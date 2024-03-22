@@ -1,0 +1,17 @@
+{
+  "dabaosword.shifttooltip": "按下shift以查看更多信息",
+  "item.dabaosword.gudingdao": "§5古锭刀",
+  "item.dabaosword.gudingdao.tooltip1": "犯大吴疆土者，盛必击而破之！",
+  "item.dabaosword.gudingdao.tooltip2": "对没有穿装备的生物造成的伤害翻倍",
+  "item.dabaosword.guding": "古锭",
+  "item.dabaosword.incomplete_gdd": "未锻造的古锭刀",
+  "enchantment.dabaosword.lightningaspect": "雷电附加",
+  "enchantment.dabaosword.pojun": "破军",
+  "item.dabaosword.rattan": "藤条",
+  "item.dabaosword.rattan_chestplate": "寿衣",
+  "item.dabaosword.rattan_leggings": "藤甲",
+  "item.dabaosword.rattanarmor.tooltip": "穿在身上，渡江不沉，经水不湿，刀箭皆不能入",
+  "item.dabaosword.peach": "桃",
+  "item.dabaosword.peach.tooltip1": "使用后：立即回复5点生命值",
+  "item.dabaosword.peach.tooltip2": "潜行时可以对其他生物使用"
+}
