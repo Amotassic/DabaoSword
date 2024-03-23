@@ -25,7 +25,7 @@ public class LightningAspectEnchantment extends Enchantment {
     public boolean canAccept(Enchantment other) {
         return super.canAccept(other) && other != Enchantments.FIRE_ASPECT;
     }
-
+    //攻击命中生物后召唤一道闪电的附魔，由于是近战，所以容易伤到自己
     @Override
     public void onTargetDamaged(LivingEntity user,Entity target,int level) {
         if (target instanceof LivingEntity) {

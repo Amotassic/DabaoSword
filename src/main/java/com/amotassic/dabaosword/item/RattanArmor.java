@@ -25,7 +25,7 @@ public class RattanArmor extends ArmorItem {
     public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext){
         tooltip.add(Text.translatable("item.dabaosword.rattanarmor.tooltip"));
     }
-
+    //实现渡江不沉的效果，代码来自https://github.com/focamacho/RingsOfAscension/中的水上行走戒指
     @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
         super.inventoryTick(stack, world, entity, slot, selected);

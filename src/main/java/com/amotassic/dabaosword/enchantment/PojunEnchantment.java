@@ -21,7 +21,7 @@ public class PojunEnchantment extends Enchantment {
     public boolean isTreasure() {
         return true;
     }
-
+    //可以附魔在斧头上
     @Override
     public boolean isAcceptableItem(ItemStack stack) {
         if (stack.getItem() instanceof AxeItem) {
@@ -29,7 +29,7 @@ public class PojunEnchantment extends Enchantment {
         }
         return super.isAcceptableItem(stack);
     }
-
+    //攻击命中盔甲槽有物品的生物后，会让其所有盔甲掉落，配合古锭刀特效使用，pvp神器
     @Override
     public void onTargetDamaged(LivingEntity user, Entity target, int level) {
         ItemStack head = ((LivingEntity) target).getEquippedStack(EquipmentSlot.HEAD);
