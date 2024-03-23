@@ -5,6 +5,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
@@ -32,6 +33,7 @@ public class PeachItem extends Item {
             if (!playerEntity.getWorld().isClient) {
                 int amount = stack.getCount();
                 playerEntity.heal(5);
+                playerEntity.playSound(SoundEvents.ENTITY_PLAYER_BURP,1.0F,1.0F);
                 if (!playerEntity.isCreative()) {stack.setCount(amount-1);}
             }
             return TypedActionResult.success(stack);
@@ -46,6 +48,7 @@ public class PeachItem extends Item {
                 if (!user.getWorld().isClient) {
                     int amount = stack1.getCount();
                     entity.heal(5);
+                    entity.playSound(SoundEvents.ENTITY_PLAYER_BURP,1.0F,1.0F);
                     if (!user.isCreative()) {stack1.setCount(amount-1);}
                 }
                 return ActionResult.success(user.getWorld().isClient);
