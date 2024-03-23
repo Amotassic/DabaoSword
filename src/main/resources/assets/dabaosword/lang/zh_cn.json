@@ -13,5 +13,8 @@
   "item.dabaosword.rattanarmor.tooltip": "穿在身上，渡江不沉，经水不湿，刀箭皆不能入",
   "item.dabaosword.peach": "桃",
   "item.dabaosword.peach.tooltip1": "使用后：立即回复5点生命值",
-  "item.dabaosword.peach.tooltip2": "潜行时可以对其他生物使用"
+  "item.dabaosword.peach.tooltip2": "潜行时可以对其他生物使用",
+  "item.minecraft.potion.effect.cooking_wine": "酒",
+  "item.minecraft.splash_potion.effect.cooking_wine": "喷溅型酒",
+  "item.minecraft.lingering_potion.effect.cooking_wine": "滞留型酒"
 }

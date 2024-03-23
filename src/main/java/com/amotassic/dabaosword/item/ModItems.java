@@ -6,9 +6,12 @@ import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.Item;
+import net.minecraft.potion.Potion;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
@@ -33,6 +36,7 @@ public class ModItems {
     public static final Item RATTAN_LEGGINGS = new RattanArmor(RATTAN_MATERIAL, ArmorItem.Type.LEGGINGS, new Item.Settings());
     //桃
     public static final Item PEACH = new PeachItem(new FabricItemSettings().maxCount(64));
+    public static final Potion COOKING_WINE = new Potion(new StatusEffectInstance(StatusEffects.STRENGTH, 1200, 1), new StatusEffectInstance(StatusEffects.NAUSEA, 300));
 
     public static void register() {
         Registry.register(Registries.ITEM, new Identifier("dabaosword", "gudingdao"), GUDINGDAO_ITEM);
@@ -44,5 +48,6 @@ public class ModItems {
         Registry.register(Registries.ITEM, new Identifier("dabaosword", "rattan_chestplate"), RATTAN_CHESTPLATE);
         Registry.register(Registries.ITEM, new Identifier("dabaosword", "rattan_leggings"), RATTAN_LEGGINGS);
         Registry.register(Registries.ITEM, new Identifier("dabaosword", "peach"), PEACH);
+        Registry.register(Registries.POTION, new Identifier("dabaosword", "cooking_wine"), COOKING_WINE);
     }
 }
