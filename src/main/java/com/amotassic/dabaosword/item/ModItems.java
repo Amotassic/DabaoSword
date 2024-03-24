@@ -36,7 +36,10 @@ public class ModItems {
     public static final Item RATTAN_LEGGINGS = new RattanArmor(RATTAN_MATERIAL, ArmorItem.Type.LEGGINGS, new Item.Settings());
     //桃
     public static final Item PEACH = new PeachItem(new FabricItemSettings().maxCount(64));
+    //酒
     public static final Potion COOKING_WINE = new Potion(new StatusEffectInstance(StatusEffects.STRENGTH, 1200, 1), new StatusEffectInstance(StatusEffects.NAUSEA, 300));
+    //万箭齐发
+    public static final Item ARROW_RAIN = new ArrowRainItem(new FabricItemSettings().maxCount(1).maxDamage(50));
 
     public static void register() {
         Registry.register(Registries.ITEM, new Identifier("dabaosword", "gudingdao"), GUDINGDAO_ITEM);
@@ -49,5 +52,6 @@ public class ModItems {
         Registry.register(Registries.ITEM, new Identifier("dabaosword", "rattan_leggings"), RATTAN_LEGGINGS);
         Registry.register(Registries.ITEM, new Identifier("dabaosword", "peach"), PEACH);
         Registry.register(Registries.POTION, new Identifier("dabaosword", "cooking_wine"), COOKING_WINE);
+        Registry.register(Registries.ITEM, new Identifier("dabaosword", "arrow_rain"), ARROW_RAIN);
     }
 }

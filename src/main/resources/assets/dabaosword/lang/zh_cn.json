@@ -16,5 +16,15 @@
   "item.dabaosword.peach.tooltip2": "潜行时可以对其他生物使用",
   "item.minecraft.potion.effect.cooking_wine": "酒",
   "item.minecraft.splash_potion.effect.cooking_wine": "喷溅型酒",
-  "item.minecraft.lingering_potion.effect.cooking_wine": "滞留型酒"
+  "item.minecraft.lingering_potion.effect.cooking_wine": "滞留型酒",
+  "item.dabaosword.arrowrain.tooltip": "“得夫差水犀手，三千强弩射潮低”  ——苏东坡",
+  "item.dabaosword.arrowrain.shift": "按下shift开始发病",
+  "item.dabaosword.arrowrain.tooltip1": "袁神，启动！",
+  "item.dabaosword.arrowrain.tooltip2": "弓箭手，准备放箭!",
+  "item.dabaosword.arrowrain.tooltip3": "放箭，放箭!",
+  "item.dabaosword.arrowrain.tooltip4": "全都去死吧！",
+  "item.dabaosword.arrowrain.tooltip5": "箭如雨下，快哉快哉!",
+  "item.dabaosword.arrowrain.tooltip6": "我的箭支，准备颇多!",
+  "item.dabaosword.arrowrain.tooltip7": "不愁弓箭尽，但愁敌未亡。",
+  "item.dabaosword.arrow_rain": "万箭齐发"
 }
