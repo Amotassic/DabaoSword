@@ -1,6 +1,7 @@
 package com.amotassic.dabaosword.mixin;
 
 import com.amotassic.dabaosword.item.ModItems;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -59,7 +60,7 @@ public abstract class RattanArmorMixin extends Entity {
             }
             //古锭刀对没有装备的生物伤害翻倍
             if (entity.getMainHandStack().getItem() == ModItems.GUDINGDAO_ITEM) {
-                if (noArmor) {
+                if (noArmor || EnchantmentHelper.getLevel(ModItems.POJUN, entity.getMainHandStack()) > 0) {
                     float health = this.getHealth();
                     if (this.getHealth()>amount) {this.setHealth(health-amount);}
                 }
