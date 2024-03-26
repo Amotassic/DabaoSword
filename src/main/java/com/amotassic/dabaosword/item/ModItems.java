@@ -6,6 +6,8 @@ import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.ArmorItem;
@@ -40,6 +42,9 @@ public class ModItems {
     public static final Potion COOKING_WINE = new Potion(new StatusEffectInstance(StatusEffects.STRENGTH, 1200, 1), new StatusEffectInstance(StatusEffects.NAUSEA, 300));
     //万箭齐发
     public static final Item ARROW_RAIN = new ArrowRainItem(new FabricItemSettings().maxCount(1).maxDamage(50));
+    //乐不思蜀以及状态效果
+    public static final Item TOO_HAPPY_ITEM = new TooHappyItem(new FabricItemSettings().maxCount(1));
+    public static final StatusEffect TOO_HAPPY = new TooHappyStatusEffect(StatusEffectCategory.HARMFUL, 0xF73C0A);
 
     public static void register() {
         Registry.register(Registries.ITEM, new Identifier("dabaosword", "gudingdao"), GUDINGDAO_ITEM);
@@ -53,5 +58,7 @@ public class ModItems {
         Registry.register(Registries.ITEM, new Identifier("dabaosword", "peach"), PEACH);
         Registry.register(Registries.POTION, new Identifier("dabaosword", "cooking_wine"), COOKING_WINE);
         Registry.register(Registries.ITEM, new Identifier("dabaosword", "arrow_rain"), ARROW_RAIN);
+        Registry.register(Registries.ITEM, new Identifier("dabaosword", "too_happy"), TOO_HAPPY_ITEM);
+        Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "too_happy"), TOO_HAPPY);
     }
 }
