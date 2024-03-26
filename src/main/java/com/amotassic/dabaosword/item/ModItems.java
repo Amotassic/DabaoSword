@@ -45,6 +45,10 @@ public class ModItems {
     //乐不思蜀以及状态效果
     public static final Item TOO_HAPPY_ITEM = new TooHappyItem(new FabricItemSettings().maxCount(1));
     public static final StatusEffect TOO_HAPPY = new TooHappyStatusEffect(StatusEffectCategory.HARMFUL, 0xF73C0A);
+    //顺手牵羊
+    public static final Item STEAL = new StealItem(new FabricItemSettings().maxCount(1));
+    //过河拆桥
+    public static final Item DISCARD = new DiscardItem(new FabricItemSettings().maxCount(1));
 
     public static void register() {
         Registry.register(Registries.ITEM, new Identifier("dabaosword", "gudingdao"), GUDINGDAO_ITEM);
@@ -60,5 +64,7 @@ public class ModItems {
         Registry.register(Registries.ITEM, new Identifier("dabaosword", "arrow_rain"), ARROW_RAIN);
         Registry.register(Registries.ITEM, new Identifier("dabaosword", "too_happy"), TOO_HAPPY_ITEM);
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "too_happy"), TOO_HAPPY);
+        Registry.register(Registries.ITEM, new Identifier("dabaosword", "steal"), STEAL);
+        Registry.register(Registries.ITEM, new Identifier("dabaosword", "discard"), DISCARD);
     }
 }

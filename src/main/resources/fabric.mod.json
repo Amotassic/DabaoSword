@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "dabaosword",
-  "version": "${version}",
+  "version": "0.1.0",
   "name": "DabaoSword",
   "description": "听说你想犯大吴疆土？",
   "authors": ["Amotassic"],

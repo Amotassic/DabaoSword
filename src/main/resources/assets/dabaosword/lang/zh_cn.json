@@ -31,5 +31,11 @@
   "item.dabaosword.too_happy.tooltip": "此间乐，不思蜀",
   "item.dabaosword.too_happy.tooltip1": "给予被命中者10秒乐不思蜀效果",
   "item.dabaosword.too_happy.tooltip2": "被乐的生物不能移动，普通伤害无法生效",
-  "effect.dabaosword.too_happy": "乐不思蜀"
+  "effect.dabaosword.too_happy": "乐不思蜀",
+  "item.dabaosword.steal": "顺手牵羊",
+  "item.dabaosword.steal.tooltip1": "随机获得对方背包里的一个物品",
+  "item.dabaosword.steal.tooltip2": "“效马效羊者右牵之”  ——《礼记·曲礼上》",
+  "item.dabaosword.discard": "过河拆桥",
+  "item.dabaosword.discard.tooltip1": "随机弃置对方背包里的一个物品（会直接消失！）",
+  "item.dabaosword.discard.tooltip2": "“你休得顺水推船，偏不许我过河拆桥”  ——康进之"
 }

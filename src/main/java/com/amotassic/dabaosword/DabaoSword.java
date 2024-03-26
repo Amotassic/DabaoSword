@@ -30,5 +30,9 @@ public class DabaoSword implements ModInitializer {
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.FOOD_AND_DRINK).register(content -> {
             content.addAfter(Items.ENCHANTED_GOLDEN_APPLE,ModItems.PEACH);
         });
+        ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register(content -> {
+            content.add(ModItems.STEAL);
+            content.add(ModItems.DISCARD);
+        });
     }
 }
