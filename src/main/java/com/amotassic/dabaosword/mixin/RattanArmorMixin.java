@@ -65,6 +65,12 @@ public abstract class RattanArmorMixin extends Entity {
                     if (this.getHealth()>amount) {this.setHealth(health-amount);}
                 }
             }
+            //被乐的生物无法造成普通攻击伤害
+            if (entity.hasStatusEffect(ModItems.TOO_HAPPY)) cir.setReturnValue(false);
+        }
+        //被乐的生物的弹射物无法造成伤害
+        if (source.isIn(DamageTypeTags.IS_PROJECTILE) && source.getAttacker() instanceof LivingEntity entity) {
+            if (entity.hasStatusEffect(ModItems.TOO_HAPPY)) cir.setReturnValue(false);
         }
         //若承受火焰伤害，则 战火燃尽，嘤熊胆！
         if (source.isIn(DamageTypeTags.IS_FIRE) && inrattan) {

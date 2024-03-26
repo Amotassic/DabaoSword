@@ -26,5 +26,10 @@
   "item.dabaosword.arrowrain.tooltip5": "箭如雨下，快哉快哉!",
   "item.dabaosword.arrowrain.tooltip6": "我的箭支，准备颇多!",
   "item.dabaosword.arrowrain.tooltip7": "不愁弓箭尽，但愁敌未亡。",
-  "item.dabaosword.arrow_rain": "万箭齐发"
+  "item.dabaosword.arrow_rain": "万箭齐发",
+  "item.dabaosword.too_happy": "乐不思蜀",
+  "item.dabaosword.too_happy.tooltip": "此间乐，不思蜀",
+  "item.dabaosword.too_happy.tooltip1": "给予被命中者10秒乐不思蜀效果",
+  "item.dabaosword.too_happy.tooltip2": "被乐的生物不能移动，普通伤害无法生效",
+  "effect.dabaosword.too_happy": "乐不思蜀"
 }
