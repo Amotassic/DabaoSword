@@ -34,7 +34,6 @@ public class LightningAspectEnchantment extends Enchantment {
                 EntityType.LIGHTNING_BOLT.spawn(world, new BlockPos((int) target.getX(), (int) target.getY(), (int) target.getZ()),null);
             }
         }
-        super.onTargetDamaged(user, target, level);
     }
 
 }

@@ -59,7 +59,7 @@ public abstract class RattanArmorMixin extends Entity {
                 if (armor3) {stack3.damage((int) (3 *Math.random()+1), entity,player -> player.sendEquipmentBreakStatus(EquipmentSlot.LEGS));}
             }
             //古锭刀对没有装备的生物伤害翻倍
-            if (entity.getMainHandStack().getItem() == ModItems.GUDINGDAO_ITEM) {
+            if (entity.getMainHandStack().getItem() == ModItems.GUDINGDAO) {
                 if (noArmor || EnchantmentHelper.getLevel(ModItems.POJUN, entity.getMainHandStack()) > 0) {
                     float health = this.getHealth();
                     if (this.getHealth()>amount) {this.setHealth(health-amount);}

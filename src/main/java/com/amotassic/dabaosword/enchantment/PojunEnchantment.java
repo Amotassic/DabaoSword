@@ -42,6 +42,5 @@ public class PojunEnchantment extends Enchantment {
             if (!legs.isEmpty()) {target.dropItem(legs.getItem());legs.setCount(0);}
             if (!feet.isEmpty()) {target.dropItem(feet.getItem());feet.setCount(0);}
         }
-        super.onTargetDamaged(user, target, level);
     }
 }
