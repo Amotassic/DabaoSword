@@ -1,12 +1,19 @@
 package com.amotassic.dabaosword.enchantment;
 
+import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.Sounds;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+
+import java.util.Random;
 
 public class PojunEnchantment extends Enchantment {
     public PojunEnchantment(Rarity weight, EnchantmentTarget target, EquipmentSlot[] slotTypes) {
@@ -36,11 +43,17 @@ public class PojunEnchantment extends Enchantment {
         ItemStack chest = ((LivingEntity) target).getEquippedStack(EquipmentSlot.CHEST);
         ItemStack legs = ((LivingEntity) target).getEquippedStack(EquipmentSlot.LEGS);
         ItemStack feet = ((LivingEntity) target).getEquippedStack(EquipmentSlot.FEET);
-        if (target instanceof LivingEntity && !user.getWorld().isClient()) {
+        if (target instanceof LivingEntity && user.getWorld() instanceof ServerWorld serverWorld/* && !user.hasStatusEffect(ModItems.COOLDOWN)*/) {
             if (!head.isEmpty()) {target.dropItem(head.getItem());head.setCount(0);}
             if (!chest.isEmpty()) {target.dropItem(chest.getItem());chest.setCount(0);}
             if (!legs.isEmpty()) {target.dropItem(legs.getItem());legs.setCount(0);}
             if (!feet.isEmpty()) {target.dropItem(feet.getItem());feet.setCount(0);}
+            if (new Random().nextFloat() < 0.5) {
+                serverWorld.playSound(null, user.getX(), user.getY(), user.getZ(), Sounds.POJUN1, SoundCategory.PLAYERS, 2.0F, 1.0F);
+            } else {
+                serverWorld.playSound(null, user.getX(), user.getY(), user.getZ(), Sounds.POJUN2, SoundCategory.PLAYERS, 2.0F, 1.0F);
+            }
+            /*user.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 5,0,false,true,true));*/
         }
     }
 }

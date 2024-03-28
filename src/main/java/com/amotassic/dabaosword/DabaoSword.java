@@ -1,7 +1,9 @@
 package com.amotassic.dabaosword;
 
+import com.amotassic.dabaosword.event.AttackEntityHandler;
 import com.amotassic.dabaosword.item.ModItems;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.Items;
@@ -15,6 +17,9 @@ public class DabaoSword implements ModInitializer {
     public void onInitialize() {
         LOGGER.info("Hello Fabric world!");
         ModItems.register();
+        Sounds.sound();
+        AttackEntityCallback.EVENT.register(new AttackEntityHandler());
+
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register(content -> {
             content.addAfter(Items.NETHERITE_SWORD,ModItems.GUDINGDAO);
             content.addAfter(Items.LEATHER_BOOTS,ModItems.RATTAN_CHESTPLATE);

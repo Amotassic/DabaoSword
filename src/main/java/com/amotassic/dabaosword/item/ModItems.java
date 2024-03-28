@@ -1,5 +1,8 @@
 package com.amotassic.dabaosword.item;
 
+import com.amotassic.dabaosword.effect.CooldownEffect;
+import com.amotassic.dabaosword.effect.InvulnerableEffect;
+import com.amotassic.dabaosword.effect.TooHappyStatusEffect;
 import com.amotassic.dabaosword.enchantment.LightningAspectEnchantment;
 import com.amotassic.dabaosword.enchantment.PojunEnchantment;
 import com.amotassic.dabaosword.enchantment.RageNatureEnchantment;
@@ -52,6 +55,16 @@ public class ModItems {
     public static final Item STEAL = new StealItem(new FabricItemSettings().maxCount(16));
     //过河拆桥
     public static final Item DISCARD = new DiscardItem(new FabricItemSettings().maxCount(16));
+    //冷却状态效果
+    public static final StatusEffect COOLDOWN = new CooldownEffect(StatusEffectCategory.NEUTRAL, 0x000000);
+    public static final StatusEffect INVULNERABLE = new InvulnerableEffect(StatusEffectCategory.BENEFICIAL,0x35F5DF);
+    //摸牌
+    public static final Item GAIN_CARD = new GainCardItem(new FabricItemSettings().maxCount(64));
+    //牌堆
+    public static final Item CARD_PILE = new GainCardItem(new FabricItemSettings().maxCount(1));
+    //无中生有
+    public static final Item WUZHONG = new WuzhongItem(new FabricItemSettings().maxCount(64));
+    public static final Item SHAN = new ShanItem(new FabricItemSettings().maxCount(64));
 
     //注册部分
     public static void register() {
@@ -73,6 +86,12 @@ public class ModItems {
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "too_happy"), TOO_HAPPY);
         Registry.register(Registries.ITEM, new Identifier("dabaosword", "steal"), STEAL);
         Registry.register(Registries.ITEM, new Identifier("dabaosword", "discard"), DISCARD);
+        Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "cooldown"), COOLDOWN);
+        Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "invulnerable"), INVULNERABLE);
+        Registry.register(Registries.ITEM, new Identifier("dabaosword", "gain_card"), GAIN_CARD);
+        Registry.register(Registries.ITEM, new Identifier("dabaosword", "card_pile"), CARD_PILE);
+        Registry.register(Registries.ITEM, new Identifier("dabaosword", "wuzhong"), WUZHONG);
+        Registry.register(Registries.ITEM, new Identifier("dabaosword", "shan"), SHAN);
     }
 
     //物品组添加
@@ -87,9 +106,13 @@ public class ModItems {
                 entries.add(ARROW_RAIN);
                 entries.add(GUDING_ITEM);
                 entries.add(RATTAN);
+                entries.add(GAIN_CARD);
+                entries.add(SHAN);
                 entries.add(PEACH);
                 entries.add(TOO_HAPPY_ITEM);
                 entries.add(STEAL);
                 entries.add(DISCARD);
+                entries.add(WUZHONG);
+                entries.add(CARD_PILE);
             }).build();
 }

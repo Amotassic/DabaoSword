@@ -3,7 +3,6 @@ package com.amotassic.dabaosword.item;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -15,7 +14,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.IntStream;
 
-public class DiscardItem extends Item {
+public class DiscardItem extends CardItem {
     public DiscardItem(Settings settings) {
         super(settings);
     }

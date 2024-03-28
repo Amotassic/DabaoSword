@@ -1,4 +1,4 @@
-package com.amotassic.dabaosword.item;
+package com.amotassic.dabaosword.effect;
 
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
@@ -9,7 +9,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 
 public class TooHappyStatusEffect extends StatusEffect {
-    protected TooHappyStatusEffect(StatusEffectCategory category, int color) {
+    public TooHappyStatusEffect(StatusEffectCategory category, int color) {
         super(category, color);
     }
 

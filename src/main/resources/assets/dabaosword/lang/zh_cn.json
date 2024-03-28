@@ -39,5 +39,28 @@
   "item.dabaosword.steal.tooltip2": "“效马效羊者右牵之”  ——《礼记·曲礼上》",
   "item.dabaosword.discard": "过河拆桥",
   "item.dabaosword.discard.tooltip1": "随机弃置对方背包里的一个物品（会直接消失！）",
-  "item.dabaosword.discard.tooltip2": "“你休得顺水推船，偏不许我过河拆桥”  ——康进之"
+  "item.dabaosword.discard.tooltip2": "“你休得顺水推船，偏不许我过河拆桥”  ——康进之",
+  "effect.dabaosword.cooldown": "冷却时间",
+  "effect.dabaosword.invulnerable": "无敌",
+  "dabaosword.cooldown": "技能冷却中",
+  "dabaosword.cooldown_end": "技能冷却时间已结束",
+  "item.dabaosword.shan": "闪",
+  "item.dabaosword.gain_card": "摸牌",
+  "item.dabaosword.card_pile": "牌堆",
+  "item.dabaosword.gain_card.tooltip": "使用后，获得一张卡牌",
+  "item.dabaosword.wuzhong": "无中生有",
+  "item.dabaosword.wuzhong.tooltip1": "使用后，获得两张卡牌",
+  "item.dabaosword.wuzhong.tooltip2": "“天下万物生于有，有生于无”  ——《老子》",
+  "item.dabaosword.wuxie": "无懈可击",
+  "item.dabaosword.wuxie.tooltip": "“击其懈怠，出其空虚”  ——曹操",
+  "item.dabaosword.huogong": "火攻",
+  "item.dabaosword.huogong.tooltip": "“行火必有因，烟火必素具”  ——孙子",
+  "item.dabaosword.juedou": "决斗",
+  "item.dabaosword.bingliang": "兵粮寸断",
+  "item.dabaosword.tiesuo": "铁锁连环",
+
+
+  //"音效"
+  "sounds.dabaosword.pojun1": "破军",
+  "sounds.dabaosword.pojun2": "破军"
 }

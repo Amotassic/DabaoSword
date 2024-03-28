@@ -17,7 +17,7 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class ArrowRainItem extends Item {
+public class ArrowRainItem extends CardItem {
     public ArrowRainItem(Settings settings) {
         super(settings);
     }

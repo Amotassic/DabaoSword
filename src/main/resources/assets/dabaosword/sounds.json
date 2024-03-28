@@ -1,0 +1,20 @@
+{
+  "pojun1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:pojun1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.pojun1"
+  },
+  "pojun2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:pojun2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.pojun2"
+  }
+}
