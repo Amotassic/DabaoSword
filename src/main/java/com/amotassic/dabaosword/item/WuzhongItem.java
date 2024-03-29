@@ -1,8 +1,10 @@
 package com.amotassic.dabaosword.item;
 
+import com.amotassic.dabaosword.Sounds;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -33,6 +35,7 @@ public class WuzhongItem extends CardItem {
                 else {user.giveItemStack(new ItemStack(ModItems.DISCARD));}
             }
             if (!user.isCreative()) user.getStackInHand(hand).decrement(1);
+            world.playSound(null, user.getX(), user.getY(), user.getZ(), Sounds.WUZHONG, SoundCategory.PLAYERS, 2.0F, 1.0F);
         }
         return super.use(world, user, hand);
     }

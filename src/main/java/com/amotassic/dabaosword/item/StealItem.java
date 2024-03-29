@@ -1,9 +1,11 @@
 package com.amotassic.dabaosword.item;
 
+import com.amotassic.dabaosword.Sounds;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -36,6 +38,7 @@ public class StealItem extends CardItem {
                 user.giveItemStack(item.copy());
                 item.setCount(0);
                 if (!user.isCreative()) {stack.decrement(1);}
+                user.getWorld().playSound(null, user.getX(), user.getY(), user.getZ(), Sounds.SHUNSHOU, SoundCategory.PLAYERS, 2.0F, 1.0F);
             }
             return ActionResult.SUCCESS;
         }

@@ -19,11 +19,12 @@ public class AttackEntityHandler implements AttackEntityCallback {
     //监听事件：若玩家杀死敌对生物，有概率摸牌；杀死玩家可以摸两张牌
     @Override
     public ActionResult interact(PlayerEntity player, World world, Hand hand, Entity entity, @Nullable EntityHitResult hitResult) {
-        if (world instanceof ServerWorld world1 && !player.isSpectator()) {
-            if (entity instanceof HostileEntity hostile && player.onKilledOther(world1, hostile) && new Random().nextFloat() < 0.5) {
-                player.giveItemStack(new ItemStack(ModItems.GAIN_CARD));
-            } else if (entity instanceof PlayerEntity player1 && player.onKilledOther(world1, player1)) {
-                player.giveItemStack(new ItemStack(ModItems.WUZHONG));
+        if (world instanceof ServerWorld && !player.isSpectator()) {
+            if (entity instanceof HostileEntity) {
+                if (new Random().nextFloat() < 0.1) player.giveItemStack(new ItemStack(ModItems.GAIN_CARD));
+            }
+            if (entity instanceof PlayerEntity) {
+                if (new Random().nextFloat() < 0.1) player.giveItemStack(new ItemStack(ModItems.WUZHONG));
             }
         }
         return ActionResult.PASS;

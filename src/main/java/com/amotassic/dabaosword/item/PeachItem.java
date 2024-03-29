@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.item;
 
+import com.amotassic.dabaosword.Sounds;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -32,7 +33,7 @@ public class PeachItem extends CardItem {
         if (playerEntity.getHealth()<=playerEntity.getMaxHealth()-5 && !playerEntity.isSneaking()) {
             if (!playerEntity.getWorld().isClient) {
                 playerEntity.heal(5);
-                world.playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), SoundEvents.ENTITY_PLAYER_BURP, SoundCategory.PLAYERS, 1.0F, 1.0F);
+                world.playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), Sounds.RECOVER, SoundCategory.PLAYERS, 1.0F, 1.0F);
                 if (!playerEntity.isCreative()) {stack.decrement(1);}
             }
             return TypedActionResult.success(stack);
@@ -46,7 +47,7 @@ public class PeachItem extends CardItem {
             if (entity.getHealth()<=entity.getMaxHealth()-5) {
                 if (!user.getWorld().isClient) {
                     entity.heal(5);
-                    entity.playSound(SoundEvents.ENTITY_PLAYER_BURP,1.0F,1.0F);
+                    entity.playSound(Sounds.RECOVER,1.0F,1.0F);
                     if (!user.isCreative()) {stack1.decrement(1);}
                 }
                 return ActionResult.success(user.getWorld().isClient);

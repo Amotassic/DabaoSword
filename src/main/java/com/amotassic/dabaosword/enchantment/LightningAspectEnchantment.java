@@ -35,5 +35,4 @@ public class LightningAspectEnchantment extends Enchantment {
             }
         }
     }
-
 }

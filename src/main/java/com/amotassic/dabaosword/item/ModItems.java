@@ -1,11 +1,10 @@
 package com.amotassic.dabaosword.item;
 
-import com.amotassic.dabaosword.effect.CooldownEffect;
-import com.amotassic.dabaosword.effect.InvulnerableEffect;
-import com.amotassic.dabaosword.effect.TooHappyStatusEffect;
+import com.amotassic.dabaosword.effect.*;
 import com.amotassic.dabaosword.enchantment.LightningAspectEnchantment;
 import com.amotassic.dabaosword.enchantment.PojunEnchantment;
 import com.amotassic.dabaosword.enchantment.RageNatureEnchantment;
+import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.enchantment.Enchantment;
@@ -51,12 +50,16 @@ public class ModItems {
     //乐不思蜀以及状态效果
     public static final Item TOO_HAPPY_ITEM = new TooHappyItem(new FabricItemSettings().maxCount(16));
     public static final StatusEffect TOO_HAPPY = new TooHappyStatusEffect(StatusEffectCategory.HARMFUL, 0xF73C0A);
+    //兵粮寸断以及状态效果
+    public static final Item BINGLIANG_ITEM = new BingliangItem(new FabricItemSettings().maxCount(16));
+    public static final StatusEffect BINGLIANG = new BingliangEffect(StatusEffectCategory.HARMFUL, 0x46F732);
     //顺手牵羊
     public static final Item STEAL = new StealItem(new FabricItemSettings().maxCount(16));
     //过河拆桥
     public static final Item DISCARD = new DiscardItem(new FabricItemSettings().maxCount(16));
     //冷却状态效果
     public static final StatusEffect COOLDOWN = new CooldownEffect(StatusEffectCategory.NEUTRAL, 0x000000);
+    public static final StatusEffect COOLDOWN2 = new Cooldown2Effect(StatusEffectCategory.NEUTRAL, 0x000000);
     public static final StatusEffect INVULNERABLE = new InvulnerableEffect(StatusEffectCategory.BENEFICIAL,0x35F5DF);
     //摸牌
     public static final Item GAIN_CARD = new GainCardItem(new FabricItemSettings().maxCount(64));
@@ -64,7 +67,10 @@ public class ModItems {
     public static final Item CARD_PILE = new GainCardItem(new FabricItemSettings().maxCount(1));
     //无中生有
     public static final Item WUZHONG = new WuzhongItem(new FabricItemSettings().maxCount(64));
+    //闪
     public static final Item SHAN = new ShanItem(new FabricItemSettings().maxCount(64));
+    //火攻
+    public static final Item FIRE_ATTACK = new FireAttackItem(new FabricItemSettings().maxCount(16));
 
     //注册部分
     public static void register() {
@@ -84,14 +90,18 @@ public class ModItems {
         Registry.register(Registries.ITEM, new Identifier("dabaosword", "arrow_rain"), ARROW_RAIN);
         Registry.register(Registries.ITEM, new Identifier("dabaosword", "too_happy"), TOO_HAPPY_ITEM);
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "too_happy"), TOO_HAPPY);
+        Registry.register(Registries.ITEM, new Identifier("dabaosword", "bingliang"), BINGLIANG_ITEM);
+        Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "bingliang"), BINGLIANG);
         Registry.register(Registries.ITEM, new Identifier("dabaosword", "steal"), STEAL);
         Registry.register(Registries.ITEM, new Identifier("dabaosword", "discard"), DISCARD);
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "cooldown"), COOLDOWN);
+        Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "cooldown2"), COOLDOWN2);
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "invulnerable"), INVULNERABLE);
         Registry.register(Registries.ITEM, new Identifier("dabaosword", "gain_card"), GAIN_CARD);
         Registry.register(Registries.ITEM, new Identifier("dabaosword", "card_pile"), CARD_PILE);
         Registry.register(Registries.ITEM, new Identifier("dabaosword", "wuzhong"), WUZHONG);
         Registry.register(Registries.ITEM, new Identifier("dabaosword", "shan"), SHAN);
+        Registry.register(Registries.ITEM, new Identifier("dabaosword", "huogong"), FIRE_ATTACK);
     }
 
     //物品组添加
@@ -109,10 +119,14 @@ public class ModItems {
                 entries.add(GAIN_CARD);
                 entries.add(SHAN);
                 entries.add(PEACH);
+                entries.add(BINGLIANG_ITEM);
                 entries.add(TOO_HAPPY_ITEM);
-                entries.add(STEAL);
                 entries.add(DISCARD);
+                entries.add(FIRE_ATTACK);
+                entries.add(STEAL);
                 entries.add(WUZHONG);
                 entries.add(CARD_PILE);
+
+                entries.add(SkillCards.YIJI);
             }).build();
 }

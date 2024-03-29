@@ -1,5 +1,5 @@
 {
-  "itemGroup.dabaosword.item_group": "大宝刀",
+  "itemGroup.dabaosword.item_group": "蒸蒸日上",
   "dabaosword.shifttooltip": "按下shift以查看更多信息",
   "item.dabaosword.gudingdao": "§5古锭刀",
   "item.dabaosword.gudingdao.tooltip1": "犯大吴疆土者，盛必击而破之！",
@@ -40,7 +40,8 @@
   "item.dabaosword.discard": "过河拆桥",
   "item.dabaosword.discard.tooltip1": "随机弃置对方背包里的一个物品（会直接消失！）",
   "item.dabaosword.discard.tooltip2": "“你休得顺水推船，偏不许我过河拆桥”  ——康进之",
-  "effect.dabaosword.cooldown": "冷却时间",
+  "effect.dabaosword.cooldown": "技能冷却",
+  "effect.dabaosword.cooldown2": "独立冷却",
   "effect.dabaosword.invulnerable": "无敌",
   "dabaosword.cooldown": "技能冷却中",
   "dabaosword.cooldown_end": "技能冷却时间已结束",
@@ -57,10 +58,35 @@
   "item.dabaosword.huogong.tooltip": "“行火必有因，烟火必素具”  ——孙子",
   "item.dabaosword.juedou": "决斗",
   "item.dabaosword.bingliang": "兵粮寸断",
+  "item.dabaosword.bingliang.tooltip": "人是铁饭是钢，一顿不吃饿得慌",
+  "item.dabaosword.bingliang.tooltip1": "给予被命中者兵粮寸断效果",
+  "item.dabaosword.bingliang.tooltip2": "被兵的玩家持续虚弱，直到被失去了两张牌",
+  "effect.dabaosword.bingliang": "兵粮寸断",
   "item.dabaosword.tiesuo": "铁锁连环",
 
+  //"技能"
+  "skill.dabaosword.enabled": "被动  已启用",
+  "skill.dabaosword.disabled": "被动  已禁用",
+  "item.dabaosword.yiji": "遗计",
+  "item.dabaosword.yiji.tooltip": "若你的血量小于等于12，你摸两张牌",
 
-  //"音效"
+  //"配音"
   "sounds.dabaosword.pojun1": "破军",
-  "sounds.dabaosword.pojun2": "破军"
+  "sounds.dabaosword.pojun2": "破军",
+  "sounds.dabaosword.kuanggu1": "狂骨",
+  "sounds.dabaosword.kuanggu2": "狂骨",
+  "sounds.dabaosword.bingliang": "兵粮寸断",
+  "sounds.dabaosword.guohe": "过河拆桥",
+  "sounds.dabaosword.huogong": "火攻",
+  "sounds.dabaosword.jiedao": "借刀杀人",
+  "sounds.dabaosword.jiu": "酒",
+  "sounds.dabaosword.juedou": "决斗",
+  "sounds.dabaosword.lebu": "乐不思蜀",
+  "sounds.dabaosword.recover": "回复",
+  "sounds.dabaosword.shan": "闪",
+  "sounds.dabaosword.shunshou": "顺手牵羊",
+  "sounds.dabaosword.tiesuo": "铁锁连环",
+  "sounds.dabaosword.wanjian": "万箭齐发",
+  "sounds.dabaosword.wuxie": "无懈可击",
+  "sounds.dabaosword.wuzhong": "无中生有"
 }

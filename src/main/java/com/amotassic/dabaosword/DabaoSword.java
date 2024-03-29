@@ -2,6 +2,7 @@ package com.amotassic.dabaosword;
 
 import com.amotassic.dabaosword.event.AttackEntityHandler;
 import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
@@ -18,6 +19,7 @@ public class DabaoSword implements ModInitializer {
         LOGGER.info("Hello Fabric world!");
         ModItems.register();
         Sounds.sound();
+        SkillCards.register();
         AttackEntityCallback.EVENT.register(new AttackEntityHandler());
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register(content -> {
