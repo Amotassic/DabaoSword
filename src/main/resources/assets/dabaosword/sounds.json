@@ -1,4 +1,31 @@
 {
+  "nahida1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/nahida1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.nahida"
+  },
+  "nahida2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/nahida2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.nahida"
+  },
+  "nahida3": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/nahida3"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.nahida"
+  },
   "pojun1": {
     "sounds": [
       {
@@ -6,7 +33,7 @@
         "name": "dabaosword:skill/pojun1"
       }
     ],
-    "subtitle": "sounds.dabaosword.pojun1"
+    "subtitle": "sounds.dabaosword.pojun"
   },
   "pojun2": {
     "sounds": [
@@ -15,7 +42,7 @@
         "name": "dabaosword:skill/pojun2"
       }
     ],
-    "subtitle": "sounds.dabaosword.pojun2"
+    "subtitle": "sounds.dabaosword.pojun"
   },
   "kuanggu1": {
     "sounds": [
@@ -24,7 +51,7 @@
         "name": "dabaosword:skill/kuanggu1"
       }
     ],
-    "subtitle": "sounds.dabaosword.kuanggu1"
+    "subtitle": "sounds.dabaosword.kuanggu"
   },
   "kuanggu2": {
     "sounds": [
@@ -33,7 +60,7 @@
         "name": "dabaosword:skill/kuanggu2"
       }
     ],
-    "subtitle": "sounds.dabaosword.kuanggu2"
+    "subtitle": "sounds.dabaosword.kuanggu"
   },
 
 

@@ -6,6 +6,9 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 
 public class Sounds {
+    public static final SoundEvent NAHIDA1 = Sounds.register("nahida1");
+    public static final SoundEvent NAHIDA2 = Sounds.register("nahida2");
+    public static final SoundEvent NAHIDA3 = Sounds.register("nahida3");
     public static final SoundEvent POJUN1 = Sounds.register("pojun1");
     public static final SoundEvent POJUN2 = Sounds.register("pojun2");
     public static final SoundEvent KUANGGU1 = Sounds.register("kuanggu1");

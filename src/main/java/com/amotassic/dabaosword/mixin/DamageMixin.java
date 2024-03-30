@@ -10,6 +10,7 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -18,10 +19,10 @@ import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -49,6 +50,14 @@ public abstract class DamageMixin extends Entity {
     }
     @Inject(method = "damage",at = @At("HEAD"), cancellable = true)
     private void damagemixin(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        /*if (source.getAttacker() instanceof PlayerEntity player && this.hasStatusEffect(StatusEffects.GLOWING)) {
+            cir.setReturnValue(false);
+            Box box = new Box(player.getBlockPos()).expand(20); // 检测范围，根据需要修改
+            for (LivingEntity nearbyEntity : player.getWorld().getEntitiesByClass(LivingEntity.class, box, nearbyEntity -> nearbyEntity.hasStatusEffect(StatusEffects.GLOWING))) {
+                nearbyEntity.applyDamage(player.getWorld().getDamageSources().playerAttack(player), amount);
+                nearbyEntity.removeStatusEffect(StatusEffects.GLOWING);
+            }
+        }*/
         ItemStack stack1 = this.getEquippedStack(EquipmentSlot.HEAD);
         ItemStack stack2 = this.getEquippedStack(EquipmentSlot.CHEST);
         boolean armor2 = stack2.getItem() == ModItems.RATTAN_CHESTPLATE;
@@ -93,8 +102,7 @@ public abstract class DamageMixin extends Entity {
             //古锭刀对没有装备的生物伤害翻倍
             if (entity.getMainHandStack().getItem() == ModItems.GUDINGDAO) {
                 if (noArmor || EnchantmentHelper.getLevel(ModItems.POJUN, entity.getMainHandStack()) > 0) {
-                    float health = this.getHealth();
-                    if (this.getHealth()>amount) {this.setHealth(health-amount);}
+                    this.applyDamage(entity.getWorld().getDamageSources().mobAttack(entity), amount);
                 }
             }
             //被乐的生物无法造成普通攻击伤害

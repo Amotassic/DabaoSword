@@ -17,6 +17,7 @@ public class DabaoSword implements ModInitializer {
     @Override
     public void onInitialize() {
         LOGGER.info("Hello Fabric world!");
+        ModItems.registerModItems();
         ModItems.register();
         Sounds.sound();
         SkillCards.register();
@@ -27,9 +28,6 @@ public class DabaoSword implements ModInitializer {
             content.addAfter(Items.LEATHER_BOOTS,ModItems.RATTAN_CHESTPLATE);
             content.addAfter(ModItems.RATTAN_CHESTPLATE,ModItems.RATTAN_LEGGINGS);
             content.addAfter(Items.EGG,ModItems.ARROW_RAIN);
-        });
-        ItemGroupEvents.modifyEntriesEvent(ItemGroups.FOOD_AND_DRINK).register(content -> {
-            content.addAfter(Items.ENCHANTED_GOLDEN_APPLE,ModItems.PEACH);
         });
     }
 }

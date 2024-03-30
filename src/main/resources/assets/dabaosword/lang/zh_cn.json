@@ -71,10 +71,9 @@
   "item.dabaosword.yiji.tooltip": "若你的血量小于等于12，你摸两张牌",
 
   //"配音"
-  "sounds.dabaosword.pojun1": "破军",
-  "sounds.dabaosword.pojun2": "破军",
-  "sounds.dabaosword.kuanggu1": "狂骨",
-  "sounds.dabaosword.kuanggu2": "狂骨",
+  "sounds.dabaosword.nahida": "纳西妲：所闻遍计",
+  "sounds.dabaosword.pojun": "破军",
+  "sounds.dabaosword.kuanggu": "狂骨",
   "sounds.dabaosword.bingliang": "兵粮寸断",
   "sounds.dabaosword.guohe": "过河拆桥",
   "sounds.dabaosword.huogong": "火攻",

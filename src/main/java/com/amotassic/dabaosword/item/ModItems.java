@@ -23,11 +23,11 @@ import net.minecraft.util.Identifier;
 
 public class ModItems {
     // 古锭刀
-    public static final Item GUDINGDAO = new GudingdaoItem(new FabricItemSettings());
+    public static final Item GUDINGDAO = register("gudingdao", new GudingdaoItem(new FabricItemSettings()));
     //未锻造的古锭刀
-    public static final Item INCOMPLETE_GUDINGDAO = new Item(new FabricItemSettings().maxCount(1));
+    public static final Item INCOMPLETE_GUDINGDAO = register("incomplete_gdd", new Item(new FabricItemSettings().maxCount(1)));
     //古锭
-    public static final Item GUDING_ITEM = new Item(new FabricItemSettings().maxCount(64));
+    public static final Item GUDING_ITEM = register("guding", new Item(new FabricItemSettings().maxCount(64)));
     //雷电附加附魔
 	public static Enchantment LIGHTNINGASPECT = new LightningAspectEnchantment(Enchantment.Rarity.COMMON, EnchantmentTarget.WEAPON, new EquipmentSlot[] {EquipmentSlot.MAINHAND});
     //破军附魔
@@ -36,73 +36,63 @@ public class ModItems {
     public static Enchantment  KUANGGU = new RageNatureEnchantment(Enchantment.Rarity.VERY_RARE, EnchantmentTarget.WEAPON, new EquipmentSlot[] {EquipmentSlot.MAINHAND});
     //藤条
     public static final ArmorMaterial RATTAN_MATERIAL = new RattanArmorMaterial();
-    public static final Item RATTAN = new Item(new FabricItemSettings().maxCount(64));
+    public static final Item RATTAN = register("rattan", new Item(new FabricItemSettings().maxCount(64)));
     //寿衣
-    public static final Item RATTAN_CHESTPLATE = new RattanArmor(RATTAN_MATERIAL, ArmorItem.Type.CHESTPLATE, new Item.Settings());
+    public static final Item RATTAN_CHESTPLATE = register("rattan_chestplate", new RattanArmor(RATTAN_MATERIAL,ArmorItem.Type.CHESTPLATE,new Item.Settings()));
     //藤甲
-    public static final Item RATTAN_LEGGINGS = new RattanArmor(RATTAN_MATERIAL, ArmorItem.Type.LEGGINGS, new Item.Settings());
+    public static final Item RATTAN_LEGGINGS = register("rattan_leggings", new RattanArmor(RATTAN_MATERIAL, ArmorItem.Type.LEGGINGS, new Item.Settings()));
     //桃
-    public static final Item PEACH = new PeachItem(new FabricItemSettings().maxCount(64));
+    public static final Item PEACH = register("peach", new PeachItem(new FabricItemSettings().maxCount(64)));
     //酒
     public static final Potion COOKING_WINE = new Potion(new StatusEffectInstance(StatusEffects.STRENGTH, 1200, 1), new StatusEffectInstance(StatusEffects.NAUSEA, 300));
     //万箭齐发
-    public static final Item ARROW_RAIN = new ArrowRainItem(new FabricItemSettings().maxCount(1).maxDamage(50));
+    public static final Item ARROW_RAIN = register("arrow_rain", new ArrowRainItem(new FabricItemSettings().maxDamage(50)));
     //乐不思蜀以及状态效果
-    public static final Item TOO_HAPPY_ITEM = new TooHappyItem(new FabricItemSettings().maxCount(16));
+    public static final Item TOO_HAPPY_ITEM = register("too_happy", new TooHappyItem(new FabricItemSettings().maxCount(16)));
     public static final StatusEffect TOO_HAPPY = new TooHappyStatusEffect(StatusEffectCategory.HARMFUL, 0xF73C0A);
     //兵粮寸断以及状态效果
-    public static final Item BINGLIANG_ITEM = new BingliangItem(new FabricItemSettings().maxCount(16));
+    public static final Item BINGLIANG_ITEM = register("bingliang",new BingliangItem(new FabricItemSettings().maxCount(16)));
     public static final StatusEffect BINGLIANG = new BingliangEffect(StatusEffectCategory.HARMFUL, 0x46F732);
     //顺手牵羊
-    public static final Item STEAL = new StealItem(new FabricItemSettings().maxCount(16));
+    public static final Item STEAL = register("steal", new StealItem(new FabricItemSettings().maxCount(16)));
     //过河拆桥
-    public static final Item DISCARD = new DiscardItem(new FabricItemSettings().maxCount(16));
+    public static final Item DISCARD = register("discard", new DiscardItem(new FabricItemSettings().maxCount(16)));
     //冷却状态效果
     public static final StatusEffect COOLDOWN = new CooldownEffect(StatusEffectCategory.NEUTRAL, 0x000000);
     public static final StatusEffect COOLDOWN2 = new Cooldown2Effect(StatusEffectCategory.NEUTRAL, 0x000000);
     public static final StatusEffect INVULNERABLE = new InvulnerableEffect(StatusEffectCategory.BENEFICIAL,0x35F5DF);
     //摸牌
-    public static final Item GAIN_CARD = new GainCardItem(new FabricItemSettings().maxCount(64));
+    public static final Item GAIN_CARD = register("gain_card",new GainCardItem(new FabricItemSettings().maxCount(64)));
     //牌堆
-    public static final Item CARD_PILE = new GainCardItem(new FabricItemSettings().maxCount(1));
+    public static final Item CARD_PILE = register("card_pile",new GainCardItem(new FabricItemSettings().maxCount(1)));
     //无中生有
-    public static final Item WUZHONG = new WuzhongItem(new FabricItemSettings().maxCount(64));
+    public static final Item WUZHONG = register("wuzhong", new WuzhongItem(new FabricItemSettings().maxCount(64)));
     //闪
-    public static final Item SHAN = new ShanItem(new FabricItemSettings().maxCount(64));
+    public static final Item SHAN = register("shan", new ShanItem(new FabricItemSettings().maxCount(64)));
     //火攻
-    public static final Item FIRE_ATTACK = new FireAttackItem(new FabricItemSettings().maxCount(16));
+    public static final Item FIRE_ATTACK = register("huogong", new FireAttackItem(new FabricItemSettings().maxCount(16)));
+    public static final Item TIESUO = register("tiesuo",new TiesuoItem(new FabricItemSettings().maxCount(16)));
 
     //注册部分
     public static void register() {
         Registry.register(Registries.ITEM_GROUP, new Identifier("dabaosword", "item_group"), DABAOSWORD_GROUP);
 
-        Registry.register(Registries.ITEM, new Identifier("dabaosword", "gudingdao"), GUDINGDAO);
-        Registry.register(Registries.ITEM, new Identifier("dabaosword", "guding"), GUDING_ITEM);
-        Registry.register(Registries.ITEM, new Identifier("dabaosword", "incomplete_gdd"), INCOMPLETE_GUDINGDAO);
         Registry.register(Registries.ENCHANTMENT, new Identifier("dabaosword", "lightningaspect"),LIGHTNINGASPECT);
         Registry.register(Registries.ENCHANTMENT, new Identifier("dabaosword", "pojun"),POJUN);
         Registry.register(Registries.ENCHANTMENT, new Identifier("dabaosword", "kuanggu"),KUANGGU);
-        Registry.register(Registries.ITEM, new Identifier("dabaosword", "rattan"), RATTAN);
-        Registry.register(Registries.ITEM, new Identifier("dabaosword", "rattan_chestplate"), RATTAN_CHESTPLATE);
-        Registry.register(Registries.ITEM, new Identifier("dabaosword", "rattan_leggings"), RATTAN_LEGGINGS);
-        Registry.register(Registries.ITEM, new Identifier("dabaosword", "peach"), PEACH);
         Registry.register(Registries.POTION, new Identifier("dabaosword", "cooking_wine"), COOKING_WINE);
-        Registry.register(Registries.ITEM, new Identifier("dabaosword", "arrow_rain"), ARROW_RAIN);
-        Registry.register(Registries.ITEM, new Identifier("dabaosword", "too_happy"), TOO_HAPPY_ITEM);
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "too_happy"), TOO_HAPPY);
-        Registry.register(Registries.ITEM, new Identifier("dabaosword", "bingliang"), BINGLIANG_ITEM);
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "bingliang"), BINGLIANG);
-        Registry.register(Registries.ITEM, new Identifier("dabaosword", "steal"), STEAL);
-        Registry.register(Registries.ITEM, new Identifier("dabaosword", "discard"), DISCARD);
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "cooldown"), COOLDOWN);
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "cooldown2"), COOLDOWN2);
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "invulnerable"), INVULNERABLE);
-        Registry.register(Registries.ITEM, new Identifier("dabaosword", "gain_card"), GAIN_CARD);
-        Registry.register(Registries.ITEM, new Identifier("dabaosword", "card_pile"), CARD_PILE);
-        Registry.register(Registries.ITEM, new Identifier("dabaosword", "wuzhong"), WUZHONG);
-        Registry.register(Registries.ITEM, new Identifier("dabaosword", "shan"), SHAN);
-        Registry.register(Registries.ITEM, new Identifier("dabaosword", "huogong"), FIRE_ATTACK);
     }
+
+    private static Item register(String name,Item item){
+        return Registry.register(Registries.ITEM,new Identifier("dabaosword",name),item);
+    }
+
+    public static void registerModItems() {}
 
     //物品组添加
     public static final ItemGroup DABAOSWORD_GROUP = FabricItemGroup.builder()
@@ -124,6 +114,7 @@ public class ModItems {
                 entries.add(DISCARD);
                 entries.add(FIRE_ATTACK);
                 entries.add(STEAL);
+                entries.add(TIESUO);
                 entries.add(WUZHONG);
                 entries.add(CARD_PILE);
 

@@ -16,6 +16,9 @@
   "entrypoints": {
     "main": [
       "com.amotassic.dabaosword.DabaoSword"
+    ],
+    "client": [
+      "com.amotassic.dabaosword.DabaoSwordClient"
     ]
   },
   "mixins": [
