@@ -61,6 +61,7 @@ public class ModItems {
     public static final StatusEffect COOLDOWN = new CooldownEffect(StatusEffectCategory.NEUTRAL, 0x000000);
     public static final StatusEffect COOLDOWN2 = new Cooldown2Effect(StatusEffectCategory.NEUTRAL, 0x000000);
     public static final StatusEffect INVULNERABLE = new InvulnerableEffect(StatusEffectCategory.BENEFICIAL,0x35F5DF);
+    public static final StatusEffect JUEDOUING = new InvulnerableEffect(StatusEffectCategory.NEUTRAL,0x000000);
     //摸牌
     public static final Item GAIN_CARD = register("gain_card",new GainCardItem(new FabricItemSettings().maxCount(64)));
     //牌堆
@@ -72,6 +73,7 @@ public class ModItems {
     //火攻
     public static final Item FIRE_ATTACK = register("huogong", new FireAttackItem(new FabricItemSettings().maxCount(16)));
     public static final Item TIESUO = register("tiesuo",new TiesuoItem(new FabricItemSettings().maxCount(16)));
+    public static final Item JUEDOU = register("juedou",new JuedouItem(new FabricItemSettings().maxCount(16)));
 
     //注册部分
     public static void register() {
@@ -86,6 +88,7 @@ public class ModItems {
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "cooldown"), COOLDOWN);
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "cooldown2"), COOLDOWN2);
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "invulnerable"), INVULNERABLE);
+        Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "juedou"), JUEDOUING);
     }
 
     private static Item register(String name,Item item){
@@ -113,6 +116,7 @@ public class ModItems {
                 entries.add(TOO_HAPPY_ITEM);
                 entries.add(DISCARD);
                 entries.add(FIRE_ATTACK);
+                entries.add(JUEDOU);
                 entries.add(STEAL);
                 entries.add(TIESUO);
                 entries.add(WUZHONG);

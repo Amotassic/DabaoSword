@@ -35,29 +35,23 @@ import java.util.Objects;
 public abstract class DamageMixin extends Entity {
     @Shadow public abstract ItemStack getEquippedStack(EquipmentSlot var1);
 
-    @Shadow protected abstract void applyDamage(DamageSource source, float amount);
-
-    @Shadow public abstract void setHealth(float health);
-
     @Shadow public abstract float getHealth();
 
     @Shadow public abstract double getAttributeValue(EntityAttribute attribute);
 
     @Shadow public abstract boolean hasStatusEffect(StatusEffect effect);
 
+    @Shadow public abstract boolean isGlowing();
+
+    @Shadow public abstract void applyDamage(DamageSource source, float amount);
+
+    @Shadow public abstract void heal(float amount);
+
     public DamageMixin(EntityType<?> type, World world) {
         super(type, world);
     }
     @Inject(method = "damage",at = @At("HEAD"), cancellable = true)
     private void damagemixin(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        /*if (source.getAttacker() instanceof PlayerEntity player && this.hasStatusEffect(StatusEffects.GLOWING)) {
-            cir.setReturnValue(false);
-            Box box = new Box(player.getBlockPos()).expand(20); // 检测范围，根据需要修改
-            for (LivingEntity nearbyEntity : player.getWorld().getEntitiesByClass(LivingEntity.class, box, nearbyEntity -> nearbyEntity.hasStatusEffect(StatusEffects.GLOWING))) {
-                nearbyEntity.applyDamage(player.getWorld().getDamageSources().playerAttack(player), amount);
-                nearbyEntity.removeStatusEffect(StatusEffects.GLOWING);
-            }
-        }*/
         ItemStack stack1 = this.getEquippedStack(EquipmentSlot.HEAD);
         ItemStack stack2 = this.getEquippedStack(EquipmentSlot.CHEST);
         boolean armor2 = stack2.getItem() == ModItems.RATTAN_CHESTPLATE;
@@ -66,10 +60,12 @@ public abstract class DamageMixin extends Entity {
         ItemStack stack4 = this.getEquippedStack(EquipmentSlot.FEET);
         boolean inrattan = armor2 || armor3;
         boolean noArmor = stack1.isEmpty() && stack2.isEmpty() && stack3.isEmpty() && stack4.isEmpty();
-        Entity owner = source.getAttacker();
+        LivingEntity entity1 = (LivingEntity) source.getAttacker();
         if (this.hasStatusEffect(ModItems.INVULNERABLE)) {cir.setReturnValue(false);}
+        if (entity1 != null && this.hasStatusEffect(ModItems.JUEDOUING) && !entity1.hasStatusEffect(ModItems.JUEDOUING)) {
+            cir.setReturnValue(false);}
         //恭喜你发现了彩蛋！副手拿着幽匿催发体，然后尽情享受弹射物带来的快乐吧！
-        if (source.isIn(DamageTypeTags.IS_PROJECTILE) && owner instanceof PlayerEntity player && player.getWorld() instanceof ServerWorld serverWorld && player.getOffHandStack().getItem() == Items.SCULK_CATALYST) {
+        if (source.isIn(DamageTypeTags.IS_PROJECTILE) && entity1 instanceof PlayerEntity player && player.getWorld() instanceof ServerWorld serverWorld && player.getOffHandStack().getItem() == Items.SCULK_CATALYST) {
             Vec3d vec3d = player.getPos().add(0.0, 1.5f, 0.0);
             Vec3d vec3d2 = this.getEyePos().subtract(vec3d);
             Vec3d vec3d3 = vec3d2.normalize();
@@ -87,6 +83,7 @@ public abstract class DamageMixin extends Entity {
         if (source.isIn(DamageTypeTags.IS_PROJECTILE) && inrattan) {
             cir.setReturnValue(false);
             Objects.requireNonNull(source.getSource()).discard();
+            Entity owner = source.getAttacker();
             if (owner instanceof LivingEntity entity) {
                 if (armor2) {stack2.damage((int) (3 *Math.random()+1), entity,player -> player.sendEquipmentBreakStatus(EquipmentSlot.CHEST));}
                 if (armor3) {stack3.damage((int) (3 *Math.random()+1), entity,player -> player.sendEquipmentBreakStatus(EquipmentSlot.LEGS));}
@@ -102,7 +99,7 @@ public abstract class DamageMixin extends Entity {
             //古锭刀对没有装备的生物伤害翻倍
             if (entity.getMainHandStack().getItem() == ModItems.GUDINGDAO) {
                 if (noArmor || EnchantmentHelper.getLevel(ModItems.POJUN, entity.getMainHandStack()) > 0) {
-                    this.applyDamage(entity.getWorld().getDamageSources().mobAttack(entity), amount);
+                    if (this.getHealth() > amount) this.applyDamage(source,amount);
                 }
             }
             //被乐的生物无法造成普通攻击伤害
@@ -116,6 +113,15 @@ public abstract class DamageMixin extends Entity {
         if (source.isIn(DamageTypeTags.IS_FIRE) && inrattan) {
             if (this.isOnFire()) {
                 if (this.getHealth()>0.2) {this.applyDamage(source,0.2f);}
+            }
+        }
+        //非常勉强实现的铁索连环效果，我做不到完美，摆了
+        if (source.getAttacker() instanceof PlayerEntity player && this.isGlowing() && player.getWorld() instanceof ServerWorld world) {
+            this.heal(amount);
+            Box box = new Box(player.getBlockPos()).expand(20); // 检测范围，根据需要修改
+            for (LivingEntity nearbyEntity : world.getEntitiesByClass(LivingEntity.class, box, LivingEntity::isGlowing)) {
+                nearbyEntity.applyDamage(world.getDamageSources().sonicBoom(player), amount);
+                nearbyEntity.removeStatusEffect(StatusEffects.GLOWING);
             }
         }
     }

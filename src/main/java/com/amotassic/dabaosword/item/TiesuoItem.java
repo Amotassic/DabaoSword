@@ -33,10 +33,15 @@ public class TiesuoItem extends CardItem{
     //原始的铁索连环
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (!entity.hasStatusEffect(StatusEffects.GLOWING) && !(user.getOffHandStack().getItem() == Items.KNOWLEDGE_BOOK)) {
-            entity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, StatusEffectInstance.INFINITE));
+        if (!entity.isGlowing() && !(user.getOffHandStack().getItem() == Items.KNOWLEDGE_BOOK)) {
+            Box box = user.getBoundingBox().stretch(user.getRotationVec(1.0F).multiply(10))
+                    .expand(0.3D, 0.3D, 0.3D);
+            for (LivingEntity nearbyEntity : user.getWorld().getEntitiesByClass(LivingEntity.class, box, nearbyEntity -> !nearbyEntity.isGlowing())) {
+                nearbyEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, StatusEffectInstance.INFINITE, 0, false, true,false));
+            }
             if (!user.isCreative()) {stack.decrement(1);}
             user.playSound(Sounds.TIESUO, 2f, 1.0f);
+            user.removeStatusEffect(StatusEffects.GLOWING);
         }
         return super.useOnEntity(stack, user, entity, hand);
     }
@@ -57,7 +62,7 @@ public class TiesuoItem extends CardItem{
         if (user.getOffHandStack().getItem() == Items.KNOWLEDGE_BOOK) {
             Box box = user.getBoundingBox().stretch(user.getRotationVec(1.0F).multiply(20))
                     .expand(1.0D, 1.0D, 1.0D);
-            for (LivingEntity nearbyEntity : world.getEntitiesByClass(LivingEntity.class, box, nearbyEntity -> !nearbyEntity.hasStatusEffect(StatusEffects.GLOWING))) {
+            for (LivingEntity nearbyEntity : world.getEntitiesByClass(LivingEntity.class, box, nearbyEntity -> !nearbyEntity.isGlowing())) {
                 nearbyEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, StatusEffectInstance.INFINITE, 0, false, true,false));
             }
         }

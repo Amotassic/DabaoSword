@@ -8,9 +8,11 @@ import net.minecraft.util.Identifier;
 
 public class SkillCards {
 
-    public static final Item YIJI = new YijiSkill(new FabricItemSettings().maxDamage(2));
+    public static final Item YIJI = register("yiji",new YijiSkill(new FabricItemSettings().maxDamage(2)));
 
-    public static void register() {
-        Registry.register(Registries.ITEM, new Identifier("dabaosword", "yiji"), YIJI);
+    private static Item register(String name,Item item){
+        return Registry.register(Registries.ITEM,new Identifier("dabaosword",name),item);
     }
+
+    public static void register() {}
 }

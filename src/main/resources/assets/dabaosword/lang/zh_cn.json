@@ -57,6 +57,8 @@
   "item.dabaosword.huogong": "火攻",
   "item.dabaosword.huogong.tooltip": "“行火必有因，烟火必素具”  ——孙子",
   "item.dabaosword.juedou": "决斗",
+  "effect.dabaosword.juedou": "决斗",
+  "item.dabaosword.juedou.tooltip": "15s内都别动，不用担心其他人的攻击",
   "item.dabaosword.bingliang": "兵粮寸断",
   "item.dabaosword.bingliang.tooltip": "人是铁饭是钢，一顿不吃饿得慌",
   "item.dabaosword.bingliang.tooltip1": "给予被命中者兵粮寸断效果",
