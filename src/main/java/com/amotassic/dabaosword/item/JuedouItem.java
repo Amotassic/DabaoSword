@@ -26,10 +26,23 @@ public class JuedouItem extends CardItem{
     @Override
     public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         if (attacker.getWorld() instanceof ServerWorld serverWorld && attacker instanceof PlayerEntity player) {
-            attacker.addStatusEffect(new StatusEffectInstance(ModItems.JUEDOUING, 20 * 15));
-            target.addStatusEffect(new StatusEffectInstance(ModItems.JUEDOUING, 20 * 15));
-            if (!player.isCreative()) stack.decrement(1);
-            serverWorld.playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(), Sounds.JUEDOU, SoundCategory.PLAYERS, 2.0F, 1.0F);
+            if (target instanceof PlayerEntity player1 && player1.getInventory().contains(ModItems.WUXIE.getDefaultStack())) {
+                for (int i = 0; i < player1.getInventory().size(); i++) {
+                    ItemStack wuxie = player1.getInventory().getStack(i);
+                    if (wuxie.getItem() == ModItems.WUXIE) {
+                        wuxie.decrement(1);
+                        target.getWorld().playSound(null, target.getX(), target.getY(), target.getZ(), Sounds.WUXIE, SoundCategory.PLAYERS, 2.0F, 1.0F);
+                        break;
+                    }
+                }
+                if (!player.isCreative()) {stack.decrement(1);}
+                player.getWorld().playSound(null, player.getX(), player.getY(), player.getZ(), Sounds.JUEDOU, SoundCategory.PLAYERS, 2.0F, 1.0F);
+            } else {
+                attacker.addStatusEffect(new StatusEffectInstance(ModItems.JUEDOUING, 20 * 15));
+                target.addStatusEffect(new StatusEffectInstance(ModItems.JUEDOUING, 20 * 15));
+                if (!player.isCreative()) stack.decrement(1);
+                serverWorld.playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(), Sounds.JUEDOU, SoundCategory.PLAYERS, 2.0F, 1.0F);
+            }
         }
         return super.postHit(stack, target, attacker);
     }

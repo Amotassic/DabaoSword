@@ -42,10 +42,10 @@ public class PojunEnchantment extends Enchantment {
         ItemStack legs = ((LivingEntity) target).getEquippedStack(EquipmentSlot.LEGS);
         ItemStack feet = ((LivingEntity) target).getEquippedStack(EquipmentSlot.FEET);
         if (target instanceof LivingEntity && user.getWorld() instanceof ServerWorld serverWorld/* && !user.hasStatusEffect(ModItems.COOLDOWN)*/) {
-            if (!head.isEmpty()) {target.dropItem(head.getItem());head.setCount(0);}
-            if (!chest.isEmpty()) {target.dropItem(chest.getItem());chest.setCount(0);}
-            if (!legs.isEmpty()) {target.dropItem(legs.getItem());legs.setCount(0);}
-            if (!feet.isEmpty()) {target.dropItem(feet.getItem());feet.setCount(0);}
+            if (!head.isEmpty()) {target.dropStack(head.copy());head.setCount(0);}
+            if (!chest.isEmpty()) {target.dropStack(chest.copy());chest.setCount(0);}
+            if (!legs.isEmpty()) {target.dropStack(legs.copy());legs.setCount(0);}
+            if (!feet.isEmpty()) {target.dropStack(feet.copy());feet.setCount(0);}
             if (new Random().nextFloat() < 0.5) {
                 serverWorld.playSound(null, user.getX(), user.getY(), user.getZ(), Sounds.POJUN1, SoundCategory.PLAYERS, 2.0F, 1.0F);
             } else {

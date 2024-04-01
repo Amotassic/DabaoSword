@@ -67,13 +67,17 @@ public class ModItems {
     //牌堆
     public static final Item CARD_PILE = register("card_pile",new GainCardItem(new FabricItemSettings().maxCount(1)));
     //无中生有
-    public static final Item WUZHONG = register("wuzhong", new WuzhongItem(new FabricItemSettings().maxCount(64)));
+    public static final Item WUZHONG = register("wuzhong", new GainCardItem(new FabricItemSettings().maxCount(64)));
     //闪
     public static final Item SHAN = register("shan", new ShanItem(new FabricItemSettings().maxCount(64)));
     //火攻
     public static final Item FIRE_ATTACK = register("huogong", new FireAttackItem(new FabricItemSettings().maxCount(16)));
+    //铁锁连环
     public static final Item TIESUO = register("tiesuo",new TiesuoItem(new FabricItemSettings().maxCount(16)));
+    //决斗
     public static final Item JUEDOU = register("juedou",new JuedouItem(new FabricItemSettings().maxCount(16)));
+    //无懈可击
+    public static final Item WUXIE = register("wuxie", new CardItem(new FabricItemSettings().maxCount(16)));
 
     //注册部分
     public static void register() {
@@ -119,6 +123,7 @@ public class ModItems {
                 entries.add(JUEDOU);
                 entries.add(STEAL);
                 entries.add(TIESUO);
+                entries.add(WUXIE);
                 entries.add(WUZHONG);
                 entries.add(CARD_PILE);
 
