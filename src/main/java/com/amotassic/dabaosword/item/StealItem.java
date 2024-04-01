@@ -40,6 +40,17 @@ public class StealItem extends CardItem {
                 }
                 if (!user.isCreative()) {stack.decrement(1);}
                 user.getWorld().playSound(null, user.getX(), user.getY(), user.getZ(), Sounds.SHUNSHOU, SoundCategory.PLAYERS, 2.0F, 1.0F);
+            } else {
+                DefaultedList<ItemStack> inventory = target.getInventory().main;
+                List<Integer> cardSlots = IntStream.range(0, inventory.size()).filter(i -> inventory.get(i).getItem() instanceof CardItem).boxed().toList();
+                if (!cardSlots.isEmpty()) {
+                    int slot = cardSlots.get(((int) (System.currentTimeMillis() / 100) % cardSlots.size()));
+                    ItemStack item = inventory.get(slot);
+                    user.giveItemStack(item.copyWithCount(1));
+                    user.getWorld().playSound(null, user.getX(), user.getY(), user.getZ(), Sounds.SHUNSHOU, SoundCategory.PLAYERS, 2.0F, 1.0F);
+                    item.decrement(1);
+                    if (!user.isCreative()) {stack.decrement(1);}
+                }
             }
             if (!target.getInventory().contains(ModItems.WUXIE.getDefaultStack())) {
                 DefaultedList<ItemStack> inventory = target.getInventory().main;
