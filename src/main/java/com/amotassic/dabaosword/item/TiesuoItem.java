@@ -33,7 +33,7 @@ public class TiesuoItem extends CardItem{
     //原始的铁索连环
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (!entity.isGlowing() && !(user.getOffHandStack().getItem() == Items.KNOWLEDGE_BOOK)) {
+        if (!entity.isGlowing() && !(user.getOffHandStack().getItem() == Items.KNOWLEDGE_BOOK) && hand == Hand.MAIN_HAND) {
             Box box = user.getBoundingBox().stretch(user.getRotationVec(1.0F).multiply(10))
                     .expand(0.3D, 0.3D, 0.3D);
             for (LivingEntity nearbyEntity : user.getWorld().getEntitiesByClass(LivingEntity.class, box, nearbyEntity -> !nearbyEntity.isGlowing())) {

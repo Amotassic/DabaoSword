@@ -13,7 +13,6 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
 import java.util.List;
-import java.util.Random;
 import java.util.stream.IntStream;
 
 public class StealItem extends CardItem {
@@ -29,16 +28,30 @@ public class StealItem extends CardItem {
 
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (entity instanceof PlayerEntity target) {
-            DefaultedList<ItemStack> inventory = target.getInventory().main;
-            List<Integer> nonEmptySlots = IntStream.range(0, inventory.size()).filter(i -> !inventory.get(i).isEmpty()).boxed().toList();
-            if (!nonEmptySlots.isEmpty()) {
-                int slot = nonEmptySlots.get(new Random().nextInt(nonEmptySlots.size()));
-                ItemStack item = inventory.get(slot);
-                user.giveItemStack(item.copy());
-                item.setCount(0);
+        if (entity instanceof PlayerEntity target && hand == Hand.MAIN_HAND) {
+            if (target.getInventory().contains(ModItems.WUXIE.getDefaultStack())) {
+                for (int i = 0; i < target.getInventory().size(); i++) {
+                    ItemStack wuxie = target.getInventory().getStack(i);
+                    if (wuxie.getItem() == ModItems.WUXIE) {
+                        wuxie.decrement(1);
+                        target.getWorld().playSound(null, target.getX(), target.getY(), target.getZ(), Sounds.WUXIE, SoundCategory.PLAYERS, 2.0F, 1.0F);
+                        break;
+                    }
+                }
                 if (!user.isCreative()) {stack.decrement(1);}
                 user.getWorld().playSound(null, user.getX(), user.getY(), user.getZ(), Sounds.SHUNSHOU, SoundCategory.PLAYERS, 2.0F, 1.0F);
+            }
+            if (!target.getInventory().contains(ModItems.WUXIE.getDefaultStack())) {
+                DefaultedList<ItemStack> inventory = target.getInventory().main;
+                List<Integer> cardSlots = IntStream.range(0, inventory.size()).filter(i -> inventory.get(i).getItem() instanceof CardItem).boxed().toList();
+                if (!cardSlots.isEmpty()) {
+                    int slot = cardSlots.get(((int) (System.currentTimeMillis() / 100) % cardSlots.size()));
+                    ItemStack item = inventory.get(slot);
+                    user.giveItemStack(item.copyWithCount(1));
+                    user.getWorld().playSound(null, user.getX(), user.getY(), user.getZ(), Sounds.SHUNSHOU, SoundCategory.PLAYERS, 2.0F, 1.0F);
+                    item.decrement(1);
+                    if (!user.isCreative()) {stack.decrement(1);}
+                }
             }
             return ActionResult.SUCCESS;
         }
