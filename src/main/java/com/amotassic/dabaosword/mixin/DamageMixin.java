@@ -45,8 +45,6 @@ public abstract class DamageMixin extends Entity {
 
     @Shadow public abstract void applyDamage(DamageSource source, float amount);
 
-    @Shadow public abstract void heal(float amount);
-
     public DamageMixin(EntityType<?> type, World world) {
         super(type, world);
     }
@@ -115,13 +113,12 @@ public abstract class DamageMixin extends Entity {
                 if (this.getHealth()>0.2) {this.applyDamage(source,0.2f);}
             }
         }
-        //非常勉强实现的铁索连环效果，我做不到完美，摆了
+        //实现铁索连环的效果，大概是好了吧
         if (source.getAttacker() instanceof PlayerEntity player && this.isGlowing() && player.getWorld() instanceof ServerWorld world) {
-            this.heal(amount);
             Box box = new Box(player.getBlockPos()).expand(20); // 检测范围，根据需要修改
             for (LivingEntity nearbyEntity : world.getEntitiesByClass(LivingEntity.class, box, LivingEntity::isGlowing)) {
-                nearbyEntity.applyDamage(world.getDamageSources().sonicBoom(player), amount);
                 nearbyEntity.removeStatusEffect(StatusEffects.GLOWING);
+                nearbyEntity.damage(world.getDamageSources().sonicBoom(player), amount);
             }
         }
     }

@@ -45,6 +45,8 @@ public class ModItems {
     public static final Item PEACH = register("peach", new PeachItem(new FabricItemSettings().maxCount(64)));
     //酒
     public static final Potion COOKING_WINE = new Potion(new StatusEffectInstance(StatusEffects.STRENGTH, 1200, 1), new StatusEffectInstance(StatusEffects.NAUSEA, 300));
+    //卡牌形式的酒，为了形式统一而添加
+    public static final Item JIU = register("jiu", new JiuItem(new FabricItemSettings().maxCount(16)));
     //万箭齐发
     public static final Item ARROW_RAIN = register("arrow_rain", new ArrowRainItem(new FabricItemSettings().maxDamage(50)));
     //乐不思蜀以及状态效果
@@ -78,6 +80,8 @@ public class ModItems {
     public static final Item JUEDOU = register("juedou",new JuedouItem(new FabricItemSettings().maxCount(16)));
     //无懈可击
     public static final Item WUXIE = register("wuxie", new CardItem(new FabricItemSettings().maxCount(16)));
+    //借刀杀人
+    public static final Item JIEDAO = register("jiedao", new JiedaoItem(new FabricItemSettings().maxCount(16)));
 
     //注册部分
     public static void register() {
@@ -116,10 +120,12 @@ public class ModItems {
                 entries.add(GAIN_CARD);
                 entries.add(SHAN);
                 entries.add(PEACH);
+                entries.add(JIU);
                 entries.add(BINGLIANG_ITEM);
                 entries.add(TOO_HAPPY_ITEM);
                 entries.add(DISCARD);
                 entries.add(FIRE_ATTACK);
+                entries.add(JIEDAO);
                 entries.add(JUEDOU);
                 entries.add(STEAL);
                 entries.add(TIESUO);

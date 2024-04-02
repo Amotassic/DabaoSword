@@ -1,16 +1,25 @@
 package com.amotassic.dabaosword.item;
 
 import com.amotassic.dabaosword.Sounds;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import java.util.List;
+
 public class ShanItem extends CardItem{
+
+    @Override
+    public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext){
+        tooltip.add(Text.translatable("item.dabaosword.shan.tooltip"));
+    }
     public ShanItem(Settings settings) {
         super(settings);
     }

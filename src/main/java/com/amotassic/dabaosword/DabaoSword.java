@@ -21,6 +21,7 @@ public class DabaoSword implements ModInitializer {
         ModItems.register();
         Sounds.sound();
         SkillCards.register();
+        Tags.Tag();
         AttackEntityCallback.EVENT.register(new AttackEntityHandler());
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register(content -> {

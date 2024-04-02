@@ -6,6 +6,7 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -35,14 +36,10 @@ public class BingliangItem extends CardItem{
     public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         if (attacker.getWorld() instanceof ServerWorld serverWorld && attacker instanceof PlayerEntity player) {
             if (target instanceof PlayerEntity player1 && player1.getInventory().contains(ModItems.WUXIE.getDefaultStack())) {
-                for (int i = 0; i < player1.getInventory().size(); i++) {
-                    ItemStack wuxie = player1.getInventory().getStack(i);
-                    if (wuxie.getItem() == ModItems.WUXIE) {
-                        wuxie.decrement(1);
-                        target.getWorld().playSound(null, target.getX(), target.getY(), target.getZ(), Sounds.WUXIE, SoundCategory.PLAYERS, 2.0F, 1.0F);
-                        break;
-                    }
-                }
+                PlayerInventory inv = player1.getInventory();
+                int i = inv.getSlotWithStack(ModItems.WUXIE.getDefaultStack());
+                inv.removeStack(i,1);
+                target.getWorld().playSound(null, target.getX(), target.getY(), target.getZ(), Sounds.WUXIE, SoundCategory.PLAYERS, 2.0F, 1.0F);
                 if (!player.isCreative()) {stack.decrement(1);}
                 player.getWorld().playSound(null, player.getX(), player.getY(), player.getZ(), Sounds.BINGLIANG, SoundCategory.PLAYERS, 2.0F, 1.0F);
             } else {

@@ -50,9 +50,9 @@ public class TiesuoItem extends CardItem{
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         if (user.getOffHandStack().getItem() == Items.KNOWLEDGE_BOOK) {
             float i = new Random().nextFloat();
-            if (i < 0.333) {user.playSound(Sounds.NAHIDA1, 2f, 1.0f);}
-            else if (0.333<= i && i < 0.666) {user.playSound(Sounds.NAHIDA2, 2f, 1.0f);}
-            else {user.playSound(Sounds.NAHIDA3, 2f, 1.0f);}
+            if (i < 0.333) {user.playSound(Sounds.NAHIDA1, 3f, 1.0f);}
+            else if (0.333<= i && i < 0.666) {user.playSound(Sounds.NAHIDA2, 3f, 1.0f);}
+            else {user.playSound(Sounds.NAHIDA3, 3f, 1.0f);}
         }
         return ItemUsage.consumeHeldItem(world, user, hand);
     }

@@ -4,6 +4,7 @@ import com.amotassic.dabaosword.Sounds;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
@@ -29,42 +30,26 @@ public class StealItem extends CardItem {
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         if (entity instanceof PlayerEntity target && hand == Hand.MAIN_HAND) {
-            if (target.getInventory().contains(ModItems.WUXIE.getDefaultStack())) {
-                for (int i = 0; i < target.getInventory().size(); i++) {
-                    ItemStack wuxie = target.getInventory().getStack(i);
-                    if (wuxie.getItem() == ModItems.WUXIE) {
-                        wuxie.decrement(1);
-                        target.getWorld().playSound(null, target.getX(), target.getY(), target.getZ(), Sounds.WUXIE, SoundCategory.PLAYERS, 2.0F, 1.0F);
-                        break;
-                    }
-                }
-                if (!user.isCreative()) {stack.decrement(1);}
+            PlayerInventory inv = target.getInventory();
+            if (inv.contains(ModItems.WUXIE.getDefaultStack())) {
+                int i = inv.getSlotWithStack(ModItems.WUXIE.getDefaultStack());
+                target.getWorld().playSound(null, target.getX(), target.getY(), target.getZ(), Sounds.WUXIE, SoundCategory.PLAYERS, 2.0F, 1.0F);
                 user.getWorld().playSound(null, user.getX(), user.getY(), user.getZ(), Sounds.SHUNSHOU, SoundCategory.PLAYERS, 2.0F, 1.0F);
+                if (!user.isCreative()) {stack.decrement(1);}
+                inv.removeStack(i,1);
+                return ActionResult.SUCCESS;
             } else {
                 DefaultedList<ItemStack> inventory = target.getInventory().main;
                 List<Integer> cardSlots = IntStream.range(0, inventory.size()).filter(i -> inventory.get(i).getItem() instanceof CardItem).boxed().toList();
                 if (!cardSlots.isEmpty()) {
-                    int slot = cardSlots.get(((int) (System.currentTimeMillis() / 100) % cardSlots.size()));
-                    ItemStack item = inventory.get(slot);
-                    user.giveItemStack(item.copyWithCount(1));
                     user.getWorld().playSound(null, user.getX(), user.getY(), user.getZ(), Sounds.SHUNSHOU, SoundCategory.PLAYERS, 2.0F, 1.0F);
-                    item.decrement(1);
+                    int slot = cardSlots.get(((int) (System.currentTimeMillis()/1000) % cardSlots.size()));
+                    ItemStack item = inventory.get(slot);
                     if (!user.isCreative()) {stack.decrement(1);}
+                    user.giveItemStack(item.copyWithCount(1)); /*顺手：复制一个物品*/ item.decrement(1);
+                    return ActionResult.SUCCESS;
                 }
             }
-            if (!target.getInventory().contains(ModItems.WUXIE.getDefaultStack())) {
-                DefaultedList<ItemStack> inventory = target.getInventory().main;
-                List<Integer> cardSlots = IntStream.range(0, inventory.size()).filter(i -> inventory.get(i).getItem() instanceof CardItem).boxed().toList();
-                if (!cardSlots.isEmpty()) {
-                    int slot = cardSlots.get(((int) (System.currentTimeMillis() / 100) % cardSlots.size()));
-                    ItemStack item = inventory.get(slot);
-                    user.giveItemStack(item.copyWithCount(1));
-                    user.getWorld().playSound(null, user.getX(), user.getY(), user.getZ(), Sounds.SHUNSHOU, SoundCategory.PLAYERS, 2.0F, 1.0F);
-                    item.decrement(1);
-                    if (!user.isCreative()) {stack.decrement(1);}
-                }
-            }
-            return ActionResult.SUCCESS;
         }
         return ActionResult.PASS;
     }
