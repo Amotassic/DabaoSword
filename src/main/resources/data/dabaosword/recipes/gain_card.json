@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "tag": "dabaosword:card"
+    },
+    {
+      "tag": "dabaosword:card"
+    }
+  ],
+  "result": {
+    "item":"dabaosword:gain_card"
+  }
+}
