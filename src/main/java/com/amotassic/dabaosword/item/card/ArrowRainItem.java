@@ -1,4 +1,4 @@
-package com.amotassic.dabaosword.item;
+package com.amotassic.dabaosword.item.card;
 
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;

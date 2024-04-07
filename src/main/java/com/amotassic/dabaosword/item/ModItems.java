@@ -4,6 +4,7 @@ import com.amotassic.dabaosword.effect.*;
 import com.amotassic.dabaosword.enchantment.LightningAspectEnchantment;
 import com.amotassic.dabaosword.enchantment.PojunEnchantment;
 import com.amotassic.dabaosword.enchantment.RageNatureEnchantment;
+import com.amotassic.dabaosword.item.card.*;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
@@ -12,10 +13,7 @@ import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.*;
-import net.minecraft.potion.Potion;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.text.Text;
@@ -43,8 +41,7 @@ public class ModItems {
     public static final Item RATTAN_LEGGINGS = register("rattan_leggings", new RattanArmor(RATTAN_MATERIAL, ArmorItem.Type.LEGGINGS, new Item.Settings()));
     //桃
     public static final Item PEACH = register("peach", new PeachItem(new FabricItemSettings().maxCount(64)));
-    //酒
-    public static final Potion COOKING_WINE = new Potion(new StatusEffectInstance(StatusEffects.STRENGTH, 1200, 1), new StatusEffectInstance(StatusEffects.NAUSEA, 300));
+    //酒  移除public static final Potion COOKING_WINE = new Potion(new StatusEffectInstance(StatusEffects.STRENGTH, 1200, 1), new StatusEffectInstance(StatusEffects.NAUSEA, 300));
     //卡牌形式的酒，为了形式统一而添加
     public static final Item JIU = register("jiu", new JiuItem(new FabricItemSettings().maxCount(16)));
     //万箭齐发
@@ -90,7 +87,7 @@ public class ModItems {
         Registry.register(Registries.ENCHANTMENT, new Identifier("dabaosword", "lightningaspect"),LIGHTNINGASPECT);
         Registry.register(Registries.ENCHANTMENT, new Identifier("dabaosword", "pojun"),POJUN);
         Registry.register(Registries.ENCHANTMENT, new Identifier("dabaosword", "kuanggu"),KUANGGU);
-        Registry.register(Registries.POTION, new Identifier("dabaosword", "cooking_wine"), COOKING_WINE);
+        //Registry.register(Registries.POTION, new Identifier("dabaosword", "cooking_wine"), COOKING_WINE);
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "too_happy"), TOO_HAPPY);
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "bingliang"), BINGLIANG);
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "cooldown"), COOLDOWN);
@@ -103,7 +100,7 @@ public class ModItems {
         return Registry.register(Registries.ITEM,new Identifier("dabaosword",name),item);
     }
 
-    public static void registerModItems() {}
+    public static void registerItems() {}
 
     //物品组添加
     public static final ItemGroup DABAOSWORD_GROUP = FabricItemGroup.builder()

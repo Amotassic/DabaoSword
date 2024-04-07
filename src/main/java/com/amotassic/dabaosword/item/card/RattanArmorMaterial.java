@@ -1,5 +1,6 @@
-package com.amotassic.dabaosword.item;
+package com.amotassic.dabaosword.item.card;
 
+import com.amotassic.dabaosword.item.ModItems;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.recipe.Ingredient;

@@ -1,4 +1,4 @@
-package com.amotassic.dabaosword.item;
+package com.amotassic.dabaosword.item.card;
 
 import com.amotassic.dabaosword.Sounds;
 import net.minecraft.client.item.TooltipContext;

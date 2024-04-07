@@ -1,5 +1,6 @@
-package com.amotassic.dabaosword.item;
+package com.amotassic.dabaosword.item.card;
 
+import com.amotassic.dabaosword.item.ModItems;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

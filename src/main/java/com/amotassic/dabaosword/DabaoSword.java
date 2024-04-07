@@ -17,7 +17,7 @@ public class DabaoSword implements ModInitializer {
     @Override
     public void onInitialize() {
         LOGGER.info("Hello Fabric world!");
-        ModItems.registerModItems();
+        ModItems.registerItems();
         ModItems.register();
         Sounds.sound();
         SkillCards.register();

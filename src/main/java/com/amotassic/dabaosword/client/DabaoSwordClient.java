@@ -1,6 +1,5 @@
-package com.amotassic.dabaosword;
+package com.amotassic.dabaosword.client;
 
-import com.amotassic.dabaosword.client.TiesuoHud;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;

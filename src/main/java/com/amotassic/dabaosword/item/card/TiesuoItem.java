@@ -1,7 +1,6 @@
-package com.amotassic.dabaosword.item;
+package com.amotassic.dabaosword.item.card;
 
 import com.amotassic.dabaosword.Sounds;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -9,7 +8,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -21,14 +19,6 @@ import java.util.Random;
 public class TiesuoItem extends CardItem{
     public TiesuoItem(Settings settings) {
         super(settings);
-    }
-    //动态显示名称，但失败了
-    @Override
-    public Text getName() {
-        PlayerEntity player = MinecraftClient.getInstance().player;
-        if (player != null && player.getOffHandStack().getItem() == Items.KNOWLEDGE_BOOK) {
-            return Text.translatable("sounds.dabaosword.nahida");
-        } else {return super.getName();}
     }
     //原始的铁索连环
     @Override
