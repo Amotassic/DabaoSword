@@ -29,6 +29,7 @@ public class Sounds {
     public static final SoundEvent WANJIAN = Sounds.register("wanjian");
     public static final SoundEvent WUXIE = Sounds.register("wuxie");
     public static final SoundEvent WUZHONG = Sounds.register("wuzhong");
+    public static final SoundEvent NANMAN = Sounds.register("nanman");
 
     public static void sound() {}
     public static SoundEvent register(String name){

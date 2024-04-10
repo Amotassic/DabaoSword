@@ -48,7 +48,7 @@
   "item.dabaosword.shan": "闪",
   "item.dabaosword.shan.tooltip": "主动使用后，向前冲刺一段距离，无敌0.5秒，冷却时间1秒",
   "item.dabaosword.jiu": "酒",
-  "item.dabaosword.jiu.tooltip": "卡牌形式的酒，为了形式统一而添加，使用后获得15秒力量二",
+  "item.dabaosword.jiu.tooltip": "使用后获得15秒力量二",
   "item.dabaosword.gain_card": "摸牌",
   "item.dabaosword.card_pile": "牌堆",
   "item.dabaosword.gain_card.tooltip": "使用后，获得一张卡牌",
@@ -71,6 +71,9 @@
   "item.dabaosword.tiesuo": "铁锁连环",
   "item.dabaosword.jiedao": "借刀杀人",
   "item.dabaosword.jiedao.tooltip": "获得对方主手上的物品",
+  "item.dabaosword.nanman": "南蛮入侵",
+  "item.dabaosword.nanman.tooltip1": "“南蛮一人持矛入侵，川兵百人见而奔逃”",
+  "item.dabaosword.nanman.tooltip2": "召唤3条无敌的狗来作战，20秒后它们会消失",
 
   //"技能"
   "skill.dabaosword.enabled": "被动  已启用",
@@ -95,5 +98,6 @@
   "sounds.dabaosword.tiesuo": "铁锁连环：使用",
   "sounds.dabaosword.wanjian": "万箭齐发：使用",
   "sounds.dabaosword.wuxie": "无懈可击：使用",
-  "sounds.dabaosword.wuzhong": "无中生有：使用"
+  "sounds.dabaosword.wuzhong": "无中生有：使用",
+  "sounds.dabaosword.nanaman": "南蛮入侵：使用"
 }

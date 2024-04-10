@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "id": "dabaosword",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "name": "DabaoSword",
   "description": "听说你想犯大吴疆土？",
   "authors": ["Amotassic"],
   "contact": {
-    "homepage": "https://github.com/Amotassic/DabaoSword/",
+    "homepage": "https://modrinth.com/mod/dabaosword",
     "sources": "https://github.com/Amotassic/DabaoSword/",
     "issues": "https://github.com/Amotassic/DabaoSword/issues"
   },

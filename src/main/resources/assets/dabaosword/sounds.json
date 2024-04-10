@@ -189,5 +189,14 @@
       }
     ],
     "subtitle": "sounds.dabaosword.wuzhong"
+  },
+  "nanman": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/nanman"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.nanaman"
   }
 }

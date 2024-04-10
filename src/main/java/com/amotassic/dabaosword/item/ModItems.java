@@ -79,6 +79,7 @@ public class ModItems {
     public static final Item WUXIE = register("wuxie", new CardItem(new FabricItemSettings().maxCount(16)));
     //借刀杀人
     public static final Item JIEDAO = register("jiedao", new JiedaoItem(new FabricItemSettings().maxCount(16)));
+    public static final Item NANMAN = register("nanman", new NanmanItem(new FabricItemSettings().maxCount(16)));
 
     //注册部分
     public static void register() {
@@ -124,6 +125,7 @@ public class ModItems {
                 entries.add(FIRE_ATTACK);
                 entries.add(JIEDAO);
                 entries.add(JUEDOU);
+                entries.add(NANMAN);
                 entries.add(STEAL);
                 entries.add(TIESUO);
                 entries.add(WUXIE);
