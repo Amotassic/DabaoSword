@@ -1,6 +1,6 @@
 package com.amotassic.dabaosword.effect;
 
-import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.items.ModItems;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AttributeContainer;

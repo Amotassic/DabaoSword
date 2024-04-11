@@ -1,6 +1,6 @@
 package com.amotassic.dabaosword.mixin;
 
-import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.items.ModItems;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;

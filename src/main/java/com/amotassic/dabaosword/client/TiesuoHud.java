@@ -1,6 +1,6 @@
 package com.amotassic.dabaosword.client;
 
-import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.items.ModItems;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;

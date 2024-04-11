@@ -1,8 +1,8 @@
 package com.amotassic.dabaosword;
 
 import com.amotassic.dabaosword.event.AttackEntityHandler;
-import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.item.skillcard.SkillCards;
+import com.amotassic.dabaosword.items.ModItems;
+import com.amotassic.dabaosword.items.skillcard.SkillCards;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;

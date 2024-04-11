@@ -6,7 +6,7 @@ import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 
-import static com.amotassic.dabaosword.item.ModItems.TIESUO;
+import static com.amotassic.dabaosword.items.ModItems.TIESUO;
 
 public class DabaoSwordClient implements ClientModInitializer {
     @Override

@@ -1,7 +1,7 @@
-package com.amotassic.dabaosword.item.card;
+package com.amotassic.dabaosword.items.card;
 
 import com.amotassic.dabaosword.Sounds;
-import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.items.ModItems;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;

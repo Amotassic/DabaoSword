@@ -1,11 +1,11 @@
-package com.amotassic.dabaosword.item;
+package com.amotassic.dabaosword.items;
 
 import com.amotassic.dabaosword.effect.*;
 import com.amotassic.dabaosword.enchantment.LightningAspectEnchantment;
 import com.amotassic.dabaosword.enchantment.PojunEnchantment;
 import com.amotassic.dabaosword.enchantment.RageNatureEnchantment;
-import com.amotassic.dabaosword.item.card.*;
-import com.amotassic.dabaosword.item.skillcard.SkillCards;
+import com.amotassic.dabaosword.items.card.*;
+import com.amotassic.dabaosword.items.skillcard.SkillCards;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.enchantment.Enchantment;
@@ -80,6 +80,8 @@ public class ModItems {
     //借刀杀人
     public static final Item JIEDAO = register("jiedao", new JiedaoItem(new FabricItemSettings().maxCount(16)));
     public static final Item NANMAN = register("nanman", new NanmanItem(new FabricItemSettings().maxCount(16)));
+    //火烧连营
+    public static final Item HUOSHAOLIANYING = register("huoshaolianying", new HoushaolianyingItem(new FabricItemSettings().maxCount(16)));
 
     //注册部分
     public static void register() {
@@ -131,6 +133,7 @@ public class ModItems {
                 entries.add(WUXIE);
                 entries.add(WUZHONG);
                 entries.add(CARD_PILE);
+                entries.add(HUOSHAOLIANYING);
 
                 entries.add(SkillCards.YIJI);
             }).build();

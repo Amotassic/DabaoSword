@@ -1,4 +1,4 @@
-package com.amotassic.dabaosword.item.skillcard;
+package com.amotassic.dabaosword.items.skillcard;
 
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.item.Item;
