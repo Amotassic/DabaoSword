@@ -1,4 +1,4 @@
-package com.amotassic.dabaosword.item.skillcard;
+package com.amotassic.dabaosword.items.skillcard;
 
 import net.minecraft.item.Item;
 

@@ -1,4 +1,4 @@
-package com.amotassic.dabaosword.item.card;
+package com.amotassic.dabaosword.items.card;
 
 import java.util.List;
 

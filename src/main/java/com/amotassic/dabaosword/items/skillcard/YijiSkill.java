@@ -1,6 +1,6 @@
-package com.amotassic.dabaosword.item.skillcard;
+package com.amotassic.dabaosword.items.skillcard;
 
-import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.items.ModItems;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffectInstance;

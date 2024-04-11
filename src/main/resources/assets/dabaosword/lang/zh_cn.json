@@ -74,6 +74,8 @@
   "item.dabaosword.nanman": "南蛮入侵",
   "item.dabaosword.nanman.tooltip1": "“南蛮一人持矛入侵，川兵百人见而奔逃”",
   "item.dabaosword.nanman.tooltip2": "召唤3条无敌的狗来作战，20秒后它们会消失",
+  "item.dabaosword.huoshaolianying": "火烧连营",
+  "item.dabaosword.huoshaolianying.tooltip" : "让周围敌人着火5秒",
 
   //"技能"
   "skill.dabaosword.enabled": "被动  已启用",
