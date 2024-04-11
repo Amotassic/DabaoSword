@@ -59,7 +59,10 @@ public abstract class DamageMixin extends Entity {
         boolean inrattan = armor2 || armor3;
         boolean noArmor = stack1.isEmpty() && stack2.isEmpty() && stack3.isEmpty() && stack4.isEmpty();
         LivingEntity entity1 = (LivingEntity) source.getAttacker();
+
+        //无敌效果
         if (this.hasStatusEffect(ModItems.INVULNERABLE)) {cir.setReturnValue(false);}
+        //决斗，相对无敌
         if (entity1 != null && this.hasStatusEffect(ModItems.JUEDOUING) && !entity1.hasStatusEffect(ModItems.JUEDOUING)) {
             cir.setReturnValue(false);}
         //恭喜你发现了彩蛋！副手拿着幽匿催发体，然后尽情享受弹射物带来的快乐吧！

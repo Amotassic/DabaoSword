@@ -29,7 +29,7 @@ public class PeachItem extends CardItem {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
         ItemStack stack = playerEntity.getStackInHand(hand);
-        if (playerEntity.getHealth()<=playerEntity.getMaxHealth()-5 && !playerEntity.isSneaking()) {
+        if (playerEntity.getHealth()<playerEntity.getMaxHealth() && !playerEntity.isSneaking()) {
             if (!playerEntity.getWorld().isClient) {
                 playerEntity.heal(5);
                 world.playSound(null, playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), Sounds.RECOVER, SoundCategory.PLAYERS, 1.0F, 1.0F);
@@ -43,7 +43,7 @@ public class PeachItem extends CardItem {
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         ItemStack stack1 = user.getStackInHand(hand);
         if (/*entity instanceof PlayerEntity && */user.isSneaking()) {
-            if (entity.getHealth()<=entity.getMaxHealth()-5) {
+            if (entity.getHealth()<entity.getMaxHealth()) {
                 if (!user.getWorld().isClient) {
                     entity.heal(5);
                     entity.playSound(Sounds.RECOVER,1.0F,1.0F);

@@ -74,6 +74,9 @@
   "item.dabaosword.nanman": "南蛮入侵",
   "item.dabaosword.nanman.tooltip1": "“南蛮一人持矛入侵，川兵百人见而奔逃”",
   "item.dabaosword.nanman.tooltip2": "召唤3条无敌的狗来作战，20秒后它们会消失",
+  "item.dabaosword.qinggang": "青釭剑",
+  "item.dabaosword.qinggang.tooltip1": "“云乃拔青釭剑乱砍，手起处，衣甲平过，血如涌泉”",
+  "item.dabaosword.qinggang.tooltip2": "攻击附加对方当前生命值25%（最多20）的真实伤害",
 
   //"技能"
   "skill.dabaosword.enabled": "被动  已启用",

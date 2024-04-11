@@ -1,11 +1,13 @@
 package com.amotassic.dabaosword.enchantment;
 
 import com.amotassic.dabaosword.Sounds;
+import com.amotassic.dabaosword.item.ModItems;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
@@ -37,21 +39,21 @@ public class PojunEnchantment extends Enchantment {
     //攻击命中盔甲槽有物品的生物后，会让其所有盔甲掉落，配合古锭刀特效使用，pvp神器
     @Override
     public void onTargetDamaged(LivingEntity user, Entity target, int level) {
-        ItemStack head = ((LivingEntity) target).getEquippedStack(EquipmentSlot.HEAD);
-        ItemStack chest = ((LivingEntity) target).getEquippedStack(EquipmentSlot.CHEST);
-        ItemStack legs = ((LivingEntity) target).getEquippedStack(EquipmentSlot.LEGS);
-        ItemStack feet = ((LivingEntity) target).getEquippedStack(EquipmentSlot.FEET);
-        if (target instanceof LivingEntity && user.getWorld() instanceof ServerWorld serverWorld/* && !user.hasStatusEffect(ModItems.COOLDOWN)*/) {
-            if (!head.isEmpty()) {target.dropStack(head.copy());head.setCount(0);}
-            if (!chest.isEmpty()) {target.dropStack(chest.copy());chest.setCount(0);}
-            if (!legs.isEmpty()) {target.dropStack(legs.copy());legs.setCount(0);}
-            if (!feet.isEmpty()) {target.dropStack(feet.copy());feet.setCount(0);}
+        if (target instanceof LivingEntity entity && user.getWorld() instanceof ServerWorld serverWorld && !user.hasStatusEffect(ModItems.COOLDOWN)) {
+            ItemStack head = entity.getEquippedStack(EquipmentSlot.HEAD);
+            ItemStack chest = entity.getEquippedStack(EquipmentSlot.CHEST);
+            ItemStack legs = entity.getEquippedStack(EquipmentSlot.LEGS);
+            ItemStack feet = entity.getEquippedStack(EquipmentSlot.FEET);
+            if (!head.isEmpty()) {entity.dropStack(head.copy());head.setCount(0);}
+            if (!chest.isEmpty()) {entity.dropStack(chest.copy());chest.setCount(0);}
+            if (!legs.isEmpty()) {entity.dropStack(legs.copy());legs.setCount(0);}
+            if (!feet.isEmpty()) {entity.dropStack(feet.copy());feet.setCount(0);}
             if (new Random().nextFloat() < 0.5) {
                 serverWorld.playSound(null, user.getX(), user.getY(), user.getZ(), Sounds.POJUN1, SoundCategory.PLAYERS, 2.0F, 1.0F);
             } else {
                 serverWorld.playSound(null, user.getX(), user.getY(), user.getZ(), Sounds.POJUN2, SoundCategory.PLAYERS, 2.0F, 1.0F);
             }
-            /*user.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 5,0,false,true,true));*/
+            user.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 50,0,false,true,true));
         }
     }
 }

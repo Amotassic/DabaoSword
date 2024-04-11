@@ -41,8 +41,8 @@ public class ModItems {
     public static final Item RATTAN_LEGGINGS = register("rattan_leggings", new RattanArmor(RATTAN_MATERIAL, ArmorItem.Type.LEGGINGS, new Item.Settings()));
     //桃
     public static final Item PEACH = register("peach", new PeachItem(new FabricItemSettings().maxCount(64)));
-    //酒  移除public static final Potion COOKING_WINE = new Potion(new StatusEffectInstance(StatusEffects.STRENGTH, 1200, 1), new StatusEffectInstance(StatusEffects.NAUSEA, 300));
-    //卡牌形式的酒，为了形式统一而添加
+    //酒  已移除 public static final Potion COOKING_WINE = new Potion(new StatusEffectInstance(StatusEffects.STRENGTH, 1200, 1), new StatusEffectInstance(StatusEffects.NAUSEA, 300));
+    //卡牌形式的酒
     public static final Item JIU = register("jiu", new JiuItem(new FabricItemSettings().maxCount(16)));
     //万箭齐发
     public static final Item ARROW_RAIN = register("arrow_rain", new ArrowRainItem(new FabricItemSettings().maxDamage(50)));
@@ -79,7 +79,10 @@ public class ModItems {
     public static final Item WUXIE = register("wuxie", new CardItem(new FabricItemSettings().maxCount(16)));
     //借刀杀人
     public static final Item JIEDAO = register("jiedao", new JiedaoItem(new FabricItemSettings().maxCount(16)));
+    //南蛮入侵
     public static final Item NANMAN = register("nanman", new NanmanItem(new FabricItemSettings().maxCount(16)));
+    //青釭剑
+    public static final Item QINGGANG = register("qinggang", new QinggangjianItem());
 
     //注册部分
     public static void register() {
@@ -109,6 +112,7 @@ public class ModItems {
             .displayName(Text.translatable("itemGroup.dabaosword.item_group"))
             .entries((context, entries) -> {
                 entries.add(GUDINGDAO);
+                entries.add(QINGGANG);
                 entries.add(INCOMPLETE_GUDINGDAO);
                 entries.add(RATTAN_CHESTPLATE);
                 entries.add(RATTAN_LEGGINGS);

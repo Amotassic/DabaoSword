@@ -35,7 +35,7 @@ public class RageNatureEnchantment extends Enchantment {
     //攻击命中敌人时，如果受伤超过5则回血，否则摸一张牌
     @Override
     public void onTargetDamaged(LivingEntity user, Entity target, int level) {
-        if (user instanceof PlayerEntity player && !player.hasStatusEffect(ModItems.COOLDOWN)) {
+        if (user instanceof PlayerEntity player && !player.hasStatusEffect(ModItems.COOLDOWN) && target instanceof LivingEntity) {
             if (player.getMaxHealth()-player.getHealth()>=5) {player.heal(5);}
             else {player.giveItemStack(new ItemStack(ModItems.GAIN_CARD));}
             if (new Random().nextFloat() < 0.5) {
