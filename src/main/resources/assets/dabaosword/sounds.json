@@ -26,6 +26,42 @@
     ],
     "subtitle": "sounds.dabaosword.nahida"
   },
+  "yiji1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/yiji1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.yiji"
+  },
+  "yiji2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/yiji2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.yiji"
+  },
+  "taoluan1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/taoluan1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.taoluan"
+  },
+  "taoluan2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/taoluan2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.taoluan"
+  },
   "pojun1": {
     "sounds": [
       {

@@ -83,9 +83,13 @@
   "skill.dabaosword.disabled": "被动  已禁用",
   "item.dabaosword.yiji": "遗计",
   "item.dabaosword.yiji.tooltip": "若你的血量小于等于12，你摸两张牌",
+  "item.dabaosword.taoluan": "滔乱",
+  "item.dabaosword.taoluan.tooltip": "失去5点生命值，获得任意一张卡牌",
 
   //"配音"
   "sounds.dabaosword.nahida": "纳西妲：所闻遍计",
+  "sounds.dabaosword.yiji": "遗计：发动",
+  "sounds.dabaosword.taoluan": "滔乱：发动",
   "sounds.dabaosword.pojun": "破军：发动",
   "sounds.dabaosword.kuanggu": "狂骨：发动",
   "sounds.dabaosword.bingliang": "兵粮寸断：使用",

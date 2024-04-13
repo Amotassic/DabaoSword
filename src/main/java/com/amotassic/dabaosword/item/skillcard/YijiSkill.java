@@ -1,11 +1,13 @@
 package com.amotassic.dabaosword.item.skillcard;
 
+import com.amotassic.dabaosword.Sounds;
 import com.amotassic.dabaosword.item.ModItems;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
@@ -13,6 +15,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 import java.util.List;
+import java.util.Random;
 
 public class YijiSkill extends SkillItem{
     public YijiSkill(Settings settings) {
@@ -34,6 +37,11 @@ public class YijiSkill extends SkillItem{
             if (stack.getDamage()==0) {
                 player.giveItemStack(new ItemStack(ModItems.WUZHONG));
                 player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 30,0,false,true,true));
+                if (new Random().nextFloat() < 0.5) {
+                    world.playSound(null, player.getX(), player.getY(), player.getZ(), Sounds.YIJI1, SoundCategory.PLAYERS, 2.0F, 1.0F);
+                } else {
+                    world.playSound(null, player.getX(), player.getY(), player.getZ(), Sounds.YIJI2, SoundCategory.PLAYERS, 2.0F, 1.0F);
+                }
             }
         }
     }
