@@ -136,6 +136,7 @@ public class ModItems {
                 entries.add(WUZHONG);
                 entries.add(CARD_PILE);
 
+                entries.add(SkillCards.TAOLUAN);
                 entries.add(SkillCards.YIJI);
             }).build();
 }

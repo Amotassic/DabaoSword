@@ -1,14 +1,19 @@
 package com.amotassic.dabaosword.item.skillcard;
 
+import com.amotassic.dabaosword.ui.TaoluanScreenHandler;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
 
 public class SkillCards {
 
     public static final Item YIJI = register("yiji",new YijiSkill(new FabricItemSettings().maxDamage(2)));
+    public static final Item TAOLUAN = register("taoluan", new TaoluanSkill(new FabricItemSettings().maxCount(1)));
+    public static final ScreenHandlerType<TaoluanScreenHandler> TAOLUAN_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "dabaosword", new ExtendedScreenHandlerType<>((syncId, playerInventory, buf) -> new TaoluanScreenHandler(syncId, buf)));
 
     private static Item register(String name,Item item){
         return Registry.register(Registries.ITEM,new Identifier("dabaosword",name),item);
