@@ -1,0 +1,1 @@
+kill @e[type=minecraft:arrow,nbt={inGround:true,CustomName:'"a"'}]

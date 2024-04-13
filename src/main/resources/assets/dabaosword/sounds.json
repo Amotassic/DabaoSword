@@ -1,0 +1,202 @@
+{
+  "nahida1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/nahida1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.nahida"
+  },
+  "nahida2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/nahida2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.nahida"
+  },
+  "nahida3": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/nahida3"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.nahida"
+  },
+  "pojun1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/pojun1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.pojun"
+  },
+  "pojun2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/pojun2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.pojun"
+  },
+  "kuanggu1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/kuanggu1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.kuanggu"
+  },
+  "kuanggu2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/kuanggu2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.kuanggu"
+  },
+
+
+  "bingliang": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/bingliang"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.bingliang"
+  },
+  "guohe": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/guohe"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.guohe"
+  },
+  "huogong": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/huogong"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.huogong"
+  },
+  "jiedao": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/jiedao"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.jiedao"
+  },
+  "jiu": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/jiu"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.jiu"
+  },
+  "juedou": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/juedou"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.juedou"
+  },
+  "lebu": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/lebu"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.lebu"
+  },
+  "recover": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/recover"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.recover"
+  },
+  "shan": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/shan"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.shan"
+  },
+  "shunshou": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/shunshou"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.shunshou"
+  },
+  "tiesuo": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/tiesuo"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.tiesuo"
+  },
+  "wanjian": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/wanjian"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.wanjian"
+  },
+  "wuxie": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/wuxie"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.wuxie"
+  },
+  "wuzhong": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/wuzhong"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.wuzhong"
+  },
+  "nanman": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/nanman"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.nanaman"
+  }
+}

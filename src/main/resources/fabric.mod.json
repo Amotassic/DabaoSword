@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "dabaosword",
+  "version": "0.1.1",
+  "name": "DabaoSword",
+  "description": "听说你想犯大吴疆土？",
+  "authors": ["Amotassic"],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/dabaosword",
+    "sources": "https://github.com/Amotassic/DabaoSword/",
+    "issues": "https://github.com/Amotassic/DabaoSword/issues"
+  },
+  "license": "MIT",
+  "icon": "assets/dabaosword/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.amotassic.dabaosword.DabaoSword"
+    ],
+    "client": [
+      "com.amotassic.dabaosword.client.DabaoSwordClient"
+    ]
+  },
+  "mixins": [
+    "dabaosword.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.15.7",
+    "fabric": "*",
+    "minecraft": "1.20.4"
+  },
+  "accessWidener": "damage.accesswidener"
+}
