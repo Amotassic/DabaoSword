@@ -44,6 +44,5 @@ public class TaoluanHandledScreen extends HandledScreen<TaoluanScreenHandler> {
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         this.renderBackground(context);
         super.render(context, mouseX, mouseY, delta);
-        this.drawMouseoverTooltip(context, mouseX, mouseY);
     }
 }

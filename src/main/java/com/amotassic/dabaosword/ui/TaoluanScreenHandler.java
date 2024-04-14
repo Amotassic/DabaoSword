@@ -1,6 +1,6 @@
 package com.amotassic.dabaosword.ui;
 
-import com.amotassic.dabaosword.Sounds;
+import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import net.minecraft.entity.effect.StatusEffectInstance;

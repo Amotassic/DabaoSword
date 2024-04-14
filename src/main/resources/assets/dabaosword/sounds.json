@@ -26,6 +26,110 @@
     ],
     "subtitle": "sounds.dabaosword.nahida"
   },
+  "luoyi1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/luoyi1"
+      }
+    ]
+  },
+  "luoyi2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/luoyi2"
+      }
+    ]
+  },
+  "huoji1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/huoji1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.huoji"
+  },
+  "huoji2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/huoji2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.huoji"
+  },
+  "quanji1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/quanji1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.quanji"
+  },
+  "quanji2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/quanji2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.quanji"
+  },
+  "zili1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/zili1"
+      }
+    ]
+  },
+  "zili2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/zili2"
+      }
+    ]
+  },
+  "paiyi1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/paiyi1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.paiyi"
+  },
+  "paiyi2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/paiyi2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.paiyi"
+  },
+  "paiyi3": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/paiyi3"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.paiyi"
+  },
+  "paiyi4": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/paiyi4"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.paiyi"
+  },
   "yiji1": {
     "sounds": [
       {

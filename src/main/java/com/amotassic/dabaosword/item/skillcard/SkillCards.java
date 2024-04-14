@@ -11,9 +11,12 @@ import net.minecraft.util.Identifier;
 
 public class SkillCards {
 
-    public static final Item YIJI = register("yiji",new YijiSkill(new FabricItemSettings().maxDamage(2)));
+    public static final Item YIJI = register("yiji",new YijiSkill(new FabricItemSettings().maxCount(1)));
     public static final Item TAOLUAN = register("taoluan", new TaoluanSkill(new FabricItemSettings().maxCount(1)));
     public static final ScreenHandlerType<TaoluanScreenHandler> TAOLUAN_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "dabaosword", new ExtendedScreenHandlerType<>((syncId, playerInventory, buf) -> new TaoluanScreenHandler(syncId, buf)));
+    public static final Item LUOYI = register("luoyi", new LuoyiSkill(new FabricItemSettings().maxCount(1)));
+    public static final Item HUOJI = register("huoji", new HuojiSkill(new FabricItemSettings().maxCount(1)));
+    public static final Item QUANJI = register("quanji", new QuanjiSkill(new FabricItemSettings().maxCount(1)));
 
     private static Item register(String name,Item item){
         return Registry.register(Registries.ITEM,new Identifier("dabaosword",name),item);

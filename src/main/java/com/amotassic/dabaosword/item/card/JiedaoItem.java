@@ -1,13 +1,12 @@
 package com.amotassic.dabaosword.item.card;
 
-import com.amotassic.dabaosword.Sounds;
+import com.amotassic.dabaosword.util.ModTools;
+import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.item.ModItems;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -15,7 +14,7 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class JiedaoItem extends CardItem{
+public class JiedaoItem extends CardItem implements ModTools {
     public JiedaoItem(Settings settings) {
         super(settings);
     }
@@ -28,24 +27,15 @@ public class JiedaoItem extends CardItem{
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         ItemStack stack1 = entity.getMainHandStack();
-        if (hand == Hand.MAIN_HAND && !stack1.isEmpty()) {
-            if (entity instanceof PlayerEntity player) { PlayerInventory inv = player.getInventory();
-                if (inv.contains(ModItems.WUXIE.getDefaultStack())) {
-                    int i = inv.getSlotWithStack(ModItems.WUXIE.getDefaultStack());
-                    player.getWorld().playSound(null, player.getX(), player.getY(), player.getZ(), Sounds.WUXIE, SoundCategory.PLAYERS, 2.0F, 1.0F);
-                    user.getWorld().playSound(null, user.getX(), user.getY(), user.getZ(), Sounds.JIEDAO, SoundCategory.PLAYERS, 2.0F, 1.0F);
-                    if (!user.isCreative()) {stack.decrement(1);}
-                    inv.removeStack(i,1);
-                } else {
-                    user.giveItemStack(stack1.copy()); stack1.setCount(0);
-                    user.getWorld().playSound(null, user.getX(), user.getY(), user.getZ(), Sounds.JIEDAO, SoundCategory.PLAYERS, 2.0F, 1.0F);
-                    if (!user.isCreative()) {stack.decrement(1);}
-                }
-            } else {
-                user.giveItemStack(stack1.copy()); stack1.setCount(0);
-                user.getWorld().playSound(null, user.getX(), user.getY(), user.getZ(), Sounds.JIEDAO, SoundCategory.PLAYERS, 2.0F, 1.0F);
-                if (!user.isCreative()) {stack.decrement(1);}
-            }
+        if (hand == Hand.MAIN_HAND && !stack1.isEmpty() && !user.getWorld().isClient) {
+            if (entity instanceof PlayerEntity player) {
+                if (hasItem(player, ModItems.WUXIE)) {
+                    voice(player, Sounds.WUXIE);
+                    removeItem(player, ModItems.WUXIE);
+                } else {user.giveItemStack(stack1.copy()); stack1.setCount(0);}
+            } else {user.giveItemStack(stack1.copy()); stack1.setCount(0);}
+            voice(user, Sounds.JIEDAO);
+            if (!user.isCreative()) {stack.decrement(1);}
             return ActionResult.SUCCESS;
         }
         return ActionResult.PASS;

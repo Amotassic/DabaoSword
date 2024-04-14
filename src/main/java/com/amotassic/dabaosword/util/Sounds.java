@@ -1,4 +1,4 @@
-package com.amotassic.dabaosword;
+package com.amotassic.dabaosword.util;
 
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -9,6 +9,18 @@ public class Sounds {
     public static final SoundEvent NAHIDA1 = Sounds.register("nahida1");
     public static final SoundEvent NAHIDA2 = Sounds.register("nahida2");
     public static final SoundEvent NAHIDA3 = Sounds.register("nahida3");
+    public static final SoundEvent LUOYI1 = Sounds.register("luoyi1");
+    public static final SoundEvent LUOYI2 = Sounds.register("luoyi2");
+    public static final SoundEvent HUOJI1 = Sounds.register("huoji1");
+    public static final SoundEvent HUOJI2 = Sounds.register("huoji2");
+    public static final SoundEvent QUANJI1 = Sounds.register("quanji1");
+    public static final SoundEvent QUANJI2 = Sounds.register("quanji2");
+    public static final SoundEvent ZILI1 = Sounds.register("zili1");
+    public static final SoundEvent ZILI2 = Sounds.register("zili2");
+    public static final SoundEvent PAIYI1 = Sounds.register("paiyi1");
+    public static final SoundEvent PAIYI2 = Sounds.register("paiyi2");
+    public static final SoundEvent PAIYI3 = Sounds.register("paiyi3");
+    public static final SoundEvent PAIYI4 = Sounds.register("paiyi4");
     public static final SoundEvent YIJI1 = Sounds.register("yiji1");
     public static final SoundEvent YIJI2 = Sounds.register("yiji2");
     public static final SoundEvent TAOLUAN1 = Sounds.register("taoluan1");

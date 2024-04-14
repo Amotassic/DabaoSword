@@ -1,23 +1,21 @@
 package com.amotassic.dabaosword.item.card;
 
-import com.amotassic.dabaosword.Sounds;
+import com.amotassic.dabaosword.util.ModTools;
+import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.item.ModItems;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 
 import java.util.List;
 
-public class TooHappyItem extends CardItem {
+public class TooHappyItem extends CardItem implements ModTools {
     public TooHappyItem(Settings settings) {
         super(settings);
     }
@@ -35,19 +33,15 @@ public class TooHappyItem extends CardItem {
     //攻击命中敌人给予其10秒乐不思蜀效果
     @Override
     public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        if (attacker.getWorld() instanceof ServerWorld serverWorld && attacker instanceof PlayerEntity player) {
-            if (target instanceof PlayerEntity player1 && player1.getInventory().contains(ModItems.WUXIE.getDefaultStack())) {
-                PlayerInventory inv = player1.getInventory();
-                int i = inv.getSlotWithStack(ModItems.WUXIE.getDefaultStack());
-                inv.removeStack(i,1);
-                target.getWorld().playSound(null, target.getX(), target.getY(), target.getZ(), Sounds.WUXIE, SoundCategory.PLAYERS, 2.0F, 1.0F);
-                if (!player.isCreative()) {stack.decrement(1);}
-                player.getWorld().playSound(null, player.getX(), player.getY(), player.getZ(), Sounds.LEBU, SoundCategory.PLAYERS, 2.0F, 1.0F);
+        if (!attacker.getWorld().isClient && attacker instanceof PlayerEntity player) {
+            if (target instanceof PlayerEntity player1 && hasItem(player1, ModItems.WUXIE)) {
+                removeItem(player1, ModItems.WUXIE);
+                voice(player1, Sounds.WUXIE);
             } else {
                 target.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 10));
-                if (!player.isCreative()) stack.decrement(1);
-                serverWorld.playSound(null, attacker.getX(), attacker.getY(), attacker.getZ(), Sounds.LEBU, SoundCategory.PLAYERS, 2.0F, 1.0F);
             }
+            if (!player.isCreative()) {stack.decrement(1);}
+            voice(player, Sounds.LEBU);
         }
         return super.postHit(stack, target, attacker);
     }

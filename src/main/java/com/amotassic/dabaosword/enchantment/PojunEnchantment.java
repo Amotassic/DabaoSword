@@ -1,6 +1,6 @@
 package com.amotassic.dabaosword.enchantment;
 
-import com.amotassic.dabaosword.Sounds;
+import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.item.ModItems;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentTarget;

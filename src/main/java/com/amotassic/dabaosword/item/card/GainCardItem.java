@@ -1,11 +1,11 @@
 package com.amotassic.dabaosword.item.card;
 
-import com.amotassic.dabaosword.Sounds;
+import com.amotassic.dabaosword.util.ModTools;
+import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.item.ModItems;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -14,7 +14,7 @@ import net.minecraft.world.World;
 import java.util.List;
 import java.util.Random;
 
-public class GainCardItem extends CardItem {
+public class GainCardItem extends CardItem implements ModTools {
     public GainCardItem(Settings settings) {
         super(settings);
     }
@@ -29,7 +29,7 @@ public class GainCardItem extends CardItem {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        if (!world.isClient() && hand == Hand.MAIN_HAND) {
+        if (!world.isClient && hand == Hand.MAIN_HAND) {
             int m;
             //牌堆，潜行时直接摸64张
             if (user.getStackInHand(hand).getItem() == ModItems.CARD_PILE) {
@@ -46,7 +46,7 @@ public class GainCardItem extends CardItem {
             if (user.getStackInHand(hand).getItem() == ModItems.WUZHONG) {
                 draw(user,2);
                 if (!user.isCreative()) user.getStackInHand(hand).decrement(1);
-                world.playSound(null, user.getX(), user.getY(), user.getZ(), Sounds.WUZHONG, SoundCategory.PLAYERS, 2.0F, 1.0F);
+                voice(user, Sounds.WUZHONG);
             }
         }
         return super.use(world, user, hand);
