@@ -19,6 +19,10 @@ public class QuanjiSkill extends SkillItem implements ModTools {
 
     @Override
     public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
+        if (stack.getNbt() != null && stack.getNbt().contains("quanji")) {
+            int quan = stack.getNbt().getInt("quanji");
+            tooltip.add(Text.of("权："+quan));
+        }
         tooltip.add(Text.translatable("item.dabaosword.quanji.tooltip").formatted(Formatting.BLUE));
     }
 
@@ -31,4 +35,5 @@ public class QuanjiSkill extends SkillItem implements ModTools {
         }
         return super.use(world, user, hand);
     }
+    //技能效果实现的代码见监听事件部分
 }

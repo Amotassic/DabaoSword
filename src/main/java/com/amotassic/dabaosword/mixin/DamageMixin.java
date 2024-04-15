@@ -1,10 +1,7 @@
 package com.amotassic.dabaosword.mixin;
 
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.EntityHurtCallback;
-import com.amotassic.dabaosword.util.ModTools;
-import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -14,12 +11,10 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.world.ServerWorld;
@@ -38,10 +33,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Objects;
-import java.util.Random;
 
 @Mixin(LivingEntity.class)
-public abstract class DamageMixin extends Entity implements ModTools {
+public abstract class DamageMixin extends Entity {
     @Shadow public abstract ItemStack getEquippedStack(EquipmentSlot var1);
 
     @Shadow public abstract float getHealth();
@@ -53,8 +47,6 @@ public abstract class DamageMixin extends Entity implements ModTools {
     @Shadow public abstract boolean isGlowing();
 
     @Shadow public abstract void applyDamage(DamageSource source, float amount);
-
-    @Shadow public abstract boolean addStatusEffect(StatusEffectInstance effect);
 
     public DamageMixin(EntityType<?> type, World world) {
         super(type, world);
@@ -70,29 +62,6 @@ public abstract class DamageMixin extends Entity implements ModTools {
         boolean inrattan = armor2 || armor3;
         boolean noArmor = stack1.isEmpty() && stack2.isEmpty() && stack3.isEmpty() && stack4.isEmpty();
         LivingEntity entity1 = (LivingEntity) source.getAttacker();
-
-        if (entity1 instanceof PlayerEntity player && hasItem(player, SkillCards.QUANJI) && player.getWorld() instanceof ServerWorld world) {
-            player.giveItemStack(ModItems.PEACH.getDefaultStack());
-            float j = new Random().nextFloat();
-            if (j < 0.25) {voice(player, Sounds.PAIYI1);
-            } else if (0.25 <= j && j < 0.5) {voice(player, Sounds.PAIYI2);
-            } else if (0.5 <= j && j < 0.75) {voice(player, Sounds.PAIYI3);
-            } else {voice(player, Sounds.PAIYI4);}
-            NbtCompound quanji = new NbtCompound();
-            ItemStack stack = stackWith(SkillCards.QUANJI, player);
-            if (stack.getNbt() != null && stack.getNbt().contains("quanji")) {
-                int quan = stack.getNbt().getInt("quanji");
-                if (quan > 0) {
-                    this.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 1));
-                    if (this.hasStatusEffect(ModItems.COOLDOWN2)) {
-                        this.damage(world.getDamageSources().playerAttack(player), quan);
-                    }
-                    int quan1 = quan / 2;
-                    quanji.putInt("quanji", quan1);
-                    stack.setNbt(quanji);
-                }
-            }
-        }
 
         //无敌效果
         if (this.hasStatusEffect(ModItems.INVULNERABLE)) {cir.setReturnValue(false);}

@@ -4,6 +4,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -13,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Random;
 
 public interface ModTools {
-    //检测玩家是否有某个物品
+    //判断玩家是否有某个物品
     default boolean hasItem(@NotNull PlayerEntity player, @NotNull Item item) {
         PlayerInventory inv = player.getInventory();
         ItemStack stack = item.getDefaultStack();
@@ -27,15 +28,33 @@ public interface ModTools {
         inv.removeStack(i, 1);
     }
 
-    default ItemStack stackWith(Item item, PlayerEntity player) {
+    default Boolean hasItemInTag(TagKey<Item> tag, @NotNull PlayerEntity player) {
+        return player.getInventory().contains(tag);
+    }
+
+    default int getSlotInTag(TagKey<Item> tag, @NotNull PlayerEntity player) {
+        for (int i = 0; i < player.getInventory().size(); ++i) {
+            ItemStack stack = player.getInventory().getStack(i);
+            if (stack.isEmpty() || !stack.isIn(tag)) continue;
+            return i;
+        }
+        return -1;
+    }
+
+    default ItemStack stackInTag(TagKey<Item> tag, @NotNull PlayerEntity player) {
         PlayerInventory inv = player.getInventory();
-        int i = inv.getSlotWithStack(item.getDefaultStack());
+        int i = getSlotInTag(tag, player);
         return inv.getStack(i);
     }
     //播放语音
     default void voice(@NotNull PlayerEntity player, SoundEvent sound) {
         if (player.getWorld() instanceof ServerWorld world) {
             world.playSound(null, player.getX(), player.getY(), player.getZ(), sound, SoundCategory.PLAYERS, 2.0F, 1.0F);
+        }
+    }
+    default void voice(@NotNull PlayerEntity player, SoundEvent sound, float volume) {
+        if (player.getWorld() instanceof ServerWorld world) {
+            world.playSound(null, player.getX(), player.getY(), player.getZ(), sound, SoundCategory.PLAYERS, volume, 1.0F);
         }
     }
     //视为类技能方法

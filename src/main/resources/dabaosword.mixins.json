@@ -4,7 +4,8 @@
   "package": "com.amotassic.dabaosword.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "DamageMixin"
+    "DamageMixin",
+    "PlayerEntityMixin"
   ],
   "client": [
   ],

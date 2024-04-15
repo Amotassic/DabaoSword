@@ -88,7 +88,7 @@
   "item.dabaosword.huoji": "火计",
   "item.dabaosword.huoji.tooltip": "将副手的一张基本牌转化为火攻",
   "item.dabaosword.quanji": "权计",
-  "item.dabaosword.quanji.tooltip": "受伤时获得一个“权”，下次攻击伤害增加，然后权减半",
+  "item.dabaosword.quanji.tooltip": "受伤时获得一个“权”，下次攻击伤害增加权的数量，然后权减半",
   "item.dabaosword.taoluan": "滔乱",
   "item.dabaosword.taoluan.tooltip": "失去5点生命值，获得任意一张卡牌",
 
