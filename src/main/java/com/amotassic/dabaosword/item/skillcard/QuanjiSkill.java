@@ -23,7 +23,8 @@ public class QuanjiSkill extends SkillItem implements ModTools {
             int quan = stack.getNbt().getInt("quanji");
             tooltip.add(Text.of("权："+quan));
         }
-        tooltip.add(Text.translatable("item.dabaosword.quanji.tooltip").formatted(Formatting.BLUE));
+        tooltip.add(Text.translatable("item.dabaosword.quanji.tooltip1").formatted(Formatting.BLUE));
+        tooltip.add(Text.translatable("item.dabaosword.quanji.tooltip2").formatted(Formatting.BLUE));
     }
 
     @Override

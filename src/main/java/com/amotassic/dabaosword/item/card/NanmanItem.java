@@ -1,9 +1,8 @@
 package com.amotassic.dabaosword.item.card;
 
+import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
-import com.amotassic.dabaosword.item.ModItems;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -18,17 +17,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
-import java.util.List;
-
 public class NanmanItem extends CardItem implements ModTools {
     public NanmanItem(Settings settings) {
         super(settings);
-    }
-
-    @Override
-    public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext){
-        tooltip.add(Text.translatable("item.dabaosword.nanman.tooltip1"));
-        tooltip.add(Text.translatable("item.dabaosword.nanman.tooltip2"));
     }
 
     @Override

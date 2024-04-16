@@ -25,7 +25,7 @@ public class ModItems {
     //未锻造的古锭刀
     public static final Item INCOMPLETE_GUDINGDAO = register("incomplete_gdd", new Item(new FabricItemSettings().maxCount(1)));
     //古锭
-    public static final Item GUDING_ITEM = register("guding", new Item(new FabricItemSettings().maxCount(64)));
+    public static final Item GUDING_ITEM = register("guding", new Item(new FabricItemSettings()));
     //雷电附加附魔
 	public static Enchantment LIGHTNINGASPECT = new LightningAspectEnchantment(Enchantment.Rarity.COMMON, EnchantmentTarget.WEAPON, new EquipmentSlot[] {EquipmentSlot.MAINHAND});
     //破军附魔
@@ -34,53 +34,53 @@ public class ModItems {
     public static Enchantment  KUANGGU = new RageNatureEnchantment(Enchantment.Rarity.VERY_RARE, EnchantmentTarget.WEAPON, new EquipmentSlot[] {EquipmentSlot.MAINHAND});
     //藤条
     public static final ArmorMaterial RATTAN_MATERIAL = new RattanArmorMaterial();
-    public static final Item RATTAN = register("rattan", new Item(new FabricItemSettings().maxCount(64)));
+    public static final Item RATTAN = register("rattan", new Item(new FabricItemSettings()));
     //寿衣
     public static final Item RATTAN_CHESTPLATE = register("rattan_chestplate", new RattanArmor(RATTAN_MATERIAL,ArmorItem.Type.CHESTPLATE,new Item.Settings()));
     //藤甲
     public static final Item RATTAN_LEGGINGS = register("rattan_leggings", new RattanArmor(RATTAN_MATERIAL, ArmorItem.Type.LEGGINGS, new Item.Settings()));
     //桃
-    public static final Item PEACH = register("peach", new PeachItem(new FabricItemSettings().maxCount(64)));
+    public static final Item PEACH = register("peach", new PeachItem(new FabricItemSettings()));
     //酒  已移除 public static final Potion COOKING_WINE = new Potion(new StatusEffectInstance(StatusEffects.STRENGTH, 1200, 1), new StatusEffectInstance(StatusEffects.NAUSEA, 300));
     //卡牌形式的酒
-    public static final Item JIU = register("jiu", new JiuItem(new FabricItemSettings().maxCount(16)));
+    public static final Item JIU = register("jiu", new JiuItem(new FabricItemSettings()));
     //万箭齐发
     public static final Item ARROW_RAIN = register("arrow_rain", new ArrowRainItem(new FabricItemSettings().maxDamage(50)));
     //乐不思蜀以及状态效果
-    public static final Item TOO_HAPPY_ITEM = register("too_happy", new TooHappyItem(new FabricItemSettings().maxCount(16)));
+    public static final Item TOO_HAPPY_ITEM = register("too_happy", new TooHappyItem(new FabricItemSettings()));
     public static final StatusEffect TOO_HAPPY = new TooHappyStatusEffect(StatusEffectCategory.HARMFUL, 0xF73C0A);
     //兵粮寸断以及状态效果
-    public static final Item BINGLIANG_ITEM = register("bingliang",new BingliangItem(new FabricItemSettings().maxCount(16)));
+    public static final Item BINGLIANG_ITEM = register("bingliang",new BingliangItem(new FabricItemSettings()));
     public static final StatusEffect BINGLIANG = new BingliangEffect(StatusEffectCategory.HARMFUL, 0x46F732);
     //顺手牵羊
-    public static final Item STEAL = register("steal", new StealItem(new FabricItemSettings().maxCount(16)));
+    public static final Item STEAL = register("steal", new StealItem(new FabricItemSettings()));
     //过河拆桥
-    public static final Item DISCARD = register("discard", new DiscardItem(new FabricItemSettings().maxCount(16)));
+    public static final Item DISCARD = register("discard", new DiscardItem(new FabricItemSettings()));
     //冷却状态效果
     public static final StatusEffect COOLDOWN = new CooldownEffect(StatusEffectCategory.NEUTRAL, 0x000000);
     public static final StatusEffect COOLDOWN2 = new Cooldown2Effect(StatusEffectCategory.NEUTRAL, 0x000000);
     public static final StatusEffect INVULNERABLE = new InvulnerableEffect(StatusEffectCategory.BENEFICIAL,0x35F5DF);
     public static final StatusEffect JUEDOUING = new InvulnerableEffect(StatusEffectCategory.NEUTRAL,0x000000);
     //摸牌
-    public static final Item GAIN_CARD = register("gain_card",new GainCardItem(new FabricItemSettings().maxCount(64)));
+    public static final Item GAIN_CARD = register("gain_card",new GainCardItem(new FabricItemSettings()));
     //牌堆
     public static final Item CARD_PILE = register("card_pile",new GainCardItem(new FabricItemSettings().maxCount(1)));
     //无中生有
-    public static final Item WUZHONG = register("wuzhong", new GainCardItem(new FabricItemSettings().maxCount(64)));
+    public static final Item WUZHONG = register("wuzhong", new GainCardItem(new FabricItemSettings()));
     //闪
-    public static final Item SHAN = register("shan", new ShanItem(new FabricItemSettings().maxCount(64)));
+    public static final Item SHAN = register("shan", new ShanItem(new FabricItemSettings()));
     //火攻
-    public static final Item FIRE_ATTACK = register("huogong", new FireAttackItem(new FabricItemSettings().maxCount(16)));
+    public static final Item FIRE_ATTACK = register("huogong", new FireAttackItem(new FabricItemSettings()));
     //铁锁连环
-    public static final Item TIESUO = register("tiesuo",new TiesuoItem(new FabricItemSettings().maxCount(16)));
+    public static final Item TIESUO = register("tiesuo",new TiesuoItem(new FabricItemSettings()));
     //决斗
-    public static final Item JUEDOU = register("juedou",new JuedouItem(new FabricItemSettings().maxCount(16)));
+    public static final Item JUEDOU = register("juedou",new JuedouItem(new FabricItemSettings()));
     //无懈可击
-    public static final Item WUXIE = register("wuxie", new CardItem(new FabricItemSettings().maxCount(16)));
+    public static final Item WUXIE = register("wuxie", new CardItem(new FabricItemSettings()));
     //借刀杀人
-    public static final Item JIEDAO = register("jiedao", new JiedaoItem(new FabricItemSettings().maxCount(16)));
+    public static final Item JIEDAO = register("jiedao", new JiedaoItem(new FabricItemSettings()));
     //南蛮入侵
-    public static final Item NANMAN = register("nanman", new NanmanItem(new FabricItemSettings().maxCount(16)));
+    public static final Item NANMAN = register("nanman", new NanmanItem(new FabricItemSettings()));
     //青釭剑
     public static final Item QINGGANG = register("qinggang", new QinggangjianItem());
 
@@ -138,6 +138,7 @@ public class ModItems {
 
                 entries.add(SkillCards.HUOJI);
                 entries.add(SkillCards.LUOYI);
+                entries.add(SkillCards.QICE);
                 entries.add(SkillCards.QUANJI);
                 entries.add(SkillCards.TAOLUAN);
                 entries.add(SkillCards.YIJI);

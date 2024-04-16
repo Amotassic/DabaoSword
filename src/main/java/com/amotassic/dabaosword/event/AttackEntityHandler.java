@@ -45,6 +45,9 @@ public class AttackEntityHandler implements ModTools, AttackEntityCallback {
                         if (quan > 0) {
                             float i = (float) player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
                             entity.damage(world.getDamageSources().playerAttack(player), quan+i);
+                            if (quan > 4 && entity instanceof PlayerEntity) {
+                                ((PlayerEntity) entity).giveItemStack(ModItems.WUZHONG.getDefaultStack());
+                            }
                             int quan1 = quan/2;
                             quanji.putInt("quanji", quan1); stack.setNbt(quanji);
                             float j = new Random().nextFloat();

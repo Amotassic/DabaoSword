@@ -10,6 +10,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
@@ -29,8 +30,9 @@ public class TaoluanSkill extends SkillItem {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        if (!world.isClient && user.getHealth()>4.99) {
-            openScreen(user, user.getStackInHand(hand));
+        if (!world.isClient) {
+            if (user.getHealth() > 4.99) {openScreen(user, user.getStackInHand(hand));}
+            else {user.sendMessage(Text.translatable("item.dabaosword.taoluan.tip").formatted(Formatting.RED), true);}
         }
         return super.use(world, user, hand);
     }
@@ -44,9 +46,7 @@ public class TaoluanSkill extends SkillItem {
                 }
 
                 @Override
-                public Text getDisplayName() {
-                    return Text.literal("滔乱：选择获得一张卡牌");
-                }
+                public Text getDisplayName() {return Text.translatable("item.dabaosword.taoluan.screen");}
 
                 @Override
                 public @NotNull ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {

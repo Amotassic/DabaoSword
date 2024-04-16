@@ -2,26 +2,17 @@ package com.amotassic.dabaosword.item.card;
 
 import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-import java.util.List;
-
 public class FireAttackItem extends CardItem implements ModTools {
     public FireAttackItem(Settings settings) {
         super(settings);
-    }
-
-    @Override
-    public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
-        tooltip.add(Text.translatable("item.dabaosword.huogong.tooltip"));
     }
 
     @Override

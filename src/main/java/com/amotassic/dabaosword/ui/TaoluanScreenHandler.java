@@ -53,7 +53,7 @@ public class TaoluanScreenHandler extends ScreenHandler {
             if (slotIndex == 12) player.giveItemStack(new ItemStack(ModItems.WUXIE));
             if (slotIndex == 13) player.giveItemStack(new ItemStack(ModItems.WUZHONG));
             if (!player.isCreative()) player.setHealth(player.getHealth()-4.99f);
-            player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 1,0,false,false,false));
+            player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 1));
             if (new Random().nextFloat() < 0.5) {
                 player.getWorld().playSound(null, player.getX(), player.getY(), player.getZ(), Sounds.TAOLUAN1, SoundCategory.PLAYERS, 2.0F, 1.0F);
             } else {

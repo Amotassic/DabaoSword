@@ -1,7 +1,5 @@
 package com.amotassic.dabaosword.item.card;
 
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
@@ -9,33 +7,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
-import java.util.List;
-
 public class ArrowRainItem extends CardItem {
     public ArrowRainItem(Settings settings) {
         super(settings);
-    }
-    //有大病的工具提示
-    @Override
-    public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext){
-        if(Screen.hasShiftDown()){
-            int i = (int) (System.currentTimeMillis() / 1000) % 7;
-            if (i==0) {tooltip.add(Text.translatable("item.dabaosword.arrowrain.tooltip7").formatted(Formatting.BLUE));}
-            if (i==1) {tooltip.add(Text.translatable("item.dabaosword.arrowrain.tooltip1").formatted(Formatting.AQUA));}
-            if (i==2) {tooltip.add(Text.translatable("item.dabaosword.arrowrain.tooltip2").formatted(Formatting.RED));}
-            if (i==3) {tooltip.add(Text.translatable("item.dabaosword.arrowrain.tooltip3").formatted(Formatting.GOLD));}
-            if (i==4) {tooltip.add(Text.translatable("item.dabaosword.arrowrain.tooltip4").formatted(Formatting.GREEN));}
-            if (i==5) {tooltip.add(Text.translatable("item.dabaosword.arrowrain.tooltip5").formatted(Formatting.DARK_PURPLE));}
-            if (i==6) {tooltip.add(Text.translatable("item.dabaosword.arrowrain.tooltip6").formatted(Formatting.YELLOW));}
-        }else{
-            tooltip.add(Text.translatable("item.dabaosword.arrowrain.tooltip").formatted(Formatting.GREEN));
-            tooltip.add(Text.translatable("item.dabaosword.arrowrain.shift").formatted(Formatting.ITALIC));
-        }
     }
     //一次射五发
     @Override

@@ -1,17 +1,14 @@
 package com.amotassic.dabaosword.item.card;
 
+import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
-import com.amotassic.dabaosword.item.ModItems;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.world.World;
 
 import java.util.List;
 import java.util.stream.IntStream;
@@ -19,12 +16,6 @@ import java.util.stream.IntStream;
 public class DiscardItem extends CardItem implements ModTools {
     public DiscardItem(Settings settings) {
         super(settings);
-    }
-
-    @Override
-    public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext){
-        tooltip.add(Text.translatable("item.dabaosword.discard.tooltip1"));
-        tooltip.add(Text.translatable("item.dabaosword.discard.tooltip2"));
     }
 
     @Override

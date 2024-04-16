@@ -26,6 +26,24 @@
     ],
     "subtitle": "sounds.dabaosword.nahida"
   },
+  "qice1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/qice1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.qice"
+  },
+  "qice2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/qice2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.qice"
+  },
   "luoyi1": {
     "sounds": [
       {
