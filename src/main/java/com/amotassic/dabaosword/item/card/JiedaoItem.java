@@ -17,15 +17,17 @@ public class JiedaoItem extends CardItem implements ModTools {
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         ItemStack stack1 = entity.getMainHandStack();
-        if (hand == Hand.MAIN_HAND && !stack1.isEmpty() && !user.getWorld().isClient) {
+        if (!user.getWorld().isClient && hand == Hand.MAIN_HAND && !stack1.isEmpty()) {
             if (entity instanceof PlayerEntity player) {
                 if (hasItem(player, ModItems.WUXIE)) {
                     voice(player, Sounds.WUXIE);
                     removeItem(player, ModItems.WUXIE);
+                    jizhi(player);
                 } else {user.giveItemStack(stack1.copy()); stack1.setCount(0);}
             } else {user.giveItemStack(stack1.copy()); stack1.setCount(0);}
             voice(user, Sounds.JIEDAO);
             if (!user.isCreative()) {stack.decrement(1);}
+            jizhi(user);
             return ActionResult.SUCCESS;
         }
         return ActionResult.PASS;

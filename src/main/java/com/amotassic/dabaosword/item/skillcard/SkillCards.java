@@ -20,6 +20,7 @@ public class SkillCards {
     public static final Item QUANJI = register("quanji", new QuanjiSkill(new FabricItemSettings().maxCount(1)));
     public static final Item QICE = register("qice", new QiceSkill(new FabricItemSettings().maxCount(1)));
     public static final ScreenHandlerType<QiceScreenHandler> QICE_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "qice", new ExtendedScreenHandlerType<>(QiceScreenHandler::new));
+    public static final Item JIZHI = register("jizhi", new SkillItem(new FabricItemSettings().maxCount(1)));
 
     private static Item register(String name,Item item){
         return Registry.register(Registries.ITEM,new Identifier("dabaosword",name),item);

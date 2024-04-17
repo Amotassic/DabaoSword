@@ -3,6 +3,7 @@ package com.amotassic.dabaosword.item.card;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
+import com.amotassic.dabaosword.util.Tags;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -20,21 +21,24 @@ public class StealItem extends CardItem implements ModTools {
 
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (entity instanceof PlayerEntity target && hand == Hand.MAIN_HAND && !user.getWorld().isClient) {
+        if (entity instanceof PlayerEntity target && !user.getWorld().isClient && hand == Hand.MAIN_HAND) {
             if (hasItem(target, ModItems.WUXIE)) {
                 voice(target, Sounds.WUXIE);
                 voice(user, Sounds.SHUNSHOU);
                 if (!user.isCreative()) {stack.decrement(1);}
+                jizhi(user);
                 removeItem(target, ModItems.WUXIE);
+                jizhi(target);
                 return ActionResult.SUCCESS;
             } else {
                 DefaultedList<ItemStack> inventory = target.getInventory().main;
-                List<Integer> cardSlots = IntStream.range(0, inventory.size()).filter(i -> inventory.get(i).getItem() instanceof CardItem).boxed().toList();
+                List<Integer> cardSlots = IntStream.range(0, inventory.size()).filter(i -> inventory.get(i).isIn(Tags.Items.CARD)).boxed().toList();
                 if (!cardSlots.isEmpty()) {
                     voice(user, Sounds.SHUNSHOU);
                     int slot = cardSlots.get(((int) (System.currentTimeMillis()/1000) % cardSlots.size()));
                     ItemStack item = inventory.get(slot);
                     if (!user.isCreative()) {stack.decrement(1);}
+                    jizhi(user);
                     user.giveItemStack(item.copyWithCount(1)); /*顺手：复制一个物品*/ item.decrement(1);
                     return ActionResult.SUCCESS;
                 }

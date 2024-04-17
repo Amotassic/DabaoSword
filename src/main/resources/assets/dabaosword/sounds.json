@@ -26,6 +26,24 @@
     ],
     "subtitle": "sounds.dabaosword.nahida"
   },
+  "jizhi1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/jizhi1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.jizhi"
+  },
+  "jizhi2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/jizhi2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.jizhi"
+  },
   "qice1": {
     "sounds": [
       {
@@ -311,6 +329,15 @@
       }
     ],
     "subtitle": "sounds.dabaosword.shunshou"
+  },
+  "taoyuan": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/taoyuan"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.taoyuan"
   },
   "tiesuo": {
     "sounds": [

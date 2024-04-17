@@ -25,9 +25,9 @@ public class NanmanItem extends CardItem implements ModTools {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         if (!world.isClient && hand == Hand.MAIN_HAND) {
-            Text a = Text.of("假装我是南蛮");
-            Text b = Text.of("我是山里灵活的狗！");
-            Text c = Text.of("卡");
+            Text a = Text.translatable("nanman.dog1");
+            Text b = Text.translatable("nanman.dog2");
+            Text c = Text.translatable("nanman.dog3");
             BlockPos blockPos = user.getBlockPos();
             //召唤3条狗
             WolfEntity wolf1 = new WolfEntity(EntityType.WOLF, world);
@@ -52,8 +52,9 @@ public class NanmanItem extends CardItem implements ModTools {
             wolf3.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 20 * 20,1,false,false,false));
 
             if (!user.isCreative()) {user.getStackInHand(hand).decrement(1);}
+            jizhi(user);
             voice(user, Sounds.NANMAN);
         }
-        return super.use(world, user, hand);
+        return TypedActionResult.success(user.getStackInHand(hand));
     }
 }

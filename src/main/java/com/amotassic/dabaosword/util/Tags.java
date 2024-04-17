@@ -11,7 +11,9 @@ public class Tags {
 
         public static final TagKey<Item> CARD = Tags.Items.createTag("card");
         public static final TagKey<Item> BASIC_CARD = Tags.Items.createTag("basic_card");
+        public static final TagKey<Item> ARMOURY_CARD = Tags.Items.createTag("armoury_card");
         public static final TagKey<Item> SKILL = Tags.Items.createTag("skill");
+        public static final TagKey<Item> YIJI = Tags.Items.createTag("yiji");
         public static final TagKey<Item> QUANJI = Tags.Items.createTag("quanji");
 
 

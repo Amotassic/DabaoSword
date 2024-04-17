@@ -46,6 +46,7 @@ public class ModItems {
     public static final Item JIU = register("jiu", new JiuItem(new FabricItemSettings()));
     //万箭齐发
     public static final Item ARROW_RAIN = register("arrow_rain", new ArrowRainItem(new FabricItemSettings().maxDamage(50)));
+    public static final Item WANJIAN = register("wanjian", new WanjianItem(new FabricItemSettings()));
     //乐不思蜀以及状态效果
     public static final Item TOO_HAPPY_ITEM = register("too_happy", new TooHappyItem(new FabricItemSettings()));
     public static final StatusEffect TOO_HAPPY = new TooHappyStatusEffect(StatusEffectCategory.HARMFUL, 0xF73C0A);
@@ -83,6 +84,8 @@ public class ModItems {
     public static final Item NANMAN = register("nanman", new NanmanItem(new FabricItemSettings()));
     //青釭剑
     public static final Item QINGGANG = register("qinggang", new QinggangjianItem());
+    //桃园结义
+    public static final Item TAOYUAN = register("taoyuan", new TaoyuanItem(new FabricItemSettings()));
 
     //注册部分
     public static void register() {
@@ -131,12 +134,15 @@ public class ModItems {
                 entries.add(JUEDOU);
                 entries.add(NANMAN);
                 entries.add(STEAL);
+                entries.add(TAOYUAN);
                 entries.add(TIESUO);
+                entries.add(WANJIAN);
                 entries.add(WUXIE);
                 entries.add(WUZHONG);
                 entries.add(CARD_PILE);
 
                 entries.add(SkillCards.HUOJI);
+                entries.add(SkillCards.JIZHI);
                 entries.add(SkillCards.LUOYI);
                 entries.add(SkillCards.QICE);
                 entries.add(SkillCards.QUANJI);

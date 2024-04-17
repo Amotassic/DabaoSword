@@ -1,8 +1,9 @@
 package com.amotassic.dabaosword.ui;
 
-import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
+import com.amotassic.dabaosword.util.ModTools;
+import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SimpleInventory;
@@ -11,11 +12,10 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.sound.SoundCategory;
 
 import java.util.Random;
 
-public class TaoluanScreenHandler extends ScreenHandler {
+public class TaoluanScreenHandler extends ScreenHandler implements ModTools {
     private final ItemStack stack;
 
     public TaoluanScreenHandler(int syncId, PacketByteBuf buf) {
@@ -37,7 +37,7 @@ public class TaoluanScreenHandler extends ScreenHandler {
 
     @Override
     public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
-        if (0 <= slotIndex && slotIndex <14) {
+        if (0 <= slotIndex && slotIndex <16) {
             if (slotIndex == 0) player.giveItemStack(new ItemStack(ModItems.SHAN));
             if (slotIndex == 1) player.giveItemStack(new ItemStack(ModItems.PEACH));
             if (slotIndex == 2) player.giveItemStack(new ItemStack(ModItems.JIU));
@@ -49,15 +49,17 @@ public class TaoluanScreenHandler extends ScreenHandler {
             if (slotIndex == 8) player.giveItemStack(new ItemStack(ModItems.JUEDOU));
             if (slotIndex == 9) player.giveItemStack(new ItemStack(ModItems.NANMAN));
             if (slotIndex == 10) player.giveItemStack(new ItemStack(ModItems.STEAL));
-            if (slotIndex == 11) player.giveItemStack(new ItemStack(ModItems.TIESUO));
-            if (slotIndex == 12) player.giveItemStack(new ItemStack(ModItems.WUXIE));
-            if (slotIndex == 13) player.giveItemStack(new ItemStack(ModItems.WUZHONG));
+            if (slotIndex == 11) player.giveItemStack(new ItemStack(ModItems.TAOYUAN));
+            if (slotIndex == 12) player.giveItemStack(new ItemStack(ModItems.TIESUO));
+            if (slotIndex == 13) player.giveItemStack(new ItemStack(ModItems.WANJIAN));
+            if (slotIndex == 14) player.giveItemStack(new ItemStack(ModItems.WUXIE));
+            if (slotIndex == 15) player.giveItemStack(new ItemStack(ModItems.WUZHONG));
             if (!player.isCreative()) player.setHealth(player.getHealth()-4.99f);
             player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 1));
             if (new Random().nextFloat() < 0.5) {
-                player.getWorld().playSound(null, player.getX(), player.getY(), player.getZ(), Sounds.TAOLUAN1, SoundCategory.PLAYERS, 2.0F, 1.0F);
+                voice(player, Sounds.TAOLUAN1);
             } else {
-                player.getWorld().playSound(null, player.getX(), player.getY(), player.getZ(), Sounds.TAOLUAN2, SoundCategory.PLAYERS, 2.0F, 1.0F);
+                voice(player, Sounds.TAOLUAN2);
             }
         }
     }

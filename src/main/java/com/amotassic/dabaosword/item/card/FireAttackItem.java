@@ -17,14 +17,15 @@ public class FireAttackItem extends CardItem implements ModTools {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        if (!world.isClient) {
+        if (!world.isClient && hand == Hand.MAIN_HAND) {
             Vec3d momentum = user.getRotationVector().multiply(3);
             FireballEntity fireballEntity = new FireballEntity(world, user, momentum.getX(), momentum.getY() ,momentum.getZ(), 3);
             fireballEntity.setPosition(user.getX(), user.getBodyY(0.5) + 0.5, user.getZ());
             world.spawnEntity(fireballEntity);
             if (!user.isCreative()) {user.getStackInHand(hand).decrement(1);}
+            jizhi(user);
             voice(user, Sounds.HUOGONG);
         }
-        return super.use(world, user, hand);
+        return TypedActionResult.success(user.getStackInHand(hand));
     }
 }

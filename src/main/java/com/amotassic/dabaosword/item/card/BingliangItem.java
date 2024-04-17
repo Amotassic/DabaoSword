@@ -19,11 +19,13 @@ public class BingliangItem extends CardItem implements ModTools {
         if (!attacker.getWorld().isClient && attacker instanceof PlayerEntity player) {
             if (target instanceof PlayerEntity player1 && hasItem(player1, ModItems.WUXIE)) {
                 removeItem(player1, ModItems.WUXIE);
+                jizhi(player1);
                 voice(player1, Sounds.WUXIE);
             } else {
                 target.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, StatusEffectInstance.INFINITE,1));
             }
             if (!player.isCreative()) {stack.decrement(1);}
+            jizhi(player);
             voice(player, Sounds.BINGLIANG);
         }
         return super.postHit(stack, target, attacker);

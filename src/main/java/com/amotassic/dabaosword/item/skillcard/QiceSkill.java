@@ -31,7 +31,7 @@ public class QiceSkill extends SkillItem implements ModTools {
     public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
         int cd = 0;
         if (stack.getNbt() != null) {cd = stack.getNbt().getInt("cooldown");}
-        tooltip.add(Text.literal(cd == 0 ? "CD: 30s" : "CD: 30s   left: "+cd/20+"s"));
+        tooltip.add(Text.literal(cd == 0 ? "CD: 20s" : "CD: 20s   left: "+cd/20+"s"));
         tooltip.add(Text.translatable("item.dabaosword.qice.tooltip").formatted(Formatting.BLUE));
     }
 

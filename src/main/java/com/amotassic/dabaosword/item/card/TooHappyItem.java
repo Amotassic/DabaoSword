@@ -20,6 +20,7 @@ public class TooHappyItem extends CardItem implements ModTools {
             if (target instanceof PlayerEntity player1) {
                 if (hasItem(player1, ModItems.WUXIE)) {
                     removeItem(player1, ModItems.WUXIE);
+                    jizhi(player1);
                     voice(player1, Sounds.WUXIE);
                 } else {
                     target.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 5));
@@ -28,6 +29,7 @@ public class TooHappyItem extends CardItem implements ModTools {
                 target.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 15));
             }
             if (!player.isCreative()) {stack.decrement(1);}
+            jizhi(player);
             voice(player, Sounds.LEBU);
         }
         return super.postHit(stack, target, attacker);

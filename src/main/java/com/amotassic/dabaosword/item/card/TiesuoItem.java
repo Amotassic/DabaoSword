@@ -31,6 +31,7 @@ public class TiesuoItem extends CardItem implements ModTools {
                 nearbyEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, StatusEffectInstance.INFINITE, 0, false, true,false));
             }
             if (!user.isCreative()) {stack.decrement(1);}
+            jizhi(user);
             voice(user, Sounds.TIESUO);
             user.removeStatusEffect(StatusEffects.GLOWING);
         }
@@ -39,18 +40,18 @@ public class TiesuoItem extends CardItem implements ModTools {
     //使用战技时播放纳西妲的语音
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        if (user.getOffHandStack().getItem() == Items.KNOWLEDGE_BOOK) {
+        if (!world.isClient && user.getOffHandStack().getItem() == Items.KNOWLEDGE_BOOK) {
             float i = new Random().nextFloat();
-            if (i < 0.333) {user.playSound(Sounds.NAHIDA1, 3f, 1.0f);}
-            else if (0.333<= i && i < 0.666) {user.playSound(Sounds.NAHIDA2, 3f, 1.0f);}
-            else {user.playSound(Sounds.NAHIDA3, 3f, 1.0f);}
+            if (i < 0.333) {voice(user, Sounds.NAHIDA1, 3);}
+            else if (0.333<= i && i < 0.666) {voice(user, Sounds.NAHIDA2, 3);}
+            else {voice(user, Sounds.NAHIDA3, 3);}
         }
         return ItemUsage.consumeHeldItem(world, user, hand);
     }
     //看到的就连上
     @Override
     public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
-        if (user.getOffHandStack().getItem() == Items.KNOWLEDGE_BOOK && !world.isClient) {
+        if (!world.isClient && user.getOffHandStack().getItem() == Items.KNOWLEDGE_BOOK) {
             Box box = user.getBoundingBox().stretch(user.getRotationVec(1.0F).multiply(20))
                     .expand(1.0D, 1.0D, 1.0D);
             for (LivingEntity nearbyEntity : world.getEntitiesByClass(LivingEntity.class, box, nearbyEntity -> !nearbyEntity.isGlowing())) {
@@ -61,7 +62,7 @@ public class TiesuoItem extends CardItem implements ModTools {
 
     @Override
     public void onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
-        if (user.getOffHandStack().getItem() == Items.KNOWLEDGE_BOOK && !world.isClient) {
+        if (!world.isClient && user.getOffHandStack().getItem() == Items.KNOWLEDGE_BOOK) {
             if (user instanceof PlayerEntity && !((PlayerEntity) user).isCreative()) {stack.decrement(1);}
         }
         user.removeStatusEffect(StatusEffects.GLOWING);

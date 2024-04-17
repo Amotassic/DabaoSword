@@ -28,6 +28,6 @@ public class ShanItem extends CardItem implements ModTools {
             if (!user.isCreative()) {user.getStackInHand(hand).decrement(1);}
             voice(user, Sounds.SHAN);
         }
-        return super.use(world, user, hand);
+        return TypedActionResult.success(user.getStackInHand(hand));
     }
 }

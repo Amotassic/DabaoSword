@@ -26,7 +26,7 @@ public class HuojiSkill extends SkillItem implements ModTools {
 
     @Override
     public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
-        tooltip.add(Text.literal(cd == 0 ? "CD: 60s" : "CD: 60s   left: "+cd/20+"s"));
+        tooltip.add(Text.literal(cd == 0 ? "CD: 10s" : "CD: 10s   left: "+cd/20+"s"));
         tooltip.add(Text.translatable("item.dabaosword.huoji.tooltip").formatted(Formatting.RED));
     }
 
@@ -35,7 +35,7 @@ public class HuojiSkill extends SkillItem implements ModTools {
         if (!world.isClient && entity instanceof PlayerEntity player) {
             ItemStack stack1 = player.getStackInHand(Hand.OFF_HAND);
             if (cd == 0 && !stack1.isEmpty() && stack1.isIn(Tags.Items.BASIC_CARD)) {
-                cd =20 * 60;
+                cd =20 * 10;
                 viewAs(player, ModItems.FIRE_ATTACK, Sounds.HUOJI1, Sounds.HUOJI2);
             }
             if (cd > 0) {cd--; nbt.putInt("cooldown", cd); stack.setNbt(nbt);}

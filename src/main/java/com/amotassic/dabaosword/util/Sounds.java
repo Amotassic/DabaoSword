@@ -9,7 +9,9 @@ public class Sounds {
     public static final SoundEvent NAHIDA1 = Sounds.register("nahida1");
     public static final SoundEvent NAHIDA2 = Sounds.register("nahida2");
     public static final SoundEvent NAHIDA3 = Sounds.register("nahida3");
-        public static final SoundEvent QICE1 = Sounds.register("qice1");
+    public static final SoundEvent JIZHI1 = Sounds.register("jizhi1");
+    public static final SoundEvent JIZHI2 = Sounds.register("jizhi2");
+    public static final SoundEvent QICE1 = Sounds.register("qice1");
     public static final SoundEvent QICE2 = Sounds.register("qice2");
     public static final SoundEvent LUOYI1 = Sounds.register("luoyi1");
     public static final SoundEvent LUOYI2 = Sounds.register("luoyi2");
@@ -43,6 +45,7 @@ public class Sounds {
     public static final SoundEvent RECOVER = Sounds.register("recover");
     public static final SoundEvent SHAN = Sounds.register("shan");
     public static final SoundEvent SHUNSHOU = Sounds.register("shunshou");
+    public static final SoundEvent TAOYUAN = Sounds.register("taoyuan");
     public static final SoundEvent TIESUO = Sounds.register("tiesuo");
     public static final SoundEvent WANJIAN = Sounds.register("wanjian");
     public static final SoundEvent WUXIE = Sounds.register("wuxie");

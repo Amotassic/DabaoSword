@@ -39,7 +39,7 @@ public class QiceScreenHandler extends ScreenHandler implements ModTools {
 
     @Override
     public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
-        if (0 <= slotIndex && slotIndex <11) {
+        if (0 <= slotIndex && slotIndex <13) {
             if (slotIndex == 0) player.giveItemStack(new ItemStack(ModItems.BINGLIANG_ITEM));
             if (slotIndex == 1) player.giveItemStack(new ItemStack(ModItems.TOO_HAPPY_ITEM));
             if (slotIndex == 2) player.giveItemStack(new ItemStack(ModItems.DISCARD));
@@ -48,13 +48,15 @@ public class QiceScreenHandler extends ScreenHandler implements ModTools {
             if (slotIndex == 5) player.giveItemStack(new ItemStack(ModItems.JUEDOU));
             if (slotIndex == 6) player.giveItemStack(new ItemStack(ModItems.NANMAN));
             if (slotIndex == 7) player.giveItemStack(new ItemStack(ModItems.STEAL));
-            if (slotIndex == 8) player.giveItemStack(new ItemStack(ModItems.TIESUO));
-            if (slotIndex == 9) player.giveItemStack(new ItemStack(ModItems.WUXIE));
-            if (slotIndex == 10) player.giveItemStack(new ItemStack(ModItems.WUZHONG));
+            if (slotIndex == 8) player.giveItemStack(new ItemStack(ModItems.TAOYUAN));
+            if (slotIndex == 9) player.giveItemStack(new ItemStack(ModItems.TIESUO));
+            if (slotIndex == 10) player.giveItemStack(new ItemStack(ModItems.WANJIAN));
+            if (slotIndex == 11) player.giveItemStack(new ItemStack(ModItems.WUXIE));
+            if (slotIndex == 12) player.giveItemStack(new ItemStack(ModItems.WUZHONG));
             if (!player.isCreative()) player.getStackInHand(Hand.OFF_HAND).decrement(3);
             player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 1));
             ItemStack stack1 = player.getStackInHand(Hand.MAIN_HAND);
-            NbtCompound nbt = new NbtCompound();nbt.putInt("cooldown", 20 * 30);stack1.setNbt(nbt);
+            NbtCompound nbt = new NbtCompound();nbt.putInt("cooldown", 20 * 20);stack1.setNbt(nbt);
             if (new Random().nextFloat() < 0.5) {
                 voice(player, Sounds.QICE1);
             } else {

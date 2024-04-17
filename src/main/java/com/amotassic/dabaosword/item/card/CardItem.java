@@ -21,7 +21,7 @@ public class CardItem extends Item {
             tooltip.add(Text.translatable("item.dabaosword.wuxie.tooltip2"));
         }
 
-        if (stack.getItem() == ModItems.ARROW_RAIN) {//有大病的工具提示
+        if (stack.getItem() == ModItems.ARROW_RAIN || stack.getItem() == ModItems.WANJIAN) {//有大病的工具提示
             if(Screen.hasShiftDown()){
                 int i = (int) (System.currentTimeMillis() / 1000) % 7;
                 if (i==0) {tooltip.add(Text.translatable("item.dabaosword.arrowrain.tooltip7").formatted(Formatting.BLUE));}
@@ -87,6 +87,10 @@ public class CardItem extends Item {
             tooltip.add(Text.translatable("item.dabaosword.steal.tooltip2"));
         }
 
+        if (stack.getItem() == ModItems.TAOYUAN) {
+            tooltip.add(Text.translatable("item.dabaosword.taoyuan.tooltip"));
+        }
+
         if (stack.getItem() == ModItems.TIESUO) {
             tooltip.add(Text.translatable("item.dabaosword.tiesuo.tooltip"));
         }
@@ -99,6 +103,20 @@ public class CardItem extends Item {
                 tooltip.add(Text.translatable("item.dabaosword.too_happy.tooltip").formatted(Formatting.RED));
                 tooltip.add(Text.translatable("dabaosword.shifttooltip"));
             }
+        }
+
+        if (stack.getItem() == ModItems.WUZHONG) {
+            tooltip.add(Text.translatable("item.dabaosword.wuzhong.tooltip1"));
+            tooltip.add(Text.translatable("item.dabaosword.wuzhong.tooltip2"));
+        }
+
+        if (stack.getItem() == ModItems.GAIN_CARD) {
+            tooltip.add(Text.translatable("item.dabaosword.gain_card.tooltip"));
+        }
+
+        if (stack.getItem() == ModItems.CARD_PILE) {
+            tooltip.add(Text.translatable("item.dabaosword.card_pile.tooltip1"));
+            tooltip.add(Text.translatable("item.dabaosword.card_pile.tooltip2"));
         }
     }
 }

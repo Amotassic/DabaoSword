@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.util;
 
+import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
@@ -12,6 +13,8 @@ import net.minecraft.util.Hand;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
+
+import static com.amotassic.dabaosword.item.card.GainCardItem.draw;
 
 public interface ModTools {
     //判断玩家是否有某个物品
@@ -64,6 +67,15 @@ public interface ModTools {
             stack.decrement(1);
             player.giveItemStack(item.getDefaultStack());
             if (new Random().nextFloat() < 0.5) {voice(player, sound1);} else {voice(player, sound2);}
+        }
+    }
+    //集智技能触发
+    default void jizhi(PlayerEntity player) {
+        if (hasItem(player, SkillCards.JIZHI)) {
+            draw(player, 1);
+            if (new Random().nextFloat() < 0.5) {
+                voice(player, Sounds.JIZHI1);
+            } else {voice(player, Sounds.JIZHI2);}
         }
     }
 }

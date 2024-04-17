@@ -35,9 +35,11 @@ public class TaoluanHandledScreen extends HandledScreen<TaoluanScreenHandler> {
         context.drawItem(ModItems.JUEDOU.getDefaultStack(),x+8+18*8,y+16);
         context.drawItem(ModItems.NANMAN.getDefaultStack(),x + 8,y+34);
         context.drawItem(ModItems.STEAL.getDefaultStack(),x+8+ 18,y+34);
-        context.drawItem(ModItems.TIESUO.getDefaultStack(),x+8+18*2,y+34);
-        context.drawItem(ModItems.WUXIE.getDefaultStack(),x+8+18*3,y+34);
-        context.drawItem(ModItems.WUZHONG.getDefaultStack(),x+8+18*4,y+34);
+        context.drawItem(ModItems.TAOYUAN.getDefaultStack(),x+8+18*2,y+34);
+        context.drawItem(ModItems.TIESUO.getDefaultStack(),x+8+18*3,y+34);
+        context.drawItem(ModItems.WANJIAN.getDefaultStack(),x+8+18*4,y+34);
+        context.drawItem(ModItems.WUXIE.getDefaultStack(),x+8+18*5,y+34);
+        context.drawItem(ModItems.WUZHONG.getDefaultStack(),x+8+18*6,y+34);
     }
 
     @Override
