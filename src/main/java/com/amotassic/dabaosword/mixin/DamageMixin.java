@@ -1,8 +1,9 @@
 package com.amotassic.dabaosword.mixin;
 
 import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.EntityHurtCallback;
-import net.minecraft.enchantment.EnchantmentHelper;
+import com.amotassic.dabaosword.util.ModTools;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -35,7 +36,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.Objects;
 
 @Mixin(LivingEntity.class)
-public abstract class DamageMixin extends Entity {
+public abstract class DamageMixin extends Entity implements ModTools {
     @Shadow public abstract ItemStack getEquippedStack(EquipmentSlot var1);
 
     @Shadow public abstract float getHealth();
@@ -102,7 +103,7 @@ public abstract class DamageMixin extends Entity {
             }
             //古锭刀对没有装备的生物伤害翻倍
             if (entity.getMainHandStack().getItem() == ModItems.GUDINGDAO) {
-                if (noArmor || EnchantmentHelper.getLevel(ModItems.POJUN, entity.getMainHandStack()) > 0) {
+                if (noArmor || hasItem((PlayerEntity) entity, SkillCards.POJUN)) {
                     if (this.getHealth() > amount) this.applyDamage(source,amount);
                 }
             }

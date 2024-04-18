@@ -1,7 +1,5 @@
 package com.amotassic.dabaosword.item.card;
 
-import java.util.List;
-
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;
@@ -11,6 +9,8 @@ import net.minecraft.item.ToolMaterials;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
+
+import java.util.List;
 
 public class GudingdaoItem extends SwordItem {
 

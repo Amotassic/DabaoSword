@@ -1,7 +1,7 @@
 package com.amotassic.dabaosword.effect;
 
-import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.util.ModTools;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;

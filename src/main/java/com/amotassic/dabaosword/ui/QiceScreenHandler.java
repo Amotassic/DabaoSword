@@ -53,7 +53,7 @@ public class QiceScreenHandler extends ScreenHandler implements ModTools {
             if (slotIndex == 10) player.giveItemStack(new ItemStack(ModItems.WANJIAN));
             if (slotIndex == 11) player.giveItemStack(new ItemStack(ModItems.WUXIE));
             if (slotIndex == 12) player.giveItemStack(new ItemStack(ModItems.WUZHONG));
-            if (!player.isCreative()) player.getStackInHand(Hand.OFF_HAND).decrement(3);
+            if (!player.isCreative()) player.getStackInHand(Hand.OFF_HAND).decrement(2);
             player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 1));
             ItemStack stack1 = player.getStackInHand(Hand.MAIN_HAND);
             NbtCompound nbt = new NbtCompound();nbt.putInt("cooldown", 20 * 20);stack1.setNbt(nbt);

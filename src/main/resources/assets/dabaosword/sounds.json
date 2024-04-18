@@ -26,6 +26,132 @@
     ],
     "subtitle": "sounds.dabaosword.nahida"
   },
+  "kanpo1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/kanpo1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.kanpo"
+  },
+  "kanpo2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/kanpo2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.kanpo"
+  },
+  "luanji1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/luanji1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.luanji"
+  },
+  "luanji2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/luanji2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.luanji"
+  },
+  "luanji3": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/luanji3"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.luanji"
+  },
+  "luanji4": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/luanji4"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.luanji"
+  },
+  "jueqing1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/jueqing1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.jueqing"
+  },
+  "jueqing2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/jueqing2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.jueqing"
+  },
+  "liuli1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/liuli1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.liuli"
+  },
+  "liuli2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/liuli2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.liuli"
+  },
+  "guose1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/guose1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.guose"
+  },
+  "guose2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/guose2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.guose"
+  },
+  "kurou1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/kurou1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.kurou"
+  },
+  "kurou2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/kurou2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.kurou"
+  },
   "jizhi1": {
     "sounds": [
       {

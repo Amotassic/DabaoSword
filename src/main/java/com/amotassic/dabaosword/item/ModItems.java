@@ -2,8 +2,6 @@ package com.amotassic.dabaosword.item;
 
 import com.amotassic.dabaosword.effect.*;
 import com.amotassic.dabaosword.enchantment.LightningAspectEnchantment;
-import com.amotassic.dabaosword.enchantment.PojunEnchantment;
-import com.amotassic.dabaosword.enchantment.RageNatureEnchantment;
 import com.amotassic.dabaosword.item.card.*;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -28,10 +26,6 @@ public class ModItems {
     public static final Item GUDING_ITEM = register("guding", new Item(new FabricItemSettings()));
     //雷电附加附魔
 	public static Enchantment LIGHTNINGASPECT = new LightningAspectEnchantment(Enchantment.Rarity.COMMON, EnchantmentTarget.WEAPON, new EquipmentSlot[] {EquipmentSlot.MAINHAND});
-    //破军附魔
-    public static Enchantment POJUN = new PojunEnchantment(Enchantment.Rarity.VERY_RARE, EnchantmentTarget.WEAPON, new EquipmentSlot[] {EquipmentSlot.MAINHAND});
-    //狂骨附魔
-    public static Enchantment  KUANGGU = new RageNatureEnchantment(Enchantment.Rarity.VERY_RARE, EnchantmentTarget.WEAPON, new EquipmentSlot[] {EquipmentSlot.MAINHAND});
     //藤条
     public static final ArmorMaterial RATTAN_MATERIAL = new RattanArmorMaterial();
     public static final Item RATTAN = register("rattan", new Item(new FabricItemSettings()));
@@ -41,8 +35,7 @@ public class ModItems {
     public static final Item RATTAN_LEGGINGS = register("rattan_leggings", new RattanArmor(RATTAN_MATERIAL, ArmorItem.Type.LEGGINGS, new Item.Settings()));
     //桃
     public static final Item PEACH = register("peach", new PeachItem(new FabricItemSettings()));
-    //酒  已移除 public static final Potion COOKING_WINE = new Potion(new StatusEffectInstance(StatusEffects.STRENGTH, 1200, 1), new StatusEffectInstance(StatusEffects.NAUSEA, 300));
-    //卡牌形式的酒
+    //酒
     public static final Item JIU = register("jiu", new JiuItem(new FabricItemSettings()));
     //万箭齐发
     public static final Item ARROW_RAIN = register("arrow_rain", new ArrowRainItem(new FabricItemSettings().maxDamage(50)));
@@ -92,9 +85,6 @@ public class ModItems {
         Registry.register(Registries.ITEM_GROUP, new Identifier("dabaosword", "item_group"), DABAOSWORD_GROUP);
 
         Registry.register(Registries.ENCHANTMENT, new Identifier("dabaosword", "lightningaspect"),LIGHTNINGASPECT);
-        Registry.register(Registries.ENCHANTMENT, new Identifier("dabaosword", "pojun"),POJUN);
-        Registry.register(Registries.ENCHANTMENT, new Identifier("dabaosword", "kuanggu"),KUANGGU);
-        //Registry.register(Registries.POTION, new Identifier("dabaosword", "cooking_wine"), COOKING_WINE);
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "too_happy"), TOO_HAPPY);
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "bingliang"), BINGLIANG);
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "cooldown"), COOLDOWN);
@@ -143,7 +133,11 @@ public class ModItems {
 
                 entries.add(SkillCards.HUOJI);
                 entries.add(SkillCards.JIZHI);
+                entries.add(SkillCards.KUANGGU);
+                entries.add(SkillCards.KUROU);
+                entries.add(SkillCards.LUANJI);
                 entries.add(SkillCards.LUOYI);
+                entries.add(SkillCards.POJUN);
                 entries.add(SkillCards.QICE);
                 entries.add(SkillCards.QUANJI);
                 entries.add(SkillCards.TAOLUAN);

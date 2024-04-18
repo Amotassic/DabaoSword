@@ -1,13 +1,16 @@
 package com.amotassic.dabaosword.event;
 
 import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -37,8 +40,9 @@ public class AttackEntityHandler implements ModTools, AttackEntityCallback {
                 if (new Random().nextFloat() < 0.05) player.giveItemStack(new ItemStack(ModItems.WUZHONG));
             }
 
-            if (entity instanceof LivingEntity) {
-                if (hasItemInTag(tag, player)) {//排异技能：攻击伤害增加
+            if (entity instanceof LivingEntity target) {
+                //排异技能：攻击伤害增加
+                if (hasItemInTag(tag, player)) {
                     ItemStack stack = stackInTag(tag, player);
                     if (stack.getNbt() != null) {
                         int quan = stack.getNbt().getInt("quanji");
@@ -57,6 +61,35 @@ public class AttackEntityHandler implements ModTools, AttackEntityCallback {
                             } else {voice(player, Sounds.PAIYI4,3);}
                         }
                     }
+                }
+                //破军：攻击命中盔甲槽有物品的生物后，会让其所有盔甲掉落，配合古锭刀特效使用，pvp神器
+                if (hasItem(player, SkillCards.POJUN) && !player.hasStatusEffect(ModItems.COOLDOWN)) {
+                    ItemStack head = target.getEquippedStack(EquipmentSlot.HEAD);
+                    ItemStack chest = target.getEquippedStack(EquipmentSlot.CHEST);
+                    ItemStack legs = target.getEquippedStack(EquipmentSlot.LEGS);
+                    ItemStack feet = target.getEquippedStack(EquipmentSlot.FEET);
+                    if (target instanceof PlayerEntity player1) {
+                        if (!head.isEmpty()) {player1.giveItemStack(head.copy());head.setCount(0);}
+                        if (!chest.isEmpty()) {player1.giveItemStack(chest.copy());chest.setCount(0);}
+                        if (!legs.isEmpty()) {player1.giveItemStack(legs.copy());legs.setCount(0);}
+                        if (!feet.isEmpty()) {player1.giveItemStack(feet.copy());feet.setCount(0);}
+                    } else {
+                        if (!head.isEmpty()) {target.dropStack(head.copy());head.setCount(0);}
+                        if (!chest.isEmpty()) {target.dropStack(chest.copy());chest.setCount(0);}
+                        if (!legs.isEmpty()) {target.dropStack(legs.copy());legs.setCount(0);}
+                        if (!feet.isEmpty()) {target.dropStack(feet.copy());feet.setCount(0);}
+                    }
+                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.POJUN1);}
+                    else {voice(player, Sounds.POJUN2);}
+                    player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 50,0,false,true,true));
+                }
+                //狂骨：攻击命中敌人时，如果受伤超过5则回血，否则摸一张牌
+                if (hasItem(player, SkillCards.KUANGGU) && !player.hasStatusEffect(ModItems.COOLDOWN)) {
+                    if (player.getMaxHealth()-player.getHealth()>=5) {player.heal(5);}
+                    else {player.giveItemStack(new ItemStack(ModItems.GAIN_CARD));}
+                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.KUANGGU1);}
+                    else {voice(player, Sounds.KUANGGU2);}
+                    player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 8,0,false,true,true));
                 }
             }
         }
