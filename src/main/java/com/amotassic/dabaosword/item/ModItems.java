@@ -131,16 +131,20 @@ public class ModItems {
                 entries.add(WUZHONG);
                 entries.add(CARD_PILE);
 
-                entries.add(SkillCards.HUOJI);
-                entries.add(SkillCards.JIZHI);
-                entries.add(SkillCards.KUANGGU);
-                entries.add(SkillCards.KUROU);
-                entries.add(SkillCards.LUANJI);
+                entries.add(SkillCards.JUEQING);
                 entries.add(SkillCards.LUOYI);
-                entries.add(SkillCards.POJUN);
                 entries.add(SkillCards.QICE);
                 entries.add(SkillCards.QUANJI);
-                entries.add(SkillCards.TAOLUAN);
                 entries.add(SkillCards.YIJI);
+                entries.add(SkillCards.HUOJI);
+                entries.add(SkillCards.KANPO);
+                entries.add(SkillCards.JIZHI);
+                entries.add(SkillCards.KUANGGU);
+                entries.add(SkillCards.GUOSE);
+                entries.add(SkillCards.LIULI);
+                entries.add(SkillCards.KUROU);
+                entries.add(SkillCards.POJUN);
+                entries.add(SkillCards.LUANJI);
+                entries.add(SkillCards.TAOLUAN);
             }).build();
 }

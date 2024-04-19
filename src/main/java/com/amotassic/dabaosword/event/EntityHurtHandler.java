@@ -1,6 +1,7 @@
 package com.amotassic.dabaosword.event;
 
 import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.EntityHurtCallback;
 import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
@@ -15,6 +16,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.math.Box;
 
 import java.util.Random;
 
@@ -41,14 +43,26 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
                     } else {voice(player, Sounds.QUANJI2);}
                 }
 
-                if (hasItemInTag(Tags.Items.YIJI, player) && !player.hasStatusEffect(ModItems.COOLDOWN) && player.getHealth() <= 12) { ItemStack stack = stackInTag(Tags.Items.YIJI, player);
-                    if (stack.getNbt() != null && stack.getNbt().getByte("enabled") == 1) {
+                if (hasItem(player, SkillCards.YIJI) && !player.hasStatusEffect(ModItems.COOLDOWN) && player.getHealth() <= 12) {
+                    ItemStack stack = stackWith(SkillCards.YIJI, player);
+                    if (stack.getDamage() == 0) {
                         player.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
                         player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 20, 0, false, true, true));
-                        if (new Random().nextFloat() < 0.5) {
-                            voice(player, Sounds.YIJI1);
-                        } else {
-                            voice(player, Sounds.YIJI2);
+                        if (new Random().nextFloat() < 0.5) {voice(player, Sounds.YIJI1);
+                        } else {voice(player, Sounds.YIJI2);}
+                    }
+                }
+
+                if (hasItem(player ,SkillCards.LIULI) && source.getAttacker() instanceof LivingEntity attacker && hasItemInTag(Tags.Items.CARD, player)) {
+                    ItemStack stack = stackInTag(Tags.Items.CARD, player);
+                    Box box = new Box(player.getBlockPos()).expand(5);
+                    for (LivingEntity nearbyEntity : world.getEntitiesByClass(LivingEntity.class, box, LivingEntity -> LivingEntity != attacker)) {
+                        if (nearbyEntity != player) {
+                            player.heal(amount);
+                            stack.decrement(1);
+                            if (new Random().nextFloat() < 0.5) {voice(player, Sounds.LIULI1);
+                            } else {voice(player, Sounds.LIULI2);}
+                            nearbyEntity.damage(source, amount);break;
                         }
                     }
                 }

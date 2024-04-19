@@ -12,11 +12,12 @@ import net.minecraft.util.Identifier;
 
 public class SkillCards {
 
-    public static final Item YIJI = register("yiji",new YijiSkill(new FabricItemSettings().maxCount(1)));
+    public static final Item YIJI = register("yiji",new YijiSkill(new FabricItemSettings().maxDamage(2)));
     public static final Item TAOLUAN = register("taoluan", new TaoluanSkill(new FabricItemSettings().maxCount(1)));
     public static final ScreenHandlerType<TaoluanScreenHandler> TAOLUAN_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "taoluan", new ExtendedScreenHandlerType<>((syncId, playerInventory, buf) -> new TaoluanScreenHandler(syncId, buf)));
     public static final Item LUOYI = register("luoyi", new LuoyiSkill(new FabricItemSettings().maxCount(1)));
     public static final Item HUOJI = register("huoji", new HuojiSkill(new FabricItemSettings().maxCount(1)));
+    public static final Item KANPO = register("kanpo", new KanpoSkill(new FabricItemSettings().maxCount(1)));
     public static final Item QUANJI = register("quanji", new QuanjiSkill(new FabricItemSettings().maxCount(1)));
     public static final Item QICE = register("qice", new QiceSkill(new FabricItemSettings().maxCount(1)));
     public static final ScreenHandlerType<QiceScreenHandler> QICE_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "qice", new ExtendedScreenHandlerType<>(QiceScreenHandler::new));
@@ -25,6 +26,9 @@ public class SkillCards {
     public static final Item POJUN = register("pojun", new SkillItem(new FabricItemSettings().maxCount(1)));
     public static final Item KUANGGU = register("kuanggu", new SkillItem(new FabricItemSettings().maxCount(1)));
     public static final Item LUANJI = register("luanji", new LuanjiSkill(new FabricItemSettings().maxCount(1)));
+    public static final Item GUOSE = register("guose", new GuoseSkill(new FabricItemSettings().maxCount(1)));
+    public static final Item LIULI = register("liuli", new SkillItem(new FabricItemSettings().maxCount(1)));
+    public static final Item JUEQING = register("jueqing", new SkillItem(new FabricItemSettings().maxCount(1)));
 
     private static Item register(String name,Item item){
         return Registry.register(Registries.ITEM,new Identifier("dabaosword",name),item);

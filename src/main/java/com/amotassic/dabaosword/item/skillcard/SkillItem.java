@@ -19,5 +19,14 @@ public class SkillItem extends Item {
         if (stack.getItem() == SkillCards.JIZHI) {
             tooltip.add(Text.translatable("item.dabaosword.jizhi.tooltip").formatted(Formatting.RED));
         }
+
+        if (stack.getItem() == SkillCards.JUEQING) {
+            tooltip.add(Text.translatable("item.dabaosword.jueqing.tooltip1").formatted(Formatting.BLUE));
+            tooltip.add(Text.translatable("item.dabaosword.jueqing.tooltip2").formatted(Formatting.BLUE));
+        }
+
+        if (stack.getItem() == SkillCards.LIULI) {
+            tooltip.add(Text.translatable("item.dabaosword.liuli.tooltip").formatted(Formatting.GREEN));
+        }
     }
 }

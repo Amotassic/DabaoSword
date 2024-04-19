@@ -19,16 +19,19 @@ import static com.amotassic.dabaosword.item.card.GainCardItem.draw;
 public interface ModTools {
     //判断玩家是否有某个物品
     default boolean hasItem(@NotNull PlayerEntity player, @NotNull Item item) {
-        PlayerInventory inv = player.getInventory();
-        ItemStack stack = item.getDefaultStack();
-        return inv.contains(stack);
+        return player.getInventory().contains(item.getDefaultStack());
     }
     //移除玩家的1个物品
     default void removeItem(@NotNull PlayerEntity player, @NotNull Item item) {
         PlayerInventory inv = player.getInventory();
-        ItemStack stack = item.getDefaultStack();
-        int i = inv.getSlotWithStack(stack);
+        int i = inv.getSlotWithStack(item.getDefaultStack());
         inv.removeStack(i, 1);
+    }
+
+    default ItemStack stackWith(Item item, PlayerEntity player) {
+        PlayerInventory inv = player.getInventory();
+        int i = inv.getSlotWithStack(item.getDefaultStack());
+        return inv.getStack(i);
     }
 
     default Boolean hasItemInTag(TagKey<Item> tag, @NotNull PlayerEntity player) {
@@ -61,9 +64,9 @@ public interface ModTools {
         }
     }
     //视为类技能方法
-    default void viewAs(@NotNull PlayerEntity player, Item item, SoundEvent sound1, SoundEvent sound2) {
+    default void viewAs(@NotNull PlayerEntity player, TagKey<Item> tag, Item item, SoundEvent sound1, SoundEvent sound2) {
         ItemStack stack = player.getStackInHand(Hand.OFF_HAND);
-        if (!stack.isEmpty() && stack.isIn(Tags.Items.BASIC_CARD)) {
+        if (!stack.isEmpty() && stack.isIn(tag)) {
             stack.decrement(1);
             player.giveItemStack(item.getDefaultStack());
             if (new Random().nextFloat() < 0.5) {voice(player, sound1);} else {voice(player, sound2);}
