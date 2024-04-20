@@ -5,6 +5,7 @@ import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.EntityHurtCallback;
 import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
+import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -13,6 +14,7 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -27,6 +29,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -52,6 +55,8 @@ public abstract class DamageMixin extends Entity implements ModTools {
     @Shadow public abstract void applyDamage(DamageSource source, float amount);
 
     @Shadow public abstract boolean damage(DamageSource source, float amount);
+
+    @Shadow public abstract @Nullable StatusEffectInstance getStatusEffect(StatusEffect effect);
 
     public DamageMixin(EntityType<?> type, World world) {super(type, world);}
 
@@ -108,6 +113,20 @@ public abstract class DamageMixin extends Entity implements ModTools {
             if (entity.getMainHandStack().getItem() == ModItems.GUDINGDAO) {
                 if (noArmor || hasItem((PlayerEntity) entity, SkillCards.POJUN)) {
                     if (this.getHealth() > amount/2) this.applyDamage(source,amount/2);
+                }
+            }
+            //沈佳宜防御效果
+            if (!(entity instanceof PlayerEntity) && this.hasStatusEffect(ModItems.DEFENSE)) {
+                if (Objects.requireNonNull(this.getStatusEffect(ModItems.DEFENSE)).getAmplifier() >= 2) {
+                    cir.setReturnValue(false);
+                }
+            }
+            if (entity instanceof PlayerEntity player && !player.getWorld().isClient) {
+                double attack = player.getAttributeValue(ReachEntityAttributes.ATTACK_RANGE) + (player.isCreative()?6:3);
+                if (this.hasStatusEffect(ModItems.DEFENSE)) {
+                    int defense = Objects.requireNonNull(this.getStatusEffect(ModItems.DEFENSE)).getAmplifier() + 1;
+                    double canReach = Math.max(0, attack - defense);
+                    if (this.distanceTo(player) > canReach) {cir.setReturnValue(false);}
                 }
             }
             //被乐的生物无法造成普通攻击伤害

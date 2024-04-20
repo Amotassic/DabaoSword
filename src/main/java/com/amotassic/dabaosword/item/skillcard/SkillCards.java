@@ -29,6 +29,8 @@ public class SkillCards {
     public static final Item GUOSE = register("guose", new GuoseSkill(new FabricItemSettings().maxCount(1)));
     public static final Item LIULI = register("liuli", new SkillItem(new FabricItemSettings().maxCount(1)));
     public static final Item JUEQING = register("jueqing", new SkillItem(new FabricItemSettings().maxCount(1)));
+    public static final Item MASHU = register("mashu", new SkillItem(new FabricItemSettings().maxCount(1)));
+    public static final Item FEIYING = register("feiying", new SkillItem(new FabricItemSettings().maxCount(1)));
 
     private static Item register(String name,Item item){
         return Registry.register(Registries.ITEM,new Identifier("dabaosword",name),item);

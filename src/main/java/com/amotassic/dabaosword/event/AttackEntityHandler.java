@@ -11,7 +11,6 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -29,16 +28,10 @@ import java.util.Random;
 public class AttackEntityHandler implements ModTools, AttackEntityCallback {
     TagKey<Item> tag = Tags.Items.QUANJI;
     NbtCompound quanji = new NbtCompound();
-    //监听事件：若玩家攻击玩家或敌对生物，有概率摸牌
+
     @Override
     public ActionResult interact(PlayerEntity player, World world, Hand hand, Entity entity, @Nullable EntityHitResult hitResult) {
         if (world instanceof ServerWorld && !player.isSpectator()) {
-            if (entity instanceof HostileEntity) {
-                if (new Random().nextFloat() < 0.05) player.giveItemStack(new ItemStack(ModItems.GAIN_CARD));
-            }
-            if (entity instanceof PlayerEntity) {
-                if (new Random().nextFloat() < 0.05) player.giveItemStack(new ItemStack(ModItems.WUZHONG));
-            }
 
             if (entity instanceof LivingEntity target) {
                 //排异技能：攻击伤害增加
@@ -50,7 +43,7 @@ public class AttackEntityHandler implements ModTools, AttackEntityCallback {
                             float i = (float) player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
                             entity.damage(world.getDamageSources().playerAttack(player), quan+i);
                             if (quan > 4 && entity instanceof PlayerEntity) {
-                                ((PlayerEntity) entity).giveItemStack(ModItems.WUZHONG.getDefaultStack());
+                                ((PlayerEntity) entity).giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
                             }
                             int quan1 = quan/2;
                             quanji.putInt("quanji", quan1); stack.setNbt(quanji);

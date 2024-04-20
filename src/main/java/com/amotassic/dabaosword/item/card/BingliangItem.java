@@ -7,27 +7,29 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 
 public class BingliangItem extends CardItem implements ModTools {
     public BingliangItem(Settings settings) {
         super(settings);
     }
 
-    //攻击命中敌人给予其兵粮寸断效果
+    //对生物使用后给予其兵粮寸断效果
     @Override
-    public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        if (!attacker.getWorld().isClient && attacker instanceof PlayerEntity player) {
-            if (target instanceof PlayerEntity player1 && hasItem(player1, ModItems.WUXIE)) {
-                removeItem(player1, ModItems.WUXIE);
-                jizhi(player1);
-                voice(player1, Sounds.WUXIE);
+    public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
+        if (!user.getWorld().isClient) {
+            if (entity instanceof PlayerEntity player && hasItem(player, ModItems.WUXIE)) {
+                removeItem(player, ModItems.WUXIE);
+                jizhi(player);
+                voice(player, Sounds.WUXIE);
             } else {
-                target.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, StatusEffectInstance.INFINITE,1));
+                entity.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, StatusEffectInstance.INFINITE,1));
             }
-            if (!player.isCreative()) {stack.decrement(1);}
-            jizhi(player);
-            voice(player, Sounds.BINGLIANG);
+            if (!user.isCreative()) {stack.decrement(1);}
+            jizhi(user);
+            voice(user, Sounds.BINGLIANG);
         }
-        return super.postHit(stack, target, attacker);
+        return super.useOnEntity(stack, user, entity, hand);
     }
 }

@@ -3,6 +3,7 @@ package com.amotassic.dabaosword.item;
 import com.amotassic.dabaosword.effect.*;
 import com.amotassic.dabaosword.enchantment.LightningAspectEnchantment;
 import com.amotassic.dabaosword.item.card.*;
+import com.amotassic.dabaosword.item.skillcard.GiftBoxItem;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
@@ -79,6 +80,13 @@ public class ModItems {
     public static final Item QINGGANG = register("qinggang", new QinggangjianItem());
     //桃园结义
     public static final Item TAOYUAN = register("taoyuan", new TaoyuanItem(new FabricItemSettings()));
+    //触及距离增加
+    public static final Item CHITU = register("chitu", new ChituItem(new FabricItemSettings().maxCount(1)));
+    public static final StatusEffect REACH = new ReachEffect(StatusEffectCategory.BENEFICIAL, 0x000000);
+    //近战防御范围增加
+    public static final Item DILU = register("dilu", new DiluItem(new FabricItemSettings().maxCount(1)));
+    public static final StatusEffect DEFENSE = new DefenseEffect(StatusEffectCategory.BENEFICIAL, 0x000000);
+    public static final Item GIFTBOX = register("gift_box", new GiftBoxItem(new FabricItemSettings()));
 
     //注册部分
     public static void register() {
@@ -91,6 +99,8 @@ public class ModItems {
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "cooldown2"), COOLDOWN2);
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "invulnerable"), INVULNERABLE);
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "juedou"), JUEDOUING);
+        Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "reach"), REACH);
+        Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "defense"), DEFENSE);
     }
 
     private static Item register(String name,Item item){
@@ -112,6 +122,8 @@ public class ModItems {
                 entries.add(ARROW_RAIN);
                 entries.add(GUDING_ITEM);
                 entries.add(RATTAN);
+                entries.add(CHITU);
+                entries.add(DILU);
                 entries.add(GAIN_CARD);
                 entries.add(SHAN);
                 entries.add(PEACH);
@@ -146,5 +158,9 @@ public class ModItems {
                 entries.add(SkillCards.POJUN);
                 entries.add(SkillCards.LUANJI);
                 entries.add(SkillCards.TAOLUAN);
+                entries.add(SkillCards.MASHU);
+                entries.add(SkillCards.FEIYING);
+
+                entries.add(ModItems.GIFTBOX);
             }).build();
 }

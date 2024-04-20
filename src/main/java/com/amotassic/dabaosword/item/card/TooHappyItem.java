@@ -7,31 +7,29 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 
 public class TooHappyItem extends CardItem implements ModTools {
     public TooHappyItem(Settings settings) {
         super(settings);
     }
 
-    //攻击命中敌人给予其10秒乐不思蜀效果
+    //对生物使用后给予其10秒乐不思蜀效果
     @Override
-    public boolean postHit(ItemStack stack, LivingEntity target, LivingEntity attacker) {
-        if (!attacker.getWorld().isClient && attacker instanceof PlayerEntity player) {
-            if (target instanceof PlayerEntity player1) {
-                if (hasItem(player1, ModItems.WUXIE)) {
-                    removeItem(player1, ModItems.WUXIE);
-                    jizhi(player1);
-                    voice(player1, Sounds.WUXIE);
-                } else {
-                    target.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 5));
-                }
-            } else {
-                target.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 15));
-            }
-            if (!player.isCreative()) {stack.decrement(1);}
-            jizhi(player);
-            voice(player, Sounds.LEBU);
+    public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
+        if (!user.getWorld().isClient) {
+            if (entity instanceof PlayerEntity player) {
+                if (hasItem(player, ModItems.WUXIE)) {
+                    removeItem(player, ModItems.WUXIE);
+                    jizhi(player);
+                    voice(player, Sounds.WUXIE);
+                } else {player.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 5));}
+            } else {entity.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 15));}
+            if (!user.isCreative()) {stack.decrement(1);}
+            jizhi(user);
+            voice(user, Sounds.LEBU);
         }
-        return super.postHit(stack, target, attacker);
+        return super.useOnEntity(stack, user, entity, hand);
     }
 }

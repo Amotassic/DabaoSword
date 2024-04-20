@@ -1,6 +1,11 @@
 package com.amotassic.dabaosword.item.skillcard;
 
+import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.util.ModTools;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -9,7 +14,7 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class SkillItem extends Item {
+public class SkillItem extends Item implements ModTools {
     public SkillItem(Settings settings) {
         super(settings);
     }
@@ -28,5 +33,26 @@ public class SkillItem extends Item {
         if (stack.getItem() == SkillCards.LIULI) {
             tooltip.add(Text.translatable("item.dabaosword.liuli.tooltip").formatted(Formatting.GREEN));
         }
+
+        if (stack.getItem() == SkillCards.MASHU) {
+            tooltip.add(Text.translatable("item.dabaosword.chitu.tooltip"));
+        }
+
+        if (stack.getItem() == SkillCards.FEIYING) {
+            tooltip.add(Text.translatable("item.dabaosword.dilu.tooltip"));
+        }
+    }
+
+    @Override
+    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
+        if (entity instanceof PlayerEntity player) {
+            if (hasItem(player, SkillCards.MASHU)) {
+                player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,1));
+            }
+            if (hasItem(player, SkillCards.FEIYING)) {
+                player.addStatusEffect(new StatusEffectInstance(ModItems.DEFENSE, 10,1));
+            }
+        }
+        super.inventoryTick(stack, world, entity, slot, selected);
     }
 }
