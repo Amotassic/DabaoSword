@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
+    "dabaosword:gain_card",
     "dabaosword:peach",
     "dabaosword:jiu",
     "dabaosword:too_happy",
@@ -10,10 +11,12 @@
     "dabaosword:wuzhong",
     "dabaosword:shan",
     "dabaosword:huogong",
+    "dabaosword:taoyuan",
     "dabaosword:tiesuo",
     "dabaosword:juedou",
     "dabaosword:wuxie",
     "dabaosword:jiedao",
-    "dabaosword:nanman"
+    "dabaosword:nanman",
+    "dabaosword:wanjian"
   ]
 }

@@ -1,7 +1,11 @@
 package com.amotassic.dabaosword.mixin;
 
 import com.amotassic.dabaosword.item.ModItems;
-import net.minecraft.enchantment.EnchantmentHelper;
+import com.amotassic.dabaosword.item.skillcard.SkillCards;
+import com.amotassic.dabaosword.util.EntityHurtCallback;
+import com.amotassic.dabaosword.util.ModTools;
+import com.amotassic.dabaosword.util.Sounds;
+import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -10,6 +14,7 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -19,20 +24,24 @@ import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Objects;
+import java.util.Random;
 
 @Mixin(LivingEntity.class)
-public abstract class DamageMixin extends Entity {
+public abstract class DamageMixin extends Entity implements ModTools {
     @Shadow public abstract ItemStack getEquippedStack(EquipmentSlot var1);
 
     @Shadow public abstract float getHealth();
@@ -43,11 +52,14 @@ public abstract class DamageMixin extends Entity {
 
     @Shadow public abstract boolean isGlowing();
 
-    @Shadow protected abstract void applyDamage(DamageSource source, float amount);
+    @Shadow public abstract void applyDamage(DamageSource source, float amount);
 
-    public DamageMixin(EntityType<?> type, World world) {
-        super(type, world);
-    }
+    @Shadow public abstract boolean damage(DamageSource source, float amount);
+
+    @Shadow public abstract @Nullable StatusEffectInstance getStatusEffect(StatusEffect effect);
+
+    public DamageMixin(EntityType<?> type, World world) {super(type, world);}
+
     @Inject(method = "damage",at = @At("HEAD"), cancellable = true)
     private void damagemixin(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         ItemStack stack1 = this.getEquippedStack(EquipmentSlot.HEAD);
@@ -99,8 +111,22 @@ public abstract class DamageMixin extends Entity {
             }
             //古锭刀对没有装备的生物伤害翻倍
             if (entity.getMainHandStack().getItem() == ModItems.GUDINGDAO) {
-                if (noArmor || EnchantmentHelper.getLevel(ModItems.POJUN, entity.getMainHandStack()) > 0) {
-                    if (this.getHealth() > amount) this.applyDamage(source,amount);
+                if (noArmor || hasItem((PlayerEntity) entity, SkillCards.POJUN)) {
+                    if (this.getHealth() > amount/2) this.applyDamage(source,amount/2);
+                }
+            }
+            //沈佳宜防御效果
+            if (!(entity instanceof PlayerEntity) && this.hasStatusEffect(ModItems.DEFENSE)) {
+                if (Objects.requireNonNull(this.getStatusEffect(ModItems.DEFENSE)).getAmplifier() >= 2) {
+                    cir.setReturnValue(false);
+                }
+            }
+            if (entity instanceof PlayerEntity player && !player.getWorld().isClient) {
+                double attack = player.getAttributeValue(ReachEntityAttributes.ATTACK_RANGE) + (player.isCreative()?6:3);
+                if (this.hasStatusEffect(ModItems.DEFENSE)) {
+                    int defense = Objects.requireNonNull(this.getStatusEffect(ModItems.DEFENSE)).getAmplifier() + 1;
+                    double canReach = Math.max(0, attack - defense);
+                    if (this.distanceTo(player) > canReach) {cir.setReturnValue(false);}
                 }
             }
             //被乐的生物无法造成普通攻击伤害
@@ -112,17 +138,43 @@ public abstract class DamageMixin extends Entity {
         }
         //若承受火焰伤害，则 战火燃尽，嘤熊胆！
         if (source.isIn(DamageTypeTags.IS_FIRE) && inrattan) {
-            if (this.isOnFire()) {
-                if (this.getHealth()>0.2) {this.applyDamage(source,0.2f);}
+            if (this.getHealth()>0.25) {this.applyDamage(source,0.25f);}
+        }
+
+        if (source.getAttacker() instanceof PlayerEntity player && player.getWorld() instanceof ServerWorld world) {
+            if (this.isGlowing()) {//实现铁索连环的效果，大概是好了吧
+                Box box = new Box(player.getBlockPos()).expand(20); // 检测范围，根据需要修改
+                for (LivingEntity nearbyEntity : world.getEntitiesByClass(LivingEntity.class, box, LivingEntity::isGlowing)) {
+                    nearbyEntity.removeStatusEffect(StatusEffects.GLOWING);
+                    nearbyEntity.damage(world.getDamageSources().sonicBoom(player), amount);
+                }
+            }
+            //绝情效果
+            if (source.isIn(DamageTypeTags.IS_PROJECTILE) && hasItem(player, SkillCards.JUEQING)) {
+                cir.setReturnValue(false);
+                this.damage(world.getDamageSources().genericKill(), amount);
+                if (new Random().nextFloat() < 0.5) {voice(player, Sounds.JUEQING1,1);}
+                else {voice(player, Sounds.JUEQING2,1);}
             }
         }
-        //实现铁索连环的效果，大概是好了吧
-        if (source.getAttacker() instanceof PlayerEntity player && this.isGlowing() && player.getWorld() instanceof ServerWorld world) {
-            Box box = new Box(player.getBlockPos()).expand(20); // 检测范围，根据需要修改
-            for (LivingEntity nearbyEntity : world.getEntitiesByClass(LivingEntity.class, box, LivingEntity::isGlowing)) {
-                nearbyEntity.removeStatusEffect(StatusEffects.GLOWING);
-                nearbyEntity.damage(world.getDamageSources().sonicBoom(player), amount);
+        //绝情效果
+        if (source.getSource() instanceof PlayerEntity player && player.getWorld() instanceof ServerWorld world) {
+            if (hasItem(player, SkillCards.JUEQING)) {
+                cir.setReturnValue(false);
+                float i = (float) player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+                this.damage(world.getDamageSources().genericKill(), i);
+                if (new Random().nextFloat() < 0.5) {voice(player, Sounds.JUEQING1,1);}
+                else {voice(player, Sounds.JUEQING2,1);}
             }
+        }
+    }
+
+    @Inject(at = @At("TAIL"), method = "applyDamage", cancellable = true)
+    private void onEntityHurt(final DamageSource source, final float amount, CallbackInfo ci) {
+        ActionResult result = EntityHurtCallback.EVENT.invoker().hurtEntity((LivingEntity) (Object) this, source,
+                amount);
+        if (result == ActionResult.FAIL) {
+            ci.cancel();
         }
     }
 }

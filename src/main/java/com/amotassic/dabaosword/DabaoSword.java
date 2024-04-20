@@ -1,8 +1,12 @@
 package com.amotassic.dabaosword;
 
 import com.amotassic.dabaosword.event.AttackEntityHandler;
+import com.amotassic.dabaosword.event.EntityHurtHandler;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
+import com.amotassic.dabaosword.util.EntityHurtCallback;
+import com.amotassic.dabaosword.util.Sounds;
+import com.amotassic.dabaosword.util.Tags;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
@@ -23,6 +27,7 @@ public class DabaoSword implements ModInitializer {
         SkillCards.register();
         Tags.Tag();
         AttackEntityCallback.EVENT.register(new AttackEntityHandler());
+        EntityHurtCallback.EVENT.register(new EntityHurtHandler());
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register(content -> {
             content.addAfter(Items.NETHERITE_SWORD,ModItems.GUDINGDAO);

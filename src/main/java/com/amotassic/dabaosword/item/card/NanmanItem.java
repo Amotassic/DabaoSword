@@ -1,8 +1,8 @@
 package com.amotassic.dabaosword.item.card;
 
-import com.amotassic.dabaosword.Sounds;
 import com.amotassic.dabaosword.item.ModItems;
-import net.minecraft.client.item.TooltipContext;
+import com.amotassic.dabaosword.util.ModTools;
+import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -10,7 +10,6 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -18,25 +17,17 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
-import java.util.List;
-
-public class NanmanItem extends CardItem{
+public class NanmanItem extends CardItem implements ModTools {
     public NanmanItem(Settings settings) {
         super(settings);
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext){
-        tooltip.add(Text.translatable("item.dabaosword.nanman.tooltip1"));
-        tooltip.add(Text.translatable("item.dabaosword.nanman.tooltip2"));
-    }
-
-    @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         if (!world.isClient && hand == Hand.MAIN_HAND) {
-            Text a = Text.of("假装我是南蛮");
-            Text b = Text.of("我是山里灵活的狗！");
-            Text c = Text.of("卡");
+            Text a = Text.translatable("nanman.dog1");
+            Text b = Text.translatable("nanman.dog2");
+            Text c = Text.translatable("nanman.dog3");
             BlockPos blockPos = user.getBlockPos();
             //召唤3条狗
             WolfEntity wolf1 = new WolfEntity(EntityType.WOLF, world);
@@ -61,8 +52,9 @@ public class NanmanItem extends CardItem{
             wolf3.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 20 * 20,1,false,false,false));
 
             if (!user.isCreative()) {user.getStackInHand(hand).decrement(1);}
-            world.playSound(null, user.getX(), user.getY(), user.getZ(), Sounds.NANMAN, SoundCategory.PLAYERS, 2.0F, 1.0F);
+            jizhi(user);
+            voice(user, Sounds.NANMAN);
         }
-        return super.use(world, user, hand);
+        return TypedActionResult.success(user.getStackInHand(hand));
     }
 }

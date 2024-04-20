@@ -1,52 +1,44 @@
 package com.amotassic.dabaosword.item.card;
 
-import com.amotassic.dabaosword.Sounds;
 import com.amotassic.dabaosword.item.ModItems;
-import net.minecraft.client.item.TooltipContext;
+import com.amotassic.dabaosword.util.ModTools;
+import com.amotassic.dabaosword.util.Sounds;
+import com.amotassic.dabaosword.util.Tags;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.world.World;
 
 import java.util.List;
 import java.util.stream.IntStream;
 
-public class StealItem extends CardItem {
+public class StealItem extends CardItem implements ModTools {
     public StealItem(Settings settings) {
         super(settings);
     }
 
     @Override
-    public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext){
-        tooltip.add(Text.translatable("item.dabaosword.steal.tooltip1"));
-        tooltip.add(Text.translatable("item.dabaosword.steal.tooltip2"));
-    }
-
-    @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (entity instanceof PlayerEntity target && hand == Hand.MAIN_HAND) {
-            PlayerInventory inv = target.getInventory();
-            if (inv.contains(ModItems.WUXIE.getDefaultStack())) {
-                int i = inv.getSlotWithStack(ModItems.WUXIE.getDefaultStack());
-                target.getWorld().playSound(null, target.getX(), target.getY(), target.getZ(), Sounds.WUXIE, SoundCategory.PLAYERS, 2.0F, 1.0F);
-                user.getWorld().playSound(null, user.getX(), user.getY(), user.getZ(), Sounds.SHUNSHOU, SoundCategory.PLAYERS, 2.0F, 1.0F);
+        if (entity instanceof PlayerEntity target && !user.getWorld().isClient && hand == Hand.MAIN_HAND) {
+            if (hasItem(target, ModItems.WUXIE)) {
+                voice(target, Sounds.WUXIE);
+                voice(user, Sounds.SHUNSHOU);
                 if (!user.isCreative()) {stack.decrement(1);}
-                inv.removeStack(i,1);
+                jizhi(user);
+                removeItem(target, ModItems.WUXIE);
+                jizhi(target);
                 return ActionResult.SUCCESS;
             } else {
                 DefaultedList<ItemStack> inventory = target.getInventory().main;
-                List<Integer> cardSlots = IntStream.range(0, inventory.size()).filter(i -> inventory.get(i).getItem() instanceof CardItem).boxed().toList();
+                List<Integer> cardSlots = IntStream.range(0, inventory.size()).filter(i -> inventory.get(i).isIn(Tags.Items.CARD)).boxed().toList();
                 if (!cardSlots.isEmpty()) {
-                    user.getWorld().playSound(null, user.getX(), user.getY(), user.getZ(), Sounds.SHUNSHOU, SoundCategory.PLAYERS, 2.0F, 1.0F);
+                    voice(user, Sounds.SHUNSHOU);
                     int slot = cardSlots.get(((int) (System.currentTimeMillis()/1000) % cardSlots.size()));
                     ItemStack item = inventory.get(slot);
                     if (!user.isCreative()) {stack.decrement(1);}
+                    jizhi(user);
                     user.giveItemStack(item.copyWithCount(1)); /*顺手：复制一个物品*/ item.decrement(1);
                     return ActionResult.SUCCESS;
                 }
