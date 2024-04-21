@@ -21,8 +21,27 @@ public class SkillItem extends Item implements ModTools {
 
     @Override
     public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
+        if (stack.getItem() == SkillCards.YIJI) {
+            if (stack.getDamage() == 0) {tooltip.add(Text.translatable("skill.dabaosword.enabled").formatted(Formatting.GREEN));
+            } else {tooltip.add(Text.translatable("skill.dabaosword.disabled").formatted(Formatting.RED));}
+            tooltip.add(Text.literal("CD: 20s"));
+            tooltip.add(Text.translatable("item.dabaosword.yiji.tooltip").formatted(Formatting.BLUE));
+        }
+
         if (stack.getItem() == SkillCards.JIZHI) {
             tooltip.add(Text.translatable("item.dabaosword.jizhi.tooltip").formatted(Formatting.RED));
+        }
+
+        if (stack.getItem() == SkillCards.KUROU) {
+            tooltip.add(Text.translatable("item.dabaosword.kurou.tooltip").formatted(Formatting.GREEN));
+        }
+
+        if (stack.getItem() == SkillCards.LUOYI) {
+            tooltip.add(Text.translatable("item.dabaosword.luoyi.tooltip").formatted(Formatting.BLUE));
+        }
+
+        if (stack.getItem() == SkillCards.TAOLUAN) {
+            tooltip.add(Text.translatable("item.dabaosword.taoluan.tooltip"));
         }
 
         if (stack.getItem() == SkillCards.JUEQING) {
@@ -30,7 +49,23 @@ public class SkillItem extends Item implements ModTools {
             tooltip.add(Text.translatable("item.dabaosword.jueqing.tooltip2").formatted(Formatting.BLUE));
         }
 
+        if (stack.getItem() == SkillCards.POJUN) {
+            if (stack.getDamage() == 0) {tooltip.add(Text.translatable("skill.dabaosword.enabled").formatted(Formatting.GREEN));
+            } else {tooltip.add(Text.translatable("skill.dabaosword.disabled").formatted(Formatting.RED));}
+            tooltip.add(Text.literal("CD: 2.5s"));
+            tooltip.add(Text.translatable("item.dabaosword.pojun.tooltip").formatted(Formatting.GREEN));
+        }
+
+        if (stack.getItem() == SkillCards.KUANGGU) {
+            if (stack.getDamage() == 0) {tooltip.add(Text.translatable("skill.dabaosword.enabled").formatted(Formatting.GREEN));
+            } else {tooltip.add(Text.translatable("skill.dabaosword.disabled").formatted(Formatting.RED));}
+            tooltip.add(Text.literal("CD: 8s"));
+            tooltip.add(Text.translatable("item.dabaosword.kuanggu.tooltip").formatted(Formatting.RED));
+        }
+
         if (stack.getItem() == SkillCards.LIULI) {
+            if (stack.getDamage() == 0) {tooltip.add(Text.translatable("skill.dabaosword.enabled").formatted(Formatting.GREEN));
+            } else {tooltip.add(Text.translatable("skill.dabaosword.disabled").formatted(Formatting.RED));}
             tooltip.add(Text.translatable("item.dabaosword.liuli.tooltip").formatted(Formatting.GREEN));
         }
 
@@ -46,6 +81,7 @@ public class SkillItem extends Item implements ModTools {
     @Override
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
         if (entity instanceof PlayerEntity player) {
+            //马术和飞影的效果
             if (hasItem(player, SkillCards.MASHU)) {
                 player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,1));
             }

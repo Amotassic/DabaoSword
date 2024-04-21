@@ -30,7 +30,8 @@ public class JuedouItem extends CardItem implements ModTools {
             if (!user.isCreative()) {stack.decrement(1);}
             jizhi(user);
             voice(user, Sounds.JUEDOU);
+            return ActionResult.SUCCESS;
         }
-        return super.useOnEntity(stack, user, entity, hand);
+        return ActionResult.PASS;
     }
 }

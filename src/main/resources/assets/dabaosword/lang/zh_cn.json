@@ -17,9 +17,6 @@
   "item.dabaosword.peach": "桃",
   "item.dabaosword.peach.tooltip1": "使用后：立即回复5点生命值",
   "item.dabaosword.peach.tooltip2": "潜行时可以对其他生物使用",
-  "item.minecraft.potion.effect.cooking_wine": "酒",
-  "item.minecraft.splash_potion.effect.cooking_wine": "喷溅型酒",
-  "item.minecraft.lingering_potion.effect.cooking_wine": "滞留型酒",
   "item.dabaosword.arrowrain.tooltip": "“得夫差水犀手，三千强弩射潮低”  ——苏东坡",
   "item.dabaosword.arrowrain.shift": "按下shift开始发病",
   "item.dabaosword.arrowrain.tooltip1": "袁神，启动！",
@@ -96,6 +93,7 @@
   "item.dabaosword.feiying": "飞影",
   "effect.dabaosword.defense": "飞影",
   "item.dabaosword.gift_box": "礼盒",
+  "item.dabaosword.gift_box.tooltip": "副手拿好金锭或金块，右键抽技能",
 
   //"技能"
   "skill.dabaosword.enabled": "被动  已启用",
@@ -112,7 +110,9 @@
   "item.dabaosword.yiji": "遗计",
   "item.dabaosword.yiji.tooltip": "受到伤害后，若你的血量小于等于12，你摸两张牌",
   "item.dabaosword.pojun": "破军",
+  "item.dabaosword.pojun.tooltip": "攻击目标时，脱掉对方的所有盔甲",
   "item.dabaosword.kuanggu": "狂骨",
+  "item.dabaosword.kuanggu.tooltip": "造成伤害时，若受伤大于5，回复5点血，否则摸一张牌",
   "item.dabaosword.kurou": "苦肉",
   "item.dabaosword.kurou.tooltip": "失去5点生命值，获得3张卡牌",
   "item.dabaosword.kurou.tip": "当前生命值低于5，无法发动苦肉",

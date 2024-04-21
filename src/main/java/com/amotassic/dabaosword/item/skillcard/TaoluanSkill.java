@@ -2,7 +2,6 @@ package com.amotassic.dabaosword.item.skillcard;
 
 import com.amotassic.dabaosword.ui.TaoluanScreenHandler;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
-import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -16,17 +15,8 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-
 public class TaoluanSkill extends SkillItem {
-    public TaoluanSkill(Settings settings) {
-        super(settings);
-    }
-
-    @Override
-    public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
-        tooltip.add(Text.translatable("item.dabaosword.taoluan.tooltip"));
-    }
+    public TaoluanSkill(Settings settings) {super(settings);}
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {

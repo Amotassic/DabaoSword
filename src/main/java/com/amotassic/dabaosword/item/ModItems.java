@@ -3,7 +3,7 @@ package com.amotassic.dabaosword.item;
 import com.amotassic.dabaosword.effect.*;
 import com.amotassic.dabaosword.enchantment.LightningAspectEnchantment;
 import com.amotassic.dabaosword.item.card.*;
-import com.amotassic.dabaosword.item.skillcard.GiftBoxItem;
+import com.amotassic.dabaosword.item.card.GiftBoxItem;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
@@ -86,6 +86,7 @@ public class ModItems {
     //近战防御范围增加
     public static final Item DILU = register("dilu", new DiluItem(new FabricItemSettings().maxCount(1)));
     public static final StatusEffect DEFENSE = new DefenseEffect(StatusEffectCategory.BENEFICIAL, 0x000000);
+    //礼盒
     public static final Item GIFTBOX = register("gift_box", new GiftBoxItem(new FabricItemSettings()));
 
     //注册部分

@@ -3,12 +3,9 @@ package com.amotassic.dabaosword.item.card;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
@@ -46,25 +43,6 @@ public class GainCardItem extends CardItem implements ModTools {
             }
         }
         return TypedActionResult.success(user.getStackInHand(hand));
-    }
-
-    @Override
-    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
-        if (!world.isClient && stack.getItem() == ModItems.CARD_PILE) {
-            if (entity instanceof PlayerEntity player && !player.isCreative() && !player.isSpectator()) {
-                NbtCompound nbt = new NbtCompound();
-                if (stack.getNbt() == null) {nbt.putInt("cooldown", 20 * 60);stack.setNbt(nbt);}
-                else {int cd = stack.getNbt().getInt("cooldown");
-                    if (cd > 0) {cd--;nbt.putInt("cooldown", cd);stack.setNbt(nbt);}
-                    if (cd == 0) {
-                        nbt.putInt("cooldown", 20 * 60);stack.setNbt(nbt);
-                        player.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
-                        player.sendMessage(Text.translatable("dabaosword.draw"),true);
-                    }
-                }
-            }
-        }
-        super.inventoryTick(stack, world, entity, slot, selected);
     }
 
     public static void draw(PlayerEntity player, int count) {

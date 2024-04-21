@@ -43,8 +43,23 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
                 }
             }
 
+            if (source.getAttacker() instanceof PlayerEntity player) {
+                //狂骨：攻击命中敌人时，如果受伤超过5则回血，否则摸一张牌
+                if (hasItem(player, SkillCards.KUANGGU) && !player.hasStatusEffect(ModItems.COOLDOWN)) {
+                    ItemStack kuanggu = stackWith(SkillCards.KUANGGU, player);
+                    if (kuanggu.getDamage() == 0) {
+                        if (player.getMaxHealth()-player.getHealth()>=5) {player.heal(5);}
+                        else {player.giveItemStack(new ItemStack(ModItems.GAIN_CARD));}
+                        if (new Random().nextFloat() < 0.5) {voice(player, Sounds.KUANGGU1);}
+                        else {voice(player, Sounds.KUANGGU2);}
+                        player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 8,0,false,true,true));
+                    }
+                }
+            }
+
             if (entity instanceof PlayerEntity player) {
-                if (hasItemInTag(tag, player) && source.getAttacker() instanceof LivingEntity) {//权计技能：受到生物伤害获得权
+                //权计技能：受到生物伤害获得权
+                if (hasItemInTag(tag, player) && source.getAttacker() instanceof LivingEntity) {
                     ItemStack stack = stackInTag(tag, player);
                     if (stack.getNbt() == null) {
                         quanji.putInt("quanji",1);
@@ -57,7 +72,7 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
                         voice(player, Sounds.QUANJI1);
                     } else {voice(player, Sounds.QUANJI2);}
                 }
-
+                //遗计
                 if (hasItem(player, SkillCards.YIJI) && !player.hasStatusEffect(ModItems.COOLDOWN) && player.getHealth() <= 12) {
                     ItemStack stack = stackWith(SkillCards.YIJI, player);
                     if (stack.getDamage() == 0) {
@@ -67,17 +82,20 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
                         } else {voice(player, Sounds.YIJI2);}
                     }
                 }
-
+                //流离
                 if (hasItem(player ,SkillCards.LIULI) && source.getAttacker() instanceof LivingEntity attacker && hasItemInTag(Tags.Items.CARD, player)) {
-                    ItemStack stack = stackInTag(Tags.Items.CARD, player);
-                    Box box = new Box(player.getBlockPos()).expand(5);
-                    for (LivingEntity nearbyEntity : world.getEntitiesByClass(LivingEntity.class, box, LivingEntity -> LivingEntity != attacker && LivingEntity != player)) {
-                        if (nearbyEntity != null) {
-                            player.heal(amount);
-                            stack.decrement(1);
-                            if (new Random().nextFloat() < 0.5) {voice(player, Sounds.LIULI1);
-                            } else {voice(player, Sounds.LIULI2);}
-                            nearbyEntity.damage(source, amount);break;
+                    ItemStack liuli = stackWith(SkillCards.LIULI, player);
+                    if (liuli.getDamage() == 0) {
+                        ItemStack stack = stackInTag(Tags.Items.CARD, player);
+                        Box box = new Box(player.getBlockPos()).expand(5);
+                        for (LivingEntity nearbyEntity : world.getEntitiesByClass(LivingEntity.class, box, LivingEntity -> LivingEntity != attacker && LivingEntity != player)) {
+                            if (nearbyEntity != null) {
+                                player.heal(amount);
+                                stack.decrement(1);
+                                if (new Random().nextFloat() < 0.5) {voice(player, Sounds.LIULI1);
+                                } else {voice(player, Sounds.LIULI2);}
+                                nearbyEntity.damage(source, amount);break;
+                            }
                         }
                     }
                 }
