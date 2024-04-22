@@ -74,8 +74,7 @@ public class AttackEntityHandler implements ModTools, AttackEntityCallback {
                             if (!legs.isEmpty()) {target.dropStack(legs.copy());legs.setCount(0);}
                             if (!feet.isEmpty()) {target.dropStack(feet.copy());feet.setCount(0);}
                         }
-                        if (new Random().nextFloat() < 0.5) {voice(player, Sounds.POJUN1);}
-                        else {voice(player, Sounds.POJUN2);}
+                        if (new Random().nextFloat() < 0.5) {voice(player, Sounds.POJUN1);} else {voice(player, Sounds.POJUN2);}
                         player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 50,0,false,true,true));
                     }
                 }

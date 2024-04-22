@@ -21,6 +21,13 @@ public class SkillItem extends Item implements ModTools {
 
     @Override
     public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
+
+        if (stack.getItem() == SkillCards.LEIJI) {
+            if (stack.getDamage() == 0) {tooltip.add(Text.translatable("skill.dabaosword.enabled").formatted(Formatting.GREEN));
+            } else {tooltip.add(Text.translatable("skill.dabaosword.disabled").formatted(Formatting.RED));}
+            tooltip.add(Text.translatable("item.dabaosword.leiji.tooltip"));
+        }
+
         if (stack.getItem() == SkillCards.YIJI) {
             if (stack.getDamage() == 0) {tooltip.add(Text.translatable("skill.dabaosword.enabled").formatted(Formatting.GREEN));
             } else {tooltip.add(Text.translatable("skill.dabaosword.disabled").formatted(Formatting.RED));}

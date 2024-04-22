@@ -22,9 +22,7 @@ public class KurouSkill extends SkillItem implements ModTools {
             if (user.getHealth() > 4.99) {
                 if (!user.isCreative()) user.setHealth(user.getHealth()-4.99f);
                 user.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 3));
-                if (new Random().nextFloat() < 0.5) {
-                    voice(user, Sounds.KUROU1);
-                } else {voice(user, Sounds.KUROU2);}
+                if (new Random().nextFloat() < 0.5) {voice(user, Sounds.KUROU1);} else {voice(user, Sounds.KUROU2);}
             } else {user.sendMessage(Text.translatable("item.dabaosword.kurou.tip").formatted(Formatting.RED), true);}
         }
         return super.use(world, user, hand);

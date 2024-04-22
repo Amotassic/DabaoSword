@@ -89,9 +89,9 @@
   "item.dabaosword.dilu": "的卢",
   "item.dabaosword.dilu.tooltip": "锁定技，你的近战防御距离加2",
   "item.dabaosword.mashu": "马术",
-  "effect.dabaosword.reach": "马术",
+  "effect.dabaosword.reach": "触及",
   "item.dabaosword.feiying": "飞影",
-  "effect.dabaosword.defense": "飞影",
+  "effect.dabaosword.defense": "近战防御",
   "item.dabaosword.gift_box": "礼盒",
   "item.dabaosword.gift_box.tooltip": "副手拿好金锭或金块，右键抽技能",
 
@@ -135,9 +135,12 @@
   "item.dabaosword.taoluan.tip": "当前生命值低于5，无法发动滔乱",
   "item.dabaosword.taoluan.tooltip": "失去5点生命值，获得任意一张卡牌",
   "item.dabaosword.taoluan.screen": "滔乱：选择获得一张卡牌",
+  "item.dabaosword.leiji": "雷击",
+  "item.dabaosword.leiji.tooltip": "闪避的同时召唤闪电",
 
   //"配音"
   "sounds.dabaosword.nahida": "纳西妲：所闻遍计",
+  "sounds.dabaosword.leiji": "雷击：发动",
   "sounds.dabaosword.guose": "国色：发动",
   "sounds.dabaosword.liuli": "流离：发动",
   "sounds.dabaosword.jueqing": "绝情：发动",
