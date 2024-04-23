@@ -17,7 +17,7 @@ public class SeverTickHandler implements ServerTickEvents.EndTick, ModTools {
             tick = 0;
             for (ServerWorld world : server.getWorlds()) {
                 for (PlayerEntity player : world.getPlayers()) {
-                    if (hasItem(player, ModItems.CARD_PILE) && !player.isCreative() && !player.isSpectator()) {
+                    if (hasTrinket(ModItems.CARD_PILE, player) && !player.isCreative() && !player.isSpectator()) {
                         player.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
                         player.sendMessage(Text.translatable("dabaosword.draw"),true);
                     }

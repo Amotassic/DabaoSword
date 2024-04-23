@@ -18,7 +18,7 @@ public class JiuItem extends CardItem implements ModTools {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         if (!user.hasStatusEffect(StatusEffects.STRENGTH) && !world.isClient && hand == Hand.MAIN_HAND) {
-            user.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 20 * 15, 1));
+            user.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 20 * 10, 1));
             voice(user, Sounds.JIU);
             if (!user.isCreative()) {user.getStackInHand(hand).decrement(1);}
         }

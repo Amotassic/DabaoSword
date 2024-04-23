@@ -4,6 +4,8 @@ import com.amotassic.dabaosword.effect.*;
 import com.amotassic.dabaosword.enchantment.LightningAspectEnchantment;
 import com.amotassic.dabaosword.item.card.*;
 import com.amotassic.dabaosword.item.card.GiftBoxItem;
+import com.amotassic.dabaosword.item.horse.Reach;
+import com.amotassic.dabaosword.item.horse.Defense;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
@@ -81,10 +83,10 @@ public class ModItems {
     //桃园结义
     public static final Item TAOYUAN = register("taoyuan", new TaoyuanItem(new FabricItemSettings()));
     //触及距离增加
-    public static final Item CHITU = register("chitu", new ChituItem(new FabricItemSettings()));
+    public static final Item CHITU = register("chitu", new Reach(new FabricItemSettings()));
     public static final StatusEffect REACH = new ReachEffect(StatusEffectCategory.BENEFICIAL, 0x000000);
     //近战防御范围增加
-    public static final Item DILU = register("dilu", new DiluItem(new FabricItemSettings()));
+    public static final Item DILU = register("dilu", new Defense(new FabricItemSettings()));
     public static final StatusEffect DEFENSE = new DefenseEffect(StatusEffectCategory.BENEFICIAL, 0x000000);
     //礼盒
     public static final Item GIFTBOX = register("gift_box", new GiftBoxItem(new FabricItemSettings()));

@@ -2,11 +2,12 @@ package com.amotassic.dabaosword.item.skillcard;
 
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.ModTools;
+import dev.emi.trinkets.api.SlotReference;
+import dev.emi.trinkets.api.TrinketItem;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -14,10 +15,8 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class SkillItem extends Item implements ModTools {
-    public SkillItem(Settings settings) {
-        super(settings);
-    }
+public class SkillItem extends TrinketItem implements ModTools {
+    public SkillItem(Settings settings) {super(settings);}
 
     @Override
     public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
@@ -86,16 +85,16 @@ public class SkillItem extends Item implements ModTools {
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
+    public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
         if (entity instanceof PlayerEntity player) {
             //马术和飞影的效果
-            if (hasItem(player, SkillCards.MASHU)) {
+            if (hasTrinket(SkillCards.MASHU, player)) {
                 player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,1));
             }
-            if (hasItem(player, SkillCards.FEIYING)) {
+            if (hasTrinket(SkillCards.FEIYING, player)) {
                 player.addStatusEffect(new StatusEffectInstance(ModItems.DEFENSE, 10,1));
             }
         }
-        super.inventoryTick(stack, world, entity, slot, selected);
+        super.tick(stack, slot, entity);
     }
 }

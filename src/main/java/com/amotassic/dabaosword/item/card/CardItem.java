@@ -118,13 +118,5 @@ public class CardItem extends Item {
             tooltip.add(Text.translatable("item.dabaosword.card_pile.tooltip1"));
             tooltip.add(Text.translatable("item.dabaosword.card_pile.tooltip2"));
         }
-
-        if (stack.getItem() == ModItems.CHITU) {
-            tooltip.add(Text.translatable("item.dabaosword.chitu.tooltip"));
-        }
-
-        if (stack.getItem() == ModItems.DILU) {
-            tooltip.add(Text.translatable("item.dabaosword.dilu.tooltip"));
-        }
     }
 }

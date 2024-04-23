@@ -47,7 +47,7 @@
   "item.dabaosword.shan": "闪",
   "item.dabaosword.shan.tooltip": "主动使用后，向前冲刺一段距离，无敌0.5秒，冷却时间1秒",
   "item.dabaosword.jiu": "酒",
-  "item.dabaosword.jiu.tooltip": "使用后获得15秒力量二",
+  "item.dabaosword.jiu.tooltip": "使用后获得10秒力量二",
   "item.dabaosword.gain_card": "摸牌",
   "item.dabaosword.gain_card.tooltip": "使用后，获得一张卡牌",
   "item.dabaosword.card_pile": "牌堆",
@@ -171,5 +171,9 @@
   "sounds.dabaosword.wanjian": "万箭齐发：使用",
   "sounds.dabaosword.wuxie": "无懈可击：使用",
   "sounds.dabaosword.wuzhong": "无中生有：使用",
-  "sounds.dabaosword.nanaman": "南蛮入侵：使用"
+  "sounds.dabaosword.nanaman": "南蛮入侵：使用",
+
+  "trinkets.slot.head.skills": "技能",
+  "trinkets.slot.legs.horses": "马匹",
+  "trinkets.slot.offhand.card_pile": "牌堆"
 }

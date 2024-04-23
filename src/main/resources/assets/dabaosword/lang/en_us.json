@@ -47,7 +47,7 @@
   "item.dabaosword.shan": "Dash",
   "item.dabaosword.shan.tooltip": "Initiates a forward dash upon use, grants 0.5 seconds of invulnerability",
   "item.dabaosword.jiu": "Wine",
-  "item.dabaosword.jiu.tooltip": "grants Strength II for 15 seconds upon use",
+  "item.dabaosword.jiu.tooltip": "grants Strength II for 10 seconds upon use",
   "item.dabaosword.gain_card": "Draw Card",
   "item.dabaosword.gain_card.tooltip": "Upon use, obtain one card",
   "item.dabaosword.card_pile": "Card Pile",

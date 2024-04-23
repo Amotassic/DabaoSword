@@ -1,6 +1,8 @@
 package com.amotassic.dabaosword.util;
 
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
+import dev.emi.trinkets.api.TrinketComponent;
+import dev.emi.trinkets.api.TrinketsApi;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
@@ -10,13 +12,28 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Pair;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
 import java.util.Random;
 
 import static com.amotassic.dabaosword.item.card.GainCardItem.draw;
 
 public interface ModTools {
+    //判断是否有某个饰品
+    default boolean hasTrinket(Item item, PlayerEntity player) {
+        return trinketItem(item, player) != null;
+    }
+
+    default ItemStack trinketItem(Item item, PlayerEntity player) {
+        Optional<TrinketComponent> optionalComponent = TrinketsApi.getTrinketComponent(player);
+        if(optionalComponent.isEmpty()) return null;
+
+        TrinketComponent component = optionalComponent.get();
+        return component.getEquipped(item).stream().map(Pair::getRight).findFirst().orElse(null);
+    }
+
     //判断玩家是否有某个物品
     default boolean hasItem(@NotNull PlayerEntity player, @NotNull Item item) {
         return player.getInventory().contains(item.getDefaultStack());
