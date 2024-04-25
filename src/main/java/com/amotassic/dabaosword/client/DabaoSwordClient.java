@@ -18,6 +18,8 @@ public class DabaoSwordClient implements ClientModInitializer {
         HudRenderCallback.EVENT.register(new TiesuoHud());
         HandledScreens.register(SkillCards.TAOLUAN_SCREEN_HANDLER, TaoluanHandledScreen::new);
         HandledScreens.register(SkillCards.QICE_SCREEN_HANDLER, QiceHandledScreen::new);
+        SkillKeyBinds.initialize();
+
         //自定义谓词，用于改变铁索连环的纹理
         ModelPredicateProviderRegistry.register(TIESUO, new Identifier("nahida"), (itemStack, clientWorld, livingEntity, seed) -> {
             if (livingEntity == null) {

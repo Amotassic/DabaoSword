@@ -103,15 +103,15 @@ public abstract class DamageMixin extends Entity implements ModTools {
             }
         }
         //若攻击者主手没有物品，则无法击穿藤甲
-        if (source.getSource() instanceof LivingEntity entity){
+        if (source.getSource() instanceof LivingEntity entity) {
             if (inrattan && entity.getMainHandStack().isEmpty()) {
                 cir.setReturnValue(false);
                 if (armor2) {stack2.damage((int) (3 *Math.random()+1), entity,player -> player.sendEquipmentBreakStatus(EquipmentSlot.CHEST));}
                 if (armor3) {stack3.damage((int) (3 *Math.random()+1), entity,player -> player.sendEquipmentBreakStatus(EquipmentSlot.LEGS));}
             }
-            //古锭刀对没有装备的生物伤害翻倍
+            //古锭刀对没有装备的生物伤害加50%
             if (entity.getMainHandStack().getItem() == ModItems.GUDINGDAO) {
-                if (noArmor || hasItem((PlayerEntity) entity, SkillCards.POJUN)) {
+                if (noArmor || hasTrinket(SkillCards.POJUN, (PlayerEntity) entity)) {
                     if (this.getHealth() > amount/2) this.applyDamage(source,amount/2);
                 }
             }
@@ -143,6 +143,7 @@ public abstract class DamageMixin extends Entity implements ModTools {
 
         if (source.getAttacker() instanceof PlayerEntity player && player.getWorld() instanceof ServerWorld world) {
             if (this.isGlowing()) {//实现铁索连环的效果，大概是好了吧
+                cir.setReturnValue(false);
                 Box box = new Box(player.getBlockPos()).expand(20); // 检测范围，根据需要修改
                 for (LivingEntity nearbyEntity : world.getEntitiesByClass(LivingEntity.class, box, LivingEntity::isGlowing)) {
                     nearbyEntity.removeStatusEffect(StatusEffects.GLOWING);
@@ -150,21 +151,19 @@ public abstract class DamageMixin extends Entity implements ModTools {
                 }
             }
             //绝情效果
-            if (source.isIn(DamageTypeTags.IS_PROJECTILE) && hasItem(player, SkillCards.JUEQING)) {
+            if (source.isIn(DamageTypeTags.IS_PROJECTILE) && hasTrinket(SkillCards.JUEQING, player)) {
                 cir.setReturnValue(false);
                 this.damage(world.getDamageSources().genericKill(), amount);
-                if (new Random().nextFloat() < 0.5) {voice(player, Sounds.JUEQING1,1);}
-                else {voice(player, Sounds.JUEQING2,1);}
+                if (new Random().nextFloat() < 0.5) {voice(player, Sounds.JUEQING1,1);} else {voice(player, Sounds.JUEQING2,1);}
             }
         }
         //绝情效果
         if (source.getSource() instanceof PlayerEntity player && player.getWorld() instanceof ServerWorld world) {
-            if (hasItem(player, SkillCards.JUEQING)) {
+            if (hasTrinket(SkillCards.JUEQING, player)) {
                 cir.setReturnValue(false);
                 float i = (float) player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
                 this.damage(world.getDamageSources().genericKill(), i);
-                if (new Random().nextFloat() < 0.5) {voice(player, Sounds.JUEQING1,1);}
-                else {voice(player, Sounds.JUEQING2,1);}
+                if (new Random().nextFloat() < 0.5) {voice(player, Sounds.JUEQING1,1);} else {voice(player, Sounds.JUEQING2,1);}
             }
         }
     }

@@ -4,6 +4,7 @@ import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
+import dev.emi.trinkets.api.TrinketItem;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -55,13 +56,9 @@ public class QiceScreenHandler extends ScreenHandler implements ModTools {
             if (slotIndex == 12) player.giveItemStack(new ItemStack(ModItems.WUZHONG));
             if (!player.isCreative()) player.getStackInHand(Hand.OFF_HAND).decrement(2);
             player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 1));
-            ItemStack stack1 = player.getStackInHand(Hand.MAIN_HAND);
+            ItemStack stack1 = trinketItem(SkillCards.QICE, player);
             NbtCompound nbt = new NbtCompound();nbt.putInt("cooldown", 20 * 20);stack1.setNbt(nbt);
-            if (new Random().nextFloat() < 0.5) {
-                voice(player, Sounds.QICE1);
-            } else {
-                voice(player, Sounds.QICE2);
-            }
+            if (new Random().nextFloat() < 0.5) {voice(player, Sounds.QICE1);} else {voice(player, Sounds.QICE2);}
         }
     }
 

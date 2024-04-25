@@ -91,7 +91,7 @@ public interface ModTools {
     }
     //集智技能触发
     default void jizhi(PlayerEntity player) {
-        if (hasItem(player, SkillCards.JIZHI)) {
+        if (hasTrinket(SkillCards.JIZHI, player)) {
             draw(player, 1);
             if (new Random().nextFloat() < 0.5) {
                 voice(player, Sounds.JIZHI1);

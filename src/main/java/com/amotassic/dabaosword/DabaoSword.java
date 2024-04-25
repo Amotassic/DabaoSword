@@ -5,6 +5,7 @@ import com.amotassic.dabaosword.event.EntityHurtHandler;
 import com.amotassic.dabaosword.event.SeverTickHandler;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
+import com.amotassic.dabaosword.network.ServerNetworking;
 import com.amotassic.dabaosword.util.EntityHurtCallback;
 import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
@@ -31,6 +32,7 @@ public class DabaoSword implements ModInitializer {
         AttackEntityCallback.EVENT.register(new AttackEntityHandler());
         EntityHurtCallback.EVENT.register(new EntityHurtHandler());
         ServerTickEvents.END_SERVER_TICK.register(new SeverTickHandler());
+        ServerNetworking.registerActiveSkillPacketHandler();
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register(content -> {
             content.addAfter(Items.NETHERITE_SWORD,ModItems.GUDINGDAO);

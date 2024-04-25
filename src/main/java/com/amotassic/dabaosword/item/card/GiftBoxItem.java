@@ -1,6 +1,7 @@
 package com.amotassic.dabaosword.item.card;
 
-import com.amotassic.dabaosword.item.skillcard.SkillCards;
+import com.amotassic.dabaosword.util.LootEntry;
+import com.amotassic.dabaosword.util.LootTableParser;
 import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.client.item.TooltipContext;
@@ -8,9 +9,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
@@ -50,25 +53,26 @@ public class GiftBoxItem extends Item implements ModTools {
 
     public void giftBox(@NotNull PlayerEntity player, float chance) {
         if (new Random().nextFloat() < chance) {
-            float i = new Random().nextFloat();
-            if (i < 0.03) {player.giveItemStack(new ItemStack(SkillCards.YIJI));voice(player, Sounds.GIFTBOX,3);
-            } else if (0.05 < i && i < 0.08) {player.giveItemStack(new ItemStack(SkillCards.TAOLUAN));voice(player, Sounds.GIFTBOX,3);
-            } else if (0.1 < i && i < 0.13) {player.giveItemStack(new ItemStack(SkillCards.QUANJI));voice(player, Sounds.GIFTBOX,3);
-            } else if (0.15 < i && i < 0.18) {player.giveItemStack(new ItemStack(SkillCards.QICE));voice(player, Sounds.GIFTBOX,3);
-            } else if (0.2 < i && i < 0.23) {player.giveItemStack(new ItemStack(SkillCards.LUOYI));voice(player, Sounds.GIFTBOX,3);
-            } else if (0.25 < i && i < 0.28) {player.giveItemStack(new ItemStack(SkillCards.LUANJI));voice(player, Sounds.GIFTBOX,3);
-            } else if (0.3 < i && i < 0.33) {player.giveItemStack(new ItemStack(SkillCards.KUROU));voice(player, Sounds.GIFTBOX,3);
-            } else if (0.35 < i && i < 0.38) {player.giveItemStack(new ItemStack(SkillCards.KANPO));voice(player, Sounds.GIFTBOX,3);
-            } else if (0.4 < i && i < 0.43) {player.giveItemStack(new ItemStack(SkillCards.HUOJI));voice(player, Sounds.GIFTBOX,3);
-            } else if (0.45 < i && i < 0.48) {player.giveItemStack(new ItemStack(SkillCards.GUOSE));voice(player, Sounds.GIFTBOX,3);
-            } else if (0.5 < i && i < 0.53) {player.giveItemStack(new ItemStack(SkillCards.LIULI));voice(player, Sounds.GIFTBOX,3);
-            } else if (0.55 < i && i < 0.58) {player.giveItemStack(new ItemStack(SkillCards.JIZHI));voice(player, Sounds.GIFTBOX,3);
-            } else if (0.6 < i && i < 0.63) {player.giveItemStack(new ItemStack(SkillCards.KUANGGU));voice(player, Sounds.GIFTBOX,3);
-            } else if (0.65 < i && i < 0.68) {player.giveItemStack(new ItemStack(SkillCards.POJUN));voice(player, Sounds.GIFTBOX,3);
-            } else if (0.7 < i && i < 0.73) {player.giveItemStack(new ItemStack(SkillCards.JUEQING));voice(player, Sounds.GIFTBOX,3);
-            } else if (0.75 < i && i < 0.78) {player.giveItemStack(new ItemStack(SkillCards.MASHU));voice(player, Sounds.GIFTBOX,3);
-            } else if (0.99 < i) {player.giveItemStack(new ItemStack(SkillCards.FEIYING));voice(player, Sounds.GIFTBOX,3);
+            List<LootEntry> lootEntries = LootTableParser.parseLootTable(new Identifier("dabaosword", "loot_tables/draw_skill.json"));
+            LootEntry selectedEntry = selectRandomEntry(lootEntries);
+
+            ItemStack stack = new ItemStack(Registries.ITEM.get(selectedEntry.item()));
+            if (stack.getItem() != Items.AIR) voice(player, Sounds.GIFTBOX,3);
+            player.giveItemStack(stack);
+        }
+    }
+
+    private static LootEntry selectRandomEntry(List<LootEntry> lootEntries) {
+        double totalWeight = lootEntries.stream().mapToDouble(LootEntry::weight).sum();
+        double randomValue = new Random().nextDouble() * totalWeight;
+        double currentWeight = 0;
+        for (LootEntry entry : lootEntries) {
+            currentWeight += entry.weight();
+            if (randomValue < currentWeight) {
+                return entry;
             }
         }
+        // 如果没有匹配的条目，默认返回最后一个条目
+        return lootEntries.get(lootEntries.size() - 1);
     }
 }

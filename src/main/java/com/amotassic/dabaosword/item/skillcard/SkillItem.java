@@ -22,14 +22,10 @@ public class SkillItem extends TrinketItem implements ModTools {
     public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
 
         if (stack.getItem() == SkillCards.LEIJI) {
-            if (stack.getDamage() == 0) {tooltip.add(Text.translatable("skill.dabaosword.enabled").formatted(Formatting.GREEN));
-            } else {tooltip.add(Text.translatable("skill.dabaosword.disabled").formatted(Formatting.RED));}
             tooltip.add(Text.translatable("item.dabaosword.leiji.tooltip"));
         }
 
         if (stack.getItem() == SkillCards.YIJI) {
-            if (stack.getDamage() == 0) {tooltip.add(Text.translatable("skill.dabaosword.enabled").formatted(Formatting.GREEN));
-            } else {tooltip.add(Text.translatable("skill.dabaosword.disabled").formatted(Formatting.RED));}
             tooltip.add(Text.literal("CD: 20s"));
             tooltip.add(Text.translatable("item.dabaosword.yiji.tooltip").formatted(Formatting.BLUE));
         }
@@ -56,22 +52,16 @@ public class SkillItem extends TrinketItem implements ModTools {
         }
 
         if (stack.getItem() == SkillCards.POJUN) {
-            if (stack.getDamage() == 0) {tooltip.add(Text.translatable("skill.dabaosword.enabled").formatted(Formatting.GREEN));
-            } else {tooltip.add(Text.translatable("skill.dabaosword.disabled").formatted(Formatting.RED));}
             tooltip.add(Text.literal("CD: 2.5s"));
             tooltip.add(Text.translatable("item.dabaosword.pojun.tooltip").formatted(Formatting.GREEN));
         }
 
         if (stack.getItem() == SkillCards.KUANGGU) {
-            if (stack.getDamage() == 0) {tooltip.add(Text.translatable("skill.dabaosword.enabled").formatted(Formatting.GREEN));
-            } else {tooltip.add(Text.translatable("skill.dabaosword.disabled").formatted(Formatting.RED));}
             tooltip.add(Text.literal("CD: 8s"));
             tooltip.add(Text.translatable("item.dabaosword.kuanggu.tooltip").formatted(Formatting.RED));
         }
 
         if (stack.getItem() == SkillCards.LIULI) {
-            if (stack.getDamage() == 0) {tooltip.add(Text.translatable("skill.dabaosword.enabled").formatted(Formatting.GREEN));
-            } else {tooltip.add(Text.translatable("skill.dabaosword.disabled").formatted(Formatting.RED));}
             tooltip.add(Text.translatable("item.dabaosword.liuli.tooltip").formatted(Formatting.GREEN));
         }
 

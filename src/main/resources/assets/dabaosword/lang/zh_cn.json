@@ -96,8 +96,6 @@
   "item.dabaosword.gift_box.tooltip": "副手拿好金锭或金块，右键抽技能",
 
   //"技能"
-  "skill.dabaosword.enabled": "被动  已启用",
-  "skill.dabaosword.disabled": "被动  已禁用",
   "item.dabaosword.guose": "国色",
   "item.dabaosword.guose.tooltip": "将副手上的一张闪转化为乐不思蜀",
   "item.dabaosword.liuli": "流离",
@@ -175,5 +173,8 @@
 
   "trinkets.slot.head.skills": "技能",
   "trinkets.slot.legs.horses": "马匹",
-  "trinkets.slot.offhand.card_pile": "牌堆"
+  "trinkets.slot.offhand.card_pile": "牌堆",
+
+  "category.dabaosword.keybindings": "大宝刀",
+  "key.dabaosword.active_skill": "发动技能"
 }

@@ -4,7 +4,6 @@ import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
-import com.amotassic.dabaosword.util.Tags;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
@@ -12,10 +11,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -26,7 +23,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Random;
 
 public class AttackEntityHandler implements ModTools, AttackEntityCallback {
-    TagKey<Item> tag = Tags.Items.QUANJI;
     NbtCompound quanji = new NbtCompound();
 
     @Override
@@ -35,8 +31,8 @@ public class AttackEntityHandler implements ModTools, AttackEntityCallback {
 
             if (entity instanceof LivingEntity target) {
                 //排异技能：攻击伤害增加
-                if (hasItemInTag(tag, player)) {
-                    ItemStack stack = stackInTag(tag, player);
+                if (hasTrinket(SkillCards.QUANJI, player)) {
+                    ItemStack stack = trinketItem(SkillCards.QUANJI, player);
                     if (stack.getNbt() != null) {
                         int quan = stack.getNbt().getInt("quanji");
                         if (quan > 0) {
@@ -56,27 +52,24 @@ public class AttackEntityHandler implements ModTools, AttackEntityCallback {
                     }
                 }
                 //破军：攻击命中盔甲槽有物品的生物后，会让其所有盔甲掉落，配合古锭刀特效使用，pvp神器
-                if (hasItem(player, SkillCards.POJUN) && !player.hasStatusEffect(ModItems.COOLDOWN)) {
-                    ItemStack pojun = stackWith(SkillCards.POJUN, player);
-                    if (pojun.getDamage() == 0) {
-                        ItemStack head = target.getEquippedStack(EquipmentSlot.HEAD);
-                        ItemStack chest = target.getEquippedStack(EquipmentSlot.CHEST);
-                        ItemStack legs = target.getEquippedStack(EquipmentSlot.LEGS);
-                        ItemStack feet = target.getEquippedStack(EquipmentSlot.FEET);
-                        if (target instanceof PlayerEntity player1) {
-                            if (!head.isEmpty()) {player1.giveItemStack(head.copy());head.setCount(0);}
-                            if (!chest.isEmpty()) {player1.giveItemStack(chest.copy());chest.setCount(0);}
-                            if (!legs.isEmpty()) {player1.giveItemStack(legs.copy());legs.setCount(0);}
-                            if (!feet.isEmpty()) {player1.giveItemStack(feet.copy());feet.setCount(0);}
-                        } else {
-                            if (!head.isEmpty()) {target.dropStack(head.copy());head.setCount(0);}
-                            if (!chest.isEmpty()) {target.dropStack(chest.copy());chest.setCount(0);}
-                            if (!legs.isEmpty()) {target.dropStack(legs.copy());legs.setCount(0);}
-                            if (!feet.isEmpty()) {target.dropStack(feet.copy());feet.setCount(0);}
-                        }
-                        if (new Random().nextFloat() < 0.5) {voice(player, Sounds.POJUN1);} else {voice(player, Sounds.POJUN2);}
-                        player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 50,0,false,true,true));
+                if (hasTrinket(SkillCards.POJUN, player) && !player.hasStatusEffect(ModItems.COOLDOWN)) {
+                    ItemStack head = target.getEquippedStack(EquipmentSlot.HEAD);
+                    ItemStack chest = target.getEquippedStack(EquipmentSlot.CHEST);
+                    ItemStack legs = target.getEquippedStack(EquipmentSlot.LEGS);
+                    ItemStack feet = target.getEquippedStack(EquipmentSlot.FEET);
+                    if (target instanceof PlayerEntity player1) {
+                        if (!head.isEmpty()) {player1.giveItemStack(head.copy());head.setCount(0);}
+                        if (!chest.isEmpty()) {player1.giveItemStack(chest.copy());chest.setCount(0);}
+                        if (!legs.isEmpty()) {player1.giveItemStack(legs.copy());legs.setCount(0);}
+                        if (!feet.isEmpty()) {player1.giveItemStack(feet.copy());feet.setCount(0);}
+                    } else {
+                        if (!head.isEmpty()) {target.dropStack(head.copy());head.setCount(0);}
+                        if (!chest.isEmpty()) {target.dropStack(chest.copy());chest.setCount(0);}
+                        if (!legs.isEmpty()) {target.dropStack(legs.copy());legs.setCount(0);}
+                        if (!feet.isEmpty()) {target.dropStack(feet.copy());feet.setCount(0);}
                     }
+                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.POJUN1);} else {voice(player, Sounds.POJUN2);}
+                    player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 50,0,false,true,true));
                 }
             }
         }
