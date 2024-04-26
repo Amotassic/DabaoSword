@@ -147,7 +147,7 @@ public abstract class DamageMixin extends Entity implements ModTools {
                 Box box = new Box(player.getBlockPos()).expand(20); // 检测范围，根据需要修改
                 for (LivingEntity nearbyEntity : world.getEntitiesByClass(LivingEntity.class, box, LivingEntity::isGlowing)) {
                     nearbyEntity.removeStatusEffect(StatusEffects.GLOWING);
-                    nearbyEntity.damage(world.getDamageSources().sonicBoom(player), amount);
+                    nearbyEntity.damage(world.getDamageSources().playerAttack(player), amount);
                 }
             }
             //绝情效果

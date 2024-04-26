@@ -33,7 +33,7 @@ public class LuanjiSkill extends SkillItem implements ModTools {
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
         if (!entity.getWorld().isClient && entity instanceof PlayerEntity player) {
             ItemStack stack1 = player.getStackInHand(Hand.OFF_HAND);
-            if (cd == 0 && !stack1.isEmpty() && stack1.isIn(Tags.Items.CARD)) {
+            if (cd == 0 && !stack1.isEmpty() && stack1.isIn(Tags.Items.CARD) && stack1.getCount() > 1) {
                 cd =20 * 15;
                 stack1.decrement(2);
                 player.giveItemStack(ModItems.WANJIAN.getDefaultStack());
@@ -42,6 +42,7 @@ public class LuanjiSkill extends SkillItem implements ModTools {
                 } else if (0.25 <= i && i < 0.5) {voice(player, Sounds.LUANJI2);
                 } else if (0.5 <= i && i < 0.75) {voice(player, Sounds.LUANJI3);
                 } else {voice(player, Sounds.LUANJI4);}
+                player.sendMessage(Text.of(slot.toString()));
             }
             if (cd > 0) {cd--; nbt.putInt("cooldown", cd); stack.setNbt(nbt);}
         }
