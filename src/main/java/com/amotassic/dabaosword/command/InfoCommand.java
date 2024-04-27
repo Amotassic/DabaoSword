@@ -33,15 +33,19 @@ public class InfoCommand {
         Optional<TrinketComponent> component = TrinketsApi.getTrinketComponent(target);
 
         if(component.isPresent()) {
+            int i = 0;
             List<Pair<SlotReference, ItemStack>> allEquipped = component.get().getAllEquipped();
             for(Pair<SlotReference, ItemStack> entry : allEquipped) {
                 ItemStack stack = entry.getRight();
                 if(stack.getItem() instanceof SkillItem || stack.getItem() instanceof Defense|| stack.getItem() instanceof Reach) {
+                    if (i == 0) {context.getSource().sendMessage(Text.literal(target.getEntityName()).append("装备了以下物品："));}
                     context.getSource().sendMessage(stack.getName());
+                    i++;
                 }
             }
+            if (i == 0) {context.getSource().sendMessage(Text.literal(target.getEntityName()).append("没有装备任何技能或马匹"));}
         } else {
-            context.getSource().sendMessage(Text.literal(target.getEntityName()).append("没有任何技能"));
+            context.getSource().sendMessage(Text.literal(target.getEntityName()).append("没有装备任何技能或马匹"));
         }
         return 1;
     }

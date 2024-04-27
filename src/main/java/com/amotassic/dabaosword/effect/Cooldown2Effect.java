@@ -34,7 +34,7 @@ public class Cooldown2Effect extends StatusEffect implements ModTools {
             int restTime = Objects.requireNonNull(entity.getStatusEffect(ModItems.COOLDOWN2)).getDuration();
             if (amplifier == 1 && restTime % 5 == 0) {arrowRain(player);}
 
-            if (hasTrinket(SkillCards.LEIJI, player) && restTime >= 15) {//雷击的效果
+            if (amplifier == 0 && hasTrinket(SkillCards.LEIJI, player) && restTime >= 15) {//雷击的效果
                 EntityType.LIGHTNING_BOLT.spawn(world, new BlockPos((int) player.getX(), (int) player.getY(), (int) player.getZ()),null);
             }
         }
@@ -43,7 +43,7 @@ public class Cooldown2Effect extends StatusEffect implements ModTools {
 
     @Override
     public void onApplied(LivingEntity entity, AttributeContainer attributes, int amplifier) {
-        if (entity instanceof PlayerEntity player && !player.getWorld().isClient && hasTrinket(SkillCards.LEIJI, player)) {
+        if (entity instanceof PlayerEntity player && !player.getWorld().isClient && hasTrinket(SkillCards.LEIJI, player) && amplifier == 0) {
             //雷击语音播放
             if (new Random().nextFloat() < 0.5) {voice(player, Sounds.LEIJI1);} else {voice(player, Sounds.LEIJI2);}
         }

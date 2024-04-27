@@ -25,8 +25,7 @@ public class TiesuoItem extends CardItem implements ModTools {
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         if (!user.getWorld().isClient && !entity.isGlowing() && !(user.getOffHandStack().getItem() == Items.KNOWLEDGE_BOOK) && hand == Hand.MAIN_HAND) {
-            Box box = user.getBoundingBox().stretch(user.getRotationVec(1.0F).multiply(10))
-                    .expand(0.3D, 0.3D, 0.3D);
+            Box box = user.getBoundingBox().stretch(user.getRotationVec(1.0F).multiply(10));
             for (LivingEntity nearbyEntity : user.getWorld().getEntitiesByClass(LivingEntity.class, box, nearbyEntity -> !nearbyEntity.isGlowing())) {
                 nearbyEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, StatusEffectInstance.INFINITE, 0, false, true,false));
             }

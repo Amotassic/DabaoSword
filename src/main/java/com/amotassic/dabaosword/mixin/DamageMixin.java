@@ -121,14 +121,6 @@ public abstract class DamageMixin extends Entity implements ModTools {
                     cir.setReturnValue(false);
                 }
             }
-            if (entity instanceof PlayerEntity player && !player.getWorld().isClient) {
-                double attack = player.getAttributeValue(ReachEntityAttributes.ATTACK_RANGE) + (player.isCreative()?6:3);
-                if (this.hasStatusEffect(ModItems.DEFENSE)) {
-                    int defense = Objects.requireNonNull(this.getStatusEffect(ModItems.DEFENSE)).getAmplifier() + 1;
-                    double canReach = Math.max(0, attack - defense);
-                    if (this.distanceTo(player) > canReach) {cir.setReturnValue(false);}
-                }
-            }
             //被乐的生物无法造成普通攻击伤害
             if (entity.hasStatusEffect(ModItems.TOO_HAPPY)) cir.setReturnValue(false);
         }

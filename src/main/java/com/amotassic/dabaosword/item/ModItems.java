@@ -88,8 +88,10 @@ public class ModItems {
     //近战防御范围增加
     public static final Item DILU = register("dilu", new Defense(new FabricItemSettings().maxCount(1)));
     public static final StatusEffect DEFENSE = new DefenseEffect(StatusEffectCategory.BENEFICIAL, 0x000000);
+    public static final StatusEffect DEFENSED = new DefensedEffect(StatusEffectCategory.HARMFUL, 0x000000);
     //礼盒
     public static final Item GIFTBOX = register("gift_box", new GiftBoxItem(new FabricItemSettings()));
+    public static final Item SHA = register("sha", new CardItem(new FabricItemSettings()));
 
     //注册部分
     public static void register() {
@@ -104,6 +106,7 @@ public class ModItems {
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "juedou"), JUEDOUING);
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "reach"), REACH);
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "defense"), DEFENSE);
+        Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "defensed"), DEFENSED);
     }
 
     private static Item register(String name,Item item){

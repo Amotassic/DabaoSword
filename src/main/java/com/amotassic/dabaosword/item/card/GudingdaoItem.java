@@ -15,7 +15,7 @@ import java.util.List;
 public class GudingdaoItem extends SwordItem {
 
     public GudingdaoItem(Settings Settings) {
-        super(ToolMaterials.NETHERITE, 7, -2.4F,new FabricItemSettings().maxDamage(999));
+        super(ToolMaterials.NETHERITE, 5, -2.4F,new FabricItemSettings().maxDamage(999));
     }
     
     @Override
