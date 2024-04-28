@@ -7,6 +7,7 @@ import com.amotassic.dabaosword.item.card.GiftBoxItem;
 import com.amotassic.dabaosword.item.horse.Reach;
 import com.amotassic.dabaosword.item.horse.Defense;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
+import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.enchantment.Enchantment;
@@ -61,7 +62,7 @@ public class ModItems {
     //摸牌
     public static final Item GAIN_CARD = register("gain_card",new GainCardItem(new FabricItemSettings()));
     //牌堆
-    public static final Item CARD_PILE = register("card_pile",new GainCardItem(new FabricItemSettings().maxCount(1)));
+    public static final Item CARD_PILE = register("card_pile",new SkillItem(new FabricItemSettings().maxCount(1)));
     //无中生有
     public static final Item WUZHONG = register("wuzhong", new GainCardItem(new FabricItemSettings()));
     //闪
@@ -92,6 +93,8 @@ public class ModItems {
     //礼盒
     public static final Item GIFTBOX = register("gift_box", new GiftBoxItem(new FabricItemSettings()));
     public static final Item SHA = register("sha", new CardItem(new FabricItemSettings()));
+    public static final Item FIRE_SHA = register("fire_sha", new CardItem(new FabricItemSettings()));
+    public static final Item THUNDER_SHA = register("thunder_sha", new CardItem(new FabricItemSettings()));
 
     //注册部分
     public static void register() {
@@ -128,9 +131,11 @@ public class ModItems {
                 entries.add(ARROW_RAIN);
                 entries.add(GUDING_ITEM);
                 entries.add(RATTAN);
-                entries.add(CHITU);
-                entries.add(DILU);
                 entries.add(GAIN_CARD);
+                entries.add(CARD_PILE);
+                entries.add(SHA);
+                entries.add(FIRE_SHA);
+                entries.add(THUNDER_SHA);
                 entries.add(SHAN);
                 entries.add(PEACH);
                 entries.add(JIU);
@@ -147,7 +152,8 @@ public class ModItems {
                 entries.add(WANJIAN);
                 entries.add(WUXIE);
                 entries.add(WUZHONG);
-                entries.add(CARD_PILE);
+                entries.add(CHITU);
+                entries.add(DILU);
 
                 entries.add(SkillCards.JUEQING);
                 entries.add(SkillCards.LUOYI);

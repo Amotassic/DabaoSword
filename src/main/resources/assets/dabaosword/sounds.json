@@ -535,5 +535,32 @@
       }
     ],
     "subtitle": "sounds.dabaosword.nanaman"
+  },
+  "sha": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/sha"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.sha"
+  },
+  "sha_fire": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/sha_fire"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.sha_fire"
+  },
+  "sha_thunder": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/sha_thunder"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.sha_thunder"
   }
 }

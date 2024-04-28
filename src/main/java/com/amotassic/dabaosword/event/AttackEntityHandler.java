@@ -8,11 +8,10 @@ import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -23,34 +22,25 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Random;
 
 public class AttackEntityHandler implements ModTools, AttackEntityCallback {
-    NbtCompound quanji = new NbtCompound();
 
     @Override
     public ActionResult interact(PlayerEntity player, World world, Hand hand, Entity entity, @Nullable EntityHitResult hitResult) {
         if (world instanceof ServerWorld && !player.isSpectator()) {
 
             if (entity instanceof LivingEntity target) {
-                //排异技能：攻击伤害增加
-                if (hasTrinket(SkillCards.QUANJI, player)) {
-                    ItemStack stack = trinketItem(SkillCards.QUANJI, player);
-                    if (stack.getNbt() != null) {
-                        int quan = stack.getNbt().getInt("quanji");
-                        if (quan > 0) {
-                            float i = (float) player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-                            entity.damage(world.getDamageSources().playerAttack(player), quan+i);
-                            if (quan > 4 && entity instanceof PlayerEntity) {
-                                ((PlayerEntity) entity).giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
-                            }
-                            int quan1 = quan/2;
-                            quanji.putInt("quanji", quan1); stack.setNbt(quanji);
-                            float j = new Random().nextFloat();
-                            if (j < 0.25) {voice(player, Sounds.PAIYI1);
-                            } else if (0.25 <= j && j < 0.5) {voice(player, Sounds.PAIYI2,3);
-                            } else if (0.5 <= j && j < 0.75) {voice(player, Sounds.PAIYI3);
-                            } else {voice(player, Sounds.PAIYI4,3);}
-                        }
+
+                //如果有杀，攻击南蛮入侵召唤的狗可杀死它
+                if (getShaSlot(player) != -1 && target instanceof WolfEntity dog && dog.hasStatusEffect(ModItems.INVULNERABLE)) {
+                    if (dog.getOwner() != player) {
+                        ItemStack stack = shaStack(player);
+                        dog.setHealth(0);
+                        if (stack.getItem() == ModItems.SHA) voice(player, Sounds.SHA);
+                        if (stack.getItem() == ModItems.FIRE_SHA) voice(player, Sounds.SHA_FIRE);
+                        if (stack.getItem() == ModItems.THUNDER_SHA) voice(player, Sounds.SHA_THUNDER);
+                        if (!player.isCreative()) {stack.decrement(1);}
                     }
                 }
+
                 //破军：攻击命中盔甲槽有物品的生物后，会让其所有盔甲掉落，配合古锭刀特效使用，pvp神器
                 if (hasTrinket(SkillCards.POJUN, player) && !player.hasStatusEffect(ModItems.COOLDOWN)) {
                     ItemStack head = target.getEquippedStack(EquipmentSlot.HEAD);
@@ -69,7 +59,7 @@ public class AttackEntityHandler implements ModTools, AttackEntityCallback {
                         if (!feet.isEmpty()) {target.dropStack(feet.copy());feet.setCount(0);}
                     }
                     if (new Random().nextFloat() < 0.5) {voice(player, Sounds.POJUN1);} else {voice(player, Sounds.POJUN2);}
-                    player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 50,0,false,true,true));
+                    player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 100));
                 }
             }
         }

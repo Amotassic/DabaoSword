@@ -26,13 +26,6 @@ public class GainCardItem extends CardItem implements ModTools {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         if (!world.isClient && hand == Hand.MAIN_HAND) {
             int m;
-            //牌堆，潜行时直接摸64张
-            if (user.getStackInHand(hand).getItem() == ModItems.CARD_PILE) {
-                if (user.isCreative()) {
-                    if (user.isSneaking()) {m=64;} else {m=1;}
-                    draw(user,m);voice(user, SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP,1);
-                }
-            }
             //摸牌
             if (user.getStackInHand(hand).getItem() == ModItems.GAIN_CARD) {
                 if (user.isSneaking()) {m=user.getStackInHand(hand).getCount();} else {m=1;}

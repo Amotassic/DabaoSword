@@ -69,6 +69,19 @@ public interface ModTools {
         int i = getSlotInTag(tag, player);
         return inv.getStack(i);
     }
+
+    default int getShaSlot(@NotNull PlayerEntity player) {
+        for (int i = 0; i < 18; ++i) {
+            ItemStack stack = player.getInventory().getStack(i);
+            if (stack.isEmpty() || !stack.isIn(Tags.Items.SHA)) continue;
+            return i;
+        }
+        return -1;
+    }
+    //只检测玩家物品栏前18格是否有杀
+    default ItemStack shaStack(@NotNull PlayerEntity player) {
+        return player.getInventory().getStack(getShaSlot(player));
+    }
     //播放语音
     default void voice(@NotNull PlayerEntity player, SoundEvent sound) {
         if (player.getWorld() instanceof ServerWorld world) {

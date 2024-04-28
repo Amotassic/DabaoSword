@@ -68,6 +68,9 @@ public class Sounds {
     public static final SoundEvent WUXIE = Sounds.register("wuxie");
     public static final SoundEvent WUZHONG = Sounds.register("wuzhong");
     public static final SoundEvent NANMAN = Sounds.register("nanman");
+    public static final SoundEvent SHA = Sounds.register("sha");
+    public static final SoundEvent SHA_FIRE = Sounds.register("sha_fire");
+    public static final SoundEvent SHA_THUNDER = Sounds.register("sha_thunder");
 
     public static void sound() {}
     public static SoundEvent register(String name){

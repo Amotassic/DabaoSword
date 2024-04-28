@@ -5,7 +5,6 @@ import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.EntityHurtCallback;
 import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
-import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -62,14 +61,11 @@ public abstract class DamageMixin extends Entity implements ModTools {
 
     @Inject(method = "damage",at = @At("HEAD"), cancellable = true)
     private void damagemixin(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        ItemStack stack1 = this.getEquippedStack(EquipmentSlot.HEAD);
         ItemStack stack2 = this.getEquippedStack(EquipmentSlot.CHEST);
         boolean armor2 = stack2.getItem() == ModItems.RATTAN_CHESTPLATE;
         ItemStack stack3 = this.getEquippedStack(EquipmentSlot.LEGS);
         boolean armor3 = stack3.getItem() == ModItems.RATTAN_LEGGINGS;
-        ItemStack stack4 = this.getEquippedStack(EquipmentSlot.FEET);
         boolean inrattan = armor2 || armor3;
-        boolean noArmor = stack1.isEmpty() && stack2.isEmpty() && stack3.isEmpty() && stack4.isEmpty();
         LivingEntity entity1 = (LivingEntity) source.getAttacker();
 
         //无敌效果
@@ -103,17 +99,11 @@ public abstract class DamageMixin extends Entity implements ModTools {
             }
         }
         //若攻击者主手没有物品，则无法击穿藤甲
-        if (source.getSource() instanceof LivingEntity entity) {
+        if (source.getSource() instanceof LivingEntity entity && !entity.getWorld().isClient) {
             if (inrattan && entity.getMainHandStack().isEmpty()) {
                 cir.setReturnValue(false);
                 if (armor2) {stack2.damage((int) (3 *Math.random()+1), entity,player -> player.sendEquipmentBreakStatus(EquipmentSlot.CHEST));}
                 if (armor3) {stack3.damage((int) (3 *Math.random()+1), entity,player -> player.sendEquipmentBreakStatus(EquipmentSlot.LEGS));}
-            }
-            //古锭刀对没有装备的生物伤害加50%
-            if (entity.getMainHandStack().getItem() == ModItems.GUDINGDAO) {
-                if (noArmor || hasTrinket(SkillCards.POJUN, (PlayerEntity) entity)) {
-                    if (this.getHealth() > amount/2) this.applyDamage(source,amount/2);
-                }
             }
             //沈佳宜防御效果
             if (!(entity instanceof PlayerEntity) && this.hasStatusEffect(ModItems.DEFENSE)) {
@@ -143,19 +133,23 @@ public abstract class DamageMixin extends Entity implements ModTools {
                 }
             }
             //绝情效果
-            if (source.isIn(DamageTypeTags.IS_PROJECTILE) && hasTrinket(SkillCards.JUEQING, player)) {
+            if (source.isIn(DamageTypeTags.IS_PROJECTILE) && hasTrinket(SkillCards.JUEQING, player) && !player.hasStatusEffect(ModItems.COOLDOWN)) {
                 cir.setReturnValue(false);
-                this.damage(world.getDamageSources().genericKill(), amount);
+                float amount1 = Math.min(8,amount);
+                this.damage(world.getDamageSources().genericKill(), amount1);
                 if (new Random().nextFloat() < 0.5) {voice(player, Sounds.JUEQING1,1);} else {voice(player, Sounds.JUEQING2,1);}
+                player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, (int) (20 * amount1)));
             }
         }
         //绝情效果
         if (source.getSource() instanceof PlayerEntity player && player.getWorld() instanceof ServerWorld world) {
-            if (hasTrinket(SkillCards.JUEQING, player)) {
+            if (hasTrinket(SkillCards.JUEQING, player) && !player.hasStatusEffect(ModItems.COOLDOWN)) {
                 cir.setReturnValue(false);
                 float i = (float) player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+                float amount1 = Math.min(8,i);
                 this.damage(world.getDamageSources().genericKill(), i);
                 if (new Random().nextFloat() < 0.5) {voice(player, Sounds.JUEQING1,1);} else {voice(player, Sounds.JUEQING2,1);}
+                player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, (int) (20 * amount1)));
             }
         }
     }
