@@ -33,6 +33,16 @@ public class SeverTickHandler implements ServerTickEvents.EndTick, ModTools {
             }
         }
 
+        if (++tick >= 2) {
+            tick = 0;
+            for (ServerWorld world : server.getWorlds()) {
+                for (PlayerEntity player : world.getPlayers()) {
+                    player.getCommandTags().remove("quanji");
+                    player.getCommandTags().remove("sha");
+                }
+            }
+        }
+
         for (ServerWorld world : server.getWorlds()) {
             for (PlayerEntity player : world.getPlayers()) {
                 Box box = new Box(player.getBlockPos()).expand(20); // 检测范围，根据需要修改

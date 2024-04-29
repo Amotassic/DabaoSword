@@ -1,7 +1,6 @@
 package com.amotassic.dabaosword.item;
 
 import com.amotassic.dabaosword.effect.*;
-import com.amotassic.dabaosword.enchantment.LightningAspectEnchantment;
 import com.amotassic.dabaosword.item.card.*;
 import com.amotassic.dabaosword.item.card.GiftBoxItem;
 import com.amotassic.dabaosword.item.horse.Reach;
@@ -10,9 +9,6 @@ import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentTarget;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.item.*;
@@ -28,8 +24,6 @@ public class ModItems {
     public static final Item INCOMPLETE_GUDINGDAO = register("incomplete_gdd", new Item(new FabricItemSettings().maxCount(1)));
     //古锭
     public static final Item GUDING_ITEM = register("guding", new Item(new FabricItemSettings()));
-    //雷电附加附魔
-	public static Enchantment LIGHTNINGASPECT = new LightningAspectEnchantment(Enchantment.Rarity.COMMON, EnchantmentTarget.WEAPON, new EquipmentSlot[] {EquipmentSlot.MAINHAND});
     //藤条
     public static final ArmorMaterial RATTAN_MATERIAL = new RattanArmorMaterial();
     public static final Item RATTAN = register("rattan", new Item(new FabricItemSettings()));
@@ -92,6 +86,7 @@ public class ModItems {
     public static final StatusEffect DEFENSED = new DefensedEffect(StatusEffectCategory.HARMFUL, 0x000000);
     //礼盒
     public static final Item GIFTBOX = register("gift_box", new GiftBoxItem(new FabricItemSettings()));
+    //杀
     public static final Item SHA = register("sha", new CardItem(new FabricItemSettings()));
     public static final Item FIRE_SHA = register("fire_sha", new CardItem(new FabricItemSettings()));
     public static final Item THUNDER_SHA = register("thunder_sha", new CardItem(new FabricItemSettings()));
@@ -100,7 +95,6 @@ public class ModItems {
     public static void register() {
         Registry.register(Registries.ITEM_GROUP, new Identifier("dabaosword", "item_group"), DABAOSWORD_GROUP);
 
-        Registry.register(Registries.ENCHANTMENT, new Identifier("dabaosword", "lightningaspect"),LIGHTNINGASPECT);
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "too_happy"), TOO_HAPPY);
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "bingliang"), BINGLIANG);
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "cooldown"), COOLDOWN);

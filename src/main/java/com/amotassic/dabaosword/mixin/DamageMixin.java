@@ -24,6 +24,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -125,11 +126,20 @@ public abstract class DamageMixin extends Entity implements ModTools {
 
         if (source.getAttacker() instanceof PlayerEntity player && player.getWorld() instanceof ServerWorld world) {
             if (this.isGlowing()) {//实现铁索连环的效果，大概是好了吧
-                cir.setReturnValue(false);
                 Box box = new Box(player.getBlockPos()).expand(20); // 检测范围，根据需要修改
                 for (LivingEntity nearbyEntity : world.getEntitiesByClass(LivingEntity.class, box, LivingEntity::isGlowing)) {
                     nearbyEntity.removeStatusEffect(StatusEffects.GLOWING);
-                    nearbyEntity.damage(world.getDamageSources().playerAttack(player), amount);
+                    if (getShaSlot(player) != -1) {
+                        ItemStack stack = shaStack(player);
+                        if (stack.getItem() == ModItems.FIRE_SHA) {
+                            nearbyEntity.setOnFireFor(6);
+                        }
+                        if (stack.getItem() == ModItems.THUNDER_SHA) {
+                            EntityType.LIGHTNING_BOLT.spawn(world, new BlockPos((int) nearbyEntity.getX(), (int) nearbyEntity.getY(), (int) nearbyEntity.getZ()),null);
+                            nearbyEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 200,0,false,false,false));
+                        }
+                    }
+                    nearbyEntity.damage(source, amount);
                 }
             }
             //绝情效果

@@ -54,7 +54,7 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
                 }
             }
 
-            if (source.getSource() instanceof PlayerEntity player) {
+            if (source.getSource() instanceof LivingEntity attacker) {
 
                 ItemStack head = entity.getEquippedStack(EquipmentSlot.HEAD);
                 ItemStack chest = entity.getEquippedStack(EquipmentSlot.CHEST);
@@ -62,13 +62,17 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
                 ItemStack feet = entity.getEquippedStack(EquipmentSlot.FEET);
                 boolean noArmor = head.isEmpty() && chest.isEmpty() && legs.isEmpty() && feet.isEmpty();
                 //古锭刀对没有装备的生物伤害加50%
-                if (player.getMainHandStack().getItem() == ModItems.GUDINGDAO && !player.getCommandTags().contains("guding") && !hasTrinket(SkillCards.QUANJI, player)) {
-                    if (noArmor || hasTrinket(SkillCards.POJUN, player)) {
-                        player.addCommandTag("guding");
-                        entity.damage(source, 1.5f * amount);
-                        player.getCommandTags().remove("guding");
+                if (attacker.getMainHandStack().getItem() == ModItems.GUDINGDAO && !attacker.getCommandTags().contains("guding")) {
+                    if (noArmor || hasTrinket(SkillCards.POJUN, (PlayerEntity) attacker)) {
+                        attacker.addCommandTag("guding");
+                        entity.damage(source,1.5f * amount);
+                        attacker.getCommandTags().remove("guding");
                     }
                 }
+
+            }
+
+            if (source.getSource() instanceof PlayerEntity player) {
 
                 //排异技能：攻击伤害增加
                 if (hasTrinket(SkillCards.QUANJI, player) && !player.getCommandTags().contains("quanji")) {
@@ -77,11 +81,7 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
                         int quan = stack.getNbt().getInt("quanji");
                         if (quan > 0) {
                             player.addCommandTag("quanji");
-                            //处理古锭刀伤害
-                            if (player.getMainHandStack().getItem() == ModItems.GUDINGDAO && noArmor) {
-                                entity.damage(source, quan + 1.5f * amount);
-                            } else {entity.damage(source, quan + amount);}
-                            player.getCommandTags().remove("quanji");
+                            entity.timeUntilRegen = 0; entity.damage(source, quan);
                             if (quan > 4 && entity instanceof PlayerEntity) {
                                 ((PlayerEntity) entity).giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
                             }
@@ -110,20 +110,19 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
                         player.addCommandTag("sha");
                         if (stack.getItem() == ModItems.SHA) {
                             voice(player, Sounds.SHA);
-                            entity.damage(source, 5 + amount);
+                            entity.timeUntilRegen = 0; entity.damage(source,5);
                         }
                         if (stack.getItem() == ModItems.FIRE_SHA) {
                             voice(player, Sounds.SHA_FIRE);
-                            entity.damage(player.getDamageSources().inFire(), 5 + amount);
-                            entity.setOnFireFor(5);
+                            entity.timeUntilRegen = 0; entity.damage(player.getDamageSources().inFire(),5);
+                            entity.setOnFireFor(6);
                         }
                         if (stack.getItem() == ModItems.THUNDER_SHA) {
                             voice(player, Sounds.SHA_THUNDER);
-                            entity.damage(player.getDamageSources().lightningBolt(),amount);
-//                            EntityType.LIGHTNING_BOLT.spawn(world, new BlockPos((int) entity.getX(), (int) entity.getY(), (int) entity.getZ()),null);
+                            entity.timeUntilRegen = 0;
+                            EntityType.LIGHTNING_BOLT.spawn(world, new BlockPos((int) entity.getX(), (int) entity.getY(), (int) entity.getZ()),null);
                             entity.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 200,0,false,false,false));
                         }
-                        player.getCommandTags().remove("sha");
                         if (!player.isCreative()) {stack.decrement(1);}
                     }
                 }
