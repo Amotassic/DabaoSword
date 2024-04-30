@@ -3,8 +3,9 @@ package com.amotassic.dabaosword.item.skillcard;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
+import dev.emi.trinkets.api.SlotReference;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -29,8 +30,8 @@ public class GuoseSkill extends SkillItem implements ModTools {
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
-        if (!world.isClient && entity instanceof PlayerEntity player) {
+    public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
+        if (!entity.getWorld().isClient && entity instanceof PlayerEntity player) {
             ItemStack stack1 = player.getStackInHand(Hand.OFF_HAND);
             if (cd == 0 && !stack1.isEmpty() && stack1.getItem() == ModItems.SHAN) {
                 cd =20 * 15;
@@ -40,6 +41,6 @@ public class GuoseSkill extends SkillItem implements ModTools {
             }
             if (cd > 0) {cd--; nbt.putInt("cooldown", cd); stack.setNbt(nbt);}
         }
-        super.inventoryTick(stack, world, entity, slot, selected);
+        super.tick(stack, slot, entity);
     }
 }

@@ -18,20 +18,17 @@ import net.minecraft.world.World;
 import java.util.Random;
 
 public class TiesuoItem extends CardItem implements ModTools {
-    public TiesuoItem(Settings settings) {
-        super(settings);
-    }
+    public TiesuoItem(Settings settings) {super(settings);}
     //原始的铁索连环
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         if (!user.getWorld().isClient && !entity.isGlowing() && !(user.getOffHandStack().getItem() == Items.KNOWLEDGE_BOOK) && hand == Hand.MAIN_HAND) {
-            Box box = user.getBoundingBox().stretch(user.getRotationVec(1.0F).multiply(10))
-                    .expand(0.3D, 0.3D, 0.3D);
+            Box box = user.getBoundingBox().stretch(user.getRotationVec(1.0F).multiply(10));
             for (LivingEntity nearbyEntity : user.getWorld().getEntitiesByClass(LivingEntity.class, box, nearbyEntity -> !nearbyEntity.isGlowing())) {
                 nearbyEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, StatusEffectInstance.INFINITE, 0, false, true,false));
             }
             if (!user.isCreative()) {stack.decrement(1);}
-            jizhi(user);
+            jizhi(user); benxi(user);
             voice(user, Sounds.TIESUO);
             user.removeStatusEffect(StatusEffects.GLOWING);
         }

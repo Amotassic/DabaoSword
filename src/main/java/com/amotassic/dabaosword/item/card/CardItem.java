@@ -114,17 +114,18 @@ public class CardItem extends Item {
             tooltip.add(Text.translatable("item.dabaosword.gain_card.tooltip"));
         }
 
-        if (stack.getItem() == ModItems.CARD_PILE) {
-            tooltip.add(Text.translatable("item.dabaosword.card_pile.tooltip1"));
-            tooltip.add(Text.translatable("item.dabaosword.card_pile.tooltip2"));
+        if (stack.getItem() == ModItems.SHA) {
+            tooltip.add(Text.translatable("item.dabaosword.sha.tooltip"));
         }
 
-        if (stack.getItem() == ModItems.CHITU) {
-            tooltip.add(Text.translatable("item.dabaosword.chitu.tooltip"));
+        if (stack.getItem() == ModItems.FIRE_SHA) {
+            tooltip.add(Text.translatable("item.dabaosword.sha.tooltip"));
+            tooltip.add(Text.translatable("item.dabaosword.fire_sha.tooltip").formatted(Formatting.RED));
         }
 
-        if (stack.getItem() == ModItems.DILU) {
-            tooltip.add(Text.translatable("item.dabaosword.dilu.tooltip"));
+        if (stack.getItem() == ModItems.THUNDER_SHA) {
+            tooltip.add(Text.translatable("item.dabaosword.sha.tooltip"));
+            tooltip.add(Text.translatable("item.dabaosword.thunder_sha.tooltip").formatted(Formatting.BLUE));
         }
     }
 }

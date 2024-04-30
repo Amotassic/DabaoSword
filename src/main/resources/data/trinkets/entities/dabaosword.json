@@ -1,0 +1,10 @@
+{
+  "entities": [
+    "player"
+  ],
+  "slots": [
+    "head/skills",
+    "legs/horses",
+    "offhand/card_pile"
+  ]
+}

@@ -11,9 +11,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class FireAttackItem extends CardItem implements ModTools {
-    public FireAttackItem(Settings settings) {
-        super(settings);
-    }
+    public FireAttackItem(Settings settings) {super(settings);}
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
@@ -23,7 +21,7 @@ public class FireAttackItem extends CardItem implements ModTools {
             fireballEntity.setPosition(user.getX(), user.getBodyY(0.5) + 0.5, user.getZ());
             world.spawnEntity(fireballEntity);
             if (!user.isCreative()) {user.getStackInHand(hand).decrement(1);}
-            jizhi(user);
+            jizhi(user); benxi(user);
             voice(user, Sounds.HUOGONG);
         }
         return TypedActionResult.success(user.getStackInHand(hand));

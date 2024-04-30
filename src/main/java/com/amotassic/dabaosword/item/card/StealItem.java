@@ -15,9 +15,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 public class StealItem extends CardItem implements ModTools {
-    public StealItem(Settings settings) {
-        super(settings);
-    }
+    public StealItem(Settings settings) {super(settings);}
 
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
@@ -26,9 +24,9 @@ public class StealItem extends CardItem implements ModTools {
                 voice(target, Sounds.WUXIE);
                 voice(user, Sounds.SHUNSHOU);
                 if (!user.isCreative()) {stack.decrement(1);}
-                jizhi(user);
+                jizhi(user); benxi(user);
                 removeItem(target, ModItems.WUXIE);
-                jizhi(target);
+                jizhi(target); benxi(target);
                 return ActionResult.SUCCESS;
             } else {
                 DefaultedList<ItemStack> inventory = target.getInventory().main;
@@ -38,7 +36,7 @@ public class StealItem extends CardItem implements ModTools {
                     int slot = cardSlots.get(((int) (System.currentTimeMillis()/1000) % cardSlots.size()));
                     ItemStack item = inventory.get(slot);
                     if (!user.isCreative()) {stack.decrement(1);}
-                    jizhi(user);
+                    jizhi(user); benxi(user);
                     user.giveItemStack(item.copyWithCount(1)); /*顺手：复制一个物品*/ item.decrement(1);
                     return ActionResult.SUCCESS;
                 }

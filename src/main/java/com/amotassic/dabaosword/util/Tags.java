@@ -13,7 +13,7 @@ public class Tags {
         public static final TagKey<Item> BASIC_CARD = Items.createTag("basic_card");
         public static final TagKey<Item> ARMOURY_CARD = Items.createTag("armoury_card");
         public static final TagKey<Item> SKILL = Items.createTag("skill");
-        public static final TagKey<Item> QUANJI = Items.createTag("quanji");
+        public static final TagKey<Item> SHA = Items.createTag("sha");
 
 
         private static TagKey<Item> createTag(String name) {

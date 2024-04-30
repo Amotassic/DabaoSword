@@ -11,9 +11,7 @@ import net.minecraft.util.Formatting;
 import java.util.Objects;
 
 public class CooldownEffect extends StatusEffect {
-    public CooldownEffect(StatusEffectCategory category, int color) {
-        super(category, color);
-    }
+    public CooldownEffect(StatusEffectCategory category, int color) {super(category, color);}
 
     @Override
     public boolean canApplyUpdateEffect(int duration, int amplifier) {return true;}

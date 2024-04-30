@@ -11,14 +11,10 @@ import net.minecraft.entity.effect.StatusEffects;
 import java.util.Objects;
 
 public class InvulnerableEffect extends StatusEffect {
-    public InvulnerableEffect(StatusEffectCategory category, int color) {
-        super(category, color);
-    }
+    public InvulnerableEffect(StatusEffectCategory category, int color) {super(category, color);}
 
     @Override
-    public boolean canApplyUpdateEffect(int duration, int amplifier) {
-        return true;
-    }
+    public boolean canApplyUpdateEffect(int duration, int amplifier) {return true;}
 
     @Override
     public void applyUpdateEffect(LivingEntity entity, int amplifier) {

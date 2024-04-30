@@ -10,16 +10,14 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 public class TaoyuanItem extends CardItem implements ModTools {
-    public TaoyuanItem(Settings settings) {
-        super(settings);
-    }
+    public TaoyuanItem(Settings settings) {super(settings);}
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         if (!world.isClient && hand == Hand.MAIN_HAND) {
             ((ServerWorld) world).getPlayers().forEach(player -> player.heal(5.0F));
             ((ServerWorld) world).getPlayers().forEach(player -> voice(player, Sounds.TAOYUAN));
-            jizhi(user);
+            jizhi(user); benxi(user);
             if (!user.isCreative()) {user.getStackInHand(hand).decrement(1);}
         }
         return TypedActionResult.success(user.getStackInHand(hand));

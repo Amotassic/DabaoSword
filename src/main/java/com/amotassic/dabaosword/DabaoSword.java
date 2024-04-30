@@ -1,13 +1,18 @@
 package com.amotassic.dabaosword;
 
+import com.amotassic.dabaosword.command.InfoCommand;
 import com.amotassic.dabaosword.event.AttackEntityHandler;
 import com.amotassic.dabaosword.event.EntityHurtHandler;
+import com.amotassic.dabaosword.event.SeverTickHandler;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
+import com.amotassic.dabaosword.network.ServerNetworking;
 import com.amotassic.dabaosword.util.EntityHurtCallback;
 import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.item.ItemGroups;
@@ -28,6 +33,9 @@ public class DabaoSword implements ModInitializer {
         Tags.Tag();
         AttackEntityCallback.EVENT.register(new AttackEntityHandler());
         EntityHurtCallback.EVENT.register(new EntityHurtHandler());
+        ServerTickEvents.END_SERVER_TICK.register(new SeverTickHandler());
+        ServerNetworking.registerActiveSkillPacketHandler();
+        CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> InfoCommand.register(dispatcher)));
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register(content -> {
             content.addAfter(Items.NETHERITE_SWORD,ModItems.GUDINGDAO);
