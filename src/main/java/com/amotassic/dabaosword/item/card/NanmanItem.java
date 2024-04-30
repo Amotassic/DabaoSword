@@ -18,9 +18,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
 public class NanmanItem extends CardItem implements ModTools {
-    public NanmanItem(Settings settings) {
-        super(settings);
-    }
+    public NanmanItem(Settings settings) {super(settings);}
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
@@ -52,7 +50,7 @@ public class NanmanItem extends CardItem implements ModTools {
             wolf3.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 20 * 20,1,false,false,false));
 
             if (!user.isCreative()) {user.getStackInHand(hand).decrement(1);}
-            jizhi(user);
+            jizhi(user); benxi(user);
             voice(user, Sounds.NANMAN);
         }
         return TypedActionResult.success(user.getStackInHand(hand));

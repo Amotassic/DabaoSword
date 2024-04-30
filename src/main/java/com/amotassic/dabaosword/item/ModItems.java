@@ -154,6 +154,7 @@ public class ModItems {
                 entries.add(SkillCards.QICE);
                 entries.add(SkillCards.QUANJI);
                 entries.add(SkillCards.YIJI);
+                entries.add(SkillCards.BENXI);
                 entries.add(SkillCards.HUOJI);
                 entries.add(SkillCards.KANPO);
                 entries.add(SkillCards.JIZHI);

@@ -26,6 +26,24 @@
     ],
     "subtitle": "sounds.dabaosword.nahida"
   },
+  "benxi1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/benxi1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.benxi"
+  },
+  "benxi2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/benxi2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.benxi"
+  },
   "leiji1": {
     "sounds": [
       {

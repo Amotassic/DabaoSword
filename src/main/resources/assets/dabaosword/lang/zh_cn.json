@@ -140,9 +140,13 @@
   "item.dabaosword.taoluan.screen": "滔乱：选择获得一张卡牌",
   "item.dabaosword.leiji": "雷击",
   "item.dabaosword.leiji.tooltip": "闪避的同时召唤闪电",
+  "item.dabaosword.benxi": "奔袭",
+  "item.dabaosword.benxi.tooltip1": "使用牌后，触及距离+1（最多5）",
+  "item.dabaosword.benxi.tooltip2": "攻击命中后，触及距离减2，摸1张牌",
 
   //"配音"
   "sounds.dabaosword.nahida": "纳西妲：所闻遍计",
+  "sounds.dabaosword.benxi": "奔袭：发动",
   "sounds.dabaosword.leiji": "雷击：发动",
   "sounds.dabaosword.guose": "国色：发动",
   "sounds.dabaosword.liuli": "流离：发动",

@@ -18,9 +18,7 @@ import java.util.List;
 import java.util.Random;
 
 public class GainCardItem extends CardItem implements ModTools {
-    public GainCardItem(Settings settings) {
-        super(settings);
-    }
+    public GainCardItem(Settings settings) {super(settings);}
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
@@ -37,7 +35,7 @@ public class GainCardItem extends CardItem implements ModTools {
                 draw(user,2);
                 if (!user.isCreative()) user.getStackInHand(hand).decrement(1);
                 voice(user, Sounds.WUZHONG);
-                jizhi(user);
+                jizhi(user); benxi(user);
             }
         }
         return TypedActionResult.success(user.getStackInHand(hand));

@@ -1,7 +1,7 @@
 {
   "results": [
     {
-      "weight": 29.0,
+      "weight": 24.0,
       "item": "dabaosword:shan"
     },
     {
@@ -9,15 +9,15 @@
       "item": "dabaosword:peach"
     },
     {
-      "weight": 9.0,
+      "weight": 5.0,
       "item": "dabaosword:jiu"
     },
     {
-      "weight": 0.5,
+      "weight": 1.0,
       "item": "dabaosword:gudingdao"
     },
     {
-      "weight": 0.5,
+      "weight": 1.0,
       "item": "dabaosword:qinggang"
     },
     {
@@ -37,11 +37,11 @@
       "item": "dabaosword:nanman"
     },
     {
-      "weight": 2.0,
+      "weight": 3.0,
       "item": "dabaosword:chitu"
     },
     {
-      "weight": 2.0,
+      "weight": 4.0,
       "item": "dabaosword:dilu"
     },
     {
@@ -49,15 +49,15 @@
       "item": "dabaosword:wuzhong"
     },
     {
-      "weight": 4.0,
+      "weight": 6.0,
       "item": "dabaosword:tiesuo"
     },
     {
-      "weight": 4.0,
+      "weight": 3.0,
       "item": "dabaosword:juedou"
     },
     {
-      "weight": 4.0,
+      "weight": 2.0,
       "item": "dabaosword:jiedao"
     },
     {
@@ -65,15 +65,15 @@
       "item": "dabaosword:taoyuan"
     },
     {
-      "weight": 4.0,
+      "weight": 3.0,
       "item": "dabaosword:huogong"
     },
     {
-      "weight": 3.0,
+      "weight": 5.0,
       "item": "dabaosword:steal"
     },
     {
-      "weight": 3.0,
+      "weight": 6.0,
       "item": "dabaosword:discard"
     },
     {
@@ -81,12 +81,24 @@
       "item": "dabaosword:too_happy"
     },
     {
-      "weight": 3.0,
+      "weight": 2.0,
       "item": "dabaosword:bingliang"
     },
     {
-      "weight": 6.0,
+      "weight": 7.0,
       "item": "dabaosword:wuxie"
+    },
+    {
+      "weight": 9.0,
+      "item": "dabaosword:fire_sha"
+    },
+    {
+      "weight": 5.0,
+      "item": "dabaosword:thunder_sha"
+    },
+    {
+      "weight": 30.0,
+      "item": "dabaosword:sha"
     }
   ]
 }

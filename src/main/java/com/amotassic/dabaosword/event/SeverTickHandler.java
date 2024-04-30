@@ -19,6 +19,7 @@ import java.util.Objects;
 
 public class SeverTickHandler implements ServerTickEvents.EndTick, ModTools {
     private int tick = 0;
+    private int tick2 = 0;
     @Override
     public void onEndTick(MinecraftServer server) {
         if (++tick >= 1200) { // 每分钟检查一次
@@ -33,12 +34,13 @@ public class SeverTickHandler implements ServerTickEvents.EndTick, ModTools {
             }
         }
 
-        if (++tick >= 2) {
-            tick = 0;
+        if (++tick2 >= 2) {
+            tick2 = 0;
             for (ServerWorld world : server.getWorlds()) {
                 for (PlayerEntity player : world.getPlayers()) {
                     player.getCommandTags().remove("quanji");
                     player.getCommandTags().remove("sha");
+                    player.getCommandTags().remove("benxi");
                 }
             }
         }

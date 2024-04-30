@@ -11,9 +11,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 
 public class JuedouItem extends CardItem implements ModTools {
-    public JuedouItem(Settings settings) {
-        super(settings);
-    }
+    public JuedouItem(Settings settings) {super(settings);}
 
     //给与双方决斗效果
     @Override
@@ -21,14 +19,14 @@ public class JuedouItem extends CardItem implements ModTools {
         if (!user.getWorld().isClient) {
             if (entity instanceof PlayerEntity player && hasItem(player, ModItems.WUXIE)) {
                 removeItem(player, ModItems.WUXIE);
-                jizhi(player);
+                jizhi(player); benxi(player);
                 voice(player, Sounds.WUXIE);
             } else {
                 user.addStatusEffect(new StatusEffectInstance(ModItems.JUEDOUING, 20 * 10));
                 entity.addStatusEffect(new StatusEffectInstance(ModItems.JUEDOUING, 20 * 10));
             }
             if (!user.isCreative()) {stack.decrement(1);}
-            jizhi(user);
+            jizhi(user); benxi(user);
             voice(user, Sounds.JUEDOU);
             return ActionResult.SUCCESS;
         }

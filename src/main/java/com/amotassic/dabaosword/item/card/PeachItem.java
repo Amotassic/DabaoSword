@@ -11,9 +11,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 public class PeachItem extends CardItem implements ModTools {
-    public PeachItem(Settings settings) {
-        super(settings);
-    }
+    public PeachItem(Settings settings) {super(settings);}
 
     //非潜行时右键，给自己回血
     @Override
@@ -21,7 +19,7 @@ public class PeachItem extends CardItem implements ModTools {
         ItemStack stack = player.getStackInHand(hand);
         if (!world.isClient && player.getHealth() < player.getMaxHealth() && !player.isSneaking() && hand == Hand.MAIN_HAND) {
             player.heal(5);
-            voice(player, Sounds.RECOVER);
+            voice(player, Sounds.RECOVER); benxi(player);
             if (!player.isCreative()) {stack.decrement(1);}
             return TypedActionResult.success(stack);
         }
@@ -32,7 +30,7 @@ public class PeachItem extends CardItem implements ModTools {
         ItemStack stack1 = user.getStackInHand(hand);
         if (!user.getWorld().isClient && user.isSneaking() && hand == Hand.MAIN_HAND) {
             if (entity.getHealth() < entity.getMaxHealth()) {
-                entity.heal(5);
+                entity.heal(5); benxi(user);
                 entity.playSound(Sounds.RECOVER,1.0F,1.0F);
                 if (!user.isCreative()) {stack1.decrement(1);}
                 return ActionResult.success(!user.getWorld().isClient);

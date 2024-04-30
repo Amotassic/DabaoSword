@@ -3,10 +3,14 @@ package com.amotassic.dabaosword.util;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketsApi;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -15,6 +19,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Pair;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 
@@ -106,9 +111,40 @@ public interface ModTools {
     default void jizhi(PlayerEntity player) {
         if (hasTrinket(SkillCards.JIZHI, player)) {
             draw(player, 1);
-            if (new Random().nextFloat() < 0.5) {
-                voice(player, Sounds.JIZHI1);
-            } else {voice(player, Sounds.JIZHI2);}
+            if (new Random().nextFloat() < 0.5) {voice(player, Sounds.JIZHI1);} else {voice(player, Sounds.JIZHI2);}
+        }
+    }
+    //奔袭技能触发
+    default void benxi(PlayerEntity player) {
+        if (hasTrinket(SkillCards.BENXI, player)) {
+            ItemStack stack = trinketItem(SkillCards.BENXI, player);
+            NbtCompound nbt = new NbtCompound();
+            if (stack.getNbt() != null) {
+                int benxi = stack.getNbt().getInt("benxi");
+                if (benxi < 5) {
+                    nbt.putInt("benxi", benxi + 1); stack.setNbt(nbt);
+                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.BENXI1);} else {voice(player, Sounds.BENXI2);}
+                }
+            }
+        }
+    }
+
+    default void effectChange(LivingEntity entity, StatusEffect effect, int changeLevel, int duration) {
+        if (changeLevel > 0) {
+            if (entity.hasStatusEffect(effect)) {
+                int amp = Objects.requireNonNull(entity.getStatusEffect(effect)).getAmplifier();
+                entity.addStatusEffect(new StatusEffectInstance(effect, duration, amp + changeLevel));
+            } else {entity.addStatusEffect(new StatusEffectInstance(effect, duration, changeLevel - 1));}
+        }
+        if (changeLevel < 0) {
+            if (entity.hasStatusEffect(effect)) {
+                int amp = Objects.requireNonNull(entity.getStatusEffect(effect)).getAmplifier();
+                int newLevel = amp + changeLevel + 1;
+                entity.removeStatusEffect(effect);
+                if (newLevel >= 0) {
+                    entity.addStatusEffect(new StatusEffectInstance(effect, duration, newLevel));
+                }
+            }
         }
     }
 }

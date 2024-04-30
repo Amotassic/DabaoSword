@@ -44,15 +44,11 @@ import java.util.Random;
 public abstract class DamageMixin extends Entity implements ModTools {
     @Shadow public abstract ItemStack getEquippedStack(EquipmentSlot var1);
 
-    @Shadow public abstract float getHealth();
-
     @Shadow public abstract double getAttributeValue(EntityAttribute attribute);
 
     @Shadow public abstract boolean hasStatusEffect(StatusEffect effect);
 
     @Shadow public abstract boolean isGlowing();
-
-    @Shadow public abstract void applyDamage(DamageSource source, float amount);
 
     @Shadow public abstract boolean damage(DamageSource source, float amount);
 
@@ -118,10 +114,6 @@ public abstract class DamageMixin extends Entity implements ModTools {
         //被乐的生物的弹射物无法造成伤害
         if (source.isIn(DamageTypeTags.IS_PROJECTILE) && source.getAttacker() instanceof LivingEntity entity) {
             if (entity.hasStatusEffect(ModItems.TOO_HAPPY)) cir.setReturnValue(false);
-        }
-        //若承受火焰伤害，则 战火燃尽，嘤熊胆！
-        if (source.isIn(DamageTypeTags.IS_FIRE) && inrattan) {
-            if (this.getHealth()>0.25) {this.applyDamage(source,0.25f);}
         }
 
         if (source.getAttacker() instanceof PlayerEntity player && player.getWorld() instanceof ServerWorld world) {

@@ -33,7 +33,7 @@ public class AttackEntityHandler implements ModTools, AttackEntityCallback {
                 if (getShaSlot(player) != -1 && target instanceof WolfEntity dog && dog.hasStatusEffect(ModItems.INVULNERABLE)) {
                     if (dog.getOwner() != player) {
                         ItemStack stack = shaStack(player);
-                        dog.setHealth(0);
+                        dog.setHealth(0); benxi(player);
                         if (stack.getItem() == ModItems.SHA) voice(player, Sounds.SHA);
                         if (stack.getItem() == ModItems.FIRE_SHA) voice(player, Sounds.SHA_FIRE);
                         if (stack.getItem() == ModItems.THUNDER_SHA) voice(player, Sounds.SHA_THUNDER);

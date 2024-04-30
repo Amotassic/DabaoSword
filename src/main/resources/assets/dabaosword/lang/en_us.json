@@ -90,8 +90,15 @@
   "effect.dabaosword.reach": "Reach",
   "item.dabaosword.feiying": "Feiying",
   "effect.dabaosword.defense": "Melee Defense",
+  "effect.dabaosword.defensed": "Decrease in attack range",
   "item.dabaosword.gift_box": "Gift Box",
-  "item.dabaosword.gift_box.tooltip": "Hold gold ingots or blocks in the off-hand and draw skills",
+  "item.dabaosword.gift_box.tooltip": "Hold gold ingots or gold blocks in the off-hand, right-click to draw a skill",
+  "item.dabaosword.sha": "Slash",
+  "item.dabaosword.sha.tooltip": "After a successful hit, consume a Slash to increase damage by 5",
+  "item.dabaosword.fire_sha": "Fire Slash",
+  "item.dabaosword.fire_sha.tooltip": "Also sets the target on fire for 5 seconds",
+  "item.dabaosword.thunder_sha": "Thunder Slash",
+  "item.dabaosword.thunder_sha.tooltip": "Also summons a lightning bolt",
 
   //"Skills"
   "item.dabaosword.guose": "Alluring Beauty",
@@ -131,9 +138,16 @@
   "item.dabaosword.taoluan.tip": "Current health points are below 5! Cannot activate Chaos",
   "item.dabaosword.taoluan.tooltip": "Lose 5 health points and obtain any card",
   "item.dabaosword.taoluan.screen": "Chaos: Choose a card",
+  "item.dabaosword.leiji": "Thunder Strike",
+  "item.dabaosword.leiji.tooltip": "Summon lightning while dashing",
+  "item.dabaosword.benxi": "Charge",
+  "item.dabaosword.benxi.tooltip1": "After using the card, increase reach distance by 1 (up to 5)",
+  "item.dabaosword.benxi.tooltip2": "After a successful hit, decrease reach distance by 2 and draw 1 card",
 
   //"Sounds"
   "sounds.dabaosword.nahida": "Nahida: 所闻遍计",
+  "sounds.dabaosword.benxi": "Charge: Activate",
+  "sounds.dabaosword.leiji": "Thunder Strike: Activate",
   "sounds.dabaosword.guose": "Alluring Beauty: Activate",
   "sounds.dabaosword.liuli": "Drifting: Activate",
   "sounds.dabaosword.jueqing": "Heartless: Activate",
@@ -164,5 +178,15 @@
   "sounds.dabaosword.wanjian": "Arrow Rain: use",
   "sounds.dabaosword.wuxie": "Invincible: use",
   "sounds.dabaosword.wuzhong": "Something out of Nothing: use",
-  "sounds.dabaosword.nanaman": " Barbarian Invasion: Use"
+  "sounds.dabaosword.nanaman": " Barbarian Invasion: Use",
+  "sounds.dabaosword.sha": "Slash: Use",
+  "sounds.dabaosword.sha_fire": "Fire Slash: Use",
+  "sounds.dabaosword.sha_thunder": "Thunder Slash: Use",
+
+  "trinkets.slot.head.skills": "skill",
+  "trinkets.slot.legs.horses": "horse",
+  "trinkets.slot.offhand.card_pile": "card pile",
+
+  "category.dabaosword.keybindings": "DabaoSword",
+  "key.dabaosword.active_skill": "Active skill"
 }

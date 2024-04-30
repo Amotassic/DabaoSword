@@ -19,14 +19,10 @@ import java.util.Random;
 import static com.amotassic.dabaosword.item.card.ArrowRainItem.arrowRain;
 
 public class Cooldown2Effect extends StatusEffect implements ModTools {
-    public Cooldown2Effect(StatusEffectCategory category, int color) {
-        super(category, color);
-    }
+    public Cooldown2Effect(StatusEffectCategory category, int color) {super(category, color);}
 
     @Override
-    public boolean canApplyUpdateEffect(int duration, int amplifier) {
-        return true;
-    }
+    public boolean canApplyUpdateEffect(int duration, int amplifier) {return true;}
     //一级效果被用于万箭齐发
     @Override
     public void applyUpdateEffect(LivingEntity entity, int amplifier) {

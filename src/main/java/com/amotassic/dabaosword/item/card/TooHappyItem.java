@@ -11,9 +11,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 
 public class TooHappyItem extends CardItem implements ModTools {
-    public TooHappyItem(Settings settings) {
-        super(settings);
-    }
+    public TooHappyItem(Settings settings) {super(settings);}
 
     //对生物使用后给予其10秒乐不思蜀效果
     @Override
@@ -22,12 +20,12 @@ public class TooHappyItem extends CardItem implements ModTools {
             if (entity instanceof PlayerEntity player) {
                 if (hasItem(player, ModItems.WUXIE)) {
                     removeItem(player, ModItems.WUXIE);
-                    jizhi(player);
+                    jizhi(player); benxi(player);
                     voice(player, Sounds.WUXIE);
                 } else {player.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 5));}
             } else {entity.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 15));}
             if (!user.isCreative()) {stack.decrement(1);}
-            jizhi(user);
+            jizhi(user); benxi(user);
             voice(user, Sounds.LEBU);
             return ActionResult.SUCCESS;
         }

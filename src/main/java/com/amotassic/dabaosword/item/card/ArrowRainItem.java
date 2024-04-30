@@ -13,9 +13,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 public class ArrowRainItem extends CardItem {
-    public ArrowRainItem(Settings settings) {
-        super(settings);
-    }
+    public ArrowRainItem(Settings settings) {super(settings);}
     //一次射五发
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {

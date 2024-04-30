@@ -13,9 +13,7 @@ import net.minecraft.world.World;
 
 public class ShanItem extends CardItem implements ModTools {
 
-    public ShanItem(Settings settings) {
-        super(settings);
-    }
+    public ShanItem(Settings settings) {super(settings);}
     //使用后，向前冲刺一段距离，无敌0.5秒，冷却时间1秒
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
@@ -25,8 +23,8 @@ public class ShanItem extends CardItem implements ModTools {
             user.addVelocity(momentum.getX(),0 ,momentum.getZ());
             user.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 10,0,false,false,false));
             user.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 20,0,false,false,false));
+            voice(user, Sounds.SHAN); benxi(user);
             if (!user.isCreative()) {user.getStackInHand(hand).decrement(1);}
-            voice(user, Sounds.SHAN);
         }
         return TypedActionResult.success(user.getStackInHand(hand));
     }
