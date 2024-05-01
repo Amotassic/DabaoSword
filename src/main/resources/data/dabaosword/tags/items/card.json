@@ -1,7 +1,6 @@
 {
   "replace": false,
   "values": [
-    "dabaosword:gain_card",
     "dabaosword:peach",
     "dabaosword:jiu",
     "dabaosword:too_happy",
@@ -23,6 +22,9 @@
     "dabaosword:gudingdao",
     "dabaosword:qinggang",
     "dabaosword:rattan_chestplate",
-    "dabaosword:rattan_leggings"
+    "dabaosword:rattan_leggings",
+    "dabaosword:fire_sha",
+    "dabaosword:thunder_sha",
+    "dabaosword:sha"
   ]
 }

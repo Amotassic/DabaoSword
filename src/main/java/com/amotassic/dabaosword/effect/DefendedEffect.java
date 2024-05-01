@@ -16,8 +16,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import java.util.Objects;
 import java.util.UUID;
 
-public class DefensedEffect extends StatusEffect {
-    public DefensedEffect(StatusEffectCategory category, int color) {super(category, color);}
+public class DefendedEffect extends StatusEffect {
+    public DefendedEffect(StatusEffectCategory category, int color) {super(category, color);}
 
     @Override
     public void onApplied(LivingEntity entity, AttributeContainer attributes, int amplifier) {
@@ -39,7 +39,7 @@ public class DefensedEffect extends StatusEffect {
         Supplier<ImmutableMultimap<EntityAttribute, EntityAttributeModifier>> rangeModifier = Suppliers.memoize(() -> ImmutableMultimap.of(ReachEntityAttributes.ATTACK_RANGE, AttributeModifier));
 
         if (entity instanceof PlayerEntity player) {
-            int restTime = Objects.requireNonNull(player.getStatusEffect(ModItems.REACH)).getDuration();
+            int restTime = Objects.requireNonNull(player.getStatusEffect(ModItems.DEFENDED)).getDuration();
             if(restTime<=1) {
                 player.getAttributes().removeModifiers(rangeModifier.get());
             }

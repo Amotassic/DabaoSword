@@ -1,6 +1,7 @@
 package com.amotassic.dabaosword.event;
 
 import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.ModTools;
 import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -47,16 +48,33 @@ public class SeverTickHandler implements ServerTickEvents.EndTick, ModTools {
 
         for (ServerWorld world : server.getWorlds()) {
             for (PlayerEntity player : world.getPlayers()) {
+
                 Box box = new Box(player.getBlockPos()).expand(20); // 检测范围，根据需要修改
-                for (LivingEntity nearbyPlayer : world.getEntitiesByClass(PlayerEntity.class, box, playerEntity -> playerEntity.hasStatusEffect(ModItems.DEFENSE))) {
+                for (LivingEntity nearbyPlayer : world.getEntitiesByClass(PlayerEntity.class, box, playerEntity -> playerEntity.hasStatusEffect(ModItems.DEFEND))) {
                     //实现沈佳宜的效果：若玩家看到的玩家有近战防御效果，则给当前玩家攻击范围缩短效果
-                    int amplifier = Objects.requireNonNull(nearbyPlayer.getStatusEffect(ModItems.DEFENSE)).getAmplifier();
+                    int amplifier = Objects.requireNonNull(nearbyPlayer.getStatusEffect(ModItems.DEFEND)).getAmplifier();
                     int attack = (int) (player.getAttributeValue(ReachEntityAttributes.ATTACK_RANGE) + (player.isCreative()?6:3));
                     int defensed = Math.min(amplifier, attack);
                     if (player != nearbyPlayer && islooking(player, nearbyPlayer)) {
-                        player.addStatusEffect(new StatusEffectInstance(ModItems.DEFENSED, 1,defensed,false,false,false));
+                        player.addStatusEffect(new StatusEffectInstance(ModItems.DEFENDED, 1,defensed,false,false,false));
                     }
                 }
+
+                //马术和飞影的效果
+                if (!hasTrinket(SkillCards.BENXI, player)) {
+                    if (hasTrinket(ModItems.CHITU, player) && hasTrinket(SkillCards.MASHU, player)) {
+                        player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,2));
+                    } else if (hasTrinket(ModItems.CHITU, player) || hasTrinket(SkillCards.MASHU, player)) {
+                        player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,1));
+                    }
+                }
+
+                if (hasTrinket(ModItems.DILU, player) && hasTrinket(SkillCards.FEIYING, player)) {
+                    player.addStatusEffect(new StatusEffectInstance(ModItems.DEFEND, 10,2));
+                } else if (hasTrinket(ModItems.DILU, player) || hasTrinket(SkillCards.FEIYING, player)) {
+                    player.addStatusEffect(new StatusEffectInstance(ModItems.DEFEND, 10,1));
+                }
+
             }
         }
     }

@@ -3,8 +3,6 @@ package com.amotassic.dabaosword.item;
 import com.amotassic.dabaosword.effect.*;
 import com.amotassic.dabaosword.item.card.*;
 import com.amotassic.dabaosword.item.card.GiftBoxItem;
-import com.amotassic.dabaosword.item.horse.Reach;
-import com.amotassic.dabaosword.item.horse.Defense;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -78,12 +76,12 @@ public class ModItems {
     //桃园结义
     public static final Item TAOYUAN = register("taoyuan", new TaoyuanItem(new FabricItemSettings()));
     //触及距离增加
-    public static final Item CHITU = register("chitu", new Reach(new FabricItemSettings().maxCount(1)));
+    public static final Item CHITU = register("chitu", new SkillItem(new FabricItemSettings().maxCount(1)));
     public static final StatusEffect REACH = new ReachEffect(StatusEffectCategory.BENEFICIAL, 0x000000);
     //近战防御范围增加
-    public static final Item DILU = register("dilu", new Defense(new FabricItemSettings().maxCount(1)));
-    public static final StatusEffect DEFENSE = new DefenseEffect(StatusEffectCategory.BENEFICIAL, 0x000000);
-    public static final StatusEffect DEFENSED = new DefensedEffect(StatusEffectCategory.HARMFUL, 0x000000);
+    public static final Item DILU = register("dilu", new SkillItem(new FabricItemSettings().maxCount(1)));
+    public static final StatusEffect DEFEND = new DefendEffect(StatusEffectCategory.BENEFICIAL, 0x000000);
+    public static final StatusEffect DEFENDED = new DefendedEffect(StatusEffectCategory.HARMFUL, 0x000000);
     //礼盒
     public static final Item GIFTBOX = register("gift_box", new GiftBoxItem(new FabricItemSettings()));
     //杀
@@ -102,8 +100,8 @@ public class ModItems {
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "invulnerable"), INVULNERABLE);
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "juedou"), JUEDOUING);
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "reach"), REACH);
-        Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "defense"), DEFENSE);
-        Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "defensed"), DEFENSED);
+        Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "defense"), DEFEND);
+        Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "defensed"), DEFENDED);
     }
 
     private static Item register(String name,Item item){

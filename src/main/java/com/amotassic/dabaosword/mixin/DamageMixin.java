@@ -103,8 +103,8 @@ public abstract class DamageMixin extends Entity implements ModTools {
                 if (armor3) {stack3.damage((int) (3 *Math.random()+1), entity,player -> player.sendEquipmentBreakStatus(EquipmentSlot.LEGS));}
             }
             //沈佳宜防御效果
-            if (!(entity instanceof PlayerEntity) && this.hasStatusEffect(ModItems.DEFENSE)) {
-                if (Objects.requireNonNull(this.getStatusEffect(ModItems.DEFENSE)).getAmplifier() >= 2) {
+            if (!(entity instanceof PlayerEntity) && this.hasStatusEffect(ModItems.DEFEND)) {
+                if (Objects.requireNonNull(this.getStatusEffect(ModItems.DEFEND)).getAmplifier() >= 2) {
                     cir.setReturnValue(false);
                 }
             }

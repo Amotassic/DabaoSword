@@ -1,7 +1,5 @@
 package com.amotassic.dabaosword.command;
 
-import com.amotassic.dabaosword.item.horse.Defense;
-import com.amotassic.dabaosword.item.horse.Reach;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
@@ -37,7 +35,7 @@ public class InfoCommand {
             List<Pair<SlotReference, ItemStack>> allEquipped = component.get().getAllEquipped();
             for(Pair<SlotReference, ItemStack> entry : allEquipped) {
                 ItemStack stack = entry.getRight();
-                if(stack.getItem() instanceof SkillItem || stack.getItem() instanceof Defense|| stack.getItem() instanceof Reach) {
+                if(stack.getItem() instanceof SkillItem) {
                     if (i == 0) {context.getSource().sendMessage(Text.literal(target.getEntityName()).append("装备了以下物品："));}
                     context.getSource().sendMessage(stack.getName());
                     i++;
