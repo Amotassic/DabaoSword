@@ -71,6 +71,10 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
                     if (new Random().nextFloat() < 0.5) {voice(player, Sounds.KUANGGU1);} else {voice(player, Sounds.KUANGGU2);}
                     player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 8,0,false,true,true));
                 }
+
+                if (player.getCommandTags().contains("px")) {
+                    entity.timeUntilRegen = 0;
+                }
             }
 
             if (source.getSource() instanceof LivingEntity attacker) {
