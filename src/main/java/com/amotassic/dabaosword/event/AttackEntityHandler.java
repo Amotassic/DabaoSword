@@ -9,7 +9,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
@@ -29,7 +28,7 @@ public class AttackEntityHandler implements ModTools, AttackEntityCallback {
 
             if (entity instanceof LivingEntity target) {
 
-                //如果有杀，攻击南蛮入侵召唤的狗可杀死它
+                /*//如果有杀，攻击南蛮入侵召唤的狗可杀死它
                 if (getShaSlot(player) != -1 && target instanceof WolfEntity dog && dog.hasStatusEffect(ModItems.INVULNERABLE)) {
                     if (dog.getOwner() != player) {
                         ItemStack stack = shaStack(player);
@@ -39,7 +38,7 @@ public class AttackEntityHandler implements ModTools, AttackEntityCallback {
                         if (stack.getItem() == ModItems.THUNDER_SHA) voice(player, Sounds.SHA_THUNDER);
                         if (!player.isCreative()) {stack.decrement(1);}
                     }
-                }
+                }*/
 
                 //破军：攻击命中盔甲槽有物品的生物后，会让其所有盔甲掉落，配合古锭刀特效使用，pvp神器
                 if (hasTrinket(SkillCards.POJUN, player) && !player.hasStatusEffect(ModItems.COOLDOWN)) {

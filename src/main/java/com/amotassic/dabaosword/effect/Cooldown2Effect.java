@@ -23,14 +23,14 @@ public class Cooldown2Effect extends StatusEffect implements ModTools {
 
     @Override
     public boolean canApplyUpdateEffect(int duration, int amplifier) {return true;}
-    //一级效果被用于万箭齐发
     @Override
     public void applyUpdateEffect(LivingEntity entity, int amplifier) {
         if (entity instanceof PlayerEntity player && player.getWorld() instanceof ServerWorld world) {
             int restTime = Objects.requireNonNull(entity.getStatusEffect(ModItems.COOLDOWN2)).getDuration();
-            if (amplifier == 1 && restTime % 5 == 0) {arrowRain(player);}
+            //一级效果被用于万箭齐发
+            if (amplifier == 1 && restTime % 3 == 0) {arrowRain(player);}
 
-            if (amplifier == 0 && hasTrinket(SkillCards.LEIJI, player) && restTime >= 15) {//雷击的效果
+            if (amplifier == 3 && hasTrinket(SkillCards.LEIJI, player) && restTime >= 15) {//雷击的效果
                 EntityType.LIGHTNING_BOLT.spawn(world, new BlockPos((int) player.getX(), (int) player.getY(), (int) player.getZ()),null);
             }
         }
@@ -39,7 +39,7 @@ public class Cooldown2Effect extends StatusEffect implements ModTools {
 
     @Override
     public void onApplied(LivingEntity entity, AttributeContainer attributes, int amplifier) {
-        if (entity instanceof PlayerEntity player && !player.getWorld().isClient && hasTrinket(SkillCards.LEIJI, player) && amplifier == 0) {
+        if (entity instanceof PlayerEntity player && !player.getWorld().isClient && hasTrinket(SkillCards.LEIJI, player) && amplifier == 3) {
             //雷击语音播放
             if (new Random().nextFloat() < 0.5) {voice(player, Sounds.LEIJI1);} else {voice(player, Sounds.LEIJI2);}
         }

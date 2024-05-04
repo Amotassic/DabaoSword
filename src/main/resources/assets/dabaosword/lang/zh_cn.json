@@ -4,6 +4,8 @@
   "dabaosword.draw": "你摸了两张牌",
   "dabaosword.draw.monster": "你击杀怪物，摸了一张牌",
   "dabaosword.draw.player": "你击杀玩家，摸了两张牌",
+  "dabaosword.change_skill": "你现在可以更换技能了",
+  "dabaosword.change_skill2": "将要更换的技能置于副手，潜行右键以更换",
   "item.dabaosword.gudingdao": "古锭刀",
   "item.dabaosword.gudingdao.tooltip1": "犯大吴疆土者，盛必击而破之！",
   "item.dabaosword.gudingdao.tooltip2": "对没有穿装备的生物造成的伤害提高50%",

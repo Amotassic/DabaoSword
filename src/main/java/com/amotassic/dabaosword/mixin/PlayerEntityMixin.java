@@ -1,16 +1,171 @@
 package com.amotassic.dabaosword.mixin;
 
+import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.EntityHurtCallback;
+import com.amotassic.dabaosword.util.ModTools;
+import com.amotassic.dabaosword.util.Sounds;
+import com.amotassic.dabaosword.util.Tags;
+import dev.emi.trinkets.api.TrinketComponent;
+import dev.emi.trinkets.api.TrinketsApi;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.registry.tag.TagKey;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Pair;
+import net.minecraft.util.math.Box;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.Optional;
+import java.util.Random;
 
 @Mixin(PlayerEntity.class)
-public class PlayerEntityMixin {
+public abstract class PlayerEntityMixin extends LivingEntity implements ModTools {
+    protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {super(entityType, world);}
+
+    @Shadow public abstract PlayerInventory getInventory();
+
+    @Shadow public abstract boolean isCreative();
+
+    @Inject(method = "damage",at = @At("HEAD"), cancellable = true)
+    private void damagemixin(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+
+        if (this.getWorld() instanceof ServerWorld world) {
+            if (source.getSource() instanceof WolfEntity dog && dog.hasStatusEffect(ModItems.INVULNERABLE)) {
+                //被南蛮入侵的狗打中可以消耗杀以免疫伤害
+                if (dog.getOwner() != this && getShaSlot(this) != -1) {
+                    ItemStack stack = shaStack(this);
+                    cir.setReturnValue(false);
+                    dog.setHealth(0);
+                    if (stack.getItem() == ModItems.SHA) voice(this, Sounds.SHA);
+                    if (stack.getItem() == ModItems.FIRE_SHA) voice(this, Sounds.SHA_FIRE);
+                    if (stack.getItem() == ModItems.THUNDER_SHA) voice(this, Sounds.SHA_THUNDER);
+                    stack.decrement(1);
+                }
+            }
+
+            if (source.getAttacker() instanceof LivingEntity) {
+                //闪的被动效果
+                if (getShanSlot(this) != -1 && !this.isCreative() && !this.hasStatusEffect(ModItems.COOLDOWN2) && !this.hasStatusEffect(ModItems.INVULNERABLE)) {
+                    ItemStack stack = shanStack(this);
+                    cir.setReturnValue(false);
+                    this.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 20,0,false,false,false));
+                    this.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 40,0,false,false,false));
+                    voice(this, Sounds.SHAN);
+                    stack.decrement(1);
+                }
+            }
+
+            //流离
+            if (hasTrinket(SkillCards.LIULI, this) && source.getAttacker() instanceof LivingEntity attacker && hasItemInTag(Tags.Items.CARD, this) && !this.hasStatusEffect(ModItems.INVULNERABLE)) {
+                ItemStack stack = stackInTag(Tags.Items.CARD, this);
+                Box box = new Box(this.getBlockPos()).expand(10);
+                for (LivingEntity nearbyEntity : world.getEntitiesByClass(LivingEntity.class, box, LivingEntity -> LivingEntity != attacker && LivingEntity != this)) {
+                    if (nearbyEntity != null) {
+                        cir.setReturnValue(false);
+                        this.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 10,0,false,false,false));
+                        this.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 10,0,false,false,false));
+                        stack.decrement(1);
+                        if (new Random().nextFloat() < 0.5) {voice(this, Sounds.LIULI1);} else {voice(this, Sounds.LIULI2);}
+                        nearbyEntity.timeUntilRegen = 0;
+                        nearbyEntity.damage(source, amount); break;
+                    }
+                }
+            }
+
+        }
+    }
+
+    @Unique
+    Boolean hasItemInTag(TagKey<Item> tag, PlayerEntityMixin player) {
+        return player.getInventory().contains(tag);
+    }
+
+    @Unique
+    ItemStack stackInTag(TagKey<Item> tag, PlayerEntityMixin player) {
+        PlayerInventory inv = player.getInventory();
+        int i = getSlotInTag(tag, player);
+        return inv.getStack(i);
+    }
+
+    @Unique
+    int getSlotInTag(TagKey<Item> tag, PlayerEntityMixin player) {
+        for (int i = 0; i < player.getInventory().size(); ++i) {
+            ItemStack stack = player.getInventory().getStack(i);
+            if (stack.isEmpty() || !stack.isIn(tag)) continue;
+            return i;
+        }
+        return -1;
+    }
+
+    @Unique
+    boolean hasTrinket(Item item, PlayerEntityMixin player) {
+        return trinketItem(item, player) != null;
+    }
+
+    @Unique
+    ItemStack trinketItem(Item item, PlayerEntityMixin player) {
+        Optional<TrinketComponent> optionalComponent = TrinketsApi.getTrinketComponent(player);
+        if(optionalComponent.isEmpty()) return null;
+
+        TrinketComponent component = optionalComponent.get();
+        return component.getEquipped(item).stream().map(Pair::getRight).findFirst().orElse(null);
+    }
+
+    @Unique
+    int getShaSlot(PlayerEntityMixin player) {
+        for (int i = 0; i < 18; ++i) {
+            ItemStack stack = player.getInventory().getStack(i);
+            if (stack.isEmpty() || !stack.isIn(Tags.Items.SHA)) continue;
+            return i;
+        }
+        return -1;
+    }
+
+    @Unique
+    ItemStack shaStack(PlayerEntityMixin player) {
+        return player.getInventory().getStack(getShaSlot(player));
+    }
+
+    @Unique
+    int getShanSlot(PlayerEntityMixin player) {
+        for (int i = 0; i < 18; ++i) {
+            ItemStack stack = player.getInventory().getStack(i);
+            if (stack.isEmpty() || stack.getItem() != ModItems.SHAN) continue;
+            return i;
+        }
+        return -1;
+    }
+
+    @Unique
+    ItemStack shanStack(PlayerEntityMixin player) {
+        return player.getInventory().getStack(getShanSlot(player));
+    }
+
+    @Unique
+    void voice(PlayerEntityMixin player, SoundEvent sound) {
+        if (player.getWorld() instanceof ServerWorld world) {
+            world.playSound(null, player.getX(), player.getY(), player.getZ(), sound, SoundCategory.PLAYERS, 2.0F, 1.0F);
+        }
+    }
+
     @Inject(at = @At("TAIL"), method = "applyDamage", cancellable = true)
     private void onEntityHurt(final DamageSource source, final float amount, CallbackInfo ci) {
         ActionResult result = EntityHurtCallback.EVENT.invoker().hurtEntity((PlayerEntity) (Object) this, source,

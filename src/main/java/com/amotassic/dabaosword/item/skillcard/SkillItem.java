@@ -1,15 +1,26 @@
 package com.amotassic.dabaosword.item.skillcard;
 
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.util.ModTools;
+import com.amotassic.dabaosword.util.*;
+import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketItem;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.registry.Registries;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 import java.util.List;
+
+import static com.amotassic.dabaosword.item.card.GiftBoxItem.selectRandomEntry;
 
 public class SkillItem extends TrinketItem implements ModTools {
     public SkillItem(Settings settings) {super(settings);}
@@ -72,5 +83,37 @@ public class SkillItem extends TrinketItem implements ModTools {
         if (stack.getItem() == ModItems.CARD_PILE) {
             tooltip.add(Text.translatable("item.dabaosword.card_pile.tooltip"));
         }
+    }
+
+    @Override
+    public void onEquip(ItemStack stack, SlotReference slot, LivingEntity entity) {
+        if (entity.getWorld() instanceof ServerWorld world) {
+            world.getPlayers().forEach(player -> player.sendMessage(
+                    Text.literal(player.getEntityName()).append(Text.literal("装备了 ").append(stack.getName()))
+            ));
+        }
+        super.onEquip(stack, slot, entity);
+    }
+
+    @Override
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        if (!user.getWorld().isClient && user.getCommandTags().contains("change_skill") && hand == Hand.OFF_HAND && user.isSneaking()) {
+            ItemStack stack = user.getStackInHand(hand);
+            if (stack.isIn(Tags.Items.SKILL)) {
+                stack.setCount(0);
+                changeSkill(user);
+                user.getCommandTags().remove("change_skill");
+            }
+        }
+        return super.use(world, user, hand);
+    }
+
+    public void changeSkill(PlayerEntity player) {
+        List<LootEntry> lootEntries = LootTableParser.parseLootTable(new Identifier("dabaosword", "loot_tables/change_skill.json"));
+        LootEntry selectedEntry = selectRandomEntry(lootEntries);
+
+        ItemStack stack = new ItemStack(Registries.ITEM.get(selectedEntry.item()));
+        if (stack.getItem() != Items.AIR) voice(player, Sounds.GIFTBOX,3);
+        player.giveItemStack(stack);
     }
 }

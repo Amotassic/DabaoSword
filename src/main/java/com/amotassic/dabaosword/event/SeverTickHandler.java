@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
@@ -21,33 +22,33 @@ import java.util.Objects;
 public class SeverTickHandler implements ServerTickEvents.EndTick, ModTools {
     private int tick = 0;
     private int tick2 = 0;
+    private int skillChange = 0;
     @Override
     public void onEndTick(MinecraftServer server) {
-        if (++tick >= 1200) { // 每分钟检查一次
-            tick = 0;
-            for (ServerWorld world : server.getWorlds()) {
-                for (PlayerEntity player : world.getPlayers()) {
+
+        for (ServerWorld world : server.getWorlds()) {
+            for (PlayerEntity player : world.getPlayers()) {
+                if (++tick >= 1200) { // 每分钟摸两张牌
+                    tick = 0;
                     if (hasTrinket(ModItems.CARD_PILE, player) && !player.isCreative() && !player.isSpectator()) {
                         player.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
                         player.sendMessage(Text.translatable("dabaosword.draw"),true);
                     }
                 }
-            }
-        }
 
-        if (++tick2 >= 2) {
-            tick2 = 0;
-            for (ServerWorld world : server.getWorlds()) {
-                for (PlayerEntity player : world.getPlayers()) {
+                if (++tick2 >= 2) {
+                    tick2 = 0;
                     player.getCommandTags().remove("quanji");
                     player.getCommandTags().remove("sha");
                     player.getCommandTags().remove("benxi");
                 }
-            }
-        }
 
-        for (ServerWorld world : server.getWorlds()) {
-            for (PlayerEntity player : world.getPlayers()) {
+                if (++skillChange >= 6000) {
+                    skillChange = 0;
+                    player.addCommandTag("change_skill");
+                    player.sendMessage(Text.translatable("dabaosword.change_skill").formatted(Formatting.BOLD));
+                    player.sendMessage(Text.translatable("dabaosword.change_skill2"));
+                }
 
                 Box box = new Box(player.getBlockPos()).expand(20); // 检测范围，根据需要修改
                 for (LivingEntity nearbyPlayer : world.getEntitiesByClass(PlayerEntity.class, box, playerEntity -> playerEntity.hasStatusEffect(ModItems.DEFEND))) {

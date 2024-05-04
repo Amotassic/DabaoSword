@@ -34,6 +34,7 @@ public class DabaoSword implements ModInitializer {
         CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> InfoCommand.register(dispatcher)));
         PlayerDeathCallback.EVENT.register(new PlayerDeathHandler());
         PlayerRespawnCallback.EVENT.register(new PlayerRespawnHandler());
+        PlayerConnectCallback.EVENT.register(new PlayerConnectHandler());
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register(content -> {
             content.addAfter(Items.NETHERITE_SWORD,ModItems.GUDINGDAO);

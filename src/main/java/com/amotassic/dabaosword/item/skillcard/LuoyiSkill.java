@@ -35,7 +35,9 @@ public class LuoyiSkill extends SkillItem implements ModTools {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        if (new Random().nextFloat() < 0.5) {voice(user, Sounds.LUOYI1);} else {voice(user, Sounds.LUOYI2);}
+        if (!world.isClient && !user.isSneaking()) {
+            if (new Random().nextFloat() < 0.5) {voice(user, Sounds.LUOYI1);} else {voice(user, Sounds.LUOYI2);}
+        }
         return super.use(world, user, hand);
     }
 }

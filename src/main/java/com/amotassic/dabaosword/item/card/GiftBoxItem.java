@@ -62,7 +62,7 @@ public class GiftBoxItem extends Item implements ModTools {
         }
     }
 
-    private static LootEntry selectRandomEntry(List<LootEntry> lootEntries) {
+    public static LootEntry selectRandomEntry(List<LootEntry> lootEntries) {
         double totalWeight = lootEntries.stream().mapToDouble(LootEntry::weight).sum();
         double randomValue = new Random().nextDouble() * totalWeight;
         double currentWeight = 0;

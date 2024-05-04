@@ -5,13 +5,12 @@ import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.EntityHurtCallback;
 import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
-import com.amotassic.dabaosword.util.Tags;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -20,12 +19,8 @@ import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 
 import java.util.Random;
-
-import static com.amotassic.dabaosword.item.card.GainCardItem.draw;
 
 public class EntityHurtHandler implements EntityHurtCallback, ModTools {
     NbtCompound quanji = new NbtCompound();
@@ -95,33 +90,27 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
                 //杀的相关结算
                 if (getShaSlot(player) != -1 && !player.getCommandTags().contains("sha")) {
                     ItemStack stack = shaStack(player);
-                    if (entity instanceof PlayerEntity target && hasItem(target, ModItems.SHAN)) {
-                        voice(target, Sounds.SHAN); benxi(target);
-                        if (stack.getItem() == ModItems.SHA) voice(player, Sounds.SHA);
-                        if (stack.getItem() == ModItems.FIRE_SHA) voice(player, Sounds.SHA_FIRE);
-                        if (stack.getItem() == ModItems.THUNDER_SHA) voice(player, Sounds.SHA_THUNDER);
-                        if (!player.isCreative()) {stack.decrement(1);}
-                        removeItem(target, ModItems.SHAN);
-                    } else {
-                        player.addCommandTag("sha");
-                        if (stack.getItem() == ModItems.SHA) {
-                            voice(player, Sounds.SHA);
-                            entity.timeUntilRegen = 0; entity.damage(source,5);
-                        }
-                        if (stack.getItem() == ModItems.FIRE_SHA) {
-                            voice(player, Sounds.SHA_FIRE);
-                            entity.timeUntilRegen = 0; entity.damage(player.getDamageSources().inFire(),5);
-                            entity.setOnFireFor(6);
-                        }
-                        if (stack.getItem() == ModItems.THUNDER_SHA) {
-                            voice(player, Sounds.SHA_THUNDER);
-                            entity.timeUntilRegen = 0;
-                            EntityType.LIGHTNING_BOLT.spawn(world, new BlockPos((int) entity.getX(), (int) entity.getY(), (int) entity.getZ()),null);
-                            entity.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 200,0,false,false,false));
-                        }
-                        benxi(player);
-                        if (!player.isCreative()) {stack.decrement(1);}
+                    player.addCommandTag("sha");
+                    if (stack.getItem() == ModItems.SHA) {
+                        voice(player, Sounds.SHA);
+                        entity.timeUntilRegen = 0; entity.damage(source,5);
                     }
+                    if (stack.getItem() == ModItems.FIRE_SHA) {
+                        voice(player, Sounds.SHA_FIRE);
+                        entity.timeUntilRegen = 0; entity.setOnFireFor(5);
+                    }
+                    if (stack.getItem() == ModItems.THUNDER_SHA) {
+                        voice(player, Sounds.SHA_THUNDER);
+                        entity.timeUntilRegen = 0; entity.damage(player.getDamageSources().magic(),5);
+                        LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(world);
+                        if (lightningEntity != null) {
+                            lightningEntity.refreshPositionAfterTeleport(entity.getX(), entity.getY(), entity.getZ());
+                            lightningEntity.setCosmetic(true);
+                        }
+                        world.spawnEntity(lightningEntity);
+                    }
+                    benxi(player);
+                    if (!player.isCreative()) {stack.decrement(1);}
                 }
 
                 //排异技能：攻击伤害增加
@@ -155,7 +144,7 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
                         if (ben > 1) {
                             player.addCommandTag("benxi");
                             benxi.putInt("benxi", ben - 2); stack.setNbt(benxi);
-                            draw(player,1);
+                            player.giveItemStack(new ItemStack(ModItems.GAIN_CARD));
                             if (new Random().nextFloat() < 0.5) {voice(player, Sounds.BENXI1);} else {voice(player, Sounds.BENXI2);}
                         }
                     }
@@ -183,20 +172,6 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
                     player.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
                     player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 20, 0, false, true, true));
                     if (new Random().nextFloat() < 0.5) {voice(player, Sounds.YIJI1);} else {voice(player, Sounds.YIJI2);}
-                }
-
-                //流离
-                if (hasTrinket(SkillCards.LIULI, player) && source.getAttacker() instanceof LivingEntity attacker && hasItemInTag(Tags.Items.CARD, player)) {
-                    ItemStack stack = stackInTag(Tags.Items.CARD, player);
-                    Box box = new Box(player.getBlockPos()).expand(5);
-                    for (LivingEntity nearbyEntity : world.getEntitiesByClass(LivingEntity.class, box, LivingEntity -> LivingEntity != attacker && LivingEntity != player)) {
-                        if (nearbyEntity != null) {
-                            player.heal(amount);
-                            stack.decrement(1);
-                            if (new Random().nextFloat() < 0.5) {voice(player, Sounds.LIULI1);} else {voice(player, Sounds.LIULI2);}
-                            nearbyEntity.damage(source, amount);break;
-                        }
-                    }
                 }
 
             }

@@ -1,6 +1,7 @@
 package com.amotassic.dabaosword.item.card;
 
 import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -21,8 +22,9 @@ public class ShanItem extends CardItem implements ModTools {
         if (!user.hasStatusEffect(ModItems.COOLDOWN2) && hand == Hand.MAIN_HAND) {
             Vec3d momentum = user.getRotationVector().multiply(3);
             user.addVelocity(momentum.getX(),0 ,momentum.getZ());
-            user.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 10,0,false,false,false));
-            user.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 20,0,false,false,false));
+            int i = hasTrinket(SkillCards.LEIJI, user) ? 3 : 0;
+            user.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 20,0,false,false,false));
+            user.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 20,i,false,false,false));
             voice(user, Sounds.SHAN); benxi(user);
             if (!user.isCreative()) {user.getStackInHand(hand).decrement(1);}
         }

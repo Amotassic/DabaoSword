@@ -5,10 +5,7 @@ import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.EntityHurtCallback;
 import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -24,7 +21,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -53,6 +49,8 @@ public abstract class DamageMixin extends Entity implements ModTools {
     @Shadow public abstract boolean damage(DamageSource source, float amount);
 
     @Shadow public abstract @Nullable StatusEffectInstance getStatusEffect(StatusEffect effect);
+
+    @Shadow public abstract void sendEquipmentBreakStatus(EquipmentSlot slot);
 
     public DamageMixin(EntityType<?> type, World world) {super(type, world);}
 
@@ -91,16 +89,16 @@ public abstract class DamageMixin extends Entity implements ModTools {
             Objects.requireNonNull(source.getSource()).discard();
             Entity owner = source.getAttacker();
             if (owner instanceof LivingEntity entity) {
-                if (armor2) {stack2.damage((int) (3 *Math.random()+1), entity,player -> player.sendEquipmentBreakStatus(EquipmentSlot.CHEST));}
-                if (armor3) {stack3.damage((int) (3 *Math.random()+1), entity,player -> player.sendEquipmentBreakStatus(EquipmentSlot.LEGS));}
+                if (armor2) {stack2.damage((int) (3 *Math.random()+1), entity,livingEntity -> this.sendEquipmentBreakStatus(EquipmentSlot.CHEST));}
+                if (armor3) {stack3.damage((int) (3 *Math.random()+1), entity,livingEntity -> this.sendEquipmentBreakStatus(EquipmentSlot.LEGS));}
             }
         }
         //若攻击者主手没有物品，则无法击穿藤甲
         if (source.getSource() instanceof LivingEntity entity && !entity.getWorld().isClient) {
             if (inrattan && entity.getMainHandStack().isEmpty()) {
                 cir.setReturnValue(false);
-                if (armor2) {stack2.damage((int) (3 *Math.random()+1), entity,player -> player.sendEquipmentBreakStatus(EquipmentSlot.CHEST));}
-                if (armor3) {stack3.damage((int) (3 *Math.random()+1), entity,player -> player.sendEquipmentBreakStatus(EquipmentSlot.LEGS));}
+                if (armor2) {stack2.damage((int) (3 *Math.random()+1), entity,livingEntity -> this.sendEquipmentBreakStatus(EquipmentSlot.CHEST));}
+                if (armor3) {stack3.damage((int) (3 *Math.random()+1), entity,livingEntity -> this.sendEquipmentBreakStatus(EquipmentSlot.LEGS));}
             }
             //沈佳宜防御效果
             if (!(entity instanceof PlayerEntity) && this.hasStatusEffect(ModItems.DEFEND)) {
@@ -124,11 +122,16 @@ public abstract class DamageMixin extends Entity implements ModTools {
                     if (getShaSlot(player) != -1) {
                         ItemStack stack = shaStack(player);
                         if (stack.getItem() == ModItems.FIRE_SHA) {
-                            nearbyEntity.setOnFireFor(6);
+                            nearbyEntity.timeUntilRegen = 0; nearbyEntity.setOnFireFor(5);
                         }
                         if (stack.getItem() == ModItems.THUNDER_SHA) {
-                            EntityType.LIGHTNING_BOLT.spawn(world, new BlockPos((int) nearbyEntity.getX(), (int) nearbyEntity.getY(), (int) nearbyEntity.getZ()),null);
-                            nearbyEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 200,0,false,false,false));
+                            nearbyEntity.timeUntilRegen = 0; nearbyEntity.damage(player.getDamageSources().lightningBolt(),5);
+                            LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(world);
+                            if (lightningEntity != null) {
+                                lightningEntity.refreshPositionAfterTeleport(nearbyEntity.getX(), nearbyEntity.getY(), nearbyEntity.getZ());
+                                lightningEntity.setCosmetic(true);
+                            }
+                            world.spawnEntity(lightningEntity);
                         }
                     }
                     nearbyEntity.damage(source, amount);
