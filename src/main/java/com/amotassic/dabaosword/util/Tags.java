@@ -14,6 +14,7 @@ public class Tags {
         public static final TagKey<Item> ARMOURY_CARD = Tags.Items.createTag("armoury_card");
         public static final TagKey<Item> SKILL = Tags.Items.createTag("skill");
         public static final TagKey<Item> SHA = Tags.Items.createTag("sha");
+        public static final TagKey<Item> RECOVER = Tags.Items.createTag("recover");
 
 
         private static TagKey<Item> createTag(String name) {

@@ -28,18 +28,6 @@ public class AttackEntityHandler implements ModTools, AttackEntityCallback {
 
             if (entity instanceof LivingEntity target) {
 
-                /*//如果有杀，攻击南蛮入侵召唤的狗可杀死它
-                if (getShaSlot(player) != -1 && target instanceof WolfEntity dog && dog.hasStatusEffect(ModItems.INVULNERABLE)) {
-                    if (dog.getOwner() != player) {
-                        ItemStack stack = shaStack(player);
-                        dog.setHealth(0); benxi(player);
-                        if (stack.getItem() == ModItems.SHA) voice(player, Sounds.SHA);
-                        if (stack.getItem() == ModItems.FIRE_SHA) voice(player, Sounds.SHA_FIRE);
-                        if (stack.getItem() == ModItems.THUNDER_SHA) voice(player, Sounds.SHA_THUNDER);
-                        if (!player.isCreative()) {stack.decrement(1);}
-                    }
-                }*/
-
                 //破军：攻击命中盔甲槽有物品的生物后，会让其所有盔甲掉落，配合古锭刀特效使用，pvp神器
                 if (hasTrinket(SkillCards.POJUN, player) && !player.hasStatusEffect(ModItems.COOLDOWN)) {
                     ItemStack head = target.getEquippedStack(EquipmentSlot.HEAD);
@@ -58,7 +46,8 @@ public class AttackEntityHandler implements ModTools, AttackEntityCallback {
                         if (!feet.isEmpty()) {target.dropStack(feet.copy());feet.setCount(0);}
                     }
                     if (new Random().nextFloat() < 0.5) {voice(player, Sounds.POJUN1);} else {voice(player, Sounds.POJUN2);}
-                    player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 100));
+                    int i = target instanceof PlayerEntity ? 200 : 40;
+                    player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, i));
                 }
             }
         }

@@ -5,6 +5,7 @@ import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.EntityHurtCallback;
 import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
+import com.amotassic.dabaosword.util.Tags;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LightningEntity;
@@ -37,6 +38,22 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
         boolean inrattan = armor2 || armor3;
 
         if (entity.getWorld() instanceof ServerWorld world) {
+
+            if (entity instanceof PlayerEntity player && player.getHealth() <= 0 && hasItemInTag(Tags.Items.RECOVER, player)) {
+                //濒死自动使用酒、桃结算：首先计算需要回复的体力为0.00001-（玩家当前生命值 - 受到的伤害amount）
+                float recover = 0.00001f - player.getHealth() + amount;
+                int tao = count(player, Tags.Items.RECOVER);//数玩家背包中回血卡牌的数量（只包含酒、桃）
+                if (5 * tao > recover) {//如果剩余回血牌的回复量大于需要回复的值，则进行下一步，否则直接趋势
+                    for (int i = 0; i < recover/5; i++) {//循环移除背包中的酒、桃
+                        ItemStack stack = stackInTag(Tags.Items.RECOVER, player);
+                        if (stack.getItem() == ModItems.PEACH) voice(player, Sounds.RECOVER);
+                        if (stack.getItem() == ModItems.JIU) voice(player, Sounds.JIU);
+                        stack.decrement(1);
+                    }//最后将玩家的体力设置为 受伤前生命值 - 伤害值 + 回复量
+                    player.setHealth(player.getHealth() - amount + 5 * ((int)(recover/5) + 1));
+                }
+            }
+
             //监听事件：若玩家杀死敌对生物，有概率摸牌，若杀死玩家，摸两张牌
             if (source.getAttacker() instanceof PlayerEntity player && entity.getHealth() <= 0) {
                 if (entity instanceof HostileEntity) {
@@ -93,7 +110,7 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
                     player.addCommandTag("sha");
                     if (stack.getItem() == ModItems.SHA) {
                         voice(player, Sounds.SHA);
-                        entity.timeUntilRegen = 0; entity.damage(source,5);
+                        if (!inrattan) {entity.timeUntilRegen = 0; entity.damage(source,5);}
                     }
                     if (stack.getItem() == ModItems.FIRE_SHA) {
                         voice(player, Sounds.SHA_FIRE);

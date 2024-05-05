@@ -2,13 +2,16 @@ package com.amotassic.dabaosword.item.skillcard;
 
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.ui.TaoluanScreenHandler;
+import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -23,16 +26,19 @@ import java.util.Random;
 
 import static com.amotassic.dabaosword.item.skillcard.QiceSkill.openQiceScreen;
 
-public class ActiveSkill extends SkillItem {
+public class ActiveSkill extends SkillItem implements ModTools {
     public ActiveSkill(Settings settings) {super(settings);}
 
     public static void active(PlayerEntity user, ItemStack stack) {
         if (!user.getWorld().isClient) {
 
             if (stack.getItem() == SkillCards.KUROU) {
-                if (user.getHealth() > 4.99) {
-                    if (!user.isCreative()) user.setHealth(user.getHealth()-4.99f);
+                if (user.getHealth() + 5 * count(Tags.Items.RECOVER, user) > 4.99) {
                     user.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 3));
+                    if (!user.isCreative()) {
+                        user.timeUntilRegen = 0;
+                        user.damage(user.getDamageSources().genericKill(), 4.99f);
+                    }
                     if (new Random().nextFloat() < 0.5) {voice(Sounds.KUROU1, user);} else {voice(Sounds.KUROU2, user);}
                 } else {user.sendMessage(Text.translatable("item.dabaosword.kurou.tip").formatted(Formatting.RED), true);}
             }
@@ -50,7 +56,7 @@ public class ActiveSkill extends SkillItem {
             }
 
             if (stack.getItem() == SkillCards.TAOLUAN) {
-                if (user.getHealth() > 4.99) {openTaoluanScreen(user, stack);}
+                if (user.getHealth() + 5 * count(Tags.Items.RECOVER, user) > 4.99) {openTaoluanScreen(user, stack);}
                 else {user.sendMessage(Text.translatable("item.dabaosword.taoluan.tip").formatted(Formatting.RED), true);}
             }
         }
@@ -79,5 +85,15 @@ public class ActiveSkill extends SkillItem {
         if (player.getWorld() instanceof ServerWorld world) {
             world.playSound(null, player.getX(), player.getY(), player.getZ(), sound, SoundCategory.PLAYERS, 2.0F, 1.0F);
         }
+    }
+
+    public static int count(TagKey<Item> tag, PlayerEntity player) {
+        PlayerInventory inv = player.getInventory();
+        int n = 0;
+        for (int i = 0; i < inv.size(); ++i) {
+            ItemStack stack = player.getInventory().getStack(i);
+            if (stack.isIn(tag)) n += stack.getCount();
+        }
+        return n;
     }
 }

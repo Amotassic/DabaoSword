@@ -129,6 +129,26 @@ public interface ModTools {
         }
     }
 
+    default int count(PlayerEntity player, TagKey<Item> tag) {
+        PlayerInventory inv = player.getInventory();
+        int n = 0;
+        for (int i = 0; i < inv.size(); ++i) {
+            ItemStack stack = player.getInventory().getStack(i);
+            if (stack.isIn(tag)) n += stack.getCount();
+        }
+        return n;
+    }
+
+    default int count(PlayerEntity player, Item item) {
+        PlayerInventory inv = player.getInventory();
+        int n = 0;
+        for (int i = 0; i < inv.size(); ++i) {
+            ItemStack stack = player.getInventory().getStack(i);
+            if (stack.getItem() == item) n += stack.getCount();
+        }
+        return n;
+    }
+
     default void effectChange(LivingEntity entity, StatusEffect effect, int changeLevel, int duration) {
         if (changeLevel > 0) {
             if (entity.hasStatusEffect(effect)) {

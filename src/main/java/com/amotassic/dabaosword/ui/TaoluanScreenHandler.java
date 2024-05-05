@@ -54,7 +54,10 @@ public class TaoluanScreenHandler extends ScreenHandler implements ModTools {
             if (slotIndex == 13) player.giveItemStack(new ItemStack(ModItems.WANJIAN));
             if (slotIndex == 14) player.giveItemStack(new ItemStack(ModItems.WUXIE));
             if (slotIndex == 15) player.giveItemStack(new ItemStack(ModItems.WUZHONG));
-            if (!player.isCreative()) player.setHealth(player.getHealth()-4.99f);
+            if (!player.isCreative()) {
+                player.timeUntilRegen = 0;
+                player.damage(player.getDamageSources().genericKill(), 4.99f);
+            }
             player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 1,2));
             if (new Random().nextFloat() < 0.5) {voice(player, Sounds.TAOLUAN1);} else {voice(player, Sounds.TAOLUAN2);}
         }

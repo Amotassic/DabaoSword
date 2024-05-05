@@ -59,7 +59,7 @@ public class SkillItem extends TrinketItem implements ModTools {
         }
 
         if (stack.getItem() == SkillCards.POJUN) {
-            tooltip.add(Text.literal("CD: 5s"));
+            tooltip.add(Text.literal("CD: 10s"));
             tooltip.add(Text.translatable("item.dabaosword.pojun.tooltip").formatted(Formatting.GREEN));
         }
 

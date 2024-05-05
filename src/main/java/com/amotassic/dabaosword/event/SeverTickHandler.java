@@ -43,7 +43,7 @@ public class SeverTickHandler implements ServerTickEvents.EndTick, ModTools {
                     player.getCommandTags().remove("benxi");
                 }
 
-                if (++skillChange >= 6000) {
+                if (++skillChange >= 6000) {//每5分钟可以切换技能
                     skillChange = 0;
                     player.addCommandTag("change_skill");
                     player.sendMessage(Text.translatable("dabaosword.change_skill").formatted(Formatting.BOLD));
@@ -69,7 +69,6 @@ public class SeverTickHandler implements ServerTickEvents.EndTick, ModTools {
                         player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,1));
                     }
                 }
-
                 if (hasTrinket(ModItems.DILU, player) && hasTrinket(SkillCards.FEIYING, player)) {
                     player.addStatusEffect(new StatusEffectInstance(ModItems.DEFEND, 10,2));
                 } else if (hasTrinket(ModItems.DILU, player) || hasTrinket(SkillCards.FEIYING, player)) {
