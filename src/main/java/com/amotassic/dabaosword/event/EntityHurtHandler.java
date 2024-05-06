@@ -100,12 +100,20 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
                     }
                 }
 
+                //青釭剑额外伤害
+                if (attacker.getMainHandStack().getItem() == ModItems.QINGGANG && !attacker.getCommandTags().contains("guding") && !attacker.getCommandTags().contains("sha")) {
+                    attacker.addCommandTag("guding");
+                    float extraDamage = Math.min(20, 0.2f * entity.getMaxHealth());
+                    entity.timeUntilRegen = 0;
+                    entity.damage(attacker.getDamageSources().genericKill(), extraDamage);
+                    attacker.getCommandTags().remove("guding");
+                }
             }
 
             if (source.getSource() instanceof PlayerEntity player) {
 
                 //杀的相关结算
-                if (getShaSlot(player) != -1 && !player.getCommandTags().contains("sha")) {
+                if (shoudSha(player)) {
                     ItemStack stack = shaStack(player);
                     player.addCommandTag("sha");
                     if (stack.getItem() == ModItems.SHA) {
@@ -194,5 +202,9 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
             }
         }
         return ActionResult.PASS;
+    }
+
+    boolean shoudSha(PlayerEntity player) {
+        return getShaSlot(player) != -1 && !player.getCommandTags().contains("sha") && !player.getCommandTags().contains("juedou") && !player.getCommandTags().contains("wanjian");
     }
 }

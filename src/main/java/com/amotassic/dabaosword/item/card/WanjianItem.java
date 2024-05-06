@@ -17,6 +17,7 @@ public class WanjianItem extends CardItem implements ModTools {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         if (!world.isClient && hand == Hand.MAIN_HAND) {
+            user.addCommandTag("wanjian");
             user.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 15,1,false,false,false));
             voice(user, Sounds.WANJIAN);
             jizhi(user); benxi(user);

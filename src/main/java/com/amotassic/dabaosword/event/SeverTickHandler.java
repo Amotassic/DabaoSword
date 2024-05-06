@@ -26,29 +26,43 @@ public class SeverTickHandler implements ServerTickEvents.EndTick, ModTools {
     @Override
     public void onEndTick(MinecraftServer server) {
 
-        for (ServerWorld world : server.getWorlds()) {
-            for (PlayerEntity player : world.getPlayers()) {
-                if (++tick >= 1200) { // 每分钟摸两张牌
-                    tick = 0;
+        if (++tick >= 1200) { // 每分钟摸两张牌
+            tick = 0;
+            for (ServerWorld world : server.getWorlds()) {
+                for (PlayerEntity player : world.getPlayers()) {
                     if (hasTrinket(ModItems.CARD_PILE, player) && !player.isCreative() && !player.isSpectator()) {
                         player.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
                         player.sendMessage(Text.translatable("dabaosword.draw"),true);
                     }
                 }
+            }
+        }
 
-                if (++tick2 >= 2) {
-                    tick2 = 0;
-                    player.getCommandTags().remove("quanji");
-                    player.getCommandTags().remove("sha");
-                    player.getCommandTags().remove("benxi");
-                }
-
-                if (++skillChange >= 6000) {//每5分钟可以切换技能
-                    skillChange = 0;
+        if (++skillChange >= 6000) {//每5分钟可以切换技能
+            skillChange = 0;
+            for (ServerWorld world : server.getWorlds()) {
+                for (PlayerEntity player : world.getPlayers()) {
                     player.addCommandTag("change_skill");
                     player.sendMessage(Text.translatable("dabaosword.change_skill").formatted(Formatting.BOLD));
                     player.sendMessage(Text.translatable("dabaosword.change_skill2"));
                 }
+            }
+        }
+
+        if (++tick2 >= 2) {
+            tick2 = 0;
+            for (ServerWorld world : server.getWorlds()) {
+                for (PlayerEntity player : world.getPlayers()) {
+                    player.getCommandTags().remove("quanji");
+                    player.getCommandTags().remove("sha");
+                    player.getCommandTags().remove("benxi");
+                    player.getCommandTags().remove("juedou");
+                }
+            }
+        }
+
+        for (ServerWorld world : server.getWorlds()) {
+            for (PlayerEntity player : world.getPlayers()) {
 
                 Box box = new Box(player.getBlockPos()).expand(20); // 检测范围，根据需要修改
                 for (LivingEntity nearbyPlayer : world.getEntitiesByClass(PlayerEntity.class, box, playerEntity -> playerEntity.hasStatusEffect(ModItems.DEFEND))) {
@@ -62,7 +76,7 @@ public class SeverTickHandler implements ServerTickEvents.EndTick, ModTools {
                 }
 
                 //马术和飞影的效果
-                if (!hasTrinket(SkillCards.BENXI, player)) {
+                if (shouldMashu(player)) {
                     if (hasTrinket(ModItems.CHITU, player) && hasTrinket(SkillCards.MASHU, player)) {
                         player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,2));
                     } else if (hasTrinket(ModItems.CHITU, player) || hasTrinket(SkillCards.MASHU, player)) {
@@ -77,6 +91,10 @@ public class SeverTickHandler implements ServerTickEvents.EndTick, ModTools {
 
             }
         }
+    }
+
+    boolean shouldMashu(PlayerEntity player) {
+        return !hasTrinket(SkillCards.BENXI, player) && player.getMainHandStack().getItem() != ModItems.JUEDOU && player.getMainHandStack().getItem() != ModItems.DISCARD;
     }
 
     boolean islooking(PlayerEntity player, Entity entity) {

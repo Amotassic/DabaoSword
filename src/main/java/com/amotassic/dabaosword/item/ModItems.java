@@ -50,7 +50,6 @@ public class ModItems {
     public static final StatusEffect COOLDOWN = new CooldownEffect(StatusEffectCategory.NEUTRAL, 0x000000);
     public static final StatusEffect COOLDOWN2 = new Cooldown2Effect(StatusEffectCategory.NEUTRAL, 0x000000);
     public static final StatusEffect INVULNERABLE = new InvulnerableEffect(StatusEffectCategory.BENEFICIAL,0x35F5DF);
-    public static final StatusEffect JUEDOUING = new InvulnerableEffect(StatusEffectCategory.NEUTRAL,0x000000);
     //摸牌
     public static final Item GAIN_CARD = register("gain_card",new GainCardItem(new FabricItemSettings()));
     //牌堆
@@ -98,7 +97,6 @@ public class ModItems {
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "cooldown"), COOLDOWN);
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "cooldown2"), COOLDOWN2);
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "invulnerable"), INVULNERABLE);
-        Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "juedou"), JUEDOUING);
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "reach"), REACH);
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "defense"), DEFEND);
         Registry.register(Registries.STATUS_EFFECT, new Identifier("dabaosword", "defensed"), DEFENDED);

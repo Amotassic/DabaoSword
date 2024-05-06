@@ -70,9 +70,9 @@ public abstract class DamageMixin extends Entity implements ModTools {
 
             if (source.getSource() instanceof LivingEntity entity) {
 
-                //决斗，相对无敌
-                if (this.hasStatusEffect(ModItems.JUEDOUING) && !entity.hasStatusEffect(ModItems.JUEDOUING)) {
-                    cir.setReturnValue(false);
+                //决斗等物品虽然手长，但过远时普通伤害无效
+                if (!source.isIn(DamageTypeTags.BYPASSES_ARMOR) && this.distanceTo(entity) > 5) {
+                    if (entity.getMainHandStack().getItem() == ModItems.JUEDOU || entity.getMainHandStack().getItem() == ModItems.DISCARD) cir.setReturnValue(false);
                 }
 
                 //若攻击者主手没有物品，则无法击穿藤甲
@@ -91,20 +91,6 @@ public abstract class DamageMixin extends Entity implements ModTools {
 
                 //被乐的生物无法造成普通攻击伤害
                 if (entity.hasStatusEffect(ModItems.TOO_HAPPY)) cir.setReturnValue(false);
-
-                if (entity instanceof PlayerEntity player) {
-
-                    //绝情效果
-                    if (hasTrinket(SkillCards.JUEQING, player) && !player.hasStatusEffect(ModItems.COOLDOWN)) {
-                        cir.setReturnValue(false);
-                        float i = (float) player.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-                        float amount1 = Math.min(8, i);
-                        this.damage(world.getDamageSources().genericKill(), i);
-                        if (new Random().nextFloat() < 0.5) {voice(player, Sounds.JUEQING1, 1);} else {voice(player, Sounds.JUEQING2, 1);}
-                        player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, (int) (20 * amount1)));
-                    }
-
-                }
 
             }
 
@@ -169,12 +155,11 @@ public abstract class DamageMixin extends Entity implements ModTools {
                     }
 
                     //绝情效果
-                    if (source.isIn(DamageTypeTags.IS_PROJECTILE) && hasTrinket(SkillCards.JUEQING, player) && !player.hasStatusEffect(ModItems.COOLDOWN)) {
+                    if (hasTrinket(SkillCards.JUEQING, player) && !player.hasStatusEffect(ModItems.COOLDOWN)) {
                         cir.setReturnValue(false);
-                        float amount1 = Math.min(8, amount);
-                        this.damage(world.getDamageSources().genericKill(), amount1);
+                        this.damage(world.getDamageSources().genericKill(), Math.min(6, amount));
                         if (new Random().nextFloat() < 0.5) {voice(player, Sounds.JUEQING1, 1);} else {voice(player, Sounds.JUEQING2, 1);}
-                        player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, (int) (20 * amount1)));
+                        player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 40));
                     }
 
                 }

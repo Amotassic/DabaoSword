@@ -50,6 +50,7 @@ public class CardItem extends Item {
         if (stack.getItem() == ModItems.DISCARD) {
             tooltip.add(Text.translatable("item.dabaosword.discard.tooltip1"));
             tooltip.add(Text.translatable("item.dabaosword.discard.tooltip2"));
+            tooltip.add(Text.translatable("item.dabaosword.long_hand").formatted(Formatting.BOLD));
         }
 
         if (stack.getItem() == ModItems.FIRE_ATTACK) {
@@ -62,10 +63,12 @@ public class CardItem extends Item {
 
         if (stack.getItem() == ModItems.JIU) {
             tooltip.add(Text.translatable("item.dabaosword.jiu.tooltip"));
+            tooltip.add(Text.translatable("item.dabaosword.recover.tip").formatted(Formatting.BOLD));
         }
 
         if (stack.getItem() == ModItems.JUEDOU) {
             tooltip.add(Text.translatable("item.dabaosword.juedou.tooltip"));
+            tooltip.add(Text.translatable("item.dabaosword.long_hand").formatted(Formatting.BOLD));
         }
 
         if (stack.getItem() == ModItems.NANMAN) {
@@ -76,6 +79,7 @@ public class CardItem extends Item {
         if (stack.getItem() == ModItems.PEACH) {
             tooltip.add(Text.translatable("item.dabaosword.peach.tooltip1").formatted(Formatting.LIGHT_PURPLE));
             tooltip.add(Text.translatable("item.dabaosword.peach.tooltip2").formatted(Formatting.LIGHT_PURPLE));
+            tooltip.add(Text.translatable("item.dabaosword.recover.tip").formatted(Formatting.BOLD));
         }
 
         if (stack.getItem() == ModItems.SHAN) {

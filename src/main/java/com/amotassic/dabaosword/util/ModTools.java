@@ -132,7 +132,7 @@ public interface ModTools {
     default int count(PlayerEntity player, TagKey<Item> tag) {
         PlayerInventory inv = player.getInventory();
         int n = 0;
-        for (int i = 0; i < inv.size(); ++i) {
+        for (int i = 0; i < inv.size(); i++) {
             ItemStack stack = player.getInventory().getStack(i);
             if (stack.isIn(tag)) n += stack.getCount();
         }
@@ -142,7 +142,7 @@ public interface ModTools {
     default int count(PlayerEntity player, Item item) {
         PlayerInventory inv = player.getInventory();
         int n = 0;
-        for (int i = 0; i < inv.size(); ++i) {
+        for (int i = 0; i < inv.size(); i++) {
             ItemStack stack = player.getInventory().getStack(i);
             if (stack.getItem() == item) n += stack.getCount();
         }
