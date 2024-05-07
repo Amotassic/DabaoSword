@@ -87,6 +87,8 @@ public class ModItems {
     public static final Item SHA = register("sha", new CardItem(new FabricItemSettings()));
     public static final Item FIRE_SHA = register("fire_sha", new CardItem(new FabricItemSettings()));
     public static final Item THUNDER_SHA = register("thunder_sha", new CardItem(new FabricItemSettings()));
+    //
+    public static final Item HANBING = register("hanbing", new HanbingjianItem());
 
     //注册部分
     public static void register() {
@@ -114,6 +116,7 @@ public class ModItems {
             .displayName(Text.translatable("itemGroup.dabaosword.item_group"))
             .entries((context, entries) -> {
                 entries.add(GUDINGDAO);
+                entries.add(HANBING);
                 entries.add(QINGGANG);
                 entries.add(INCOMPLETE_GUDINGDAO);
                 entries.add(RATTAN_CHESTPLATE);

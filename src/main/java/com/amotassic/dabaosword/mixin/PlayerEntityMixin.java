@@ -55,14 +55,16 @@ public abstract class PlayerEntityMixin extends LivingEntity implements ModTools
 
             if (source.getSource() instanceof WolfEntity dog && dog.hasStatusEffect(ModItems.INVULNERABLE)) {
                 //被南蛮入侵的狗打中可以消耗杀以免疫伤害
-                if (dog.getOwner() != this && getShaSlot(this) != -1) {
-                    ItemStack stack = shaStack(this);
-                    cir.setReturnValue(false);
+                if (dog.getOwner() != this) {
+                    if (getShaSlot(this) != -1) {
+                        ItemStack stack = shaStack(this);
+                        cir.setReturnValue(false);
+                        if (stack.getItem() == ModItems.SHA) voice(this, Sounds.SHA);
+                        if (stack.getItem() == ModItems.FIRE_SHA) voice(this, Sounds.SHA_FIRE);
+                        if (stack.getItem() == ModItems.THUNDER_SHA) voice(this, Sounds.SHA_THUNDER);
+                        stack.decrement(1);
+                    }
                     dog.setHealth(0);
-                    if (stack.getItem() == ModItems.SHA) voice(this, Sounds.SHA);
-                    if (stack.getItem() == ModItems.FIRE_SHA) voice(this, Sounds.SHA_FIRE);
-                    if (stack.getItem() == ModItems.THUNDER_SHA) voice(this, Sounds.SHA_THUNDER);
-                    stack.decrement(1);
                 }
             }
 

@@ -7,7 +7,9 @@ import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
@@ -37,23 +39,9 @@ public class TaoluanScreenHandler extends ScreenHandler implements ModTools {
 
     @Override
     public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
-        if (0 <= slotIndex && slotIndex <16) {
-            if (slotIndex == 0) player.giveItemStack(new ItemStack(ModItems.SHAN));
-            if (slotIndex == 1) player.giveItemStack(new ItemStack(ModItems.PEACH));
-            if (slotIndex == 2) player.giveItemStack(new ItemStack(ModItems.JIU));
-            if (slotIndex == 3) player.giveItemStack(new ItemStack(ModItems.BINGLIANG_ITEM));
-            if (slotIndex == 4) player.giveItemStack(new ItemStack(ModItems.TOO_HAPPY_ITEM));
-            if (slotIndex == 5) player.giveItemStack(new ItemStack(ModItems.DISCARD));
-            if (slotIndex == 6) player.giveItemStack(new ItemStack(ModItems.FIRE_ATTACK));
-            if (slotIndex == 7) player.giveItemStack(new ItemStack(ModItems.JIEDAO));
-            if (slotIndex == 8) player.giveItemStack(new ItemStack(ModItems.JUEDOU));
-            if (slotIndex == 9) player.giveItemStack(new ItemStack(ModItems.NANMAN));
-            if (slotIndex == 10) player.giveItemStack(new ItemStack(ModItems.STEAL));
-            if (slotIndex == 11) player.giveItemStack(new ItemStack(ModItems.TAOYUAN));
-            if (slotIndex == 12) player.giveItemStack(new ItemStack(ModItems.TIESUO));
-            if (slotIndex == 13) player.giveItemStack(new ItemStack(ModItems.WANJIAN));
-            if (slotIndex == 14) player.giveItemStack(new ItemStack(ModItems.WUXIE));
-            if (slotIndex == 15) player.giveItemStack(new ItemStack(ModItems.WUZHONG));
+        Item[] items = {ModItems.THUNDER_SHA, ModItems.FIRE_SHA, ModItems.SHAN, ModItems.PEACH, ModItems.JIU, ModItems.BINGLIANG_ITEM, ModItems.TOO_HAPPY_ITEM, ModItems.DISCARD, ModItems.FIRE_ATTACK, ModItems.JIEDAO, ModItems.JUEDOU, ModItems.NANMAN, ModItems.STEAL, ModItems.TAOYUAN, ModItems.TIESUO, ModItems.WANJIAN, ModItems.WUXIE, ModItems.WUZHONG};
+        if (0 <= slotIndex && slotIndex <items.length) {
+            player.giveItemStack(new ItemStack(items[slotIndex]));
             if (!player.isCreative()) {
                 player.timeUntilRegen = 0;
                 player.damage(player.getDamageSources().genericKill(), 4.99f);
@@ -66,12 +54,8 @@ public class TaoluanScreenHandler extends ScreenHandler implements ModTools {
     public ItemStack getStack() {return stack;}
 
     @Override
-    public ItemStack quickMove(PlayerEntity player, int slot) {
-        return null;
-    }
+    public ItemStack quickMove(PlayerEntity player, int slot) {return Items.AIR.getDefaultStack();}
 
     @Override
-    public boolean canUse(PlayerEntity player) {
-        return !player.hasStatusEffect(ModItems.COOLDOWN2);
-    }
+    public boolean canUse(PlayerEntity player) {return !player.hasStatusEffect(ModItems.COOLDOWN2);}
 }

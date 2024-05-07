@@ -1,6 +1,7 @@
 package com.amotassic.dabaosword.command;
 
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
+import com.amotassic.dabaosword.util.ModTools;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import dev.emi.trinkets.api.SlotReference;
@@ -19,7 +20,7 @@ import java.util.Optional;
 import static net.minecraft.server.command.CommandManager.literal;
 import static net.minecraft.server.command.CommandManager.argument;
 
-public class InfoCommand {
+public class InfoCommand implements ModTools {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(literal("info")
                 .then(argument("target", EntityArgumentType.player())
@@ -28,22 +29,22 @@ public class InfoCommand {
     }
 
     private static int run(PlayerEntity target, CommandContext<ServerCommandSource> context) {
-        Optional<TrinketComponent> component = TrinketsApi.getTrinketComponent(target);
 
+        Optional<TrinketComponent> component = TrinketsApi.getTrinketComponent(target);
         if(component.isPresent()) {
             int i = 0;
             List<Pair<SlotReference, ItemStack>> allEquipped = component.get().getAllEquipped();
             for(Pair<SlotReference, ItemStack> entry : allEquipped) {
                 ItemStack stack = entry.getRight();
                 if(stack.getItem() instanceof SkillItem) {
-                    if (i == 0) {context.getSource().sendMessage(Text.literal(target.getEntityName()).append("装备了以下物品："));}
+                    if (i == 0) {context.getSource().sendMessage(Text.literal(target.getEntityName()).append(Text.translatable("info.item")));}
                     context.getSource().sendMessage(stack.getName());
                     i++;
                 }
             }
-            if (i == 0) {context.getSource().sendMessage(Text.literal(target.getEntityName()).append("没有装备任何技能或马匹"));}
+            if (i == 0) {context.getSource().sendMessage(Text.literal(target.getEntityName()).append(Text.translatable("info.none")));}
         } else {
-            context.getSource().sendMessage(Text.literal(target.getEntityName()).append("没有装备任何技能或马匹"));
+            context.getSource().sendMessage(Text.literal(target.getEntityName()).append(Text.translatable("info.none")));
         }
         return 1;
     }

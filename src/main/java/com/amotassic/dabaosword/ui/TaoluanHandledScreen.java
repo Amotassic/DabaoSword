@@ -6,6 +6,7 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.Item;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
@@ -24,22 +25,22 @@ public class TaoluanHandledScreen extends HandledScreen<TaoluanScreenHandler> {
         RenderSystem.setShaderTexture(0, TEXTURE);
         int x = this.x; int y = this.y;
         context.drawTexture(TEXTURE, x, y,0,0, backgroundWidth, backgroundHeight);
-        context.drawItem(ModItems.SHAN.getDefaultStack(),x + 8,y+16);
-        context.drawItem(ModItems.PEACH.getDefaultStack(),x+8+ 18,y+16);
-        context.drawItem(ModItems.JIU.getDefaultStack(),x+8+18*2,y+16);
-        context.drawItem(ModItems.BINGLIANG_ITEM.getDefaultStack(),x+8+18*3,y+16);
-        context.drawItem(ModItems.TOO_HAPPY_ITEM.getDefaultStack(),x+8+18*4,y+16);
-        context.drawItem(ModItems.DISCARD.getDefaultStack(),x+8+18*5,y+16);
-        context.drawItem(ModItems.FIRE_ATTACK.getDefaultStack(),x+8+18*6,y+16);
-        context.drawItem(ModItems.JIEDAO.getDefaultStack(),x+8+18*7,y+16);
-        context.drawItem(ModItems.JUEDOU.getDefaultStack(),x+8+18*8,y+16);
-        context.drawItem(ModItems.NANMAN.getDefaultStack(),x + 8,y+34);
-        context.drawItem(ModItems.STEAL.getDefaultStack(),x+8+ 18,y+34);
-        context.drawItem(ModItems.TAOYUAN.getDefaultStack(),x+8+18*2,y+34);
-        context.drawItem(ModItems.TIESUO.getDefaultStack(),x+8+18*3,y+34);
-        context.drawItem(ModItems.WANJIAN.getDefaultStack(),x+8+18*4,y+34);
-        context.drawItem(ModItems.WUXIE.getDefaultStack(),x+8+18*5,y+34);
-        context.drawItem(ModItems.WUZHONG.getDefaultStack(),x+8+18*6,y+34);
+
+        Item[] items = {ModItems.THUNDER_SHA, ModItems.FIRE_SHA, ModItems.SHAN, ModItems.PEACH, ModItems.JIU, ModItems.BINGLIANG_ITEM, ModItems.TOO_HAPPY_ITEM, ModItems.DISCARD, ModItems.FIRE_ATTACK, ModItems.JIEDAO, ModItems.JUEDOU, ModItems.NANMAN, ModItems.STEAL, ModItems.TAOYUAN, ModItems.TIESUO, ModItems.WANJIAN, ModItems.WUXIE, ModItems.WUZHONG};
+        // 定义物品起始绘制位置
+        int itemX = x + 8;
+        int itemY = y + 16;
+        // 遍历物品数组，绘制物品图标
+        for (Item item : items) {
+            context.drawItem(item.getDefaultStack(), itemX, itemY);
+            // 更新物品绘制位置
+            itemX += 18;
+            // 如果一行绘制完毕，则换行
+            if (itemX > x + 8 + 18 * 8) {
+                itemX = x + 8;
+                itemY += 18;
+            }
+        }
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.amotassic.dabaosword.event;
 
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
+import com.amotassic.dabaosword.util.Gamerule;
 import com.amotassic.dabaosword.util.ModTools;
 import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -25,8 +26,10 @@ public class SeverTickHandler implements ServerTickEvents.EndTick, ModTools {
     private int skillChange = 0;
     @Override
     public void onEndTick(MinecraftServer server) {
+        int giveCard = server.getGameRules().getInt(Gamerule.GIVE_CARD_INTERVAL) * 20;
+        int skill = server.getGameRules().getInt(Gamerule.CHANGE_SKILL_INTERVAL) * 20;
 
-        if (++tick >= 1200) { // 每分钟摸两张牌
+        if (++tick >= giveCard) { // 每分钟摸两张牌
             tick = 0;
             for (ServerWorld world : server.getWorlds()) {
                 for (PlayerEntity player : world.getPlayers()) {
@@ -38,13 +41,17 @@ public class SeverTickHandler implements ServerTickEvents.EndTick, ModTools {
             }
         }
 
-        if (++skillChange >= 6000) {//每5分钟可以切换技能
-            skillChange = 0;
-            for (ServerWorld world : server.getWorlds()) {
-                for (PlayerEntity player : world.getPlayers()) {
-                    player.addCommandTag("change_skill");
-                    player.sendMessage(Text.translatable("dabaosword.change_skill").formatted(Formatting.BOLD));
-                    player.sendMessage(Text.translatable("dabaosword.change_skill2"));
+        if (skill != -20) {
+            if (++skillChange >= skill) {//每5分钟可以切换技能
+                skillChange = 0;
+                for (ServerWorld world : server.getWorlds()) {
+                    for (PlayerEntity player : world.getPlayers()) {
+                        player.addCommandTag("change_skill");
+                        if (skill >= 600) {
+                            player.sendMessage(Text.translatable("dabaosword.change_skill").formatted(Formatting.BOLD));
+                            player.sendMessage(Text.translatable("dabaosword.change_skill2"));
+                        }
+                    }
                 }
             }
         }
@@ -57,6 +64,10 @@ public class SeverTickHandler implements ServerTickEvents.EndTick, ModTools {
                     player.getCommandTags().remove("sha");
                     player.getCommandTags().remove("benxi");
                     player.getCommandTags().remove("juedou");
+
+                    //牌堆恢复饱食度
+                    boolean food = world.getGameRules().getBoolean(Gamerule.CARD_PILE_HUNGERLESS);
+                    if (hasTrinket(ModItems.CARD_PILE, player) && food) {player.getHungerManager().setFoodLevel(20);}
                 }
             }
         }

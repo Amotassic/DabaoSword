@@ -1,6 +1,7 @@
 package com.amotassic.dabaosword.event;
 
 import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.util.Gamerule;
 import com.amotassic.dabaosword.util.PlayerDeathCallback;
 import com.amotassic.dabaosword.util.Tags;
 import dev.emi.trinkets.api.SlotReference;
@@ -21,23 +22,26 @@ public class PlayerDeathHandler implements PlayerDeathCallback {
     public void onDeath(ServerPlayerEntity player, DamageSource source) {
 
         if (player.getWorld() instanceof ServerWorld world) {
-            PlayerInventory inv = player.getInventory();
-            for (int i = 0; i < inv.size(); ++i) {
-                ItemStack stack = inv.getStack(i);
-                if (stack.isIn(Tags.Items.CARD) || stack.getItem() == ModItems.GAIN_CARD) inv.removeStack(i);
-            }
+            boolean card = world.getGameRules().getBoolean(Gamerule.CLEAR_CARDS_AFTER_DEATH);
+            if (card) {
+                PlayerInventory inv = player.getInventory();
+                for (int i = 0; i < inv.size(); ++i) {
+                    ItemStack stack = inv.getStack(i);
+                    if (stack.isIn(Tags.Items.CARD) || stack.getItem() == ModItems.GAIN_CARD) inv.removeStack(i);
+                }
 
-            List<ItemStack> armors = (List<ItemStack>) player.getArmorItems();
-            for (ItemStack stack : armors) {
-                if (!stack.isEmpty() && stack.isIn(Tags.Items.CARD)) stack.setCount(0);
-            }
+                List<ItemStack> armors = (List<ItemStack>) player.getArmorItems();
+                for (ItemStack stack : armors) {
+                    if (!stack.isEmpty() && stack.isIn(Tags.Items.CARD)) stack.setCount(0);
+                }
 
-            Optional<TrinketComponent> component = TrinketsApi.getTrinketComponent(player);
-            if(component.isPresent()) {
-                List<Pair<SlotReference, ItemStack>> allEquipped = component.get().getAllEquipped();
-                for(Pair<SlotReference, ItemStack> entry : allEquipped) {
-                    ItemStack stack = entry.getRight();
-                    if(stack.isIn(Tags.Items.CARD)) stack.setCount(0);
+                Optional<TrinketComponent> component = TrinketsApi.getTrinketComponent(player);
+                if(component.isPresent()) {
+                    List<Pair<SlotReference, ItemStack>> allEquipped = component.get().getAllEquipped();
+                    for(Pair<SlotReference, ItemStack> entry : allEquipped) {
+                        ItemStack stack = entry.getRight();
+                        if(stack.isIn(Tags.Items.CARD)) stack.setCount(0);
+                    }
                 }
             }
 
