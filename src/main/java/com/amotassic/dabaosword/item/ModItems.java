@@ -148,6 +148,7 @@ public class ModItems {
                 entries.add(CHITU);
                 entries.add(DILU);
 
+                entries.add(SkillCards.GONGAO);
                 entries.add(SkillCards.JUEQING);
                 entries.add(SkillCards.LUOYI);
                 entries.add(SkillCards.QICE);

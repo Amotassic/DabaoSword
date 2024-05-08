@@ -33,6 +33,7 @@ public class SkillCards {
     public static final Item FEIYING = register("feiying", new SkillItem(new FabricItemSettings().maxCount(1)));
     public static final Item LEIJI = register("leiji", new SkillItem(new FabricItemSettings().maxCount(1)));
     public static final Item BENXI = register("benxi", new BenxiSkill(new FabricItemSettings().maxCount(1)));
+    public static final Item GONGAO = register("gongao", new GongaoSkill(new FabricItemSettings().maxCount(1)));
 
     private static Item register(String name,Item item){
         return Registry.register(Registries.ITEM,new Identifier("dabaosword",name),item);

@@ -34,7 +34,7 @@ public class ActiveSkill extends SkillItem implements ModTools {
 
             if (stack.getItem() == SkillCards.KUROU) {
                 if (user.getHealth() + 5 * count(Tags.Items.RECOVER, user) > 4.99) {
-                    user.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 3));
+                    user.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
                     if (!user.isCreative()) {
                         user.timeUntilRegen = 0;
                         user.damage(user.getDamageSources().genericKill(), 4.99f);

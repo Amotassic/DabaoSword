@@ -1,9 +1,14 @@
 package com.amotassic.dabaosword.util;
 
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketsApi;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
+import java.util.UUID;
 
 import static com.amotassic.dabaosword.item.card.GainCardItem.draw;
 
@@ -147,6 +153,14 @@ public interface ModTools {
             if (stack.getItem() == item) n += stack.getCount();
         }
         return n;
+    }
+
+    default void gainMaxHp(LivingEntity entity, int hp) {
+        Multimap<EntityAttribute, EntityAttributeModifier> maxHP = HashMultimap.create();
+        final UUID HP_UUID = UUID.fromString("b29c34f3-1450-48ff-ab28-639647e11862");
+        maxHP.put(EntityAttributes.GENERIC_MAX_HEALTH, new EntityAttributeModifier(
+                HP_UUID, "Max Hp", hp, EntityAttributeModifier.Operation.ADDITION));
+        entity.getAttributes().addTemporaryModifiers(maxHP);
     }
 
     default void effectChange(LivingEntity entity, StatusEffect effect, int changeLevel, int duration) {

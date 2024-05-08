@@ -26,6 +26,33 @@
     ],
     "subtitle": "sounds.dabaosword.nahida"
   },
+  "gongao1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/gongao1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.gongao"
+  },
+  "gongao2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/gongao2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.gongao"
+  },
+  "weizhong": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/weizhong"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.weizhong"
+  },
   "benxi1": {
     "sounds": [
       {

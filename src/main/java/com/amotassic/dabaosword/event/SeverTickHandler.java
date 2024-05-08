@@ -24,6 +24,7 @@ public class SeverTickHandler implements ServerTickEvents.EndTick, ModTools {
     private int tick = 0;
     private int tick2 = 0;
     private int skillChange = 0;
+
     @Override
     public void onEndTick(MinecraftServer server) {
         int giveCard = server.getGameRules().getInt(Gamerule.GIVE_CARD_INTERVAL) * 20;

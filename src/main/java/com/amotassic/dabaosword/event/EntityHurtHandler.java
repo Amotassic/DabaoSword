@@ -39,18 +39,19 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
 
         if (entity.getWorld() instanceof ServerWorld world) {
 
-            if (entity instanceof PlayerEntity player && player.getHealth() <= 0 && hasItemInTag(Tags.Items.RECOVER, player)) {
-                //濒死自动使用酒、桃结算：首先计算需要回复的体力为0.00001-（玩家当前生命值 - 受到的伤害amount）
-                float recover = 0.00001f - player.getHealth() + amount;
+            if (entity instanceof PlayerEntity player && player.isDead() && hasItemInTag(Tags.Items.RECOVER, player)) {
+                //濒死自动使用酒、桃结算：首先计算需要回复的体力为(受到的伤害amount - 玩家当前生命值）
+                float recover = amount - player.getHealth();
                 int tao = count(player, Tags.Items.RECOVER);//数玩家背包中回血卡牌的数量（只包含酒、桃）
                 if (5 * tao > recover) {//如果剩余回血牌的回复量大于需要回复的值，则进行下一步，否则直接趋势
-                    for (int i = 0; i < recover/5; i++) {//循环移除背包中的酒、桃
+                    for (int i = 1; i < recover/5; i++) {//循环移除背包中的酒、桃
                         ItemStack stack = stackInTag(Tags.Items.RECOVER, player);
                         if (stack.getItem() == ModItems.PEACH) voice(player, Sounds.RECOVER);
                         if (stack.getItem() == ModItems.JIU) voice(player, Sounds.JIU);
                         stack.decrement(1);
                     }//最后将玩家的体力设置为 受伤前生命值 - 伤害值 + 回复量
-                    player.setHealth(player.getHealth() - amount + 5 * ((int)(recover/5) + 1));
+                    float result = recover % 5 == 0 ? 5 * (int)(recover/5) : 5 * ((int)(recover/5) + 1);
+                    player.setHealth(player.getHealth() - amount + result);
                 }
             }
 
@@ -61,10 +62,28 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
                         player.giveItemStack(new ItemStack(ModItems.GAIN_CARD));
                         player.sendMessage(Text.translatable("dabaosword.draw.monster"),true);
                     }
+                    //功獒技能触发
+                    if (hasTrinket(SkillCards.GONGAO, player)) {
+                        ItemStack stack = trinketItem(SkillCards.GONGAO, player);
+                        NbtCompound nbt = new NbtCompound();
+                        int extraHP = stack.getNbt() != null ? stack.getNbt().getInt("extraHP") : 0;
+                        nbt.putInt("extraHP", extraHP + 1); stack.setNbt(nbt);
+                        player.setHealth(player.getHealth() + 1);
+                        if (new Random().nextFloat() < 0.5) {voice(player, Sounds.GONGAO1);} else {voice(player, Sounds.GONGAO2);}
+                    }
                 }
                 if (entity instanceof PlayerEntity) {
                     player.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
                     player.sendMessage(Text.translatable("dabaosword.draw.player"),true);
+                    //功獒技能触发
+                    if (hasTrinket(SkillCards.GONGAO, player)) {
+                        ItemStack stack = trinketItem(SkillCards.GONGAO, player);
+                        NbtCompound nbt = new NbtCompound();
+                        int extraHP = stack.getNbt() != null ? stack.getNbt().getInt("extraHP") : 0;
+                        nbt.putInt("extraHP", extraHP + 5); stack.setNbt(nbt);
+                        player.setHealth(player.getHealth() + 5);
+                        if (new Random().nextFloat() < 0.5) {voice(player, Sounds.GONGAO1);} else {voice(player, Sounds.GONGAO2);}
+                    }
                 }
             }
 
