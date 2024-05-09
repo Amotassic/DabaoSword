@@ -53,6 +53,19 @@ public abstract class PlayerEntityMixin extends LivingEntity implements ModTools
 
         if (this.getWorld() instanceof ServerWorld world) {
 
+            if (source.getSource() instanceof LivingEntity entity) {
+                //若攻击者主手没有物品，则无法击穿藤甲
+                if (inrattan(this)) {
+                    if (entity.getMainHandStack().isEmpty()) cir.setReturnValue(false);
+                    else if (getShanSlot(this) != -1 && !this.hasStatusEffect(ModItems.COOLDOWN2)) {
+                        cir.setReturnValue(false);
+                        shan(this);//闪的额外判断
+                    }
+                }
+            }
+            //弹射物对藤甲无效
+            if (source.isIn(DamageTypeTags.IS_PROJECTILE) && inrattan(this)) {cir.setReturnValue(false);}
+
             if (source.getSource() instanceof WolfEntity dog && dog.hasStatusEffect(ModItems.INVULNERABLE)) {
                 //被南蛮入侵的狗打中可以消耗杀以免疫伤害
                 if (dog.getOwner() != this) {
@@ -70,7 +83,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements ModTools
 
             if (source.getAttacker() instanceof LivingEntity && !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
                 //闪的被动效果
-                if (getShanSlot(this) != -1 && !this.isCreative() && !this.hasStatusEffect(ModItems.COOLDOWN2) && !hasTrinket(SkillCards.LIULI, this)) {
+                if (getShanSlot(this) != -1 && !this.isCreative() && !this.hasStatusEffect(ModItems.COOLDOWN2) && !hasTrinket(SkillCards.LIULI, this) && !hasTrinket(ModItems.RATTAN_ARMOR, this)) {
                     cir.setReturnValue(false);
                     shan(this);
                     //虽然没有因为杀而触发闪，但如果攻击者的杀处于自动触发状态，则仍会消耗
@@ -109,6 +122,11 @@ public abstract class PlayerEntityMixin extends LivingEntity implements ModTools
             }
 
         }
+    }
+
+    @Unique
+    boolean inrattan(PlayerEntityMixin player) {
+        return hasTrinket(ModItems.RATTAN_ARMOR, player);
     }
 
     @Unique

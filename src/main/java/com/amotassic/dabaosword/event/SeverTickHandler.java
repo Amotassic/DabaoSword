@@ -37,6 +37,8 @@ public class SeverTickHandler implements ServerTickEvents.EndTick, ModTools {
                     if (hasTrinket(ModItems.CARD_PILE, player) && !player.isCreative() && !player.isSpectator()) {
                         player.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
                         player.sendMessage(Text.translatable("dabaosword.draw"),true);
+                        /*if (count(player, Tags.Items.CARD) + count(player, ModItems.GAIN_CARD) <= 8) {
+                        }*/
                     }
                 }
             }

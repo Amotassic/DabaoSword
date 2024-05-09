@@ -1,5 +1,6 @@
-package com.amotassic.dabaosword.item.card;
+package com.amotassic.dabaosword.item.equipment;
 
+import com.amotassic.dabaosword.item.card.CardItem;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ArrowEntity;

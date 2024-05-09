@@ -1,4 +1,4 @@
-package com.amotassic.dabaosword.item.card;
+package com.amotassic.dabaosword.item.equipment;
 
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.client.item.TooltipContext;
@@ -19,8 +19,8 @@ public class GudingdaoItem extends SwordItem {
     
     @Override
 	public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext){
-        tooltip.add(Text.translatable("item.dabaosword.gudingdao.tooltip1").formatted(Formatting.GREEN));
-        tooltip.add(Text.translatable("item.dabaosword.gudingdao.tooltip2").formatted(Formatting.AQUA));
+        tooltip.add(Text.translatable("item.dabaosword.gudingdao.tooltip").formatted(Formatting.GREEN));
+        tooltip.add(Text.translatable("item.dabaosword.gudingdao.tooltip1").formatted(Formatting.AQUA));
         tooltip.add(Text.literal(""));
 	}
 }

@@ -1,6 +1,5 @@
 package com.amotassic.dabaosword.item.skillcard;
 
-import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.*;
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketItem;
@@ -77,16 +76,12 @@ public class SkillItem extends TrinketItem implements ModTools {
             tooltip.add(Text.translatable("item.dabaosword.liuli.tooltip").formatted(Formatting.GREEN));
         }
 
-        if (stack.getItem() == SkillCards.MASHU || stack.getItem() == ModItems.CHITU) {
+        if (stack.getItem() == SkillCards.MASHU) {
             tooltip.add(Text.translatable("item.dabaosword.chitu.tooltip"));
         }
 
-        if (stack.getItem() == SkillCards.FEIYING || stack.getItem() == ModItems.DILU) {
+        if (stack.getItem() == SkillCards.FEIYING) {
             tooltip.add(Text.translatable("item.dabaosword.dilu.tooltip"));
-        }
-
-        if (stack.getItem() == ModItems.CARD_PILE) {
-            tooltip.add(Text.translatable("item.dabaosword.card_pile.tooltip"));
         }
     }
 

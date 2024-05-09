@@ -16,7 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import java.util.Objects;
 import java.util.Random;
 
-import static com.amotassic.dabaosword.item.card.ArrowRainItem.arrowRain;
+import static com.amotassic.dabaosword.item.equipment.ArrowRainItem.arrowRain;
 
 public class Cooldown2Effect extends StatusEffect implements ModTools {
     public Cooldown2Effect(StatusEffectCategory category, int color) {super(category, color);}

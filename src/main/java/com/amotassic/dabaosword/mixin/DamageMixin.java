@@ -28,6 +28,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -38,7 +39,6 @@ import java.util.Random;
 
 @Mixin(LivingEntity.class)
 public abstract class DamageMixin extends Entity implements ModTools {
-    @Shadow public abstract ItemStack getEquippedStack(EquipmentSlot var1);
 
     @Shadow public abstract double getAttributeValue(EntityAttribute attribute);
 
@@ -50,17 +50,10 @@ public abstract class DamageMixin extends Entity implements ModTools {
 
     @Shadow public abstract @Nullable StatusEffectInstance getStatusEffect(StatusEffect effect);
 
-    @Shadow public abstract void sendEquipmentBreakStatus(EquipmentSlot slot);
-
     public DamageMixin(EntityType<?> type, World world) {super(type, world);}
 
     @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
     private void damagemixin(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        ItemStack stack2 = this.getEquippedStack(EquipmentSlot.CHEST);
-        boolean armor2 = stack2.getItem() == ModItems.RATTAN_CHESTPLATE;
-        ItemStack stack3 = this.getEquippedStack(EquipmentSlot.LEGS);
-        boolean armor3 = stack3.getItem() == ModItems.RATTAN_LEGGINGS;
-        boolean inrattan = armor2 || armor3;
 
         if (this.getWorld() instanceof ServerWorld world) {
             //无敌效果
@@ -75,13 +68,6 @@ public abstract class DamageMixin extends Entity implements ModTools {
                     if (entity.getMainHandStack().getItem() == ModItems.JUEDOU || entity.getMainHandStack().getItem() == ModItems.DISCARD) cir.setReturnValue(false);
                 }
 
-                //若攻击者主手没有物品，则无法击穿藤甲
-                if (inrattan && entity.getMainHandStack().isEmpty()) {
-                    cir.setReturnValue(false);
-                    if (armor2) {stack2.damage((int) (3 * Math.random() + 1), entity, livingEntity -> this.sendEquipmentBreakStatus(EquipmentSlot.CHEST));}
-                    if (armor3) {stack3.damage((int) (3 * Math.random() + 1), entity, livingEntity -> this.sendEquipmentBreakStatus(EquipmentSlot.LEGS));}
-                }
-
                 //沈佳宜防御效果
                 if (!(entity instanceof PlayerEntity) && this.hasStatusEffect(ModItems.DEFEND)) {
                     if (Objects.requireNonNull(this.getStatusEffect(ModItems.DEFEND)).getAmplifier() >= 2) {
@@ -91,23 +77,13 @@ public abstract class DamageMixin extends Entity implements ModTools {
 
                 //被乐的生物无法造成普通攻击伤害
                 if (entity.hasStatusEffect(ModItems.TOO_HAPPY)) cir.setReturnValue(false);
-
             }
 
             if (source.getAttacker() instanceof LivingEntity entity) {
 
-                //弹射物对藤甲无效
                 if (source.isIn(DamageTypeTags.IS_PROJECTILE)) {
-                    if (inrattan) {
-                        cir.setReturnValue(false);
-                        Objects.requireNonNull(source.getSource()).discard();
-                        if (armor2) {stack2.damage((int) (3 * Math.random() + 1), entity, livingEntity -> this.sendEquipmentBreakStatus(EquipmentSlot.CHEST));}
-                        if (armor3) {stack3.damage((int) (3 * Math.random() + 1), entity, livingEntity -> this.sendEquipmentBreakStatus(EquipmentSlot.LEGS));}
-                    }
-
                     //被乐的生物的弹射物无法造成伤害
                     if (entity.hasStatusEffect(ModItems.TOO_HAPPY)) cir.setReturnValue(false);
-
                 }
 
                 if (entity instanceof PlayerEntity player) {
@@ -128,20 +104,29 @@ public abstract class DamageMixin extends Entity implements ModTools {
                         this.addVelocity(vec3d3.getX() * e, vec3d3.getY() * d, vec3d3.getZ() * e);
                     }
 
-                    if (this.isGlowing() && getShaSlot(player) != -1) {//实现铁索连环的效果，大概是好了吧
-                        Box box = new Box(player.getBlockPos()).expand(20); // 检测范围，根据需要修改3]
+                    if (this.isGlowing() && shouldSha(player)) {//实现铁索连环的效果，大概是好了吧
+                        ItemStack stack = shaStack(player);
+                        player.addCommandTag("sha");
+                        if (stack.getItem() == ModItems.SHA) {
+                            voice(player, Sounds.SHA);
+                            if (!(entity instanceof PlayerEntity && hasTrinket(ModItems.RATTAN_ARMOR, (PlayerEntity) entity))) {
+                                entity.damage(source, 5); entity.timeUntilRegen = 0;
+                            }
+                        }
+                        if (stack.getItem() == ModItems.FIRE_SHA) voice(player, Sounds.SHA_FIRE);
+                        if (stack.getItem() == ModItems.THUNDER_SHA) voice(player, Sounds.SHA_THUNDER);
+                        Box box = new Box(player.getBlockPos()).expand(20); // 检测范围，根据需要修改
                         for (LivingEntity nearbyEntity : world.getEntitiesByClass(LivingEntity.class, box, LivingEntity::isGlowing)) {
                             //处理杀的效果
-                            ItemStack stack = shaStack(player);
                             if (stack.getItem() == ModItems.FIRE_SHA) {
-                                nearbyEntity.timeUntilRegen = 0;
                                 nearbyEntity.setOnFireFor(5);
+                                nearbyEntity.timeUntilRegen = 0;
                                 nearbyEntity.removeStatusEffect(StatusEffects.GLOWING);
                                 nearbyEntity.damage(source, amount);
                             }
                             if (stack.getItem() == ModItems.THUNDER_SHA) {
-                                nearbyEntity.timeUntilRegen = 0;
                                 nearbyEntity.damage(player.getDamageSources().magic(), 5);
+                                nearbyEntity.timeUntilRegen = 0;
                                 LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(world);
                                 if (lightningEntity != null) {
                                     lightningEntity.refreshPositionAfterTeleport(nearbyEntity.getX(), nearbyEntity.getY(), nearbyEntity.getZ());
@@ -151,7 +136,8 @@ public abstract class DamageMixin extends Entity implements ModTools {
                                 nearbyEntity.removeStatusEffect(StatusEffects.GLOWING);
                                 nearbyEntity.damage(source, amount);
                             }
-                        }
+                        } benxi(player);
+                        if (!player.isCreative()) {stack.decrement(1);}
                     }
 
                     //绝情效果
@@ -167,6 +153,11 @@ public abstract class DamageMixin extends Entity implements ModTools {
             }
 
         }
+    }
+
+    @Unique
+    boolean shouldSha(PlayerEntity player) {
+        return getShaSlot(player) != -1 && !player.getCommandTags().contains("sha") && !player.getCommandTags().contains("juedou") && !player.getCommandTags().contains("wanjian");
     }
 
     @Inject(at = @At("TAIL"), method = "applyDamage", cancellable = true)

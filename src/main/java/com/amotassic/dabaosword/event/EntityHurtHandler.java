@@ -33,25 +33,40 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
         ItemStack legs = entity.getEquippedStack(EquipmentSlot.LEGS);
         ItemStack feet = entity.getEquippedStack(EquipmentSlot.FEET);
         boolean noArmor = head.isEmpty() && chest.isEmpty() && legs.isEmpty() && feet.isEmpty();
-        boolean armor2 = chest.getItem() == ModItems.RATTAN_CHESTPLATE;
-        boolean armor3 = legs.getItem() == ModItems.RATTAN_LEGGINGS;
-        boolean inrattan = armor2 || armor3;
 
         if (entity.getWorld() instanceof ServerWorld world) {
 
-            if (entity instanceof PlayerEntity player && player.isDead() && hasItemInTag(Tags.Items.RECOVER, player)) {
-                //濒死自动使用酒、桃结算：首先计算需要回复的体力为(受到的伤害amount - 玩家当前生命值）
-                float recover = amount - player.getHealth();
-                int tao = count(player, Tags.Items.RECOVER);//数玩家背包中回血卡牌的数量（只包含酒、桃）
-                if (5 * tao > recover) {//如果剩余回血牌的回复量大于需要回复的值，则进行下一步，否则直接趋势
-                    for (int i = 1; i < recover/5; i++) {//循环移除背包中的酒、桃
-                        ItemStack stack = stackInTag(Tags.Items.RECOVER, player);
-                        if (stack.getItem() == ModItems.PEACH) voice(player, Sounds.RECOVER);
-                        if (stack.getItem() == ModItems.JIU) voice(player, Sounds.JIU);
-                        stack.decrement(1);
-                    }//最后将玩家的体力设置为 受伤前生命值 - 伤害值 + 回复量
-                    float result = recover % 5 == 0 ? 5 * (int)(recover/5) : 5 * ((int)(recover/5) + 1);
-                    player.setHealth(player.getHealth() - amount + result);
+            if (entity instanceof PlayerEntity player) {
+                if (player.isDead() && hasItemInTag(Tags.Items.RECOVER, player)) {
+                    //濒死自动使用酒、桃结算：首先计算需要回复的体力为(受到的伤害amount - 玩家当前生命值）
+                    float recover = amount - player.getHealth(); int need = (int) (recover/5) + 1;
+                    int tao = count(player, Tags.Items.RECOVER);//数玩家背包中回血卡牌的数量（只包含酒、桃）
+                    if (tao >= need) {//如果剩余回血牌大于需要的桃的数量，则进行下一步，否则直接趋势
+                        if (source.getAttacker() != null) {
+                            for (int i = 0; i < need - 1; i++) {//循环移除背包中的酒、桃
+                                ItemStack stack = stackInTag(Tags.Items.RECOVER, player);
+                                if (stack.getItem() == ModItems.PEACH) voice(player, Sounds.RECOVER);
+                                if (stack.getItem() == ModItems.JIU) voice(player, Sounds.JIU);
+                                stack.decrement(1);
+                            }
+                        } else {
+                            for (int i = 0; i < need; i++) {//循环移除背包中的酒、桃
+                                ItemStack stack = stackInTag(Tags.Items.RECOVER, player);
+                                if (stack.getItem() == ModItems.PEACH) voice(player, Sounds.RECOVER);
+                                if (stack.getItem() == ModItems.JIU) voice(player, Sounds.JIU);
+                                stack.decrement(1);
+                            }
+                        }
+                        //最后将玩家的体力设置为 受伤前生命值 - 伤害值 + 回复量
+                        player.setHealth(player.getHealth() - amount + 5 * need);
+                    }
+                }
+
+                //穿藤甲时，若承受火焰伤害，则 战火燃尽，嘤熊胆！
+                if (source.isIn(DamageTypeTags.IS_FIRE) && hasTrinket(ModItems.RATTAN_ARMOR, player) && !player.getCommandTags().contains("rattan")) {
+                    player.addCommandTag("rattan");
+                    player.timeUntilRegen = 0; player.damage(source, amount > 5 ? 5 : amount);
+                    player.getCommandTags().remove("rattan");
                 }
             }
 
@@ -87,13 +102,6 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
                 }
             }
 
-            //穿藤甲时，若承受火焰伤害，则 战火燃尽，嘤熊胆！
-            if (source.isIn(DamageTypeTags.IS_FIRE) && inrattan && !entity.getCommandTags().contains("rattan")) {
-                entity.addCommandTag("rattan");
-                entity.damage(source, 2 * amount);
-                entity.getCommandTags().remove("rattan");
-            }
-
             if (source.getAttacker() instanceof PlayerEntity player) {
                 //狂骨：攻击命中敌人时，如果受伤超过5则回血，否则摸一张牌
                 if (hasTrinket(SkillCards.KUANGGU, player) && !player.hasStatusEffect(ModItems.COOLDOWN)) {
@@ -109,35 +117,46 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
             }
 
             if (source.getSource() instanceof LivingEntity attacker) {
-
-                //古锭刀对没有装备的生物伤害加50%
+                //古锭刀对没有装备的生物伤害增加 限定版翻倍
                 if (attacker.getMainHandStack().getItem() == ModItems.GUDINGDAO && !attacker.getCommandTags().contains("guding")) {
                     if (noArmor || hasTrinket(SkillCards.POJUN, (PlayerEntity) attacker)) {
                         attacker.addCommandTag("guding");
-                        entity.damage(source,1.5f * amount);
+                        entity.timeUntilRegen = 0; entity.damage(source, amount);
                         attacker.getCommandTags().remove("guding");
                     }
-                }
-
-                //青釭剑额外伤害
-                if (attacker.getMainHandStack().getItem() == ModItems.QINGGANG && !attacker.getCommandTags().contains("guding") && !attacker.getCommandTags().contains("sha")) {
-                    attacker.addCommandTag("guding");
-                    float extraDamage = Math.min(20, 0.2f * entity.getMaxHealth());
-                    entity.timeUntilRegen = 0;
-                    entity.damage(attacker.getDamageSources().genericKill(), extraDamage);
-                    attacker.getCommandTags().remove("guding");
                 }
             }
 
             if (source.getSource() instanceof PlayerEntity player) {
+                //古锭刀对没有装备的生物伤害增加 卡牌版加5
+                if (hasTrinket(ModItems.GUDING_WEAPON, player) && !player.getCommandTags().contains("guding")) {
+                    if (noArmor || hasTrinket(SkillCards.POJUN, player)) {
+                        player.addCommandTag("guding");
+                        entity.timeUntilRegen = 0; entity.damage(source,5);
+                        player.getCommandTags().remove("guding");
+                    }
+                }
+
+                //青釭剑额外伤害
+                if (hasTrinket(ModItems.QINGGANG, player) && !player.getCommandTags().contains("guding") && !player.getCommandTags().contains("sha")) {
+                    player.addCommandTag("guding");
+                    float extraDamage = Math.min(20, 0.2f * entity.getMaxHealth());
+                    entity.timeUntilRegen = 0; entity.damage(player.getDamageSources().genericKill(), extraDamage);
+                    player.getCommandTags().remove("guding");
+                }
+
+                //寒冰剑冻伤
+                if (hasTrinket(ModItems.HANBING, player)) {entity.timeUntilRegen = 0; entity.setFrozenTicks(500);}
 
                 //杀的相关结算
-                if (shoudSha(player)) {
+                if (shouldSha(player) && !entity.isGlowing()) {
                     ItemStack stack = shaStack(player);
                     player.addCommandTag("sha");
                     if (stack.getItem() == ModItems.SHA) {
                         voice(player, Sounds.SHA);
-                        if (!inrattan) {entity.timeUntilRegen = 0; entity.damage(source,5);}
+                        if (!(entity instanceof PlayerEntity && hasTrinket(ModItems.RATTAN_ARMOR, (PlayerEntity) entity))) {
+                            entity.timeUntilRegen = 0; entity.damage(source, 5);
+                        }
                     }
                     if (stack.getItem() == ModItems.FIRE_SHA) {
                         voice(player, Sounds.SHA_FIRE);
@@ -223,7 +242,7 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
         return ActionResult.PASS;
     }
 
-    boolean shoudSha(PlayerEntity player) {
+    boolean shouldSha(PlayerEntity player) {
         return getShaSlot(player) != -1 && !player.getCommandTags().contains("sha") && !player.getCommandTags().contains("juedou") && !player.getCommandTags().contains("wanjian");
     }
 }
