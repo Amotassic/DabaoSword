@@ -111,6 +111,8 @@
   "item.dabaosword.thunder_sha.tooltip": "攻击命中后，消耗此牌，额外造成5点魔法伤害",
   "item.dabaosword.hanbing": "寒冰剑",
   "item.dabaosword.hanbing.tooltip": "命中后使目标冻伤",
+  "item.dabaosword.baiyin": "白银狮子",
+  "item.dabaosword.baiyin.tooltip": "使来自生物的伤害降低60%",
 
   //"技能"
   "item.dabaosword.guose": "国色",

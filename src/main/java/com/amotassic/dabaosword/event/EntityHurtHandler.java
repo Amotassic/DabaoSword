@@ -42,20 +42,11 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
                     float recover = amount - player.getHealth(); int need = (int) (recover/5) + 1;
                     int tao = count(player, Tags.Items.RECOVER);//数玩家背包中回血卡牌的数量（只包含酒、桃）
                     if (tao >= need) {//如果剩余回血牌大于需要的桃的数量，则进行下一步，否则直接趋势
-                        if (source.getAttacker() != null) {
-                            for (int i = 0; i < need - 1; i++) {//循环移除背包中的酒、桃
-                                ItemStack stack = stackInTag(Tags.Items.RECOVER, player);
-                                if (stack.getItem() == ModItems.PEACH) voice(player, Sounds.RECOVER);
-                                if (stack.getItem() == ModItems.JIU) voice(player, Sounds.JIU);
-                                stack.decrement(1);
-                            }
-                        } else {
-                            for (int i = 0; i < need; i++) {//循环移除背包中的酒、桃
-                                ItemStack stack = stackInTag(Tags.Items.RECOVER, player);
-                                if (stack.getItem() == ModItems.PEACH) voice(player, Sounds.RECOVER);
-                                if (stack.getItem() == ModItems.JIU) voice(player, Sounds.JIU);
-                                stack.decrement(1);
-                            }
+                        for (int i = 0; i < need; i++) {//循环移除背包中的酒、桃
+                            ItemStack stack = stackInTag(Tags.Items.RECOVER, player);
+                            if (stack.getItem() == ModItems.PEACH) voice(player, Sounds.RECOVER);
+                            if (stack.getItem() == ModItems.JIU) voice(player, Sounds.JIU);
+                            stack.decrement(1);
                         }
                         //最后将玩家的体力设置为 受伤前生命值 - 伤害值 + 回复量
                         player.setHealth(player.getHealth() - amount + 5 * need);
@@ -68,6 +59,27 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
                     player.timeUntilRegen = 0; player.damage(source, amount > 5 ? 5 : amount);
                     player.getCommandTags().remove("rattan");
                 }
+
+                //权计技能：受到生物伤害获得权
+                if (hasTrinket(SkillCards.QUANJI, player) && source.getAttacker() instanceof LivingEntity) {
+                    ItemStack stack = trinketItem(SkillCards.QUANJI, player);
+                    if (stack.getNbt() == null) {
+                        quanji.putInt("quanji",1);
+                        stack.setNbt(quanji);
+                    } else {
+                        int quan = stack.getNbt().getInt("quanji");
+                        quan++; quanji.putInt("quanji", quan); stack.setNbt(quanji);
+                    }
+                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.QUANJI1);} else {voice(player, Sounds.QUANJI2);}
+                }
+
+                //遗计
+                if (hasTrinket(SkillCards.YIJI, player) && !player.hasStatusEffect(ModItems.COOLDOWN) && player.getHealth() <= 12) {
+                    player.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
+                    player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 20, 0, false, true, true));
+                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.YIJI1);} else {voice(player, Sounds.YIJI2);}
+                }
+
             }
 
             //监听事件：若玩家杀死敌对生物，有概率摸牌，若杀死玩家，摸两张牌
@@ -215,29 +227,6 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
 
             }
 
-            if (entity instanceof PlayerEntity player) {
-
-                //权计技能：受到生物伤害获得权
-                if (hasTrinket(SkillCards.QUANJI, player) && source.getAttacker() instanceof LivingEntity) {
-                    ItemStack stack = trinketItem(SkillCards.QUANJI, player);
-                    if (stack.getNbt() == null) {
-                        quanji.putInt("quanji",1);
-                        stack.setNbt(quanji);
-                    } else {
-                        int quan = stack.getNbt().getInt("quanji");
-                        quan++; quanji.putInt("quanji", quan); stack.setNbt(quanji);
-                    }
-                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.QUANJI1);} else {voice(player, Sounds.QUANJI2);}
-                }
-
-                //遗计
-                if (hasTrinket(SkillCards.YIJI, player) && !player.hasStatusEffect(ModItems.COOLDOWN) && player.getHealth() <= 12) {
-                    player.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
-                    player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 20, 0, false, true, true));
-                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.YIJI1);} else {voice(player, Sounds.YIJI2);}
-                }
-
-            }
         }
         return ActionResult.PASS;
     }

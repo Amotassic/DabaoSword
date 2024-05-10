@@ -21,12 +21,7 @@ public class ReachEffect extends StatusEffect {
 
     @Override
     public void onApplied(LivingEntity entity, AttributeContainer attributes, int amplifier) {
-        EntityAttributeModifier AttributeModifier = new EntityAttributeModifier(UUID.fromString("7f7dbdb2-0d0d-458a-aa40-ac7633691f66"), "Range modifier", amplifier + 1, EntityAttributeModifier.Operation.ADDITION);
-        Supplier<ImmutableMultimap<EntityAttribute, EntityAttributeModifier>> rangeModifier = Suppliers.memoize(() -> ImmutableMultimap.of(ReachEntityAttributes.REACH, AttributeModifier, ReachEntityAttributes.ATTACK_RANGE, AttributeModifier));
-
-        if (entity instanceof PlayerEntity player) {
-            player.getAttributes().addTemporaryModifiers(rangeModifier.get());
-        }
+        if (entity instanceof PlayerEntity player) gainReach(player,amplifier + 1);
         super.onApplied(entity, attributes, amplifier);
     }
 
@@ -35,14 +30,16 @@ public class ReachEffect extends StatusEffect {
 
     @Override
     public void applyUpdateEffect(LivingEntity entity, int amplifier) {
-        EntityAttributeModifier AttributeModifier = new EntityAttributeModifier(UUID.fromString("7f7dbdb2-0d0d-458a-aa40-ac7633691f66"), "Range modifier", amplifier + 1, EntityAttributeModifier.Operation.ADDITION);
-        Supplier<ImmutableMultimap<EntityAttribute, EntityAttributeModifier>> rangeModifier = Suppliers.memoize(() -> ImmutableMultimap.of(ReachEntityAttributes.REACH, AttributeModifier, ReachEntityAttributes.ATTACK_RANGE, AttributeModifier));
-
         if (entity instanceof PlayerEntity player) {
             int restTime = Objects.requireNonNull(player.getStatusEffect(ModItems.REACH)).getDuration();
-            if(restTime<=1) {
-                player.getAttributes().removeModifiers(rangeModifier.get());
-            }
+            if(restTime<=1) gainReach(player, 0);
         }
+    }
+
+    private void gainReach(LivingEntity entity, int value) {
+        EntityAttributeModifier AttributeModifier = new EntityAttributeModifier(UUID.fromString("2b3df518-6e44-3554-821b-232333bcef5b"), "Range modifier", value, EntityAttributeModifier.Operation.ADDITION);
+        Supplier<ImmutableMultimap<EntityAttribute, EntityAttributeModifier>> rangeModifier = Suppliers.memoize(() -> ImmutableMultimap.of(ReachEntityAttributes.REACH, AttributeModifier, ReachEntityAttributes.ATTACK_RANGE, AttributeModifier));
+
+        entity.getAttributes().addTemporaryModifiers(rangeModifier.get());
     }
 }

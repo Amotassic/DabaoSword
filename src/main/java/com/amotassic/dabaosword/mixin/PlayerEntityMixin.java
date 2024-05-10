@@ -81,9 +81,9 @@ public abstract class PlayerEntityMixin extends LivingEntity implements ModTools
                 }
             }
 
-            if (source.getAttacker() instanceof LivingEntity && !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+            if (source.getAttacker() instanceof LivingEntity) {
                 //闪的被动效果
-                if (getShanSlot(this) != -1 && !this.isCreative() && !this.hasStatusEffect(ModItems.COOLDOWN2) && !hasTrinket(SkillCards.LIULI, this) && !hasTrinket(ModItems.RATTAN_ARMOR, this)) {
+                if (!source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY) && getShanSlot(this) != -1 && !this.isCreative() && !this.hasStatusEffect(ModItems.COOLDOWN2) && !hasTrinket(SkillCards.LIULI, this) && !hasTrinket(ModItems.RATTAN_ARMOR, this)) {
                     cir.setReturnValue(false);
                     shan(this);
                     //虽然没有因为杀而触发闪，但如果攻击者的杀处于自动触发状态，则仍会消耗
@@ -95,6 +95,13 @@ public abstract class PlayerEntityMixin extends LivingEntity implements ModTools
                         benxi(player);
                         if (!player.isCreative()) stack.decrement(1);
                     }
+                }
+
+                if (hasTrinket(ModItems.BAIYIN,this) && !this.getCommandTags().contains("baiyin")) {
+                    cir.setReturnValue(false);
+                    this.addCommandTag("baiyin");
+                    this.damage(source, 0.4f * amount);
+                    this.getCommandTags().remove("baiyin");
                 }
             }
 

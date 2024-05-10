@@ -89,7 +89,7 @@ public class SkillItem extends TrinketItem implements ModTools {
     public void onEquip(ItemStack stack, SlotReference slot, LivingEntity entity) {
         if (entity.getWorld() instanceof ServerWorld world) {
             world.getPlayers().forEach(player -> player.sendMessage(
-                    Text.literal(player.getEntityName()).append(Text.literal("装备了 ").append(stack.getName()))
+                    Text.literal(entity.getEntityName()).append(Text.literal("装备了 ").append(stack.getName()))
             ));
         }
         super.onEquip(stack, slot, entity);

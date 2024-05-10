@@ -12,7 +12,6 @@ public class RattanArmor extends EquipmentItem {
     public RattanArmor(Settings settings) {super(settings);}
 
     //实现渡江不沉的效果，代码来自https://github.com/focamacho/RingsOfAscension/中的水上行走戒指
-
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
         if(entity.isSneaking()) return;
@@ -29,5 +28,6 @@ public class RattanArmor extends EquipmentItem {
             entity.fallDistance = 0;
             entity.setOnGround(true);
         }
+        super.tick(stack, slot, entity);
     }
 }

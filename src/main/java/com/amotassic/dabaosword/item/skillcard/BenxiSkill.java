@@ -30,7 +30,7 @@ public class BenxiSkill extends SkillItem implements ModTools {
 
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-        if (!entity.getWorld().isClient && entity instanceof PlayerEntity player) {
+        if (!entity.getWorld().isClient && entity instanceof PlayerEntity player && noLongHand(player)) {
             NbtCompound nbt = new NbtCompound();
             if (stack.getNbt() == null) {nbt.putInt("benxi", 0); stack.setNbt(nbt);}
             else {
@@ -52,5 +52,9 @@ public class BenxiSkill extends SkillItem implements ModTools {
             }
         }
         super.tick(stack, slot, entity);
+    }
+
+    private boolean noLongHand(PlayerEntity player) {
+        return player.getMainHandStack().getItem() != ModItems.JUEDOU && player.getMainHandStack().getItem() != ModItems.DISCARD;
     }
 }
