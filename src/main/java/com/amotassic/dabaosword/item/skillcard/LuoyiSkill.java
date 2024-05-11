@@ -27,7 +27,7 @@ public class LuoyiSkill extends SkillItem implements ModTools {
             ItemStack stack4 = player.getEquippedStack(EquipmentSlot.FEET);
             boolean noArmor = stack1.isEmpty() && stack2.isEmpty() && stack3.isEmpty() && stack4.isEmpty();
             if (noArmor) {
-                player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 1,2,false,true,true));
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 1,1,false,true,true));
             }
         }
         super.tick(stack, slot, entity);
@@ -35,7 +35,9 @@ public class LuoyiSkill extends SkillItem implements ModTools {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        if (new Random().nextFloat() < 0.5) {voice(user, Sounds.LUOYI1);} else {voice(user, Sounds.LUOYI2);}
+        if (!world.isClient && !user.isSneaking()) {
+            if (new Random().nextFloat() < 0.5) {voice(user, Sounds.LUOYI1);} else {voice(user, Sounds.LUOYI2);}
+        }
         return super.use(world, user, hand);
     }
 }

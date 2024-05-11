@@ -8,10 +8,10 @@ import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -20,12 +20,8 @@ import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 
 import java.util.Random;
-
-import static com.amotassic.dabaosword.item.card.GainCardItem.draw;
 
 public class EntityHurtHandler implements EntityHurtCallback, ModTools {
     NbtCompound quanji = new NbtCompound();
@@ -37,11 +33,55 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
         ItemStack legs = entity.getEquippedStack(EquipmentSlot.LEGS);
         ItemStack feet = entity.getEquippedStack(EquipmentSlot.FEET);
         boolean noArmor = head.isEmpty() && chest.isEmpty() && legs.isEmpty() && feet.isEmpty();
-        boolean armor2 = chest.getItem() == ModItems.RATTAN_CHESTPLATE;
-        boolean armor3 = legs.getItem() == ModItems.RATTAN_LEGGINGS;
-        boolean inrattan = armor2 || armor3;
 
         if (entity.getWorld() instanceof ServerWorld world) {
+
+            if (entity instanceof PlayerEntity player) {
+                if (player.isDead() && hasItemInTag(Tags.Items.RECOVER, player)) {
+                    //濒死自动使用酒、桃结算：首先计算需要回复的体力为(受到的伤害amount - 玩家当前生命值）
+                    float recover = amount - player.getHealth(); int need = (int) (recover/5) + 1;
+                    int tao = count(player, Tags.Items.RECOVER);//数玩家背包中回血卡牌的数量（只包含酒、桃）
+                    if (tao >= need) {//如果剩余回血牌大于需要的桃的数量，则进行下一步，否则直接趋势
+                        for (int i = 0; i < need; i++) {//循环移除背包中的酒、桃
+                            ItemStack stack = stackInTag(Tags.Items.RECOVER, player);
+                            if (stack.getItem() == ModItems.PEACH) voice(player, Sounds.RECOVER);
+                            if (stack.getItem() == ModItems.JIU) voice(player, Sounds.JIU);
+                            stack.decrement(1);
+                        }
+                        //最后将玩家的体力设置为 受伤前生命值 - 伤害值 + 回复量
+                        player.setHealth(player.getHealth() - amount + 5 * need);
+                    }
+                }
+
+                //穿藤甲时，若承受火焰伤害，则 战火燃尽，嘤熊胆！
+                if (source.isIn(DamageTypeTags.IS_FIRE) && hasTrinket(ModItems.RATTAN_ARMOR, player) && !player.getCommandTags().contains("rattan")) {
+                    player.addCommandTag("rattan");
+                    player.timeUntilRegen = 0; player.damage(source, amount > 5 ? 5 : amount);
+                    player.getCommandTags().remove("rattan");
+                }
+
+                //权计技能：受到生物伤害获得权
+                if (hasTrinket(SkillCards.QUANJI, player) && source.getAttacker() instanceof LivingEntity) {
+                    ItemStack stack = trinketItem(SkillCards.QUANJI, player);
+                    if (stack.getNbt() == null) {
+                        quanji.putInt("quanji",1);
+                        stack.setNbt(quanji);
+                    } else {
+                        int quan = stack.getNbt().getInt("quanji");
+                        quan++; quanji.putInt("quanji", quan); stack.setNbt(quanji);
+                    }
+                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.QUANJI1);} else {voice(player, Sounds.QUANJI2);}
+                }
+
+                //遗计
+                if (hasTrinket(SkillCards.YIJI, player) && !player.hasStatusEffect(ModItems.COOLDOWN) && player.getHealth() <= 12) {
+                    player.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
+                    player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 20, 0, false, true, true));
+                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.YIJI1);} else {voice(player, Sounds.YIJI2);}
+                }
+
+            }
+
             //监听事件：若玩家杀死敌对生物，有概率摸牌，若杀死玩家，摸两张牌
             if (source.getAttacker() instanceof PlayerEntity player && entity.getHealth() <= 0) {
                 if (entity instanceof HostileEntity) {
@@ -49,18 +89,29 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
                         player.giveItemStack(new ItemStack(ModItems.GAIN_CARD));
                         player.sendMessage(Text.translatable("dabaosword.draw.monster"),true);
                     }
+                    //功獒技能触发
+                    if (hasTrinket(SkillCards.GONGAO, player)) {
+                        ItemStack stack = trinketItem(SkillCards.GONGAO, player);
+                        NbtCompound nbt = new NbtCompound();
+                        int extraHP = stack.getNbt() != null ? stack.getNbt().getInt("extraHP") : 0;
+                        nbt.putInt("extraHP", extraHP + 1); stack.setNbt(nbt);
+                        player.setHealth(player.getHealth() + 1);
+                        if (new Random().nextFloat() < 0.5) {voice(player, Sounds.GONGAO1);} else {voice(player, Sounds.GONGAO2);}
+                    }
                 }
                 if (entity instanceof PlayerEntity) {
                     player.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
                     player.sendMessage(Text.translatable("dabaosword.draw.player"),true);
+                    //功獒技能触发
+                    if (hasTrinket(SkillCards.GONGAO, player)) {
+                        ItemStack stack = trinketItem(SkillCards.GONGAO, player);
+                        NbtCompound nbt = new NbtCompound();
+                        int extraHP = stack.getNbt() != null ? stack.getNbt().getInt("extraHP") : 0;
+                        nbt.putInt("extraHP", extraHP + 5); stack.setNbt(nbt);
+                        player.setHealth(player.getHealth() + 5);
+                        if (new Random().nextFloat() < 0.5) {voice(player, Sounds.GONGAO1);} else {voice(player, Sounds.GONGAO2);}
+                    }
                 }
-            }
-
-            //穿藤甲时，若承受火焰伤害，则 战火燃尽，嘤熊胆！
-            if (source.isIn(DamageTypeTags.IS_FIRE) && inrattan && !entity.getCommandTags().contains("rattan")) {
-                entity.addCommandTag("rattan");
-                entity.damage(source, 2 * amount);
-                entity.getCommandTags().remove("rattan");
             }
 
             if (source.getAttacker() instanceof PlayerEntity player) {
@@ -71,53 +122,70 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
                     if (new Random().nextFloat() < 0.5) {voice(player, Sounds.KUANGGU1);} else {voice(player, Sounds.KUANGGU2);}
                     player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 8,0,false,true,true));
                 }
+
+                if (player.getCommandTags().contains("px")) {
+                    entity.timeUntilRegen = 0;
+                }
             }
 
             if (source.getSource() instanceof LivingEntity attacker) {
-
-                //古锭刀对没有装备的生物伤害加50%
+                //古锭刀对没有装备的生物伤害增加 限定版翻倍
                 if (attacker.getMainHandStack().getItem() == ModItems.GUDINGDAO && !attacker.getCommandTags().contains("guding")) {
                     if (noArmor || hasTrinket(SkillCards.POJUN, (PlayerEntity) attacker)) {
                         attacker.addCommandTag("guding");
-                        entity.damage(source,1.5f * amount);
+                        entity.timeUntilRegen = 0; entity.damage(source, amount);
                         attacker.getCommandTags().remove("guding");
                     }
                 }
-
             }
 
             if (source.getSource() instanceof PlayerEntity player) {
+                //古锭刀对没有装备的生物伤害增加 卡牌版加5
+                if (hasTrinket(ModItems.GUDING_WEAPON, player) && !player.getCommandTags().contains("guding")) {
+                    if (noArmor || hasTrinket(SkillCards.POJUN, player)) {
+                        player.addCommandTag("guding");
+                        entity.timeUntilRegen = 0; entity.damage(source,5);
+                        player.getCommandTags().remove("guding");
+                    }
+                }
+
+                //青釭剑额外伤害
+                if (hasTrinket(ModItems.QINGGANG, player) && !player.getCommandTags().contains("guding") && !player.getCommandTags().contains("sha")) {
+                    player.addCommandTag("guding");
+                    float extraDamage = Math.min(20, 0.2f * entity.getMaxHealth());
+                    entity.timeUntilRegen = 0; entity.damage(player.getDamageSources().genericKill(), extraDamage);
+                    player.getCommandTags().remove("guding");
+                }
+
+                //寒冰剑冻伤
+                if (hasTrinket(ModItems.HANBING, player)) {entity.timeUntilRegen = 0; entity.setFrozenTicks(500);}
 
                 //杀的相关结算
-                if (getShaSlot(player) != -1 && !player.getCommandTags().contains("sha")) {
+                if (shouldSha(player) && !entity.isGlowing()) {
                     ItemStack stack = shaStack(player);
-                    if (entity instanceof PlayerEntity target && hasItem(target, ModItems.SHAN)) {
-                        voice(target, Sounds.SHAN); benxi(target);
-                        if (stack.getItem() == ModItems.SHA) voice(player, Sounds.SHA);
-                        if (stack.getItem() == ModItems.FIRE_SHA) voice(player, Sounds.SHA_FIRE);
-                        if (stack.getItem() == ModItems.THUNDER_SHA) voice(player, Sounds.SHA_THUNDER);
-                        if (!player.isCreative()) {stack.decrement(1);}
-                        removeItem(target, ModItems.SHAN);
-                    } else {
-                        player.addCommandTag("sha");
-                        if (stack.getItem() == ModItems.SHA) {
-                            voice(player, Sounds.SHA);
-                            entity.timeUntilRegen = 0; entity.damage(source,5);
+                    player.addCommandTag("sha");
+                    if (stack.getItem() == ModItems.SHA) {
+                        voice(player, Sounds.SHA);
+                        if (!(entity instanceof PlayerEntity && hasTrinket(ModItems.RATTAN_ARMOR, (PlayerEntity) entity))) {
+                            entity.timeUntilRegen = 0; entity.damage(source, 5);
                         }
-                        if (stack.getItem() == ModItems.FIRE_SHA) {
-                            voice(player, Sounds.SHA_FIRE);
-                            entity.timeUntilRegen = 0; entity.damage(player.getDamageSources().inFire(),5);
-                            entity.setOnFireFor(6);
-                        }
-                        if (stack.getItem() == ModItems.THUNDER_SHA) {
-                            voice(player, Sounds.SHA_THUNDER);
-                            entity.timeUntilRegen = 0;
-                            EntityType.LIGHTNING_BOLT.spawn(world, new BlockPos((int) entity.getX(), (int) entity.getY(), (int) entity.getZ()),null);
-                            entity.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 200,0,false,false,false));
-                        }
-                        benxi(player);
-                        if (!player.isCreative()) {stack.decrement(1);}
                     }
+                    if (stack.getItem() == ModItems.FIRE_SHA) {
+                        voice(player, Sounds.SHA_FIRE);
+                        entity.timeUntilRegen = 0; entity.setOnFireFor(5);
+                    }
+                    if (stack.getItem() == ModItems.THUNDER_SHA) {
+                        voice(player, Sounds.SHA_THUNDER);
+                        entity.timeUntilRegen = 0; entity.damage(player.getDamageSources().magic(),5);
+                        LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(world);
+                        if (lightningEntity != null) {
+                            lightningEntity.refreshPositionAfterTeleport(entity.getX(), entity.getY(), entity.getZ());
+                            lightningEntity.setCosmetic(true);
+                        }
+                        world.spawnEntity(lightningEntity);
+                    }
+                    benxi(player);
+                    if (!player.isCreative()) {stack.decrement(1);}
                 }
 
                 //排异技能：攻击伤害增加
@@ -151,7 +219,7 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
                         if (ben > 1) {
                             player.addCommandTag("benxi");
                             benxi.putInt("benxi", ben - 2); stack.setNbt(benxi);
-                            draw(player,1);
+                            player.giveItemStack(new ItemStack(ModItems.GAIN_CARD));
                             if (new Random().nextFloat() < 0.5) {voice(player, Sounds.BENXI1);} else {voice(player, Sounds.BENXI2);}
                         }
                     }
@@ -159,44 +227,11 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
 
             }
 
-            if (entity instanceof PlayerEntity player) {
-
-                //权计技能：受到生物伤害获得权
-                if (hasTrinket(SkillCards.QUANJI, player) && source.getAttacker() instanceof LivingEntity) {
-                    ItemStack stack = trinketItem(SkillCards.QUANJI, player);
-                    if (stack.getNbt() == null) {
-                        quanji.putInt("quanji",1);
-                        stack.setNbt(quanji);
-                    } else {
-                        int quan = stack.getNbt().getInt("quanji");
-                        quan++; quanji.putInt("quanji", quan); stack.setNbt(quanji);
-                    }
-                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.QUANJI1);} else {voice(player, Sounds.QUANJI2);}
-                }
-
-                //遗计
-                if (hasTrinket(SkillCards.YIJI, player) && !player.hasStatusEffect(ModItems.COOLDOWN) && player.getHealth() <= 12) {
-                    player.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
-                    player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 20, 0, false, true, true));
-                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.YIJI1);} else {voice(player, Sounds.YIJI2);}
-                }
-
-                //流离
-                if (hasTrinket(SkillCards.LIULI, player) && source.getAttacker() instanceof LivingEntity attacker && hasItemInTag(Tags.Items.CARD, player)) {
-                    ItemStack stack = stackInTag(Tags.Items.CARD, player);
-                    Box box = new Box(player.getBlockPos()).expand(5);
-                    for (LivingEntity nearbyEntity : world.getEntitiesByClass(LivingEntity.class, box, LivingEntity -> LivingEntity != attacker && LivingEntity != player)) {
-                        if (nearbyEntity != null) {
-                            player.heal(amount);
-                            stack.decrement(1);
-                            if (new Random().nextFloat() < 0.5) {voice(player, Sounds.LIULI1);} else {voice(player, Sounds.LIULI2);}
-                            nearbyEntity.damage(source, amount);break;
-                        }
-                    }
-                }
-
-            }
         }
         return ActionResult.PASS;
+    }
+
+    boolean shouldSha(PlayerEntity player) {
+        return getShaSlot(player) != -1 && !player.getCommandTags().contains("sha") && !player.getCommandTags().contains("juedou") && !player.getCommandTags().contains("wanjian");
     }
 }

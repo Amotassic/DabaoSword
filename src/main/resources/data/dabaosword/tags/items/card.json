@@ -1,15 +1,17 @@
 {
   "replace": false,
   "values": [
-    "dabaosword:gain_card",
+    "dabaosword:sha",
+    "dabaosword:fire_sha",
+    "dabaosword:thunder_sha",
+    "dabaosword:shan",
     "dabaosword:peach",
     "dabaosword:jiu",
-    "dabaosword:too_happy",
     "dabaosword:bingliang",
+    "dabaosword:too_happy",
     "dabaosword:steal",
     "dabaosword:discard",
     "dabaosword:wuzhong",
-    "dabaosword:shan",
     "dabaosword:huogong",
     "dabaosword:taoyuan",
     "dabaosword:tiesuo",
@@ -20,9 +22,10 @@
     "dabaosword:wanjian",
     "dabaosword:chitu",
     "dabaosword:dilu",
-    "dabaosword:gudingdao",
+    "dabaosword:guding_dao",
+    "dabaosword:hanbing",
     "dabaosword:qinggang",
-    "dabaosword:rattan_chestplate",
-    "dabaosword:rattan_leggings"
+    "dabaosword:rattan_armor",
+    "dabaosword:baiyin"
   ]
 }

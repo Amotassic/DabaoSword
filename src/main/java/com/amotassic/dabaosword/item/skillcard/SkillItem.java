@@ -1,25 +1,36 @@
 package com.amotassic.dabaosword.item.skillcard;
 
-import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.util.ModTools;
+import com.amotassic.dabaosword.util.*;
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketItem;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.registry.Registries;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 import java.util.List;
+
+import static com.amotassic.dabaosword.item.card.GiftBoxItem.selectRandomEntry;
 
 public class SkillItem extends TrinketItem implements ModTools {
     public SkillItem(Settings settings) {super(settings);}
 
     @Override
     public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
+
+        if (stack.getItem() == SkillCards.GONGAO) {
+            tooltip.add(Text.translatable("item.dabaosword.gongao.tooltip1").formatted(Formatting.BLUE));
+            tooltip.add(Text.translatable("item.dabaosword.gongao.tooltip2").formatted(Formatting.BLUE));
+        }
 
         if (stack.getItem() == SkillCards.LEIJI) {
             tooltip.add(Text.translatable("item.dabaosword.leiji.tooltip"));
@@ -52,7 +63,7 @@ public class SkillItem extends TrinketItem implements ModTools {
         }
 
         if (stack.getItem() == SkillCards.POJUN) {
-            tooltip.add(Text.literal("CD: 5s"));
+            tooltip.add(Text.literal("CD: 10s"));
             tooltip.add(Text.translatable("item.dabaosword.pojun.tooltip").formatted(Formatting.GREEN));
         }
 
@@ -72,23 +83,37 @@ public class SkillItem extends TrinketItem implements ModTools {
         if (stack.getItem() == SkillCards.FEIYING) {
             tooltip.add(Text.translatable("item.dabaosword.dilu.tooltip"));
         }
-
-        if (stack.getItem() == ModItems.CARD_PILE) {
-            tooltip.add(Text.translatable("item.dabaosword.card_pile.tooltip"));
-        }
     }
 
     @Override
-    public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-        if (entity instanceof PlayerEntity player) {
-            //马术和飞影的效果
-            if (hasTrinket(SkillCards.MASHU, player)) {
-                player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,1));
-            }
-            if (hasTrinket(SkillCards.FEIYING, player)) {
-                player.addStatusEffect(new StatusEffectInstance(ModItems.DEFENSE, 10,1));
+    public void onEquip(ItemStack stack, SlotReference slot, LivingEntity entity) {
+        if (entity.getWorld() instanceof ServerWorld world) {
+            world.getPlayers().forEach(player -> player.sendMessage(
+                    Text.literal(entity.getNameForScoreboard()).append(Text.literal("装备了 ").append(stack.getName()))
+            ));
+        }
+        super.onEquip(stack, slot, entity);
+    }
+
+    @Override
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+        if (!user.getWorld().isClient && user.getCommandTags().contains("change_skill") && hand == Hand.OFF_HAND && user.isSneaking()) {
+            ItemStack stack = user.getStackInHand(hand);
+            if (stack.isIn(Tags.Items.SKILL)) {
+                stack.setCount(0);
+                changeSkill(user);
+                user.getCommandTags().remove("change_skill");
             }
         }
-        super.tick(stack, slot, entity);
+        return super.use(world, user, hand);
+    }
+
+    public void changeSkill(PlayerEntity player) {
+        List<LootEntry> lootEntries = LootTableParser.parseLootTable(new Identifier("dabaosword", "loot_tables/change_skill.json"));
+        LootEntry selectedEntry = selectRandomEntry(lootEntries);
+
+        ItemStack stack = new ItemStack(Registries.ITEM.get(selectedEntry.item()));
+        if (stack.getItem() != Items.AIR) voice(player, Sounds.GIFTBOX,3);
+        player.giveItemStack(stack);
     }
 }

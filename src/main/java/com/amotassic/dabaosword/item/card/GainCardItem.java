@@ -22,7 +22,7 @@ public class GainCardItem extends CardItem implements ModTools {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        if (!world.isClient && hand == Hand.MAIN_HAND) {
+        if (!world.isClient) {
             int m;
             //摸牌
             if (user.getStackInHand(hand).getItem() == ModItems.GAIN_CARD) {

@@ -8,6 +8,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
@@ -39,20 +40,9 @@ public class QiceScreenHandler extends ScreenHandler implements ModTools {
 
     @Override
     public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
-        if (0 <= slotIndex && slotIndex <13) {
-            if (slotIndex == 0) player.giveItemStack(new ItemStack(ModItems.BINGLIANG_ITEM));
-            if (slotIndex == 1) player.giveItemStack(new ItemStack(ModItems.TOO_HAPPY_ITEM));
-            if (slotIndex == 2) player.giveItemStack(new ItemStack(ModItems.DISCARD));
-            if (slotIndex == 3) player.giveItemStack(new ItemStack(ModItems.FIRE_ATTACK));
-            if (slotIndex == 4) player.giveItemStack(new ItemStack(ModItems.JIEDAO));
-            if (slotIndex == 5) player.giveItemStack(new ItemStack(ModItems.JUEDOU));
-            if (slotIndex == 6) player.giveItemStack(new ItemStack(ModItems.NANMAN));
-            if (slotIndex == 7) player.giveItemStack(new ItemStack(ModItems.STEAL));
-            if (slotIndex == 8) player.giveItemStack(new ItemStack(ModItems.TAOYUAN));
-            if (slotIndex == 9) player.giveItemStack(new ItemStack(ModItems.TIESUO));
-            if (slotIndex == 10) player.giveItemStack(new ItemStack(ModItems.WANJIAN));
-            if (slotIndex == 11) player.giveItemStack(new ItemStack(ModItems.WUXIE));
-            if (slotIndex == 12) player.giveItemStack(new ItemStack(ModItems.WUZHONG));
+        Item[] items = {ModItems.BINGLIANG_ITEM, ModItems.TOO_HAPPY_ITEM, ModItems.DISCARD, ModItems.FIRE_ATTACK, ModItems.JIEDAO, ModItems.JUEDOU, ModItems.NANMAN, ModItems.STEAL, ModItems.TAOYUAN, ModItems.TIESUO, ModItems.WANJIAN, ModItems.WUXIE, ModItems.WUZHONG};
+        if (0 <= slotIndex && slotIndex <items.length) {
+            player.giveItemStack(new ItemStack(items[slotIndex]));
             if (!player.isCreative()) player.getStackInHand(Hand.OFF_HAND).decrement(2);
             player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 1,2));
             ItemStack stack1 = trinketItem(SkillCards.QICE, player);
@@ -64,12 +54,8 @@ public class QiceScreenHandler extends ScreenHandler implements ModTools {
     public ItemStack getStack() {return stack;}
 
     @Override
-    public ItemStack quickMove(PlayerEntity player, int slot) {
-        return null;
-    }
+    public ItemStack quickMove(PlayerEntity player, int slot) {return null;}
 
     @Override
-    public boolean canUse(PlayerEntity player) {
-        return !player.hasStatusEffect(ModItems.COOLDOWN2);
-    }
+    public boolean canUse(PlayerEntity player) {return !player.hasStatusEffect(ModItems.COOLDOWN2);}
 }

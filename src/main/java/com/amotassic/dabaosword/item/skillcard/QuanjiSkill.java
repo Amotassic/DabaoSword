@@ -29,7 +29,7 @@ public class QuanjiSkill extends SkillItem implements ModTools {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        if (!world.isClient) {
+        if (!world.isClient && !user.isSneaking()) {
             if (new Random().nextFloat() < 0.5) {voice(user, Sounds.ZILI1);} else {voice(user, Sounds.ZILI2);}
         }
         return super.use(world, user, hand);
