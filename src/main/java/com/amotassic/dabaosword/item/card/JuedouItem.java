@@ -41,6 +41,7 @@ public class JuedouItem extends CardItem implements ModTools {
                     int userSha = count(user, tag);
                     int targetSha = count(target, tag);
                     if (userSha >= targetSha) { target.timeUntilRegen = 0;
+                        target.addCommandTag("juedou");
                         target.damage(user.getDamageSources().sonicBoom(user),5f);
                         target.sendMessage(Text.literal(user.getEntityName()).append(Text.translatable("dabaosword.juedou2")));
                     } else { user.timeUntilRegen = 0;

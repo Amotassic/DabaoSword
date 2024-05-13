@@ -110,5 +110,5 @@ publishing {
 }
 
 loom {
-    accessWidenerPath = file("src/main/resources/damage.accesswidener")
+    accessWidenerPath = file("src/main/resources/dabaosword.accesswidener")
 }

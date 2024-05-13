@@ -23,6 +23,7 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Pair;
 import net.minecraft.util.math.Box;
@@ -48,6 +49,8 @@ public abstract class PlayerEntityMixin extends LivingEntity implements ModTools
 
     @Shadow public abstract boolean damage(DamageSource source, float amount);
 
+    @Shadow public abstract void sendMessage(Text message, boolean overlay);
+
     @Inject(method = "damage",at = @At("HEAD"), cancellable = true)
     private void damagemixin(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
 
@@ -59,7 +62,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements ModTools
                     if (entity.getMainHandStack().isEmpty()) cir.setReturnValue(false);
                     else if (getShanSlot(this) != -1 && !this.hasStatusEffect(ModItems.COOLDOWN2)) {
                         cir.setReturnValue(false);
-                        shan(this);//闪的额外判断
+                        shan(this,false);//闪的额外判断
                     }
                 }
             }
@@ -82,10 +85,15 @@ public abstract class PlayerEntityMixin extends LivingEntity implements ModTools
             }
 
             if (source.getAttacker() instanceof LivingEntity) {
+
+                final boolean trigger = baguaTrigger(this);
+                boolean hasShan = getShanSlot(this) != -1 || trigger;
+                boolean shouldShan = !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY) && !this.getCommandTags().contains("juedou") && hasShan && !this.isCreative() && !this.hasStatusEffect(ModItems.COOLDOWN2) && !hasTrinket(SkillCards.LIULI, this) && !hasTrinket(ModItems.RATTAN_ARMOR, this);
+
                 //闪的被动效果
-                if (!source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY) && getShanSlot(this) != -1 && !this.isCreative() && !this.hasStatusEffect(ModItems.COOLDOWN2) && !hasTrinket(SkillCards.LIULI, this) && !hasTrinket(ModItems.RATTAN_ARMOR, this)) {
+                if (shouldShan) {
                     cir.setReturnValue(false);
-                    shan(this);
+                    shan(this, trigger);
                     //虽然没有因为杀而触发闪，但如果攻击者的杀处于自动触发状态，则仍会消耗
                     if (source.getSource() instanceof PlayerEntity player && getShaSlot(player) != -1) {
                         ItemStack stack = shaStack(player);
@@ -122,28 +130,36 @@ public abstract class PlayerEntityMixin extends LivingEntity implements ModTools
                     }
                 }
                 //避免闪自动触发，因此在这里额外判断
-                if (i == 0 && getShanSlot(this) != -1 && !this.hasStatusEffect(ModItems.COOLDOWN2)) {
-                    cir.setReturnValue(false);
-                    shan(this);
+                if (i == 0 && !this.hasStatusEffect(ModItems.COOLDOWN2)) {
+                    final boolean trigger = baguaTrigger(this);
+                    boolean hasShan = getShanSlot(this) != -1 || trigger;
+                    if (hasShan) {
+                        cir.setReturnValue(false);
+                        shan(this, trigger);
+                    }
                 }
             }
 
         }
     }
 
-    @Unique
-    boolean inrattan(PlayerEntityMixin player) {
+    @Unique boolean inrattan(PlayerEntityMixin player) {
         return hasTrinket(ModItems.RATTAN_ARMOR, player);
     }
 
+    @Unique boolean baguaTrigger(PlayerEntityMixin player) {
+        return hasTrinket(ModItems.BAGUA, player) && new Random().nextFloat() < 0.5;
+    }
     @Unique
-    void shan(PlayerEntityMixin player) {
-        ItemStack stack = shanStack(player);
+    void shan(PlayerEntityMixin player, boolean bl) {
+        ItemStack stack = bl ? trinketItem(ModItems.BAGUA, player) : shanStack(player);
+        int cd = bl ? 60 : 40;
         player.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 20,0,false,false,false));
-        player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 40,0,false,false,false));
+        player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, cd,0,false,false,false));
         voice(player, Sounds.SHAN);
         benxi(player);
-        stack.decrement(1);
+        if (bl) player.sendMessage(Text.translatable("dabaosword.bagua"),true);
+        else stack.decrement(1);
     }
 
     @Unique

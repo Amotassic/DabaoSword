@@ -111,8 +111,13 @@
   "item.dabaosword.thunder_sha.tooltip": "攻击命中后，消耗此牌，额外造成5点魔法伤害",
   "item.dabaosword.hanbing": "寒冰剑",
   "item.dabaosword.hanbing.tooltip": "命中后使目标冻伤",
+  "item.dabaosword.bagua": "八卦阵",
+  "item.dabaosword.bagua.tooltip": "受伤时有50%概率闪避，触发间隔3秒",
+  "dabaosword.bagua": "你成功发动八卦阵，视为使用了一张闪",
   "item.dabaosword.baiyin": "白银狮子",
   "item.dabaosword.baiyin.tooltip": "使来自生物的伤害降低60%",
+  "item.dabaosword.qinglong": "青龙偃月刀",
+  "item.dabaosword.qinglong.tooltip": "“刀势即大，其三十六刀法，兵仗遇之，无不屈者，刀类中以此为第一” ——《三才图会·器用》",
 
   //"技能"
   "item.dabaosword.guose": "国色",

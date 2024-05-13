@@ -15,6 +15,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,6 +50,15 @@ public class AttackEntityHandler implements ModTools, AttackEntityCallback {
                     int i = target instanceof PlayerEntity ? 200 : 40;
                     player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, i));
                 }
+
+                if (hasTrinket(ModItems.QINGLONG, player) && player.getAttackCooldownProgress(0) >= 0.9) {
+                    player.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 10,0,false,false,false));
+                    player.teleport(target.getX(), target.getY(), target.getZ());
+                    Vec3d momentum = player.getRotationVector().multiply(2);
+                    player.velocityModified = true; player.setVelocity(momentum.getX(),0 ,momentum.getZ());
+                    target.velocityModified = true; target.setVelocity(momentum.multiply(2).getX(),0 ,momentum.multiply(2).getZ());
+                }
+
             }
         }
         return ActionResult.PASS;

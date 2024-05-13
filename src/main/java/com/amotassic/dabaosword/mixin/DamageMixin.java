@@ -53,7 +53,7 @@ public abstract class DamageMixin extends Entity implements ModTools {
     public DamageMixin(EntityType<?> type, World world) {super(type, world);}
 
     @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
-    private void damagemixin(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+    private void damageMixin(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
 
         if (this.getWorld() instanceof ServerWorld world) {
             //无敌效果
@@ -141,11 +141,10 @@ public abstract class DamageMixin extends Entity implements ModTools {
                     }
 
                     //绝情效果
-                    if (hasTrinket(SkillCards.JUEQING, player) && !player.hasStatusEffect(ModItems.COOLDOWN)) {
+                    if (hasTrinket(SkillCards.JUEQING, player)) {
                         cir.setReturnValue(false);
                         this.damage(world.getDamageSources().genericKill(), Math.min(6, amount));
                         if (new Random().nextFloat() < 0.5) {voice(player, Sounds.JUEQING1, 1);} else {voice(player, Sounds.JUEQING2, 1);}
-                        player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 40));
                     }
 
                 }
@@ -161,7 +160,7 @@ public abstract class DamageMixin extends Entity implements ModTools {
     }
 
     @Inject(at = @At("TAIL"), method = "applyDamage", cancellable = true)
-    private void onEntityHurt ( final DamageSource source, final float amount, CallbackInfo ci){
+    private void onEntityHurt (final DamageSource source, final float amount, CallbackInfo ci) {
         ActionResult result = EntityHurtCallback.EVENT.invoker().hurtEntity((LivingEntity) (Object) this, source,
                 amount);
         if (result == ActionResult.FAIL) {

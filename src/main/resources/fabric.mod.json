@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "dabaosword",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "name": "DabaoSword",
   "description": "\\u542c\\u8bf4\\u4f60\\u60f3\\u72af\\u5927\\u5434\\u7586\\u571f\\uff1f",
   "authors": ["Amotassic"],
@@ -30,5 +30,5 @@
     "minecraft": "1.20.x",
     "trinkets": ">=3.7.0"
   },
-  "accessWidener": "damage.accesswidener"
+  "accessWidener": "dabaosword.accesswidener"
 }

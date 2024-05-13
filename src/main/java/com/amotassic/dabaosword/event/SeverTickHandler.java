@@ -103,6 +103,10 @@ public class SeverTickHandler implements ServerTickEvents.EndTick, ModTools {
                     player.addStatusEffect(new StatusEffectInstance(ModItems.DEFEND, 10,1));
                 }
 
+                if (player.getCommandTags().contains("px")) {
+                    player.lastAttackedTicks = 1145;
+                }
+
             }
         }
     }
