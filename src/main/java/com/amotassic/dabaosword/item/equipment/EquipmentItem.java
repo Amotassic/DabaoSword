@@ -31,6 +31,11 @@ public class EquipmentItem extends TrinketItem {
             tooltip.add(Text.translatable("item.dabaosword.gudingdao.tooltip2").formatted(Formatting.AQUA));
         }
 
+        if (stack.getItem() == ModItems.FANGTIAN) {
+            tooltip.add(Text.translatable("item.dabaosword.fangtian.tooltip1"));
+            tooltip.add(Text.translatable("item.dabaosword.fangtian.tooltip2").formatted(Formatting.AQUA));
+        }
+
         if (stack.getItem() == ModItems.HANBING) {
             tooltip.add(Text.translatable("item.dabaosword.hanbing.tooltip").formatted(Formatting.AQUA));
         }

@@ -21,6 +21,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -49,6 +50,10 @@ public abstract class DamageMixin extends Entity implements ModTools {
     @Shadow public abstract boolean damage(DamageSource source, float amount);
 
     @Shadow public abstract @Nullable StatusEffectInstance getStatusEffect(StatusEffect effect);
+
+    @Shadow public abstract boolean isDead();
+
+    @Shadow public abstract Hand getActiveHand();
 
     public DamageMixin(EntityType<?> type, World world) {super(type, world);}
 
@@ -151,6 +156,21 @@ public abstract class DamageMixin extends Entity implements ModTools {
 
             }
 
+        }
+    }
+
+    @Inject(method = "tick", at = @At("HEAD"))
+    private void tick(CallbackInfo ci) {
+        PlayerEntity closestPlayer = getEntityWorld().getClosestPlayer(this, 5);
+        if (closestPlayer != null && hasTrinket(ModItems.FANGTIAN, closestPlayer) && !getWorld().isClient && !isDead()) {
+            ItemStack stack = trinketItem(ModItems.FANGTIAN, closestPlayer);
+            if (stack.getNbt() != null) {
+                int time = stack.getNbt().getInt("time");
+                if (time > 0) {
+                    float i = (float) closestPlayer.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+                    this.damage(getDamageSources().playerAttack(closestPlayer), i);
+                }
+            }
         }
     }
 

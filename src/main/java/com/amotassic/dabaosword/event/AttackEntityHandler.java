@@ -11,6 +11,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -57,6 +58,16 @@ public class AttackEntityHandler implements ModTools, AttackEntityCallback {
                     Vec3d momentum = player.getRotationVector().multiply(2);
                     player.velocityModified = true; player.setVelocity(momentum.getX(),0 ,momentum.getZ());
                     target.velocityModified = true; target.setVelocity(momentum.multiply(2).getX(),0 ,momentum.multiply(2).getZ());
+                }
+
+
+                if (hasTrinket(ModItems.FANGTIAN, player)) {
+                    ItemStack stack = trinketItem(ModItems.FANGTIAN, player);
+                    if (stack.getNbt() != null) {
+                        NbtCompound nbt = new NbtCompound();
+                        int cd = stack.getNbt().getInt("cd");
+                        if (cd == 0) nbt.putInt("time", 100); nbt.putInt("cd", 400); stack.setNbt(nbt);
+                    }
                 }
 
             }

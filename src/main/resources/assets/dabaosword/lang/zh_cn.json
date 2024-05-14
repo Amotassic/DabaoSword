@@ -118,6 +118,9 @@
   "item.dabaosword.baiyin.tooltip": "使来自生物的伤害降低60%",
   "item.dabaosword.qinglong": "青龙偃月刀",
   "item.dabaosword.qinglong.tooltip": "“刀势即大，其三十六刀法，兵仗遇之，无不屈者，刀类中以此为第一” ——《三才图会·器用》",
+  "item.dabaosword.fangtian": "方天画戟",
+  "item.dabaosword.fangtian.tooltip1": "“豹子尾摇穿画戟，雄兵十万脱征衣”  ——《三国演义》",
+  "item.dabaosword.fangtian.tooltip2": "命中生物后，左键即可造成范围伤害，持续5秒，CD 15s",
 
   //"技能"
   "item.dabaosword.guose": "国色",

@@ -28,11 +28,13 @@ public class ModItems {
     public static final Item INCOMPLETE_GUDINGDAO = register("incomplete_gdd", new Item(new Item.Settings().maxCount(1)));
     //古锭
     public static final Item GUDING_ITEM = register("guding", new Item(new FabricItemSettings()));
+    //方天画戟
+    public static final Item FANGTIAN = register("fangtian", new FangtianWeapon(new Item.Settings().maxCount(1)));
     //寒冰剑
     public static final Item HANBING = register("hanbing", new EquipmentItem(new Item.Settings().maxCount(1)));
     //青釭剑
     public static final Item QINGGANG = register("qinggang", new EquipmentItem(new Item.Settings().maxCount(1)));
-    //
+    //青龙偃月刀
     public static final Item QINGLONG = register("qinglong", new EquipmentItem(new Item.Settings().maxCount(1)));
     //八卦阵
     public static final Item BAGUA = register("bagua", new EquipmentItem(new Item.Settings().maxCount(1)));
@@ -121,6 +123,7 @@ public class ModItems {
             .displayName(Text.translatable("itemGroup.dabaosword.item_group"))
             .entries((context, entries) -> {
                 entries.add(GUDING_WEAPON);
+                entries.add(FANGTIAN);
                 entries.add(HANBING);
                 entries.add(QINGGANG);
                 entries.add(QINGLONG);
