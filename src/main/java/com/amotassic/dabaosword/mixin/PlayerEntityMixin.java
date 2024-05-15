@@ -88,7 +88,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements ModTools
 
                 final boolean trigger = baguaTrigger(this);
                 boolean hasShan = getShanSlot(this) != -1 || trigger;
-                boolean shouldShan = !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY) && !this.getCommandTags().contains("juedou") && hasShan && !this.isCreative() && !this.hasStatusEffect(ModItems.COOLDOWN2) && !hasTrinket(SkillCards.LIULI, this) && !hasTrinket(ModItems.RATTAN_ARMOR, this);
+                boolean shouldShan = !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY) && !getCommandTags().contains("juedou") && hasShan && !isCreative() && !hasStatusEffect(ModItems.COOLDOWN2) && !hasStatusEffect(ModItems.INVULNERABLE) && !hasTrinket(SkillCards.LIULI, this) && !hasTrinket(ModItems.RATTAN_ARMOR, this);
 
                 //闪的被动效果
                 if (shouldShan) {

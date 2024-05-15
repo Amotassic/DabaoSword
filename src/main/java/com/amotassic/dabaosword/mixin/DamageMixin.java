@@ -161,12 +161,15 @@ public abstract class DamageMixin extends Entity implements ModTools {
 
     @Inject(method = "tick", at = @At("HEAD"))
     private void tick(CallbackInfo ci) {
-        PlayerEntity closestPlayer = getEntityWorld().getClosestPlayer(this, 5);
+        //若方天画戟被触发了，只要左键就可以造成群伤
+        PlayerEntity closestPlayer = getEntityWorld().getClosestPlayer(this, 7);
         if (closestPlayer != null && hasTrinket(ModItems.FANGTIAN, closestPlayer) && !getWorld().isClient && !isDead()) {
             ItemStack stack = trinketItem(ModItems.FANGTIAN, closestPlayer);
             if (stack.getNbt() != null) {
                 int time = stack.getNbt().getInt("time");
-                if (time > 0) {
+                if (time > 0 && closestPlayer.handSwingTicks == 1) {
+                    //给玩家本人一个极短的无敌效果，以防止被误伤
+                    closestPlayer.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE,2,0,false,false,false));
                     float i = (float) closestPlayer.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
                     this.damage(getDamageSources().playerAttack(closestPlayer), i);
                 }

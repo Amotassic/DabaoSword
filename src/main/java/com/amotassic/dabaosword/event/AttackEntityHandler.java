@@ -13,7 +13,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.Vec3d;
@@ -56,17 +58,20 @@ public class AttackEntityHandler implements ModTools, AttackEntityCallback {
                     player.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 10,0,false,false,false));
                     player.teleport(target.getX(), target.getY(), target.getZ());
                     Vec3d momentum = player.getRotationVector().multiply(2);
-                    player.velocityModified = true; player.setVelocity(momentum.getX(),0 ,momentum.getZ());
-                    target.velocityModified = true; target.setVelocity(momentum.multiply(2).getX(),0 ,momentum.multiply(2).getZ());
+                    target.setVelocity(momentum.getX(),0 ,momentum.getZ());
                 }
 
 
                 if (hasTrinket(ModItems.FANGTIAN, player)) {
+                    //方天画戟：打中生物后触发特效，给予CD和持续时间
                     ItemStack stack = trinketItem(ModItems.FANGTIAN, player);
                     if (stack.getNbt() != null) {
                         NbtCompound nbt = new NbtCompound();
                         int cd = stack.getNbt().getInt("cd");
-                        if (cd == 0) nbt.putInt("time", 100); nbt.putInt("cd", 400); stack.setNbt(nbt);
+                        if (cd == 0) {
+                            nbt.putInt("time", 100); nbt.putInt("cd", 400); stack.setNbt(nbt);
+                            player.sendMessage(Text.translatable("dabaosword.fangtian").formatted(Formatting.RED), true);
+                        }
                     }
                 }
 
