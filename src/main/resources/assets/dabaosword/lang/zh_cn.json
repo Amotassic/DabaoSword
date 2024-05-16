@@ -169,9 +169,13 @@
   "item.dabaosword.gongao": "功獒",
   "item.dabaosword.gongao.tooltip1": "杀死敌对生物或玩家后，增加最大生命值",
   "item.dabaosword.gongao.tooltip2": "若你的生命上限>=25，则每30s减少5上限，摸两张牌",
+  "item.dabaosword.liegong": "烈弓",
+  "item.dabaosword.liegong.tooltip1": "若不处于CD中，触及距离+13",
+  "item.dabaosword.liegong.tooltip2": "攻击命中时，伤害 +（13-距离，至少5）且不可被闪避",
 
   //"配音"
   "sounds.dabaosword.nahida": "纳西妲：所闻遍计",
+  "sounds.dabaosword.liegong": "烈弓：发动",
   "sounds.dabaosword.gongao": "功獒：发动",
   "sounds.dabaosword.weizhong": "威重：发动",
   "sounds.dabaosword.benxi": "奔袭：发动",

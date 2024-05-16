@@ -165,6 +165,7 @@ public class ModItems {
                 entries.add(SkillCards.KANPO);
                 entries.add(SkillCards.JIZHI);
                 entries.add(SkillCards.KUANGGU);
+                entries.add(SkillCards.LIEGONG);
                 entries.add(SkillCards.GUOSE);
                 entries.add(SkillCards.LIULI);
                 entries.add(SkillCards.KUROU);

@@ -21,7 +21,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -52,8 +51,6 @@ public abstract class DamageMixin extends Entity implements ModTools {
     @Shadow public abstract @Nullable StatusEffectInstance getStatusEffect(StatusEffect effect);
 
     @Shadow public abstract boolean isDead();
-
-    @Shadow public abstract Hand getActiveHand();
 
     public DamageMixin(EntityType<?> type, World world) {super(type, world);}
 

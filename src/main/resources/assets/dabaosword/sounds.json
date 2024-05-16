@@ -26,6 +26,24 @@
     ],
     "subtitle": "sounds.dabaosword.nahida"
   },
+  "liegong1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/liegong1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.liegong"
+  },
+  "liegong2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/liegong2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.liegong"
+  },
   "gongao1": {
     "sounds": [
       {

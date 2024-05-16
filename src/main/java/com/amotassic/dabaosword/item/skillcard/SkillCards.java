@@ -25,6 +25,7 @@ public class SkillCards {
     public static final Item KANPO = register("kanpo", new KanpoSkill(new FabricItemSettings().maxCount(1)));
     public static final Item JIZHI = register("jizhi", new SkillItem(new FabricItemSettings().maxCount(1)));
     public static final Item KUANGGU = register("kuanggu", new SkillItem(new FabricItemSettings().maxCount(1)));
+    public static final Item LIEGONG = register("liegong", new LiegongSkill(new FabricItemSettings().maxCount(1)));
     //吴
     public static final Item GUOSE = register("guose", new GuoseSkill(new FabricItemSettings().maxCount(1)));
     public static final Item LIULI = register("liuli", new SkillItem(new FabricItemSettings().maxCount(1)));
