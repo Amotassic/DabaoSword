@@ -122,6 +122,9 @@
   "item.dabaosword.fangtian.tooltip1": "“豹子尾摇穿画戟，雄兵十万脱征衣”  ——《三国演义》",
   "item.dabaosword.fangtian.tooltip2": "命中生物后，左键即可造成范围伤害，持续5秒，CD 15s",
   "dabaosword.fangtian": "你触发了方天画戟的效果！",
+  "effect.dabaosword.falling_attack": "下落攻击",
+  "sounds.dabaosword.falling_attack1": "下落攻击",
+  "sounds.dabaosword.falling_attack2": "着地",
 
   //"技能"
   "item.dabaosword.guose": "国色",

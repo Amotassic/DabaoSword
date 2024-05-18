@@ -6,7 +6,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 
 public class BingliangEffect extends StatusEffect implements ModTools {
@@ -17,8 +16,6 @@ public class BingliangEffect extends StatusEffect implements ModTools {
 
     @Override
     public void applyUpdateEffect(LivingEntity entity, int amplifier) {
-        //添加一个持续的虚弱
-        entity.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 2,0,false,false,false));
         if (entity instanceof PlayerEntity player) {
             //清除玩家的牌
             if(amplifier == 1) {
@@ -26,7 +23,7 @@ public class BingliangEffect extends StatusEffect implements ModTools {
                     removeItem(player, ModItems.GAIN_CARD);
                     //将2级效果换成1级
                     player.removeStatusEffect(ModItems.BINGLIANG);
-                    player.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, StatusEffectInstance.INFINITE,0));
+                    player.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, StatusEffectInstance.INFINITE));
                 }
             }
             if (amplifier == 0) {

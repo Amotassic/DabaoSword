@@ -26,6 +26,24 @@
     ],
     "subtitle": "sounds.dabaosword.nahida"
   },
+  "falling_attack1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:falling_attack1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.falling_attack1"
+  },
+  "falling_attack2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:falling_attack2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.falling_attack2"
+  },
   "liegong1": {
     "sounds": [
       {
