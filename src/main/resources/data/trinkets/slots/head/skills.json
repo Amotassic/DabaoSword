@@ -1,0 +1,5 @@
+{
+  "icon": "trinkets:gui/slots/blank",
+  "amount": 3,
+  "drop_rule": "keep"
+}

@@ -1,0 +1,190 @@
+package com.amotassic.dabaosword.item;
+
+import com.amotassic.dabaosword.effect.*;
+import com.amotassic.dabaosword.item.card.*;
+import com.amotassic.dabaosword.item.equipment.ArrowRainItem;
+import com.amotassic.dabaosword.item.equipment.EquipmentItem;
+import com.amotassic.dabaosword.item.equipment.GudingdaoItem;
+import com.amotassic.dabaosword.item.equipment.RattanArmor;
+import com.amotassic.dabaosword.item.skillcard.SkillCards;
+import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.minecraft.component.DataComponentType;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectCategory;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.network.codec.PacketCodecs;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.dynamic.Codecs;
+
+import java.util.function.UnaryOperator;
+
+public class ModItems {
+    //摸牌
+    public static final Item GAIN_CARD = register("gain_card",new GainCardItem(new Item.Settings()));
+    //牌堆
+    public static final Item CARD_PILE = register("card_pile",new EquipmentItem(new Item.Settings().maxCount(1)));
+
+    // 古锭刀
+    public static final Item GUDINGDAO = register("gudingdao", new GudingdaoItem());
+    public static final Item GUDING_WEAPON = register("guding_dao", new EquipmentItem(new Item.Settings().maxCount(1)));
+    //未锻造的古锭刀
+    public static final Item INCOMPLETE_GUDINGDAO = register("incomplete_gdd", new Item(new Item.Settings().maxCount(1)));
+    //古锭
+    public static final Item GUDING_ITEM = register("guding", new Item(new Item.Settings()));
+    //青釭剑
+    public static final Item QINGGANG = register("qinggang", new EquipmentItem(new Item.Settings().maxCount(1)));
+    //寒冰剑
+    public static final Item HANBING = register("hanbing", new EquipmentItem(new Item.Settings().maxCount(1)));
+    //白银狮子
+    public static final Item BAIYIN = register("baiyin", new EquipmentItem(new Item.Settings().maxCount(1)));
+    //寿衣
+    public static final Item RATTAN_ARMOR = register("rattan_armor", new RattanArmor(new Item.Settings().maxCount(1)));
+    //触及距离增加
+    public static final Item CHITU = register("chitu", new EquipmentItem(new Item.Settings().maxCount(1)));
+    public static final RegistryEntry<StatusEffect> REACH = register("reach", new DefendEffect(StatusEffectCategory.BENEFICIAL, 0x000000).addAttributeModifier(EntityAttributes.PLAYER_BLOCK_INTERACTION_RANGE, "b29c34f3-1450-48ff-ab28-639647e11862", 1.0, EntityAttributeModifier.Operation.ADD_VALUE).addAttributeModifier(EntityAttributes.PLAYER_ENTITY_INTERACTION_RANGE, "b29c34f3-1450-48ff-ab28-639647e11863", 1.0, EntityAttributeModifier.Operation.ADD_VALUE));
+    //近战防御范围增加
+    public static final Item DILU = register("dilu", new EquipmentItem(new Item.Settings().maxCount(1)));
+    public static final RegistryEntry<StatusEffect> DEFEND =
+            register("defend", new DefendEffect(StatusEffectCategory.BENEFICIAL, 0x000000));
+    public static final RegistryEntry<StatusEffect> DEFENDED = register("defended", new DefendEffect(StatusEffectCategory.HARMFUL, 0x000000).addAttributeModifier(EntityAttributes.PLAYER_ENTITY_INTERACTION_RANGE, "6656ba40-7a9c-a584-3c63-1e1e0e655446", -1.0, EntityAttributeModifier.Operation.ADD_VALUE));
+
+    //杀
+    public static final Item SHA = register("sha", new CardItem(new Item.Settings()));
+    public static final Item FIRE_SHA = register("fire_sha", new CardItem(new Item.Settings()));
+    public static final Item THUNDER_SHA = register("thunder_sha", new CardItem(new Item.Settings()));
+    //闪
+    public static final Item SHAN = register("shan", new ShanItem(new Item.Settings()));
+    //桃
+    public static final Item PEACH = register("peach", new PeachItem(new Item.Settings()));
+    //酒
+    public static final Item JIU = register("jiu", new JiuItem(new Item.Settings()));
+
+    //兵粮寸断以及状态效果
+    public static final Item BINGLIANG_ITEM = register("bingliang",new BingliangItem(new Item.Settings()));
+    public static final RegistryEntry<StatusEffect> BINGLIANG =
+            register("bingliang", new BingliangEffect(StatusEffectCategory.HARMFUL, 0x46F732));
+    //乐不思蜀以及状态效果
+    public static final Item TOO_HAPPY_ITEM = register("too_happy", new TooHappyItem(new Item.Settings()));
+    public static final RegistryEntry<StatusEffect> TOO_HAPPY =
+            register("too_happy", new TooHappyEffect(StatusEffectCategory.HARMFUL, 0xF73C0A));
+    //过河拆桥
+    public static final Item DISCARD = register("discard", new DiscardItem(new Item.Settings()));
+    //火攻
+    public static final Item FIRE_ATTACK = register("huogong", new FireAttackItem(new Item.Settings()));
+    //借刀杀人
+    public static final Item JIEDAO = register("jiedao", new JiedaoItem(new Item.Settings()));
+    //决斗
+    public static final Item JUEDOU = register("juedou",new JuedouItem(new Item.Settings()));
+    //南蛮入侵
+    public static final Item NANMAN = register("nanman", new NanmanItem(new Item.Settings()));
+    //顺手牵羊
+    public static final Item STEAL = register("steal", new StealItem(new Item.Settings()));
+    //桃园结义
+    public static final Item TAOYUAN = register("taoyuan", new TaoyuanItem(new Item.Settings()));
+    //铁锁连环
+    public static final Item TIESUO = register("tiesuo",new TiesuoItem(new Item.Settings()));
+    //万箭齐发
+    public static final Item ARROW_RAIN = register("arrow_rain", new ArrowRainItem(new Item.Settings().maxDamage(50)));
+    public static final Item WANJIAN = register("wanjian", new WanjianItem(new Item.Settings()));
+    //无懈可击
+    public static final Item WUXIE = register("wuxie", new CardItem(new Item.Settings()));
+    //无中生有
+    public static final Item WUZHONG = register("wuzhong", new GainCardItem(new Item.Settings()));
+    //冷却状态效果
+    public static final RegistryEntry<StatusEffect> COOLDOWN =
+            register("cooldown", new CooldownEffect(StatusEffectCategory.NEUTRAL,0x000000));
+    public static final RegistryEntry<StatusEffect> COOLDOWN2 =
+            register("cooldown2", new Cooldown2Effect(StatusEffectCategory.NEUTRAL,0x000000));
+    public static final RegistryEntry<StatusEffect> INVULNERABLE =
+            register("invulnerable", new InvulnerableEffect(StatusEffectCategory.BENEFICIAL,0x35F5DF));
+    //礼盒
+    public static final Item GIFTBOX = register("gift_box", new GiftBoxItem(new Item.Settings()));
+
+    //注册部分
+    public static void register() {
+        Registry.register(Registries.ITEM_GROUP, new Identifier("dabaosword", "item_group"), DABAOSWORD_GROUP);
+    }
+
+    private static RegistryEntry<StatusEffect> register(String id, StatusEffect statusEffect) {
+        return Registry.registerReference(Registries.STATUS_EFFECT, new Identifier("dabaosword", id), statusEffect);
+    }
+
+    private static Item register(String id,Item item){
+        return Registry.register(Registries.ITEM,new Identifier("dabaosword",id),item);
+    }
+
+    public static final DataComponentType<Integer> TAGS = register("tags", builder -> builder.codec(Codecs.NONNEGATIVE_INT).packetCodec(PacketCodecs.VAR_INT));
+    public static final DataComponentType<Integer> CD = register("cd", builder -> builder.codec(Codecs.NONNEGATIVE_INT).packetCodec(PacketCodecs.VAR_INT));
+
+    private static <T> DataComponentType<T> register(String id, UnaryOperator<DataComponentType.Builder<T>> builderOperator) {
+        return Registry.register(Registries.DATA_COMPONENT_TYPE, new Identifier("dabaosword",id), (builderOperator.apply(DataComponentType.builder())).build());
+    }
+
+    public static void registerItems() {}
+
+    //物品组添加
+    public static final ItemGroup DABAOSWORD_GROUP = FabricItemGroup.builder()
+            .icon(() -> new ItemStack(GUDINGDAO))
+            .displayName(Text.translatable("itemGroup.dabaosword.item_group"))
+            .entries((context, entries) -> {
+                entries.add(GUDING_WEAPON);
+                entries.add(HANBING);
+                entries.add(QINGGANG);
+                entries.add(BAIYIN);
+                entries.add(RATTAN_ARMOR);
+                entries.add(GAIN_CARD);
+                entries.add(CARD_PILE);
+                entries.add(SHA);
+                entries.add(FIRE_SHA);
+                entries.add(THUNDER_SHA);
+                entries.add(SHAN);
+                entries.add(PEACH);
+                entries.add(JIU);
+                entries.add(BINGLIANG_ITEM);
+                entries.add(TOO_HAPPY_ITEM);
+                entries.add(DISCARD);
+                entries.add(FIRE_ATTACK);
+                entries.add(JIEDAO);
+                entries.add(JUEDOU);
+                entries.add(NANMAN);
+                entries.add(STEAL);
+                entries.add(TAOYUAN);
+                entries.add(TIESUO);
+                entries.add(WANJIAN);
+                entries.add(WUXIE);
+                entries.add(WUZHONG);
+                entries.add(CHITU);
+                entries.add(DILU);
+
+                entries.add(SkillCards.GONGAO);
+                entries.add(SkillCards.JUEQING);
+                entries.add(SkillCards.LUOYI);
+                entries.add(SkillCards.QICE);
+                entries.add(SkillCards.QUANJI);
+                entries.add(SkillCards.YIJI);
+                entries.add(SkillCards.BENXI);
+                entries.add(SkillCards.HUOJI);
+                entries.add(SkillCards.KANPO);
+                entries.add(SkillCards.JIZHI);
+                entries.add(SkillCards.KUANGGU);
+                entries.add(SkillCards.GUOSE);
+                entries.add(SkillCards.LIULI);
+                entries.add(SkillCards.KUROU);
+                entries.add(SkillCards.POJUN);
+                entries.add(SkillCards.LEIJI);
+                entries.add(SkillCards.LUANJI);
+                entries.add(SkillCards.TAOLUAN);
+                entries.add(SkillCards.MASHU);
+                entries.add(SkillCards.FEIYING);
+
+                entries.add(ModItems.GIFTBOX);
+            }).build();
+}

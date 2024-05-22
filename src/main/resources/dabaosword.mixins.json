@@ -1,0 +1,18 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.amotassic.dabaosword.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "DamageMixin",
+    "FireballEntityMixin",
+    "PlayerEntityMixin",
+    "PlayerManagerMixin",
+    "ServerPlayerEntityMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "type": "create:sequenced_assembly",
+  "ingredient": {
+    "item": "dabaosword:incomplete_gdd"
+  },
+  "loops": 3,
+  "results": [
+    {
+      "item": "dabaosword:gudingdao"
+    }
+  ],
+  "sequence": [
+    {
+      "type": "create:filling",
+      "ingredients": [
+        {
+          "item": "dabaosword:incomplete_gdd"
+        },
+        {
+          "amount": 81000,
+          "fluid": "minecraft:lava",
+          "nbt": {}
+        }
+      ],
+      "results": [
+        {
+          "item": "dabaosword:incomplete_gdd"
+        }
+      ]
+    },
+    {
+      "type": "create:pressing",
+      "ingredients": [
+        {
+          "item": "dabaosword:incomplete_gdd"
+        }
+      ],
+      "results": [
+        {
+          "item": "dabaosword:incomplete_gdd"
+        }
+      ]
+    },
+    {
+      "type": "create:pressing",
+      "ingredients": [
+        {
+          "item": "dabaosword:incomplete_gdd"
+        }
+      ],
+      "results": [
+        {
+          "item": "dabaosword:incomplete_gdd"
+        }
+      ]
+    },
+    {
+      "type": "create:filling",
+      "ingredients": [
+        {
+          "item": "dabaosword:incomplete_gdd"
+        },
+        {
+          "amount": 81000,
+          "fluid": "minecraft:water",
+          "nbt": {}
+        }
+      ],
+      "results": [
+        {
+          "item": "dabaosword:incomplete_gdd"
+        }
+      ]
+    },
+    {
+      "type": "create:pressing",
+      "ingredients": [
+        {
+          "item": "dabaosword:incomplete_gdd"
+        }
+      ],
+      "results": [
+        {
+          "item": "dabaosword:incomplete_gdd"
+        }
+      ]
+    }
+  ],
+  "transitionalItem": {
+    "item": "dabaosword:incomplete_gdd"
+  }
+}

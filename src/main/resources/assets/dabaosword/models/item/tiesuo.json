@@ -1,0 +1,14 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "dabaosword:item/tiesuo"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "nahida": 1
+      },
+      "model": "dabaosword:item/nahida"
+    }
+  ]
+}
