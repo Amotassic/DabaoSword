@@ -2,10 +2,7 @@ package com.amotassic.dabaosword.item;
 
 import com.amotassic.dabaosword.effect.*;
 import com.amotassic.dabaosword.item.card.*;
-import com.amotassic.dabaosword.item.equipment.ArrowRainItem;
-import com.amotassic.dabaosword.item.equipment.EquipmentItem;
-import com.amotassic.dabaosword.item.equipment.GudingdaoItem;
-import com.amotassic.dabaosword.item.equipment.RattanArmor;
+import com.amotassic.dabaosword.item.equipment.*;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.component.DataComponentType;
@@ -39,8 +36,14 @@ public class ModItems {
     public static final Item INCOMPLETE_GUDINGDAO = register("incomplete_gdd", new Item(new Item.Settings().maxCount(1)));
     //古锭
     public static final Item GUDING_ITEM = register("guding", new Item(new Item.Settings()));
+    //方天画戟
+    public static final Item FANGTIAN = register("fangtian", new FangtianWeapon(new Item.Settings().maxCount(1)));
     //青釭剑
     public static final Item QINGGANG = register("qinggang", new EquipmentItem(new Item.Settings().maxCount(1)));
+    //青龙偃月刀
+    public static final Item QINGLONG = register("qinglong", new EquipmentItem(new Item.Settings().maxCount(1)));
+    //八卦阵
+    public static final Item BAGUA = register("bagua", new EquipmentItem(new Item.Settings().maxCount(1)));
     //寒冰剑
     public static final Item HANBING = register("hanbing", new EquipmentItem(new Item.Settings().maxCount(1)));
     //白银狮子
@@ -69,12 +72,10 @@ public class ModItems {
 
     //兵粮寸断以及状态效果
     public static final Item BINGLIANG_ITEM = register("bingliang",new BingliangItem(new Item.Settings()));
-    public static final RegistryEntry<StatusEffect> BINGLIANG =
-            register("bingliang", new BingliangEffect(StatusEffectCategory.HARMFUL, 0x46F732));
+    public static final RegistryEntry<StatusEffect> BINGLIANG = register("bingliang", new BingliangEffect(StatusEffectCategory.HARMFUL, 0x46F732).addAttributeModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE,"22653B89-116E-49DC-9B6B-9971489B5BE5",-4, EntityAttributeModifier.Operation.ADD_VALUE));
     //乐不思蜀以及状态效果
     public static final Item TOO_HAPPY_ITEM = register("too_happy", new TooHappyItem(new Item.Settings()));
-    public static final RegistryEntry<StatusEffect> TOO_HAPPY =
-            register("too_happy", new TooHappyEffect(StatusEffectCategory.HARMFUL, 0xF73C0A));
+    public static final RegistryEntry<StatusEffect> TOO_HAPPY = register("too_happy", new TooHappyEffect(StatusEffectCategory.HARMFUL, 0xF73C0A).addAttributeModifier(EntityAttributes.GENERIC_MOVEMENT_SPEED,"7107DE5E-7CE8-4030-940E-514C1F160890",-10, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
     //过河拆桥
     public static final Item DISCARD = register("discard", new DiscardItem(new Item.Settings()));
     //火攻
@@ -107,6 +108,9 @@ public class ModItems {
             register("invulnerable", new InvulnerableEffect(StatusEffectCategory.BENEFICIAL,0x35F5DF));
     //礼盒
     public static final Item GIFTBOX = register("gift_box", new GiftBoxItem(new Item.Settings()));
+    //下落攻击效果
+    public static final RegistryEntry<StatusEffect> FALLING_ATTACK =
+            register("falling_attack", new FallingEffect(StatusEffectCategory.BENEFICIAL, 0x000000));
 
     //注册部分
     public static void register() {
@@ -136,8 +140,11 @@ public class ModItems {
             .displayName(Text.translatable("itemGroup.dabaosword.item_group"))
             .entries((context, entries) -> {
                 entries.add(GUDING_WEAPON);
+                entries.add(FANGTIAN);
                 entries.add(HANBING);
                 entries.add(QINGGANG);
+                entries.add(QINGLONG);
+                entries.add(BAGUA);
                 entries.add(BAIYIN);
                 entries.add(RATTAN_ARMOR);
                 entries.add(GAIN_CARD);
@@ -175,6 +182,7 @@ public class ModItems {
                 entries.add(SkillCards.KANPO);
                 entries.add(SkillCards.JIZHI);
                 entries.add(SkillCards.KUANGGU);
+                entries.add(SkillCards.LIEGONG);
                 entries.add(SkillCards.GUOSE);
                 entries.add(SkillCards.LIULI);
                 entries.add(SkillCards.KUROU);

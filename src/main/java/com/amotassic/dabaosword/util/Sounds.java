@@ -9,6 +9,10 @@ public class Sounds {
     public static final SoundEvent NAHIDA1 = Sounds.register("nahida1");
     public static final SoundEvent NAHIDA2 = Sounds.register("nahida2");
     public static final SoundEvent NAHIDA3 = Sounds.register("nahida3");
+    public static final SoundEvent FALL1 = Sounds.register("falling_attack1");
+    public static final SoundEvent FALL2 = Sounds.register("falling_attack2");
+    public static final SoundEvent LIEGONG1 = Sounds.register("liegong1");
+    public static final SoundEvent LIEGONG2 = Sounds.register("liegong2");
     public static final SoundEvent GONGAO1 = Sounds.register("gongao1");
     public static final SoundEvent GONGAO2 = Sounds.register("gongao2");
     public static final SoundEvent WEIZHONG = Sounds.register("weizhong");

@@ -32,6 +32,11 @@ public class SkillItem extends TrinketItem implements ModTools {
             tooltip.add(Text.translatable("item.dabaosword.gongao.tooltip2").formatted(Formatting.BLUE));
         }
 
+        if (stack.getItem() == SkillCards.LIEGONG) {
+            tooltip.add(Text.translatable("item.dabaosword.liegong.tooltip1").formatted(Formatting.RED));
+            tooltip.add(Text.translatable("item.dabaosword.liegong.tooltip2").formatted(Formatting.RED));
+        }
+
         if (stack.getItem() == SkillCards.LEIJI) {
             tooltip.add(Text.translatable("item.dabaosword.leiji.tooltip"));
         }

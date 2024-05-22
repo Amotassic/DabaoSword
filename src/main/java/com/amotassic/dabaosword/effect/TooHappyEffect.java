@@ -5,8 +5,6 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 
 import java.util.Objects;
@@ -24,7 +22,6 @@ public class TooHappyEffect extends StatusEffect {
         else {
             if (!(entity instanceof PlayerEntity)) {entity.setPose(EntityPose.SLEEPING);}
             entity.setVelocity(0, 0, 0);
-            entity.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 2,255,false,false,false));
         }
         return true;
     }

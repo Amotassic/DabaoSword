@@ -92,12 +92,12 @@ public interface ModTools {
         return player.getInventory().getStack(getShaSlot(player));
     }
     //播放语音
-    default void voice(@NotNull PlayerEntity player, SoundEvent sound) {
+    default void voice(@NotNull LivingEntity player, SoundEvent sound) {
         if (player.getWorld() instanceof ServerWorld world) {
             world.playSound(null, player.getX(), player.getY(), player.getZ(), sound, SoundCategory.PLAYERS, 2.0F, 1.0F);
         }
     }
-    default void voice(@NotNull PlayerEntity player, SoundEvent sound, float volume) {
+    default void voice(@NotNull LivingEntity player, SoundEvent sound, float volume) {
         if (player.getWorld() instanceof ServerWorld world) {
             world.playSound(null, player.getX(), player.getY(), player.getZ(), sound, SoundCategory.PLAYERS, volume, 1.0F);
         }
