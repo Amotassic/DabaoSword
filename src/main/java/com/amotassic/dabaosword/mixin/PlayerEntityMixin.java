@@ -205,8 +205,8 @@ public abstract class PlayerEntityMixin extends LivingEntity implements ModTools
                 player.addStatusEffect(new StatusEffectInstance(ModItems.DEFEND, 10,1));
             }
 
-            if (player.getCommandTags().contains("px")) {
-                player.lastAttackedTicks = 1145;
+            if (this.getCommandTags().contains("px")) {
+                this.lastAttackedTicks = 1145;
             }
 
             BlockPos blockPos = player.getBlockPos().down(1); BlockPos blockPos2 = player.getBlockPos().down(2);

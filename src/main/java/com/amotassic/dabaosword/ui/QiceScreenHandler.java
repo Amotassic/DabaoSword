@@ -6,8 +6,7 @@ import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -23,15 +22,13 @@ import java.util.Random;
 public class QiceScreenHandler extends ScreenHandler implements ModTools {
     private final ItemStack stack;
 
-    public QiceScreenHandler(int syncId, PlayerInventory inv, PacketByteBuf buf) {
+    public QiceScreenHandler(int syncId, Inventory inv, PacketByteBuf buf) {
         this(syncId, inv, buf.readItemStack());
     }
 
-    public QiceScreenHandler(int syncId, PlayerInventory inv, ItemStack stack) {
+    public QiceScreenHandler(int syncId, Inventory inventory, ItemStack stack) {
         super(SkillCards.QICE_SCREEN_HANDLER, syncId);
         this.stack = stack;
-        SimpleInventory inventory = new SimpleInventory(18);
-        checkSize(inventory, 18);
         for (int i = 0; i < 2; ++i) {
             for (int j = 0; j < 9; ++j) {
                 this.addSlot(new Slot(inventory, j + i * 9 + 9, 8 + j * 18, 16 + i * 18));

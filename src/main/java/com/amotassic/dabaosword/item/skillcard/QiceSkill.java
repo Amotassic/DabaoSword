@@ -8,6 +8,7 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
@@ -21,9 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class QiceSkill extends ActiveSkill implements ModTools {
-    public QiceSkill(Settings settings) {
-        super(settings);
-    }
+    public QiceSkill(Settings settings) {super(settings);}
 
     @Override
     public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
@@ -60,7 +59,7 @@ public class QiceSkill extends ActiveSkill implements ModTools {
 
                 @Override
                 public @NotNull ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                    return new QiceScreenHandler(syncId, inv, stack);
+                    return new QiceScreenHandler(syncId, new SimpleInventory(18), stack);
                 }
             });
         }

@@ -98,7 +98,7 @@ public class ModItems {
     public static final StatusEffect INVULNERABLE = new InvulnerableEffect(StatusEffectCategory.BENEFICIAL,0x35F5DF);
     //礼盒
     public static final Item GIFTBOX = register("gift_box", new GiftBoxItem(new Item.Settings()));
-
+    //下落攻击效果
     public static final StatusEffect FALLING_ATTACK = new FallingEffect(StatusEffectCategory.BENEFICIAL, 0x000000);
 
     //注册部分

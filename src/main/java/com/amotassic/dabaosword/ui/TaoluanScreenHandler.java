@@ -6,7 +6,7 @@ import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -20,15 +20,13 @@ import java.util.Random;
 public class TaoluanScreenHandler extends ScreenHandler implements ModTools {
     private final ItemStack stack;
 
-    public TaoluanScreenHandler(int syncId, PacketByteBuf buf) {
-        this(syncId, buf.readItemStack());
+    public TaoluanScreenHandler(int syncId, Inventory inventory, PacketByteBuf buf) {
+        this(syncId, buf.readItemStack(), inventory);
     }
 
-    public TaoluanScreenHandler(int syncId, ItemStack stack) {
+    public TaoluanScreenHandler(int syncId, ItemStack stack, Inventory inventory) {
         super(SkillCards.TAOLUAN_SCREEN_HANDLER, syncId);
         this.stack = stack;
-        SimpleInventory inventory = new SimpleInventory(18);
-        checkSize(inventory, 18);
         int i;
         for (i = 0; i < 2; ++i) {
             for (int j = 0; j < 9; ++j) {

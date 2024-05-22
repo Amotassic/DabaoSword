@@ -28,7 +28,7 @@ public class FallingEffect extends StatusEffect implements ModTools {
             entity.velocityModified = true; entity.setVelocity(0,-1.5,0);
             entity.fallDistance = 0;
             if (entity.isOnGround()) {
-                float i = (float) entity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+                float i = (float) entity.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE)/2;
                 Box box = new Box(entity.getBlockPos()).expand(3);
                 for (LivingEntity nearbyEntity : world.getEntitiesByClass(LivingEntity.class, box, LivingEntity -> LivingEntity != entity)) {
                     nearbyEntity.damage(entity.getDamageSources().mobAttack(entity), i);
