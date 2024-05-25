@@ -54,12 +54,18 @@ public interface ModTools {
         inv.removeStack(i, 1);
     }
 
+    //判断是否是非基本牌
+    default boolean nonBasic(ItemStack stack) {
+        return stack.isIn(Tags.Items.CARD) && !stack.isIn(Tags.Items.BASIC_CARD);
+    }
+
     default ItemStack stackWith(Item item, PlayerEntity player) {
         PlayerInventory inv = player.getInventory();
         int i = inv.getSlotWithStack(item.getDefaultStack());
         return inv.getStack(i);
     }
 
+    //判断是否有含某个标签的物品
     default Boolean hasItemInTag(TagKey<Item> tag, @NotNull PlayerEntity player) {
         return player.getInventory().contains(tag);
     }
@@ -73,6 +79,7 @@ public interface ModTools {
         return -1;
     }
 
+    //获取背包中第一个含有含某个标签的物品
     default ItemStack stackInTag(TagKey<Item> tag, @NotNull PlayerEntity player) {
         PlayerInventory inv = player.getInventory();
         int i = getSlotInTag(tag, player);

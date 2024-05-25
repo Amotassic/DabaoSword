@@ -11,6 +11,14 @@ public class Sounds {
     public static final SoundEvent NAHIDA3 = Sounds.register("nahida3");
     public static final SoundEvent FALL1 = Sounds.register("falling_attack1");
     public static final SoundEvent FALL2 = Sounds.register("falling_attack2");
+    public static final SoundEvent DUANLIANG1 = Sounds.register("duanliang1");
+    public static final SoundEvent DUANLIANG2 = Sounds.register("duanliang2");
+    public static final SoundEvent LUOSHEN1 = Sounds.register("luoshen1");
+    public static final SoundEvent LUOSHEN2 = Sounds.register("luoshen2");
+    public static final SoundEvent QIXI1 = Sounds.register("qixi1");
+    public static final SoundEvent QIXI2 = Sounds.register("qixi2");
+    public static final SoundEvent QINGGUO1 = Sounds.register("qingguo1");
+    public static final SoundEvent QINGGUO2 = Sounds.register("qingguo2");
     public static final SoundEvent LIEGONG1 = Sounds.register("liegong1");
     public static final SoundEvent LIEGONG2 = Sounds.register("liegong2");
     public static final SoundEvent GONGAO1 = Sounds.register("gongao1");

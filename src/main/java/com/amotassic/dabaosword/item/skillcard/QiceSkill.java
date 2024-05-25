@@ -6,7 +6,6 @@ import com.amotassic.dabaosword.ui.QiceScreenHandler;
 import com.amotassic.dabaosword.util.ModTools;
 import dev.emi.trinkets.api.SlotReference;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
-import net.minecraft.client.item.TooltipType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -15,23 +14,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.util.Objects;
 
 public class QiceSkill extends ActiveSkill implements ModTools {
     public QiceSkill(Settings settings) {super(settings);}
-
-    @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        if (stack.get(ModItems.CD) != null) {
-            int cd = Objects.requireNonNull(stack.get(ModItems.CD));
-            tooltip.add(Text.literal(cd == 0 ? "CD: 20s" : "CD: 20s   left: "+ cd +"s"));
-        }
-        tooltip.add(Text.translatable("item.dabaosword.qice.tooltip").formatted(Formatting.BLUE));
-    }
 
     private int tick = 0;
     @Override

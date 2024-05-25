@@ -26,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 import java.util.Random;
 
+import static com.amotassic.dabaosword.item.card.GainCardItem.draw;
 import static com.amotassic.dabaosword.item.skillcard.QiceSkill.openQiceScreen;
 
 public class ActiveSkill extends SkillItem implements ModTools {
@@ -33,6 +34,21 @@ public class ActiveSkill extends SkillItem implements ModTools {
 
     public static void active(PlayerEntity user, ItemStack stack) {
         if (!user.getWorld().isClient) {
+
+            if (stack.getItem() == SkillCards.LUOSHEN) {
+                int cd = stack.get(ModItems.CD) == null ? 0 : Objects.requireNonNull(stack.get(ModItems.CD));
+                if (cd > 0) user.sendMessage(Text.translatable("dabaosword.cooldown").formatted(Formatting.RED), true);
+                else {
+                    if (new Random().nextFloat() < 0.5) {voice(Sounds.LUOSHEN1, user);} else {voice(Sounds.LUOSHEN2, user);}
+                    if (new Random().nextFloat() < 0.5) {
+                        draw(user,1);
+                        user.sendMessage(Text.translatable("item.dabaosword.luoshen.win").formatted(Formatting.GREEN), true);
+                    } else {
+                        stack.set(ModItems.CD, 30);
+                        user.sendMessage(Text.translatable("item.dabaosword.luoshen.lose").formatted(Formatting.RED), true);
+                    }
+                }
+            }
 
             if (stack.getItem() == SkillCards.KUROU) {
                 if (user.getHealth() + 5 * count(Tags.Items.RECOVER, user) > 4.99) {
