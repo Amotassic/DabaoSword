@@ -12,8 +12,8 @@ import net.minecraft.util.Hand;
 
 import java.util.Random;
 
-public class GuoseSkill extends SkillItem implements ModTools {
-    public GuoseSkill(Settings settings) {super(settings);}
+public class DuanliangSkill extends SkillItem implements ModTools {
+    public DuanliangSkill(Settings settings) {super(settings);}
 
     private int tick = 0;
     private final NbtCompound nbt = new NbtCompound();
@@ -22,11 +22,11 @@ public class GuoseSkill extends SkillItem implements ModTools {
         if (!entity.getWorld().isClient && entity instanceof PlayerEntity player) {
             ItemStack stack1 = player.getStackInHand(Hand.OFF_HAND);
             int cd = stack.getNbt() == null ? 0 : stack.getNbt().getInt("cooldown");
-            if (cd == 0 && !stack1.isEmpty() && stack1.getItem() == ModItems.SHAN) {
-                cd = 15; nbt.putInt("cooldown", cd); stack.setNbt(nbt);
+            if (cd == 0 && !stack1.isEmpty() && nonBasic(stack1)) {
+                cd = 5; nbt.putInt("cooldown", cd); stack.setNbt(nbt);
                 stack1.decrement(1);
-                player.giveItemStack(ModItems.TOO_HAPPY_ITEM.getDefaultStack());
-                if (new Random().nextFloat() < 0.5) {voice(player, Sounds.GUOSE1);} else {voice(player, Sounds.GUOSE2);}
+                player.giveItemStack(ModItems.BINGLIANG_ITEM.getDefaultStack());
+                if (new Random().nextFloat() < 0.5) {voice(player, Sounds.DUANLIANG1);} else {voice(player, Sounds.DUANLIANG2);}
             }
             if (++tick >= 20) {
                 tick = 0;

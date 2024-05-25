@@ -5,8 +5,13 @@ import com.amotassic.dabaosword.ui.QiceHandledScreen;
 import com.amotassic.dabaosword.ui.TaoluanHandledScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 
@@ -19,6 +24,12 @@ public class DabaoSwordClient implements ClientModInitializer {
         HandledScreens.register(SkillCards.TAOLUAN_SCREEN_HANDLER, TaoluanHandledScreen::new);
         HandledScreens.register(SkillCards.QICE_SCREEN_HANDLER, QiceHandledScreen::new);
         SkillKeyBinds.initialize();
+        WorldRenderEvents.BEFORE_DEBUG_RENDER.register(context -> {
+            MinecraftClient client = MinecraftClient.getInstance();
+            if (client.player != null && client.player.hasStatusEffect(StatusEffects.POISON)) {
+                invertScreen(context);
+            }
+        });
 
         //自定义谓词，用于改变铁索连环的纹理
         ModelPredicateProviderRegistry.register(TIESUO, new Identifier("nahida"), (itemStack, clientWorld, livingEntity, seed) -> {
@@ -27,5 +38,14 @@ public class DabaoSwordClient implements ClientModInitializer {
             }
             return livingEntity.getOffHandStack().getItem() == Items.KNOWLEDGE_BOOK ? 1.0F : 0.0F;
         });
+    }
+
+    private void invertScreen(WorldRenderContext context) {
+        MatrixStack matrixStack = context.matrixStack();
+        MinecraftClient client = MinecraftClient.getInstance();
+/*
+        matrixStack.push();
+        matrixStack.scale(1.0F, -1.0F, 1.0F);
+        matrixStack.translate(0.0, client.getWindow().getScaledHeight(), 0.0);*/
     }
 }

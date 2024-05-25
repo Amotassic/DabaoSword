@@ -11,8 +11,11 @@ import net.minecraft.util.Identifier;
 
 public class SkillCards {
     //魏
+    public static final Item DUANLIANG = register("duanliang", new DuanliangSkill(new Item.Settings().maxCount(1)));
     public static final Item GONGAO = register("gongao", new GongaoSkill(new Item.Settings().maxCount(1)));
     public static final Item JUEQING = register("jueqing", new SkillItem(new Item.Settings().maxCount(1)));
+    public static final Item LUOSHEN = register("luoshen", new LuoshenSkill(new Item.Settings().maxCount(1)));
+    public static final Item QINGGUO = register("qingguo", new QingguoSkill(new Item.Settings().maxCount(1)));
     public static final Item LUOYI = register("luoyi", new LuoyiSkill(new Item.Settings().maxCount(1)));
     public static final Item QICE = register("qice", new QiceSkill(new Item.Settings().maxCount(1)));
     public static final ScreenHandlerType<QiceScreenHandler> QICE_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "qice", new ExtendedScreenHandlerType<>(QiceScreenHandler::new));
@@ -30,6 +33,7 @@ public class SkillCards {
     public static final Item LIULI = register("liuli", new SkillItem(new Item.Settings().maxCount(1)));
     public static final Item KUROU = register("kurou", new ActiveSkill(new Item.Settings().maxCount(1)));
     public static final Item POJUN = register("pojun", new SkillItem(new Item.Settings().maxCount(1)));
+    public static final Item QIXI = register("qixi", new QixiSkill(new Item.Settings().maxCount(1)));
     //群
     public static final Item LEIJI = register("leiji", new SkillItem(new Item.Settings().maxCount(1)));
     public static final Item LUANJI = register("luanji", new LuanjiSkill(new Item.Settings().maxCount(1)));
@@ -40,7 +44,7 @@ public class SkillCards {
     public static final Item FEIYING = register("feiying", new SkillItem(new Item.Settings().maxCount(1)));
 
     private static Item register(String name,Item item){
-        return Registry.register(Registries.ITEM,new Identifier("dabaosword",name),item);
+        return Registry.register(Registries.ITEM, new Identifier("dabaosword", name), item);
     }
 
     public static void register() {}

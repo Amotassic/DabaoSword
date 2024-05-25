@@ -26,6 +26,78 @@
     ],
     "subtitle": "sounds.dabaosword.nahida"
   },
+  "duanliang1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/duanliang1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.duanliang"
+  },
+  "duanliang2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/duanliang2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.duanliang"
+  },
+  "luoshen1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/luoshen1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.luoshen"
+  },
+  "luoshen2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/luoshen2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.luoshen"
+  },
+  "qingguo1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/qingguo1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.qingguo"
+  },
+  "qingguo2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/qingguo2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.qingguo"
+  },
+  "qixi1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/qixi1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.qixi"
+  },
+  "qixi2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/qixi2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.qixi"
+  },
   "falling_attack1": {
     "sounds": [
       {

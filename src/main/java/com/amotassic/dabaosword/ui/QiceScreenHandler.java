@@ -44,7 +44,7 @@ public class QiceScreenHandler extends ScreenHandler implements ModTools {
             if (!player.isCreative()) player.getStackInHand(Hand.OFF_HAND).decrement(2);
             player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 1,2));
             ItemStack stack1 = trinketItem(SkillCards.QICE, player);
-            NbtCompound nbt = new NbtCompound();nbt.putInt("cooldown", 20 * 20);stack1.setNbt(nbt);
+            NbtCompound nbt = new NbtCompound();nbt.putInt("cooldown", 20);stack1.setNbt(nbt);
             if (new Random().nextFloat() < 0.5) {voice(player, Sounds.QICE1);} else {voice(player, Sounds.QICE2);}
         }
     }

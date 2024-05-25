@@ -11,6 +11,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.screen.ScreenHandler;
@@ -25,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 
+import static com.amotassic.dabaosword.item.card.GainCardItem.draw;
 import static com.amotassic.dabaosword.item.skillcard.QiceSkill.openQiceScreen;
 
 public class ActiveSkill extends SkillItem implements ModTools {
@@ -32,6 +34,22 @@ public class ActiveSkill extends SkillItem implements ModTools {
 
     public static void active(PlayerEntity user, ItemStack stack) {
         if (!user.getWorld().isClient) {
+
+            if (stack.getItem() == SkillCards.LUOSHEN) {
+                int cd = stack.getNbt() == null ? 0 : stack.getNbt().getInt("cooldown");
+                if (cd > 0) user.sendMessage(Text.translatable("dabaosword.cooldown").formatted(Formatting.RED), true);
+                else {
+                    if (new Random().nextFloat() < 0.5) {voice(Sounds.LUOSHEN1, user);} else {voice(Sounds.LUOSHEN2, user);}
+                    if (new Random().nextFloat() < 0.5) {
+                        draw(user,1);
+                        user.sendMessage(Text.translatable("item.dabaosword.luoshen.win").formatted(Formatting.GREEN), true);
+                    } else {
+                        NbtCompound nbt = new NbtCompound();
+                        nbt.putInt("cooldown", 30); stack.setNbt(nbt);
+                        user.sendMessage(Text.translatable("item.dabaosword.luoshen.lose").formatted(Formatting.RED), true);
+                    }
+                }
+            }
 
             if (stack.getItem() == SkillCards.KUROU) {
                 if (user.getHealth() + 5 * count(Tags.Items.RECOVER, user) > 4.99) {
