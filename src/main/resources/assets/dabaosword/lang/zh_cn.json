@@ -185,10 +185,14 @@
   "item.dabaosword.qingguo.tooltip": "将副手上的一张非基本牌转化为闪",
   "item.dabaosword.qixi": "奇袭",
   "item.dabaosword.qixi.tooltip": "将副手上的一张非基本牌转化为过河拆桥",
+  "item.dabaosword.bbji": "BB机",
+  "item.dabaosword.bbji.tooltip": "右键使用后对13格内的生物造成2点真实伤害",
 
 
   //"配音"
   "sounds.dabaosword.nahida": "纳西妲：所闻遍计",
+  "sounds.dabaosword.bbji": "许攸：BB",
+  "sounds.dabaosword.xuyou": "许攸：死亡",
   "sounds.dabaosword.duanliang": "断粮：发动",
   "sounds.dabaosword.luoshen": "洛神：发动",
   "sounds.dabaosword.qixi": "奇袭：发动",
@@ -238,6 +242,7 @@
   "gamerule.clear_cards_after_death": "死亡后清除所有卡牌",
   "gamerule.give_card_interval": "牌堆发牌时间间隔",
   "gamerule.change_skill_interval": "更换技能时间间隔",
+  "gamerule.enable_falling_attack": "启用下落攻击",
 
   "trinkets.slot.chest.armor": "防具",
   "trinkets.slot.hand.weapon": "武器",

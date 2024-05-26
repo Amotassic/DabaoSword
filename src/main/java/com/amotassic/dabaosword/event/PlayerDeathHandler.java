@@ -1,9 +1,7 @@
 package com.amotassic.dabaosword.event;
 
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.util.Gamerule;
-import com.amotassic.dabaosword.util.PlayerDeathCallback;
-import com.amotassic.dabaosword.util.Tags;
+import com.amotassic.dabaosword.util.*;
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketsApi;
@@ -17,7 +15,7 @@ import net.minecraft.util.Pair;
 import java.util.List;
 import java.util.Optional;
 
-public class PlayerDeathHandler implements PlayerDeathCallback {
+public class PlayerDeathHandler implements PlayerDeathCallback, ModTools {
     @Override
     public void onDeath(ServerPlayerEntity player, DamageSource source) {
 
@@ -45,6 +43,7 @@ public class PlayerDeathHandler implements PlayerDeathCallback {
                 }
             }
 
+            if (hasItem(player, ModItems.BBJI)) voice(player, Sounds.XUYOU);
         }
     }
 }

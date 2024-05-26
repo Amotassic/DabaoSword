@@ -47,7 +47,12 @@ public interface ModTools {
 
     //判断玩家是否有某个物品
     default boolean hasItem(@NotNull PlayerEntity player, @NotNull Item item) {
-        return player.getInventory().contains(item.getDefaultStack());
+        for (int i = 0; i < player.getInventory().size(); ++i) {
+            ItemStack stack = player.getInventory().getStack(i);
+            if (stack.isEmpty() || stack.getItem() != item) continue;
+            return true;
+        }
+        return false;
     }
     //移除玩家的1个物品
     default void removeItem(@NotNull PlayerEntity player, @NotNull Item item) {

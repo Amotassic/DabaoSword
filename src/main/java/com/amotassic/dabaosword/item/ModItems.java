@@ -89,6 +89,8 @@ public class ModItems {
     public static final Item WUZHONG = register("wuzhong", new GainCardItem(new Item.Settings()));
     //礼盒
     public static final Item GIFTBOX = register("gift_box", new GiftBoxItem(new Item.Settings()));
+    //BB机
+    public static final Item BBJI = register("bbji", new BBjiItem(new Item.Settings().maxDamage(250)));
 
     //注册部分
     public static void register() {
@@ -196,6 +198,7 @@ public class ModItems {
                 entries.add(SkillCards.MASHU);
                 entries.add(SkillCards.FEIYING);
 
-                entries.add(ModItems.GIFTBOX);
+                entries.add(GIFTBOX);
+                entries.add(BBJI);
             }).build();
 }
