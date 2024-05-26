@@ -22,8 +22,11 @@ repositories {
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html
     // for more information about repositories.
 
-    maven { url = "https://maven.terraformersmc.com" }
-    maven { url = "https://maven.architectury.dev" }
+    //trinkets
+    maven {
+        name = "TerraformersMC"
+        url = "https://maven.terraformersmc.com/"
+    }
     maven {
         name = "Ladysnake Libs"
         url = 'https://maven.ladysnake.org/releases'
@@ -38,11 +41,8 @@ dependencies {
 
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-    modApi include("org.ladysnake.cardinal-components-api:cardinal-components-base:6.0.0-beta.3")
-    modApi include("org.ladysnake.cardinal-components-api:cardinal-components-entity:6.0.0-beta.3")
-
-    compileOnly files(project.rootDir.toString() + '/libs/trinket-3.8.0-dev.jar')
-    embed files(project.rootDir.toString() + '/libs/trinket-3.8.0-dev.jar')
+    //trinkets
+    modImplementation "dev.emi:trinkets:3.9.0"
 }
 
 processResources {

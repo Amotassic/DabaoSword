@@ -26,6 +26,69 @@
     ],
     "subtitle": "sounds.dabaosword.nahida"
   },
+  "xuyou": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/xuyou"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.xuyou"
+  },
+  "chenglve1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/chenglve1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.bbji"
+  },
+  "chenglve2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/chenglve2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.bbji"
+  },
+  "cunmu1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/cunmu1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.bbji"
+  },
+  "cunmu2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/cunmu2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.bbji"
+  },
+  "shicai1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/shicai1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.bbji"
+  },
+  "shicai2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/shicai2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.bbji"
+  },
   "duanliang1": {
     "sounds": [
       {
