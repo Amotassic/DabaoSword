@@ -15,6 +15,8 @@ public class Gamerule {
             "give_card_interval", GameRules.Category.MISC, GameRuleFactory.createIntRule(60,1));
     public static final GameRules.Key<GameRules.IntRule> CHANGE_SKILL_INTERVAL = GameRuleRegistry.register(
             "change_skill_interval", GameRules.Category.MISC, GameRuleFactory.createIntRule(300,-1));
+    public static final GameRules.Key<GameRules.BooleanRule> ENABLE_FALLING_ATTACK =
+            GameRuleRegistry.register("enable_falling_attack", GameRules.Category.MISC, GameRuleFactory.createBooleanRule(false));
 
     public static void registerGamerules() {}
 }

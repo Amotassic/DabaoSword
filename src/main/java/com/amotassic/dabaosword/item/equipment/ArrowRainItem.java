@@ -5,6 +5,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -28,7 +29,7 @@ public class ArrowRainItem extends CardItem {
     }
 
     public static void arrowRain(PlayerEntity player) {
-        ItemStack stack = player.getMainHandStack();
+        ItemStack stack = new ItemStack(Items.ARROW);
         Text a = Text.of("a");
         ServerWorld world = (ServerWorld) player.getWorld();
         ArrowEntity arrow1 = new ArrowEntity(world, player, stack);arrow1.setCustomName(a);

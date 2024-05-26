@@ -2,6 +2,7 @@
   "replace": false,
   "values": [
     "dabaosword:luoyi",
+    "dabaosword:liegong",
     "dabaosword:gongao",
     "dabaosword:mashu",
     "dabaosword:feiying",
@@ -20,6 +21,10 @@
     "dabaosword:kurou",
     "dabaosword:qice",
     "dabaosword:taoluan",
-    "dabaosword:benxi"
+    "dabaosword:benxi",
+    "dabaosword:duanliang",
+    "dabaosword:luoshen",
+    "dabaosword:qingguo",
+    "dabaosword:qixi"
   ]
 }

@@ -31,6 +31,11 @@ public class EquipmentItem extends TrinketItem {
             tooltip.add(Text.translatable("item.dabaosword.gudingdao.tooltip2").formatted(Formatting.AQUA));
         }
 
+        if (stack.getItem() == ModItems.FANGTIAN) {
+            tooltip.add(Text.translatable("item.dabaosword.fangtian.tooltip1"));
+            tooltip.add(Text.translatable("item.dabaosword.fangtian.tooltip2").formatted(Formatting.AQUA));
+        }
+
         if (stack.getItem() == ModItems.HANBING) {
             tooltip.add(Text.translatable("item.dabaosword.hanbing.tooltip").formatted(Formatting.AQUA));
         }
@@ -38,6 +43,14 @@ public class EquipmentItem extends TrinketItem {
         if (stack.getItem() == ModItems.QINGGANG) {
             tooltip.add(Text.translatable("item.dabaosword.qinggang.tooltip1"));
             tooltip.add(Text.translatable("item.dabaosword.qinggang.tooltip2").formatted(Formatting.AQUA));
+        }
+
+        if (stack.getItem() == ModItems.QINGLONG) {
+            tooltip.add(Text.translatable("item.dabaosword.qinglong.tooltip"));
+        }
+
+        if (stack.getItem() == ModItems.BAGUA) {
+            tooltip.add(Text.translatable("item.dabaosword.bagua.tooltip"));
         }
 
         if (stack.getItem() == ModItems.BAIYIN) {
@@ -74,15 +87,19 @@ public class EquipmentItem extends TrinketItem {
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
         if (!entity.getWorld().isClient) {
-            if (stack.getItem() == ModItems.BAIYIN || stack.getItem() == ModItems.RATTAN_ARMOR) gainArmor(entity,5);
+            if (armorTrinket(stack)) gainArmor(entity,5);
         }
     }
 
     @Override
     public void onUnequip(ItemStack stack, SlotReference slot, LivingEntity entity) {
         if (!entity.getWorld().isClient) {
-            if (stack.getItem() == ModItems.BAIYIN || stack.getItem() == ModItems.RATTAN_ARMOR) gainArmor(entity,0);
+            if (armorTrinket(stack)) gainArmor(entity,0);
         }
+    }
+
+    private boolean armorTrinket(ItemStack stack) {
+        return stack.getItem() == ModItems.BAIYIN || stack.getItem() == ModItems.RATTAN_ARMOR || stack.getItem() == ModItems.BAGUA;
     }
 
     private void gainArmor(LivingEntity entity, int amount) {

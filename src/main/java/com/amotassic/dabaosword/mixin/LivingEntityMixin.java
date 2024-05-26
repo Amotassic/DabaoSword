@@ -41,7 +41,7 @@ import java.util.Objects;
 import java.util.Random;
 
 @Mixin(LivingEntity.class)
-public abstract class DamageMixin extends Entity implements ModTools {
+public abstract class LivingEntityMixin extends Entity implements ModTools {
 
     @Shadow public abstract double getAttributeValue(EntityAttribute attribute);
 
@@ -53,7 +53,9 @@ public abstract class DamageMixin extends Entity implements ModTools {
 
     @Shadow public abstract @Nullable StatusEffectInstance getStatusEffect(StatusEffect effect);
 
-    public DamageMixin(EntityType<?> type, World world) {super(type, world);}
+    @Shadow public abstract boolean isDead();
+
+    public LivingEntityMixin(EntityType<?> type, World world) {super(type, world);}
 
     @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
     private void damageMixin(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
@@ -157,13 +159,31 @@ public abstract class DamageMixin extends Entity implements ModTools {
         }
     }
 
+    @Inject(method = "tick", at = @At("HEAD"))
+    private void tick(CallbackInfo ci) {
+        //若方天画戟被触发了，只要左键就可以造成群伤
+        PlayerEntity closestPlayer = getEntityWorld().getClosestPlayer(this, 5);
+        if (closestPlayer != null && hasTrinket(ModItems.FANGTIAN, closestPlayer) && !getWorld().isClient && !isDead()) {
+            ItemStack stack = trinketItem(ModItems.FANGTIAN, closestPlayer);
+            if (stack.getNbt() != null) {
+                int time = stack.getNbt().getInt("time");
+                if (time > 0 && closestPlayer.handSwingTicks == 1) {
+                    //给玩家本人一个极短的无敌效果，以防止被误伤
+                    closestPlayer.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE,2,0,false,false,false));
+                    float i = (float) closestPlayer.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+                    this.damage(getDamageSources().playerAttack(closestPlayer), i);
+                }
+            }
+        }
+    }
+
     @Unique
     boolean shouldSha(PlayerEntity player) {
         return getShaSlot(player) != -1 && !player.getCommandTags().contains("sha") && !player.getCommandTags().contains("juedou") && !player.getCommandTags().contains("wanjian");
     }
 
     @Inject(at = @At("TAIL"), method = "applyDamage", cancellable = true)
-    private void onEntityHurt ( final DamageSource source, final float amount, CallbackInfo ci){
+    private void onEntityHurt (final DamageSource source, final float amount, CallbackInfo ci) {
         ActionResult result = EntityHurtCallback.EVENT.invoker().hurtEntity((LivingEntity) (Object) this, source,
                 amount);
         if (result == ActionResult.FAIL) {

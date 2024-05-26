@@ -47,7 +47,12 @@ public interface ModTools {
 
     //判断玩家是否有某个物品
     default boolean hasItem(@NotNull PlayerEntity player, @NotNull Item item) {
-        return player.getInventory().contains(item.getDefaultStack());
+        for (int i = 0; i < player.getInventory().size(); ++i) {
+            ItemStack stack = player.getInventory().getStack(i);
+            if (stack.isEmpty() || stack.getItem() != item) continue;
+            return true;
+        }
+        return false;
     }
     //移除玩家的1个物品
     default void removeItem(@NotNull PlayerEntity player, @NotNull Item item) {
@@ -56,12 +61,18 @@ public interface ModTools {
         inv.removeStack(i, 1);
     }
 
+    //判断是否是非基本牌
+    default boolean nonBasic(ItemStack stack) {
+        return stack.isIn(Tags.Items.CARD) && !stack.isIn(Tags.Items.BASIC_CARD);
+    }
+
     default ItemStack stackWith(Item item, PlayerEntity player) {
         PlayerInventory inv = player.getInventory();
         int i = inv.getSlotWithStack(item.getDefaultStack());
         return inv.getStack(i);
     }
 
+    //判断是否有含某个标签的物品
     default Boolean hasItemInTag(TagKey<Item> tag, @NotNull PlayerEntity player) {
         return player.getInventory().contains(tag);
     }
@@ -75,6 +86,7 @@ public interface ModTools {
         return -1;
     }
 
+    //获取背包中第一个含有含某个标签的物品
     default ItemStack stackInTag(TagKey<Item> tag, @NotNull PlayerEntity player) {
         PlayerInventory inv = player.getInventory();
         int i = getSlotInTag(tag, player);
@@ -94,14 +106,14 @@ public interface ModTools {
         return player.getInventory().getStack(getShaSlot(player));
     }
     //播放语音
-    default void voice(@NotNull PlayerEntity player, SoundEvent sound) {
-        if (player.getWorld() instanceof ServerWorld world) {
-            world.playSound(null, player.getX(), player.getY(), player.getZ(), sound, SoundCategory.PLAYERS, 2.0F, 1.0F);
+    default void voice(@NotNull LivingEntity entity, SoundEvent sound) {
+        if (entity.getWorld() instanceof ServerWorld world) {
+            world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), sound, SoundCategory.PLAYERS, 2.0F, 1.0F);
         }
     }
-    default void voice(@NotNull PlayerEntity player, SoundEvent sound, float volume) {
-        if (player.getWorld() instanceof ServerWorld world) {
-            world.playSound(null, player.getX(), player.getY(), player.getZ(), sound, SoundCategory.PLAYERS, volume, 1.0F);
+    default void voice(@NotNull LivingEntity entity, SoundEvent sound, float volume) {
+        if (entity.getWorld() instanceof ServerWorld world) {
+            world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), sound, SoundCategory.PLAYERS, volume, 1.0F);
         }
     }
     //视为类技能方法

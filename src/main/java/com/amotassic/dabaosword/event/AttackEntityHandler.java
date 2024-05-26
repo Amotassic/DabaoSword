@@ -11,10 +11,14 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,6 +53,38 @@ public class AttackEntityHandler implements ModTools, AttackEntityCallback {
                     int i = target instanceof PlayerEntity ? 200 : 40;
                     player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, i));
                 }
+
+                if (hasTrinket(ModItems.QINGLONG, player) && player.getAttackCooldownProgress(0) >= 0.9) {
+                    player.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE,10,0,false,false,false));
+                    player.teleport(target.getX(), target.getY(), target.getZ());
+                    Vec3d momentum = player.getRotationVector().multiply(2);
+                    target.setVelocity(momentum.getX(),0 ,momentum.getZ());
+                }
+
+
+                if (hasTrinket(ModItems.FANGTIAN, player)) {
+                    //方天画戟：打中生物后触发特效，给予CD和持续时间
+                    ItemStack stack = trinketItem(ModItems.FANGTIAN, player);
+                    if (stack.getNbt() != null) {
+                        NbtCompound nbt = new NbtCompound();
+                        int cd = stack.getNbt().getInt("cd");
+                        if (cd == 0) {
+                            nbt.putInt("time", 100); nbt.putInt("cd", 400); stack.setNbt(nbt);
+                            player.sendMessage(Text.translatable("dabaosword.fangtian").formatted(Formatting.RED), true);
+                        }
+                    }
+                }
+
+                if (hasTrinket(SkillCards.LIEGONG, player) && !player.hasStatusEffect(ModItems.COOLDOWN)) {
+                    //烈弓：命中后加伤害，至少为5，给目标一个短暂的冷却效果，防止其自动触发闪
+                    target.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2,2,0,false,false,false));
+                    float f = Math.max(13 - player.distanceTo(target), 5);
+                    player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, (int) (20 * f)));
+                    target.damage(player.getDamageSources().playerAttack(player), f); target.timeUntilRegen = 0;
+                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.LIEGONG1);} else {voice(player, Sounds.LIEGONG2);}
+                }
+
+
             }
         }
         return ActionResult.PASS;

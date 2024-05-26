@@ -27,9 +27,65 @@ public class SkillItem extends TrinketItem implements ModTools {
     @Override
     public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
 
+        if (stack.getItem() == SkillCards.DUANLIANG) {
+            tooltip.add(Text.literal("CD: 5s"));
+            tooltip.add(Text.translatable("item.dabaosword.duanliang.tooltip").formatted(Formatting.BLUE));
+        }
+
+        if (stack.getItem() == SkillCards.LUOSHEN) {
+            int cd = stack.getNbt() == null ? 0 : stack.getNbt().getInt("cooldown");
+            tooltip.add(Text.literal(cd == 0 ? "CD: 30s" : "CD: 30s   left: "+ cd +"s"));
+            tooltip.add(Text.translatable("item.dabaosword.luoshen.tooltip").formatted(Formatting.BLUE));
+        }
+
+        if (stack.getItem() == SkillCards.QINGGUO) {
+            tooltip.add(Text.literal("CD: 5s"));
+            tooltip.add(Text.translatable("item.dabaosword.qingguo.tooltip").formatted(Formatting.BLUE));
+        }
+
+        if (stack.getItem() == SkillCards.QIXI) {
+            tooltip.add(Text.literal("CD: 5s"));
+            tooltip.add(Text.translatable("item.dabaosword.qixi.tooltip").formatted(Formatting.GREEN));
+        }
+
+        if (stack.getItem() == SkillCards.HUOJI) {
+            int cd = stack.getNbt() == null ? 0 : stack.getNbt().getInt("cooldown");
+            tooltip.add(Text.literal(cd == 0 ? "CD: 15s" : "CD: 15s   left: "+ cd +"s"));
+            tooltip.add(Text.translatable("item.dabaosword.huoji.tooltip").formatted(Formatting.RED));
+        }
+
+        if (stack.getItem() == SkillCards.LUANJI) {
+            int cd = stack.getNbt() == null ? 0 : stack.getNbt().getInt("cooldown");
+            tooltip.add(Text.literal(cd == 0 ? "CD: 15s" : "CD: 15s   left: "+ cd +"s"));
+            tooltip.add(Text.translatable("item.dabaosword.luanji.tooltip"));
+        }
+
+        if (stack.getItem() == SkillCards.QICE) {
+            int cd = stack.getNbt() == null ? 0 : stack.getNbt().getInt("cooldown");
+            tooltip.add(Text.literal(cd == 0 ? "CD: 20s" : "CD: 20s   left: "+ cd +"s"));
+            tooltip.add(Text.translatable("item.dabaosword.qice.tooltip").formatted(Formatting.BLUE));
+        }
+
+        if (stack.getItem() == SkillCards.KANPO) {
+            int cd = stack.getNbt() == null ? 0 : stack.getNbt().getInt("cooldown");
+            tooltip.add(Text.literal(cd == 0 ? "CD: 10s" : "CD: 10s   left: "+ cd +"s"));
+            tooltip.add(Text.translatable("item.dabaosword.kanpo.tooltip").formatted(Formatting.RED));
+        }
+
+        if (stack.getItem() == SkillCards.GUOSE) {
+            int cd = stack.getNbt() == null ? 0 : stack.getNbt().getInt("cooldown");
+            tooltip.add(Text.literal(cd == 0 ? "CD: 15s" : "CD: 15s   left: "+ cd +"s"));
+            tooltip.add(Text.translatable("item.dabaosword.guose.tooltip").formatted(Formatting.GREEN));
+        }
+
         if (stack.getItem() == SkillCards.GONGAO) {
             tooltip.add(Text.translatable("item.dabaosword.gongao.tooltip1").formatted(Formatting.BLUE));
             tooltip.add(Text.translatable("item.dabaosword.gongao.tooltip2").formatted(Formatting.BLUE));
+        }
+
+        if (stack.getItem() == SkillCards.LIEGONG) {
+            tooltip.add(Text.translatable("item.dabaosword.liegong.tooltip1").formatted(Formatting.RED));
+            tooltip.add(Text.translatable("item.dabaosword.liegong.tooltip2").formatted(Formatting.RED));
         }
 
         if (stack.getItem() == SkillCards.LEIJI) {
