@@ -76,8 +76,15 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
                 //遗计
                 if (hasTrinket(SkillCards.YIJI, player) && !player.hasStatusEffect(ModItems.COOLDOWN) && player.getHealth() <= 12) {
                     player.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
-                    player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 20, 0, false, true, true));
+                    player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 20, 0, false, false, true));
                     if (new Random().nextFloat() < 0.5) {voice(player, Sounds.YIJI1);} else {voice(player, Sounds.YIJI2);}
+                }
+
+                //放逐
+                if (hasTrinket(SkillCards.FANGZHU, player) && source.getAttacker() instanceof LivingEntity attacker && player != attacker) {
+                    int i = attacker instanceof PlayerEntity ? (int) (20 * amount + 60) : 300;
+                    attacker.addStatusEffect(new StatusEffectInstance(ModItems.TURNOVER, i));
+                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.FANGZHU1);} else {voice(player, Sounds.FANGZHU2);}
                 }
 
             }
@@ -120,7 +127,7 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
                     if (player.getMaxHealth()-player.getHealth()>=5) {player.heal(5);}
                     else {player.giveItemStack(new ItemStack(ModItems.GAIN_CARD));}
                     if (new Random().nextFloat() < 0.5) {voice(player, Sounds.KUANGGU1);} else {voice(player, Sounds.KUANGGU2);}
-                    player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 8,0,false,true,true));
+                    player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 8,0,false,false,true));
                 }
 
                 if (player.getCommandTags().contains("px")) {

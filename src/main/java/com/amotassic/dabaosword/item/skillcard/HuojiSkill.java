@@ -14,7 +14,6 @@ import net.minecraft.util.Hand;
 public class HuojiSkill extends SkillItem implements ModTools {
     public HuojiSkill(Settings settings) {super(settings);}
 
-    private int tick = 0;
     private final NbtCompound nbt = new NbtCompound();
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
@@ -24,10 +23,6 @@ public class HuojiSkill extends SkillItem implements ModTools {
             if (cd == 0 && !stack1.isEmpty() && stack1.isIn(Tags.Items.BASIC_CARD)) {
                 cd = 15; nbt.putInt("cooldown", cd); stack.setNbt(nbt);
                 viewAs(player, Tags.Items.BASIC_CARD, ModItems.FIRE_ATTACK, Sounds.HUOJI1, Sounds.HUOJI2);
-            }
-            if (++tick >= 20) {
-                tick = 0;
-                if (cd > 0) {cd--; nbt.putInt("cooldown", cd); stack.setNbt(nbt);}
             }
         }
         super.tick(stack, slot, entity);

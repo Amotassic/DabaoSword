@@ -15,7 +15,6 @@ import java.util.Random;
 public class QingguoSkill extends SkillItem implements ModTools {
     public QingguoSkill(Settings settings) {super(settings);}
 
-    private int tick = 0;
     private final NbtCompound nbt = new NbtCompound();
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
@@ -27,10 +26,6 @@ public class QingguoSkill extends SkillItem implements ModTools {
                 stack1.decrement(1);
                 player.giveItemStack(ModItems.SHAN.getDefaultStack());
                 if (new Random().nextFloat() < 0.5) {voice(player, Sounds.QINGGUO1);} else {voice(player, Sounds.QINGGUO2);}
-            }
-            if (++tick >= 20) {
-                tick = 0;
-                if (cd > 0) {cd--; nbt.putInt("cooldown", cd); stack.setNbt(nbt);}
             }
         }
         super.tick(stack, slot, entity);

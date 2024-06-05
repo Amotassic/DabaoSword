@@ -8,6 +8,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -26,6 +27,14 @@ public class SkillItem extends TrinketItem implements ModTools {
 
     @Override
     public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
+
+        if (stack.getItem() == SkillCards.FANGZHU) {
+            tooltip.add(Text.translatable("item.dabaosword.fangzhu.tooltip").formatted(Formatting.BLUE));
+        }
+
+        if (stack.getItem() == SkillCards.XINGSHANG) {
+            tooltip.add(Text.translatable("item.dabaosword.xingshang.tooltip").formatted(Formatting.BLUE));
+        }
 
         if (stack.getItem() == SkillCards.DUANLIANG) {
             tooltip.add(Text.literal("CD: 5s"));
@@ -162,6 +171,22 @@ public class SkillItem extends TrinketItem implements ModTools {
             }
         }
         return super.use(world, user, hand);
+    }
+
+    @Override
+    public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
+        if (entity.getWorld() instanceof ServerWorld world) {
+            if (stack.getNbt() != null) {
+                if (stack.getNbt().contains("cooldown")) {
+                    int cd = stack.getNbt().getInt("cooldown");
+                    if (world.getTime() % 20 == 0) {//世界时间除以20取余为0时，技能内置CD减一秒
+                        NbtCompound nbt = new NbtCompound();
+                        if (cd > 0) {cd--; nbt.putInt("cooldown", cd); stack.setNbt(nbt);}
+                    }
+                }
+            }
+        }
+        super.tick(stack, slot, entity);
     }
 
     public void changeSkill(PlayerEntity player) {

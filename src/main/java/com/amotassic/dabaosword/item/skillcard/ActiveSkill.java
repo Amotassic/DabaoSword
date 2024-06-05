@@ -1,6 +1,7 @@
 package com.amotassic.dabaosword.item.skillcard;
 
 import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.ui.QiceScreenHandler;
 import com.amotassic.dabaosword.ui.TaoluanScreenHandler;
 import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
@@ -27,7 +28,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Random;
 
 import static com.amotassic.dabaosword.item.card.GainCardItem.draw;
-import static com.amotassic.dabaosword.item.skillcard.QiceSkill.openQiceScreen;
 
 public class ActiveSkill extends SkillItem implements ModTools {
     public ActiveSkill(Settings settings) {super(settings);}
@@ -64,20 +64,36 @@ public class ActiveSkill extends SkillItem implements ModTools {
 
             if (stack.getItem() == SkillCards.QICE) {
                 ItemStack offStack = user.getStackInHand(Hand.OFF_HAND);
-                if (stack.getNbt() != null) {
-                    int cd = stack.getNbt().getInt("cooldown");
-                    if (!offStack.isEmpty() && offStack.isIn(Tags.Items.CARD) && offStack.getCount() > 1) {
-                        if (cd == 0) openQiceScreen(user, stack);
-                        else {user.sendMessage(Text.translatable("dabaosword.cooldown").formatted(Formatting.RED), true);}
-                    }
-                    else {user.sendMessage(Text.translatable("item.dabaosword.qice.tip").formatted(Formatting.RED), true);}
-                }
+                int cd = stack.getNbt() == null ? 0 : stack.getNbt().getInt("cooldown");
+                if (!offStack.isEmpty() && offStack.isIn(Tags.Items.CARD) && offStack.getCount() > 1) {
+                    if (cd == 0) openQiceScreen(user, stack);
+                    else {user.sendMessage(Text.translatable("dabaosword.cooldown").formatted(Formatting.RED), true);}
+                } else {user.sendMessage(Text.translatable("item.dabaosword.qice.tip").formatted(Formatting.RED), true);}
             }
 
             if (stack.getItem() == SkillCards.TAOLUAN) {
                 if (user.getHealth() + 5 * count(Tags.Items.RECOVER, user) > 4.99) {openTaoluanScreen(user, stack);}
                 else {user.sendMessage(Text.translatable("item.dabaosword.taoluan.tip").formatted(Formatting.RED), true);}
             }
+        }
+    }
+
+    public static void openQiceScreen(PlayerEntity player, ItemStack stack) {
+        if (!player.getWorld().isClient) {
+            player.openHandledScreen(new ExtendedScreenHandlerFactory() {
+                @Override
+                public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
+                    buf.writeItemStack(stack);
+                }
+
+                @Override
+                public Text getDisplayName() {return Text.translatable("item.dabaosword.qice.screen");}
+
+                @Override
+                public @NotNull ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
+                    return new QiceScreenHandler(syncId, new SimpleInventory(18), stack);
+                }
+            });
         }
     }
 

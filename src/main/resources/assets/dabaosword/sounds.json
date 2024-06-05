@@ -26,6 +26,42 @@
     ],
     "subtitle": "sounds.dabaosword.nahida"
   },
+  "fangzhu1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/fangzhu1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.fangzhu"
+  },
+  "fangzhu2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/fangzhu2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.fangzhu"
+  },
+  "xingshang1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/xingshang1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.xingshang"
+  },
+  "xingshang2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/xingshang2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.xingshang"
+  },
   "xuyou": {
     "sounds": [
       {

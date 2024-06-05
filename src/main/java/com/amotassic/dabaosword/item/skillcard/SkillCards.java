@@ -12,12 +12,14 @@ import net.minecraft.util.Identifier;
 public class SkillCards {
     //魏
     public static final Item DUANLIANG = register("duanliang", new DuanliangSkill(new Item.Settings().maxCount(1)));
+    public static final Item FANGZHU = register("fangzhu", new SkillItem(new Item.Settings().maxCount(1)));
+    public static final Item XINGSHANG = register("xingshang", new SkillItem(new Item.Settings().maxCount(1)));
     public static final Item GONGAO = register("gongao", new GongaoSkill(new Item.Settings().maxCount(1)));
     public static final Item JUEQING = register("jueqing", new SkillItem(new Item.Settings().maxCount(1)));
-    public static final Item LUOSHEN = register("luoshen", new LuoshenSkill(new Item.Settings().maxCount(1)));
+    public static final Item LUOSHEN = register("luoshen", new ActiveSkill(new Item.Settings().maxCount(1)));
     public static final Item QINGGUO = register("qingguo", new QingguoSkill(new Item.Settings().maxCount(1)));
     public static final Item LUOYI = register("luoyi", new LuoyiSkill(new Item.Settings().maxCount(1)));
-    public static final Item QICE = register("qice", new QiceSkill(new Item.Settings().maxCount(1)));
+    public static final Item QICE = register("qice", new ActiveSkill(new Item.Settings().maxCount(1)));
     public static final ScreenHandlerType<QiceScreenHandler> QICE_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "qice", new ExtendedScreenHandlerType<>(QiceScreenHandler::new));
     public static final Item QUANJI = register("quanji", new QuanjiSkill(new Item.Settings().maxCount(1)));
     public static final Item YIJI = register("yiji",new SkillItem(new Item.Settings().maxCount(1)));

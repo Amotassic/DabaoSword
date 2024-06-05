@@ -43,9 +43,5 @@ public class DabaoSwordClient implements ClientModInitializer {
     private void invertScreen(WorldRenderContext context) {
         MatrixStack matrixStack = context.matrixStack();
         MinecraftClient client = MinecraftClient.getInstance();
-/*
-        matrixStack.push();
-        matrixStack.scale(1.0F, -1.0F, 1.0F);
-        matrixStack.translate(0.0, client.getWindow().getScaledHeight(), 0.0);*/
     }
 }
