@@ -29,6 +29,14 @@ public class SkillItem extends TrinketItem implements ModTools {
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
 
+        if (stack.getItem() == SkillCards.FANGZHU) {
+            tooltip.add(Text.translatable("item.dabaosword.fangzhu.tooltip").formatted(Formatting.BLUE));
+        }
+
+        if (stack.getItem() == SkillCards.XINGSHANG) {
+            tooltip.add(Text.translatable("item.dabaosword.xingshang.tooltip").formatted(Formatting.BLUE));
+        }
+
         if (stack.getItem() == SkillCards.DUANLIANG) {
             tooltip.add(Text.literal("CD: 5s"));
             tooltip.add(Text.translatable("item.dabaosword.duanliang.tooltip").formatted(Formatting.BLUE));
@@ -164,6 +172,19 @@ public class SkillItem extends TrinketItem implements ModTools {
             }
         }
         return super.use(world, user, hand);
+    }
+
+    @Override
+    public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
+        if (entity.getWorld() instanceof ServerWorld world) {
+            if (stack.get(ModItems.CD) != null) {
+                int cd = Objects.requireNonNull(stack.get(ModItems.CD));
+                if (world.getTime() % 20 == 0) {//世界时间除以20取余为0时，技能内置CD减一秒
+                    if (cd > 0) {cd--; stack.set(ModItems.CD, cd);}
+                }
+            }
+        }
+        super.tick(stack, slot, entity);
     }
 
     public void changeSkill(PlayerEntity player) {

@@ -16,7 +16,6 @@ public class HuojiSkill extends SkillItem implements ModTools {
 
     public HuojiSkill(Settings settings) {super(settings);}
 
-    private int tick = 0;
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
         if (!entity.getWorld().isClient && entity instanceof PlayerEntity player) {
@@ -25,10 +24,6 @@ public class HuojiSkill extends SkillItem implements ModTools {
             if (cd == 0 && !stack1.isEmpty() && stack1.isIn(Tags.Items.BASIC_CARD)) {
                 stack.set(ModItems.CD, 15);
                 viewAs(player, Tags.Items.BASIC_CARD, ModItems.FIRE_ATTACK, Sounds.HUOJI1, Sounds.HUOJI2);
-            }
-            if (++tick >= 20) {
-                tick = 0;
-                if (cd > 0) {cd--; stack.set(ModItems.CD, cd);}
             }
         }
         super.tick(stack, slot, entity);

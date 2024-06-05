@@ -1,7 +1,9 @@
 package com.amotassic.dabaosword.item.skillcard;
 
 import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.network.QicePayload;
 import com.amotassic.dabaosword.network.TaoluanPayload;
+import com.amotassic.dabaosword.ui.QiceScreenHandler;
 import com.amotassic.dabaosword.ui.TaoluanScreenHandler;
 import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
@@ -27,7 +29,6 @@ import java.util.Objects;
 import java.util.Random;
 
 import static com.amotassic.dabaosword.item.card.GainCardItem.draw;
-import static com.amotassic.dabaosword.item.skillcard.QiceSkill.openQiceScreen;
 
 public class ActiveSkill extends SkillItem implements ModTools {
     public ActiveSkill(Settings settings) {super(settings);}
@@ -63,14 +64,12 @@ public class ActiveSkill extends SkillItem implements ModTools {
 
             if (stack.getItem() == SkillCards.QICE) {
                 ItemStack offStack = user.getStackInHand(Hand.OFF_HAND);
-                if (stack.get(ModItems.CD) != null) {
-                    int cd = Objects.requireNonNull(stack.get(ModItems.CD));
-                    if (!offStack.isEmpty() && offStack.isIn(Tags.Items.CARD) && offStack.getCount() > 1) {
-                        if (cd == 0) openQiceScreen(user);
-                        else {user.sendMessage(Text.translatable("dabaosword.cooldown").formatted(Formatting.RED), true);}
-                    }
-                    else {user.sendMessage(Text.translatable("item.dabaosword.qice.tip").formatted(Formatting.RED), true);}
+                int cd = stack.get(ModItems.CD) == null ? 0 : Objects.requireNonNull(stack.get(ModItems.CD));
+                if (!offStack.isEmpty() && offStack.isIn(Tags.Items.CARD) && offStack.getCount() > 1) {
+                    if (cd == 0) openQiceScreen(user);
+                    else {user.sendMessage(Text.translatable("dabaosword.cooldown").formatted(Formatting.RED), true);}
                 }
+                else {user.sendMessage(Text.translatable("item.dabaosword.qice.tip").formatted(Formatting.RED), true);}
             }
 
             if (stack.getItem() == SkillCards.TAOLUAN) {
@@ -92,6 +91,23 @@ public class ActiveSkill extends SkillItem implements ModTools {
                 @Override
                 public @NotNull ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
                     return new TaoluanScreenHandler(syncId, new SimpleInventory(18));
+                }
+            });
+        }
+    }
+
+    public static void openQiceScreen(PlayerEntity player) {
+        if (!player.getWorld().isClient) {
+            player.openHandledScreen(new ExtendedScreenHandlerFactory<>() {
+                @Override
+                public Object getScreenOpeningData(ServerPlayerEntity player) {return new QicePayload(player.getBlockX());}
+
+                @Override
+                public Text getDisplayName() {return Text.translatable("item.dabaosword.qice.screen");}
+
+                @Override
+                public @NotNull ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
+                    return new QiceScreenHandler(syncId, new SimpleInventory(18));
                 }
             });
         }

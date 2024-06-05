@@ -15,7 +15,6 @@ import java.util.Random;
 public class DuanliangSkill extends SkillItem implements ModTools {
     public DuanliangSkill(Settings settings) {super(settings);}
 
-    private int tick = 0;
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
         if (!entity.getWorld().isClient && entity instanceof PlayerEntity player) {
@@ -26,10 +25,6 @@ public class DuanliangSkill extends SkillItem implements ModTools {
                 stack1.decrement(1);
                 player.giveItemStack(ModItems.BINGLIANG_ITEM.getDefaultStack());
                 if (new Random().nextFloat() < 0.5) {voice(player, Sounds.DUANLIANG1);} else {voice(player, Sounds.DUANLIANG2);}
-            }
-            if (++tick >= 20) {
-                tick = 0;
-                if (cd > 0) {cd--; stack.set(ModItems.CD, cd);}
             }
         }
         super.tick(stack, slot, entity);

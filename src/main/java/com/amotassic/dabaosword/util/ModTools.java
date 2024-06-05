@@ -7,13 +7,10 @@ import dev.emi.trinkets.api.TrinketsApi;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -168,22 +165,4 @@ public interface ModTools {
         Objects.requireNonNull(entity.getAttributes().getCustomInstance(EntityAttributes.GENERIC_MAX_HEALTH)).updateModifier(AttributeModifier);
     }
 
-    default void effectChange(LivingEntity entity, RegistryEntry<StatusEffect> effect, int changeLevel, int duration) {
-        if (changeLevel > 0) {
-            if (entity.hasStatusEffect(effect)) {
-                int amp = Objects.requireNonNull(entity.getStatusEffect(effect)).getAmplifier();
-                entity.addStatusEffect(new StatusEffectInstance(effect, duration, amp + changeLevel));
-            } else {entity.addStatusEffect(new StatusEffectInstance(effect, duration, changeLevel - 1));}
-        }
-        if (changeLevel < 0) {
-            if (entity.hasStatusEffect(effect)) {
-                int amp = Objects.requireNonNull(entity.getStatusEffect(effect)).getAmplifier();
-                int newLevel = amp + changeLevel + 1;
-                entity.removeStatusEffect(effect);
-                if (newLevel >= 0) {
-                    entity.addStatusEffect(new StatusEffectInstance(effect, duration, newLevel));
-                }
-            }
-        }
-    }
 }

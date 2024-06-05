@@ -1,11 +1,13 @@
 package com.amotassic.dabaosword.event;
 
 import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.*;
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketsApi;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -14,6 +16,7 @@ import net.minecraft.util.Pair;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 public class PlayerDeathHandler implements PlayerDeathCallback, ModTools {
     @Override
@@ -25,12 +28,18 @@ public class PlayerDeathHandler implements PlayerDeathCallback, ModTools {
                 PlayerInventory inv = player.getInventory();
                 for (int i = 0; i < inv.size(); ++i) {
                     ItemStack stack = inv.getStack(i);
-                    if (stack.isIn(Tags.Items.CARD) || stack.getItem() == ModItems.GAIN_CARD) inv.removeStack(i);
-                }
-
-                List<ItemStack> armors = (List<ItemStack>) player.getArmorItems();
-                for (ItemStack stack : armors) {
-                    if (!stack.isEmpty() && stack.isIn(Tags.Items.CARD)) stack.setCount(0);
+                    if (stack.isIn(Tags.Items.CARD) || stack.getItem() == ModItems.GAIN_CARD) {
+                        for (PlayerEntity player1 : world.getPlayers()) {//行殇技能触发
+                            if (hasTrinket(SkillCards.XINGSHANG, player1) && player1.distanceTo(player) <= 25 && player1 != player) {
+                                if (!player1.getCommandTags().contains("xingshang")) {
+                                    if (new Random().nextFloat() < 0.5) voice(player1, Sounds.XINGSHANG1); else voice(player1, Sounds.XINGSHANG2);
+                                }
+                                player1.addCommandTag("xingshang");
+                                player1.giveItemStack(stack); break;
+                            }
+                        }
+                        inv.removeStack(i);
+                    }
                 }
 
                 Optional<TrinketComponent> component = TrinketsApi.getTrinketComponent(player);
@@ -38,7 +47,18 @@ public class PlayerDeathHandler implements PlayerDeathCallback, ModTools {
                     List<Pair<SlotReference, ItemStack>> allEquipped = component.get().getAllEquipped();
                     for(Pair<SlotReference, ItemStack> entry : allEquipped) {
                         ItemStack stack = entry.getRight();
-                        if(stack.isIn(Tags.Items.CARD)) stack.setCount(0);
+                        if(stack.isIn(Tags.Items.CARD)) {
+                            for (PlayerEntity player1 : world.getPlayers()) {//行殇技能触发
+                                if (hasTrinket(SkillCards.XINGSHANG, player1) && player1.distanceTo(player) <= 25 && player1 != player) {
+                                    if (!player1.getCommandTags().contains("xingshang")) {
+                                        if (new Random().nextFloat() < 0.5) voice(player1, Sounds.XINGSHANG1); else voice(player1, Sounds.XINGSHANG2);
+                                    }
+                                    player1.addCommandTag("xingshang");
+                                    player1.giveItemStack(stack); break;
+                                }
+                            }
+                            stack.setCount(0);
+                        }
                     }
                 }
             }

@@ -17,7 +17,6 @@ public class LuanjiSkill extends SkillItem implements ModTools {
 
     public LuanjiSkill(Settings settings) {super(settings);}
 
-    private int tick = 0;
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
         if (!entity.getWorld().isClient && entity instanceof PlayerEntity player) {
@@ -30,10 +29,6 @@ public class LuanjiSkill extends SkillItem implements ModTools {
                 float i = new Random().nextFloat();
                 if (i < 0.25) {voice(player, Sounds.LUANJI1);} else if (0.25 <= i && i < 0.5) {voice(player, Sounds.LUANJI2);}
                 else if (0.5 <= i && i < 0.75) {voice(player, Sounds.LUANJI3);} else {voice(player, Sounds.LUANJI4);}
-            }
-            if (++tick >= 20) {
-                tick = 0;
-                if (cd > 0) {cd--; stack.set(ModItems.CD, cd);}
             }
         }
         super.tick(stack, slot, entity);

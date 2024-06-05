@@ -113,25 +113,28 @@ public class ModItems {
     public static final RegistryEntry<StatusEffect> TOO_HAPPY = register("too_happy",
             new TooHappyEffect(StatusEffectCategory.HARMFUL, 0xF73C0A).addAttributeModifier(EntityAttributes.GENERIC_MOVEMENT_SPEED,"7107DE5E-7CE8-4030-940E-514C1F160890",-10, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
     //触及距离增加
-    public static final RegistryEntry<StatusEffect> REACH = register("reach", new DefendEffect(StatusEffectCategory.BENEFICIAL, 0x000000)
+    public static final RegistryEntry<StatusEffect> REACH = register("reach", new CommonEffect(StatusEffectCategory.BENEFICIAL, 0xFFFFFF)
             .addAttributeModifier(EntityAttributes.PLAYER_BLOCK_INTERACTION_RANGE, "b29c34f3-1450-48ff-ab28-639647e11862", 1.0, EntityAttributeModifier.Operation.ADD_VALUE)
             .addAttributeModifier(EntityAttributes.PLAYER_ENTITY_INTERACTION_RANGE, "b29c34f3-1450-48ff-ab28-639647e11863", 1.0, EntityAttributeModifier.Operation.ADD_VALUE));
     //近战防御范围增加
     public static final RegistryEntry<StatusEffect> DEFEND =
-            register("defend", new DefendEffect(StatusEffectCategory.BENEFICIAL, 0x000000));
+            register("defend", new CommonEffect(StatusEffectCategory.BENEFICIAL, 0xFFFFFF));
     public static final RegistryEntry<StatusEffect> DEFENDED = register("defended",
-            new DefendEffect(StatusEffectCategory.HARMFUL, 0x000000).addAttributeModifier(EntityAttributes.PLAYER_ENTITY_INTERACTION_RANGE, "6656ba40-7a9c-a584-3c63-1e1e0e655446", -1.0, EntityAttributeModifier.Operation.ADD_VALUE));
+            new CommonEffect(StatusEffectCategory.HARMFUL, 0xFFFFFF).addAttributeModifier(EntityAttributes.PLAYER_ENTITY_INTERACTION_RANGE, "6656ba40-7a9c-a584-3c63-1e1e0e655446", -1.0, EntityAttributeModifier.Operation.ADD_VALUE));
     //冷却状态效果
     public static final RegistryEntry<StatusEffect> COOLDOWN =
-            register("cooldown", new CooldownEffect(StatusEffectCategory.NEUTRAL,0x000000));
+            register("cooldown", new CooldownEffect(StatusEffectCategory.NEUTRAL,0xFFFFFF));
     public static final RegistryEntry<StatusEffect> COOLDOWN2 =
-            register("cooldown2", new Cooldown2Effect(StatusEffectCategory.NEUTRAL,0x000000));
+            register("cooldown2", new Cooldown2Effect(StatusEffectCategory.NEUTRAL,0xFFFFFF));
     //无敌效果
     public static final RegistryEntry<StatusEffect> INVULNERABLE =
             register("invulnerable", new InvulnerableEffect(StatusEffectCategory.BENEFICIAL,0x35F5DF));
     //下落攻击效果
     public static final RegistryEntry<StatusEffect> FALLING_ATTACK =
-            register("falling_attack", new FallingEffect(StatusEffectCategory.BENEFICIAL, 0x000000));
+            register("falling_attack", new FallingEffect(StatusEffectCategory.BENEFICIAL, 0xFFFFFF));
+    //翻面效果
+    public static final RegistryEntry<StatusEffect> TURNOVER =
+            register("turn_over", new TurnOverEffect(StatusEffectCategory.HARMFUL, 0x07050F));
 
     private static Item register(String id,Item item){
         return Registry.register(Registries.ITEM,new Identifier("dabaosword",id),item);
@@ -185,6 +188,8 @@ public class ModItems {
                 entries.add(DILU);
                 //魏
                 entries.add(SkillCards.DUANLIANG);
+                entries.add(SkillCards.FANGZHU);
+                entries.add(SkillCards.XINGSHANG);
                 entries.add(SkillCards.GONGAO);
                 entries.add(SkillCards.JUEQING);
                 entries.add(SkillCards.LUOSHEN);

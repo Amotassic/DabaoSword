@@ -194,15 +194,15 @@ public abstract class PlayerEntityMixin extends LivingEntity implements ModTools
             //马术和飞影的效果
             if (shouldMashu(player)) {
                 if (hasTrinket(ModItems.CHITU, player) && hasTrinket(SkillCards.MASHU, player)) {
-                    player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,2));
+                    player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,2,false,false,true));
                 } else if (hasTrinket(ModItems.CHITU, player) || hasTrinket(SkillCards.MASHU, player)) {
-                    player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,1));
+                    player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,1,false,false,true));
                 }
             }
             if (hasTrinket(ModItems.DILU, player) && hasTrinket(SkillCards.FEIYING, player)) {
-                player.addStatusEffect(new StatusEffectInstance(ModItems.DEFEND, 10,2));
+                player.addStatusEffect(new StatusEffectInstance(ModItems.DEFEND, 10,2,false,false,true));
             } else if (hasTrinket(ModItems.DILU, player) || hasTrinket(SkillCards.FEIYING, player)) {
-                player.addStatusEffect(new StatusEffectInstance(ModItems.DEFEND, 10,1));
+                player.addStatusEffect(new StatusEffectInstance(ModItems.DEFEND, 10,1,false,false,true));
             }
 
             if (this.getCommandTags().contains("px")) {
@@ -213,7 +213,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements ModTools
             BlockPos blockPos = player.getBlockPos().down(1); BlockPos blockPos2 = player.getBlockPos().down(2);
             boolean falling = world.getGameRules().getBoolean(Gamerule.ENABLE_FALLING_ATTACK);
             if (falling && world.getBlockState(blockPos).getBlock() == Blocks.AIR && world.getBlockState(blockPos2).getBlock() == Blocks.AIR && player.getMainHandStack().isDamageable() && player.handSwingTicks == 1) {
-                player.addStatusEffect(new StatusEffectInstance(ModItems.FALLING_ATTACK, StatusEffectInstance.INFINITE,0,false,false));
+                player.addStatusEffect(new StatusEffectInstance(ModItems.FALLING_ATTACK, StatusEffectInstance.INFINITE,0,false,false,false));
             }
 
         }
