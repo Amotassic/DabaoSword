@@ -190,6 +190,7 @@ public class ModItems {
                 entries.add(SkillCards.DUANLIANG);
                 entries.add(SkillCards.FANGZHU);
                 entries.add(SkillCards.XINGSHANG);
+                entries.add(SkillCards.GANGLIE);
                 entries.add(SkillCards.GONGAO);
                 entries.add(SkillCards.JUEQING);
                 entries.add(SkillCards.LUOSHEN);

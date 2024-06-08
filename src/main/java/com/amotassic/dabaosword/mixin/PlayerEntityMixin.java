@@ -146,14 +146,18 @@ public abstract class PlayerEntityMixin extends LivingEntity implements ModTools
         if (this.getWorld() instanceof ServerWorld world) {
             int giveCard = world.getGameRules().getInt(Gamerule.GIVE_CARD_INTERVAL) * 20;
             int skill = world.getGameRules().getInt(Gamerule.CHANGE_SKILL_INTERVAL) * 20;
+            boolean enableLimit = world.getGameRules().getBoolean(Gamerule.ENABLE_CARDS_LIMIT);
 
             if (++tick >= giveCard) { // 每分钟摸两张牌
                 tick = 0;
                 if (hasTrinket(ModItems.CARD_PILE, player) && !player.isCreative() && !player.isSpectator()) {
-                    player.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
-                    player.sendMessage(Text.translatable("dabaosword.draw"),true);
-                        /*if (count(player, Tags.Items.CARD) + count(player, ModItems.GAIN_CARD) <= 8) {
-                        }*/
+                    if (count(player, Tags.Items.CARD) + count(player, ModItems.GAIN_CARD) <= player.getMaxHealth()) {
+                        player.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
+                        player.sendMessage(Text.translatable("dabaosword.draw"),true);
+                    } else if (!enableLimit) {//如果不限制摸牌就继续发牌
+                        player.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
+                        player.sendMessage(Text.translatable("dabaosword.draw"),true);
+                    }
                 }
             }
 

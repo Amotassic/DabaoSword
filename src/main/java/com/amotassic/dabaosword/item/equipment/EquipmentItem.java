@@ -40,7 +40,8 @@ public class EquipmentItem extends TrinketItem {
         }
 
         if (stack.getItem() == ModItems.QINGLONG) {
-            tooltip.add(Text.translatable("item.dabaosword.qinglong.tooltip"));
+            tooltip.add(Text.translatable("item.dabaosword.qinglong.tooltip1"));
+            tooltip.add(Text.translatable("item.dabaosword.qinglong.tooltip2").formatted(Formatting.AQUA));
         }
 
         if (stack.getItem() == ModItems.BAGUA) {
