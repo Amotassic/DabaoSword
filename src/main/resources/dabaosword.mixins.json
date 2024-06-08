@@ -4,8 +4,9 @@
   "package": "com.amotassic.dabaosword.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "LivingEntityMixin",
     "FireballEntityMixin",
+    "ItemEntityMixin",
+    "LivingEntityMixin",
     "PlayerEntityMixin",
     "PlayerManagerMixin",
     "ServerPlayerEntityMixin"

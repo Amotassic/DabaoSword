@@ -51,14 +51,14 @@ public class AttackEntityHandler implements ModTools, AttackEntityCallback {
                     }
                     if (new Random().nextFloat() < 0.5) {voice(player, Sounds.POJUN1);} else {voice(player, Sounds.POJUN2);}
                     int i = target instanceof PlayerEntity ? 200 : 40;
-                    player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, i,0, false,false,false));
+                    player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, i,0, false,false,true));
                 }
 
                 if (hasTrinket(ModItems.QINGLONG, player) && player.getAttackCooldownProgress(0) >= 0.9) {
                     player.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE,10,0,false,false,false));
                     player.teleport(target.getX(), target.getY(), target.getZ());
                     Vec3d momentum = player.getRotationVector().multiply(2);
-                    target.setVelocity(momentum.getX(),0 ,momentum.getZ());
+                    target.velocityModified = true; target.setVelocity(momentum.getX(),0 ,momentum.getZ());
                 }
 
 
@@ -79,7 +79,7 @@ public class AttackEntityHandler implements ModTools, AttackEntityCallback {
                     //烈弓：命中后加伤害，至少为5，给目标一个短暂的冷却效果，防止其自动触发闪
                     target.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2,2,0,false,false,false));
                     float f = Math.max(13 - player.distanceTo(target), 5);
-                    player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, (int) (40 * f),0,false,false,false));
+                    player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, (int) (40 * f),0,false,false,true));
                     target.damage(player.getDamageSources().playerAttack(player), f); target.timeUntilRegen = 0;
                     if (new Random().nextFloat() < 0.5) {voice(player, Sounds.LIEGONG1);} else {voice(player, Sounds.LIEGONG2);}
                 }
