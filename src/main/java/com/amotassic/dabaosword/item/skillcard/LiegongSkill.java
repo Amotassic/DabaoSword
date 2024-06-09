@@ -16,7 +16,7 @@ public class LiegongSkill extends SkillItem implements ModTools {
 
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-        if (!entity.getWorld().isClient) {
+        if (!entity.getWorld().isClient && noTieji(entity)) {
             if (!entity.hasStatusEffect(ModItems.COOLDOWN)) gainReach(entity,13);
             else gainReach(entity,0);
         }

@@ -135,6 +135,9 @@ public class ModItems {
     //翻面效果
     public static final RegistryEntry<StatusEffect> TURNOVER =
             register("turn_over", new TurnOverEffect(StatusEffectCategory.HARMFUL, 0x07050F));
+    //铁骑效果
+    public static final RegistryEntry<StatusEffect> TIEJI =
+            register("tieji", new CommonEffect(StatusEffectCategory.HARMFUL, 0x07050F));
 
     private static Item register(String id,Item item){
         return Registry.register(Registries.ITEM,new Identifier("dabaosword",id),item);

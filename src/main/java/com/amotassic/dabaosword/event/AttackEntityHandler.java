@@ -30,7 +30,7 @@ public class AttackEntityHandler implements ModTools, AttackEntityCallback {
     public ActionResult interact(PlayerEntity player, World world, Hand hand, Entity entity, @Nullable EntityHitResult hitResult) {
         if (world instanceof ServerWorld && !player.isSpectator()) {
 
-            if (entity instanceof LivingEntity target) {
+            if (entity instanceof LivingEntity target && !(player.getMainHandStack().getItem() == ModItems.JUEDOU || player.getMainHandStack().getItem() == ModItems.DISCARD)) {
 
                 //破军：攻击命中盔甲槽有物品的生物后，会让其所有盔甲掉落，配合古锭刀特效使用，pvp神器
                 if (hasTrinket(SkillCards.POJUN, player) && !player.hasStatusEffect(ModItems.COOLDOWN)) {
@@ -79,6 +79,12 @@ public class AttackEntityHandler implements ModTools, AttackEntityCallback {
                     player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, (int) (40 * f),0,false,false,true));
                     target.damage(player.getDamageSources().playerAttack(player), f); target.timeUntilRegen = 0;
                     if (new Random().nextFloat() < 0.5) {voice(player, Sounds.LIEGONG1);} else {voice(player, Sounds.LIEGONG2);}
+                }
+
+                if (hasTrinket(SkillCards.TIEJI, player) && getShaSlot(player) != -1) {
+                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.TIEJI1);} else {voice(player, Sounds.TIEJI2);}
+                    target.addStatusEffect(new StatusEffectInstance(ModItems.TIEJI,200,0,false,true,true));
+                    if (new Random().nextFloat() < 0.75) target.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2,2,0,false,false,false));
                 }
 
             }

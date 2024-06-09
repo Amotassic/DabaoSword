@@ -17,7 +17,7 @@ public class DuanliangSkill extends SkillItem implements ModTools {
 
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-        if (!entity.getWorld().isClient && entity instanceof PlayerEntity player) {
+        if (!entity.getWorld().isClient && entity instanceof PlayerEntity player && noTieji(entity)) {
             ItemStack stack1 = player.getStackInHand(Hand.OFF_HAND);
             int cd = stack.get(ModItems.CD) == null ? 0 : Objects.requireNonNull(stack.get(ModItems.CD));
             if (cd == 0 && !stack1.isEmpty() && nonBasic(stack1)) {

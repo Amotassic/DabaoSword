@@ -19,9 +19,9 @@ public class ShanItem extends CardItem implements ModTools {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         //判断是否有独立冷却buff，若冷却中则无法生效
-        if (!user.hasStatusEffect(ModItems.COOLDOWN2) && hand == Hand.MAIN_HAND) {
+        if (!world.isClient && !user.hasStatusEffect(ModItems.COOLDOWN2) && hand == Hand.MAIN_HAND) {
             Vec3d momentum = user.getRotationVector().multiply(3);
-            user.addVelocity(momentum.getX(),0 ,momentum.getZ());
+            user.velocityModified = true; user.addVelocity(momentum.getX(),0 ,momentum.getZ());
             int i = hasTrinket(SkillCards.LEIJI, user) ? 3 : 0;
             user.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 20,0,false,false,false));
             user.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 20,i,false,false,false));

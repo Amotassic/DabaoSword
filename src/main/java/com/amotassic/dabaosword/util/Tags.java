@@ -15,7 +15,7 @@ public class Tags {
         public static final TagKey<Item> SKILL = Items.createTag("skill");
         public static final TagKey<Item> SHA = Items.createTag("sha");
         public static final TagKey<Item> RECOVER = Items.createTag("recover");
-
+        public static final TagKey<Item> LOCK_SKILL = Items.createTag("lock_skill");
 
         private static TagKey<Item> createTag(String name) {
             return TagKey.of(RegistryKeys.ITEM, new Identifier("dabaosword", name));

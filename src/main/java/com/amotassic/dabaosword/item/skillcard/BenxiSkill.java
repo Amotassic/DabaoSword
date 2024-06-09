@@ -29,7 +29,7 @@ public class BenxiSkill extends SkillItem implements ModTools {
 
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-        if (!entity.getWorld().isClient && entity instanceof PlayerEntity player && noLongHand(player)) {
+        if (!entity.getWorld().isClient && entity instanceof PlayerEntity player && noLongHand(player) && noTieji(entity)) {
             if (stack.get(ModItems.TAGS) == null) stack.set(ModItems.TAGS, 0);
             else {
                 int benxi = Objects.requireNonNull(stack.get(ModItems.TAGS));

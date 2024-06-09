@@ -96,15 +96,14 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
                     for (int i = 0; i < amount; i += 5) {//造成伤害
                         if (new Random().nextFloat() < 0.5) {
                             player.addCommandTag("sha");//以此造成伤害不自动触发杀
-                            attacker.timeUntilRegen = 0; attacker.damage(player.getDamageSources().playerAttack(player), 5);
+                            float f = i + 5 < amount ? 5 : amount - i;
+                            attacker.timeUntilRegen = 0; attacker.damage(player.getDamageSources().playerAttack(player), f);
                         } else {//弃牌
                             if (attacker instanceof PlayerEntity target) {//如果来源是玩家则弃牌
                                 List<ItemStack> candidate = new ArrayList<>();
                                 //把背包中的卡牌添加到待选物品中
                                 DefaultedList<ItemStack> inventory = target.getInventory().main;
-                                List<Integer> cardSlots = IntStream.range(0, inventory.size()).filter(
-                                                j -> inventory.get(j).isIn(Tags.Items.CARD) || inventory.get(j).getItem() == ModItems.GAIN_CARD)
-                                        .boxed().toList();
+                                List<Integer> cardSlots = IntStream.range(0, inventory.size()).filter(j -> inventory.get(j).isIn(Tags.Items.CARD) || inventory.get(j).getItem() == ModItems.GAIN_CARD).boxed().toList();
                                 for (Integer slot : cardSlots) {candidate.add(inventory.get(slot));}
                                 //把饰品栏的卡牌添加到待选物品中
                                 Optional<TrinketComponent> component = TrinketsApi.getTrinketComponent(target);

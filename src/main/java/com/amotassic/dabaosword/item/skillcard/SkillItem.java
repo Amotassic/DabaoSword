@@ -29,8 +29,14 @@ public class SkillItem extends TrinketItem implements ModTools {
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
 
+        if (stack.getItem() == SkillCards.TIEJI) {
+            tooltip.add(Text.translatable("item.dabaosword.tieji.tooltip1").formatted(Formatting.RED));
+            tooltip.add(Text.translatable("item.dabaosword.tieji.tooltip2").formatted(Formatting.RED));
+        }
+
         if (stack.getItem() == SkillCards.GANGLIE) {
-            tooltip.add(Text.translatable("item.dabaosword.ganglie.tooltip").formatted(Formatting.BLUE));
+            tooltip.add(Text.translatable("item.dabaosword.ganglie.tooltip1").formatted(Formatting.BLUE));
+            tooltip.add(Text.translatable("item.dabaosword.ganglie.tooltip2").formatted(Formatting.BLUE));
         }
 
         if (stack.getItem() == SkillCards.FANGZHU) {
