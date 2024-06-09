@@ -6,6 +6,9 @@ import com.amotassic.dabaosword.util.EntityHurtCallback;
 import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
+import dev.emi.trinkets.api.SlotReference;
+import dev.emi.trinkets.api.TrinketComponent;
+import dev.emi.trinkets.api.TrinketsApi;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LightningEntity;
@@ -20,8 +23,14 @@ import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Pair;
+import net.minecraft.util.collection.DefaultedList;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 public class EntityHurtHandler implements EntityHurtCallback, ModTools {
     NbtCompound quanji = new NbtCompound();
@@ -76,8 +85,57 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
                 //遗计
                 if (hasTrinket(SkillCards.YIJI, player) && !player.hasStatusEffect(ModItems.COOLDOWN) && player.getHealth() <= 12) {
                     player.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
-                    player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 20, 0, false, true, true));
+                    player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 20, 0, false, false, true));
                     if (new Random().nextFloat() < 0.5) {voice(player, Sounds.YIJI1);} else {voice(player, Sounds.YIJI2);}
+                }
+
+                //放逐
+                if (hasTrinket(SkillCards.FANGZHU, player) && source.getAttacker() instanceof LivingEntity attacker && player != attacker) {
+                    int i = attacker instanceof PlayerEntity ? (int) (20 * amount + 60) : 300;
+                    attacker.addStatusEffect(new StatusEffectInstance(ModItems.TURNOVER, i));
+                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.FANGZHU1);} else {voice(player, Sounds.FANGZHU2);}
+                }
+
+                //刚烈
+                if (hasTrinket(SkillCards.GANGLIE, player) && source.getAttacker() instanceof LivingEntity attacker && player != attacker) {
+                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.GANGLIE1);} else {voice(player, Sounds.GANGLIE2);}
+                    for (int i = 0; i < amount; i += 5) {//造成伤害
+                        if (new Random().nextFloat() < 0.5) {
+                            player.addCommandTag("sha");//以此造成伤害不自动触发杀
+                            float f = i + 5 < amount ? 5 : amount - i;
+                            attacker.timeUntilRegen = 0; attacker.damage(player.getDamageSources().playerAttack(player), f);
+                        } else {//弃牌
+                            if (attacker instanceof PlayerEntity target) {//如果来源是玩家则弃牌
+                                List<ItemStack> candidate = new ArrayList<>();
+                                //把背包中的卡牌添加到待选物品中
+                                DefaultedList<ItemStack> inventory = target.getInventory().main;
+                                List<Integer> cardSlots = IntStream.range(0, inventory.size()).filter(j -> inventory.get(j).isIn(Tags.Items.CARD) || inventory.get(j).getItem() == ModItems.GAIN_CARD).boxed().toList();
+                                for (Integer slot : cardSlots) {candidate.add(inventory.get(slot));}
+                                //把饰品栏的卡牌添加到待选物品中
+                                Optional<TrinketComponent> component = TrinketsApi.getTrinketComponent(target);
+                                if(component.isPresent()) {
+                                    List<Pair<SlotReference, ItemStack>> allEquipped = component.get().getAllEquipped();
+                                    for(Pair<SlotReference, ItemStack> entry : allEquipped) {
+                                        ItemStack stack1 = entry.getRight(); if(stack1.isIn(Tags.Items.CARD)) candidate.add(stack1);
+                                    }
+                                }
+                                if(!candidate.isEmpty()) {
+                                    Random r = new Random(); int index = r.nextInt(candidate.size()); ItemStack chosen = candidate.get(index);
+                                    target.sendMessage(Text.literal(player.getNameForScoreboard()).append(Text.translatable("dabaosword.discard")).append(chosen.getName()));
+                                    chosen.decrement(1);
+                                }
+                            } else {//如果来源不是玩家则随机弃置它的主副手物品和装备
+                                List<ItemStack> candidate = new ArrayList<>();
+                                if (!attacker.getMainHandStack().isEmpty()) candidate.add(attacker.getMainHandStack());
+                                if (!attacker.getOffHandStack().isEmpty()) candidate.add(attacker.getOffHandStack());
+                                for (ItemStack armor : attacker.getArmorItems()) {if (!armor.isEmpty()) candidate.add(armor);}
+                                if(!candidate.isEmpty()) {
+                                    Random r = new Random(); int index = r.nextInt(candidate.size()); ItemStack chosen = candidate.get(index);
+                                    chosen.decrement(1);
+                                }
+                            }
+                        }
+                    }
                 }
 
             }
@@ -120,7 +178,7 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
                     if (player.getMaxHealth()-player.getHealth()>=5) {player.heal(5);}
                     else {player.giveItemStack(new ItemStack(ModItems.GAIN_CARD));}
                     if (new Random().nextFloat() < 0.5) {voice(player, Sounds.KUANGGU1);} else {voice(player, Sounds.KUANGGU2);}
-                    player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 8,0,false,true,true));
+                    player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 8,0,false,false,true));
                 }
 
                 if (player.getCommandTags().contains("px")) {

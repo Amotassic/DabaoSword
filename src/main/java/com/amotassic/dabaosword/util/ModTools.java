@@ -1,6 +1,8 @@
 package com.amotassic.dabaosword.util;
 
+import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
+import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import dev.emi.trinkets.api.TrinketComponent;
@@ -9,8 +11,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
@@ -24,7 +24,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Pair;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
@@ -32,8 +31,15 @@ import java.util.UUID;
 import static com.amotassic.dabaosword.item.card.GainCardItem.draw;
 
 public interface ModTools {
+    default boolean noTieji(LivingEntity entity) {
+        return !entity.hasStatusEffect(ModItems.TIEJI);
+    }
+
     //判断是否有某个饰品
     default boolean hasTrinket(Item item, PlayerEntity player) {
+        if (item instanceof SkillItem) {
+            if (item.getDefaultStack().isIn(Tags.Items.LOCK_SKILL)) return trinketItem(item, player) != null;
+            else return trinketItem(item, player) != null && noTieji(player);}
         return trinketItem(item, player) != null;
     }
 
@@ -175,22 +181,4 @@ public interface ModTools {
         entity.getAttributes().addTemporaryModifiers(maxHP);
     }
 
-    default void effectChange(LivingEntity entity, StatusEffect effect, int changeLevel, int duration) {
-        if (changeLevel > 0) {
-            if (entity.hasStatusEffect(effect)) {
-                int amp = Objects.requireNonNull(entity.getStatusEffect(effect)).getAmplifier();
-                entity.addStatusEffect(new StatusEffectInstance(effect, duration, amp + changeLevel));
-            } else {entity.addStatusEffect(new StatusEffectInstance(effect, duration, changeLevel - 1));}
-        }
-        if (changeLevel < 0) {
-            if (entity.hasStatusEffect(effect)) {
-                int amp = Objects.requireNonNull(entity.getStatusEffect(effect)).getAmplifier();
-                int newLevel = amp + changeLevel + 1;
-                entity.removeStatusEffect(effect);
-                if (newLevel >= 0) {
-                    entity.addStatusEffect(new StatusEffectInstance(effect, duration, newLevel));
-                }
-            }
-        }
-    }
 }

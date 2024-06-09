@@ -15,6 +15,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -85,6 +86,8 @@ public abstract class LivingEntityMixin extends Entity implements ModTools {
             }
 
             if (source.getAttacker() instanceof LivingEntity entity) {
+                //翻面的生物（除了玩家）无法造成伤害
+                if (!(entity instanceof PlayerEntity) && entity.hasStatusEffect(ModItems.TURNOVER)) cir.setReturnValue(false);
 
                 if (source.isIn(DamageTypeTags.IS_PROJECTILE)) {
                     //被乐的生物的弹射物无法造成伤害
@@ -175,7 +178,10 @@ public abstract class LivingEntityMixin extends Entity implements ModTools {
                 }
             }
         }
+
+        if (livingEntity instanceof MobEntity mob && mob.hasStatusEffect(ModItems.TURNOVER)) mob.setTarget(null);
     }
+    @Unique LivingEntity livingEntity = (LivingEntity) (Object) this;
 
     @Unique
     boolean shouldSha(PlayerEntity player) {

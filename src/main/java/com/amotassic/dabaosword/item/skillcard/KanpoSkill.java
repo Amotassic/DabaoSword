@@ -14,20 +14,15 @@ import net.minecraft.util.Hand;
 public class KanpoSkill extends SkillItem implements ModTools {
     public KanpoSkill(Settings settings) {super(settings);}
 
-    private int tick = 0;
     private final NbtCompound nbt = new NbtCompound();
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-        if (!entity.getWorld().isClient && entity instanceof PlayerEntity player) {
+        if (!entity.getWorld().isClient && entity instanceof PlayerEntity player && noTieji(entity)) {
             ItemStack stack1 = player.getStackInHand(Hand.OFF_HAND);
             int cd = stack.getNbt() == null ? 0 : stack.getNbt().getInt("cooldown");
             if (cd == 0 && !stack1.isEmpty() && nonBasic(stack1)) {
                 cd = 10; nbt.putInt("cooldown", cd); stack.setNbt(nbt);
                 viewAs(player, Tags.Items.ARMOURY_CARD, ModItems.WUXIE, Sounds.KANPO1, Sounds.KANPO2);
-            }
-            if (++tick >= 20) {
-                tick = 0;
-                if (cd > 0) {cd--; nbt.putInt("cooldown", cd); stack.setNbt(nbt);}
             }
         }
         super.tick(stack, slot, entity);

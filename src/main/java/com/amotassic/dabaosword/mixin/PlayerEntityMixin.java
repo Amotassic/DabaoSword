@@ -146,14 +146,18 @@ public abstract class PlayerEntityMixin extends LivingEntity implements ModTools
         if (this.getWorld() instanceof ServerWorld world) {
             int giveCard = world.getGameRules().getInt(Gamerule.GIVE_CARD_INTERVAL) * 20;
             int skill = world.getGameRules().getInt(Gamerule.CHANGE_SKILL_INTERVAL) * 20;
+            boolean enableLimit = world.getGameRules().getBoolean(Gamerule.ENABLE_CARDS_LIMIT);
 
             if (++tick >= giveCard) { // 每分钟摸两张牌
                 tick = 0;
                 if (hasTrinket(ModItems.CARD_PILE, player) && !player.isCreative() && !player.isSpectator()) {
-                    player.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
-                    player.sendMessage(Text.translatable("dabaosword.draw"),true);
-                        /*if (count(player, Tags.Items.CARD) + count(player, ModItems.GAIN_CARD) <= 8) {
-                        }*/
+                    if (count(player, Tags.Items.CARD) + count(player, ModItems.GAIN_CARD) <= player.getMaxHealth()) {
+                        player.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
+                        player.sendMessage(Text.translatable("dabaosword.draw"),true);
+                    } else if (!enableLimit) {//如果不限制摸牌就继续发牌
+                        player.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
+                        player.sendMessage(Text.translatable("dabaosword.draw"),true);
+                    }
                 }
             }
 
@@ -174,6 +178,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements ModTools
                 player.getCommandTags().remove("sha");
                 player.getCommandTags().remove("benxi");
                 player.getCommandTags().remove("juedou");
+                player.getCommandTags().remove("xingshang");
 
                 //牌堆恢复饱食度
                 boolean food = world.getGameRules().getBoolean(Gamerule.CARD_PILE_HUNGERLESS);
@@ -194,15 +199,15 @@ public abstract class PlayerEntityMixin extends LivingEntity implements ModTools
             //马术和飞影的效果
             if (shouldMashu(player)) {
                 if (hasTrinket(ModItems.CHITU, player) && hasTrinket(SkillCards.MASHU, player)) {
-                    player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,2));
+                    player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,2,false,false,true));
                 } else if (hasTrinket(ModItems.CHITU, player) || hasTrinket(SkillCards.MASHU, player)) {
-                    player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,1));
+                    player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,1,false,false,true));
                 }
             }
             if (hasTrinket(ModItems.DILU, player) && hasTrinket(SkillCards.FEIYING, player)) {
-                player.addStatusEffect(new StatusEffectInstance(ModItems.DEFEND, 10,2));
+                player.addStatusEffect(new StatusEffectInstance(ModItems.DEFEND, 10,2,false,false,true));
             } else if (hasTrinket(ModItems.DILU, player) || hasTrinket(SkillCards.FEIYING, player)) {
-                player.addStatusEffect(new StatusEffectInstance(ModItems.DEFEND, 10,1));
+                player.addStatusEffect(new StatusEffectInstance(ModItems.DEFEND, 10,1,false,false,true));
             }
 
             if (this.getCommandTags().contains("px")) {
@@ -213,7 +218,7 @@ public abstract class PlayerEntityMixin extends LivingEntity implements ModTools
             BlockPos blockPos = player.getBlockPos().down(1); BlockPos blockPos2 = player.getBlockPos().down(2);
             boolean falling = world.getGameRules().getBoolean(Gamerule.ENABLE_FALLING_ATTACK);
             if (falling && world.getBlockState(blockPos).getBlock() == Blocks.AIR && world.getBlockState(blockPos2).getBlock() == Blocks.AIR && player.getMainHandStack().getItem().isDamageable() && player.handSwingTicks == 1) {
-                player.addStatusEffect(new StatusEffectInstance(ModItems.FALLING_ATTACK, StatusEffectInstance.INFINITE,0,false,false));
+                player.addStatusEffect(new StatusEffectInstance(ModItems.FALLING_ATTACK, StatusEffectInstance.INFINITE,0,false,false,false));
             }
 
         }

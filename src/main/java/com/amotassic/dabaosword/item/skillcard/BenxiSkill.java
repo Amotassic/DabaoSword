@@ -30,23 +30,23 @@ public class BenxiSkill extends SkillItem implements ModTools {
 
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-        if (!entity.getWorld().isClient && entity instanceof PlayerEntity player && noLongHand(player)) {
+        if (!entity.getWorld().isClient && entity instanceof PlayerEntity player && noLongHand(player) && noTieji(entity)) {
             NbtCompound nbt = new NbtCompound();
             if (stack.getNbt() == null) {nbt.putInt("benxi", 0); stack.setNbt(nbt);}
             else {
                 int benxi = stack.getNbt().getInt("benxi");
                 if (benxi > 0) {
                     if (hasTrinket(ModItems.CHITU, player) && hasTrinket(SkillCards.MASHU, player)) {
-                        player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,benxi + 2));
+                        player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,benxi + 2,false,false,true));
                     } else if (hasTrinket(ModItems.CHITU, player) || hasTrinket(SkillCards.MASHU, player)) {
-                        player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,benxi + 1));
-                    } else {player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,benxi - 1));}
+                        player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,benxi + 1,false,false,true));
+                    } else {player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,benxi - 1,false,false,true));}
                 }
                 if (benxi == 0) {
                     if (hasTrinket(ModItems.CHITU, player) && hasTrinket(SkillCards.MASHU, player)) {
-                        player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,2));
+                        player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,2,false,false,true));
                     } else if (hasTrinket(ModItems.CHITU, player) || hasTrinket(SkillCards.MASHU, player)) {
-                        player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,1));
+                        player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,1,false,false,true));
                     }
                 }
             }

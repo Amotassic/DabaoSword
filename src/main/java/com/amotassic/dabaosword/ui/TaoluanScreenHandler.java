@@ -43,7 +43,7 @@ public class TaoluanScreenHandler extends ScreenHandler implements ModTools {
                 player.timeUntilRegen = 0;
                 player.damage(player.getDamageSources().genericKill(), 4.99f);
             }
-            player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 1,2));
+            player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 1,2,false,false,false));
             if (new Random().nextFloat() < 0.5) {voice(player, Sounds.TAOLUAN1);} else {voice(player, Sounds.TAOLUAN2);}
         }
     }

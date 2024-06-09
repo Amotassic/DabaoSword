@@ -16,11 +16,10 @@ import java.util.Random;
 public class LuanjiSkill extends SkillItem implements ModTools {
     public LuanjiSkill(Settings settings) {super(settings);}
 
-    private int tick = 0;
     private final NbtCompound nbt = new NbtCompound();
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-        if (!entity.getWorld().isClient && entity instanceof PlayerEntity player) {
+        if (!entity.getWorld().isClient && entity instanceof PlayerEntity player && noTieji(entity)) {
             ItemStack stack1 = player.getStackInHand(Hand.OFF_HAND);
             int cd = stack.getNbt() == null ? 0 : stack.getNbt().getInt("cooldown");
             if (cd == 0 && !stack1.isEmpty() && stack1.isIn(Tags.Items.CARD) && stack1.getCount() > 1) {
@@ -32,10 +31,6 @@ public class LuanjiSkill extends SkillItem implements ModTools {
                 } else if (0.25 <= i && i < 0.5) {voice(player, Sounds.LUANJI2);
                 } else if (0.5 <= i && i < 0.75) {voice(player, Sounds.LUANJI3);
                 } else {voice(player, Sounds.LUANJI4);}
-            }
-            if (++tick >= 20) {
-                tick = 0;
-                if (cd > 0) {cd--; nbt.putInt("cooldown", cd); stack.setNbt(nbt);}
             }
         }
         super.tick(stack, slot, entity);

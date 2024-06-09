@@ -108,24 +108,29 @@ public class ModItems {
     public static final StatusEffect TOO_HAPPY = register("too_happy",
             new TooHappyEffect(StatusEffectCategory.HARMFUL, 0xF73C0A).addAttributeModifier(EntityAttributes.GENERIC_MOVEMENT_SPEED,"7107DE5E-7CE8-4030-940E-514C1F160890",-10, EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
     //触及距离增加
-    public static final StatusEffect REACH = register("reach", new DefendEffect(StatusEffectCategory.BENEFICIAL, 0x000000)
+    public static final StatusEffect REACH = register("reach", new CommonEffect(StatusEffectCategory.BENEFICIAL, 0xFFFFFF)
             .addAttributeModifier(ReachEntityAttributes.REACH,"2b3df518-6e44-3554-821b-232333bcef5b",1.0, EntityAttributeModifier.Operation.ADDITION)
             .addAttributeModifier(ReachEntityAttributes.ATTACK_RANGE,"2b3df518-6e44-3554-821b-232333bcef5b",1.0, EntityAttributeModifier.Operation.ADDITION));
     //近战防御范围增加
-    public static final StatusEffect DEFEND = register("defend", new DefendEffect(StatusEffectCategory.BENEFICIAL, 0x000000));
+    public static final StatusEffect DEFEND = register("defend", new CommonEffect(StatusEffectCategory.BENEFICIAL, 0xFFFFFF));
     public static final StatusEffect DEFENDED = register("defended",
-            new DefendEffect(StatusEffectCategory.HARMFUL, 0x000000).addAttributeModifier(ReachEntityAttributes.ATTACK_RANGE,"6656ba40-7a9c-a584-3c63-1e1e0e655446",-1.0, EntityAttributeModifier.Operation.ADDITION));
+            new CommonEffect(StatusEffectCategory.HARMFUL, 0xFFFFFF).addAttributeModifier(ReachEntityAttributes.ATTACK_RANGE,"6656ba40-7a9c-a584-3c63-1e1e0e655446",-1.0, EntityAttributeModifier.Operation.ADDITION));
     //冷却状态效果
     public static final StatusEffect COOLDOWN = register(
-            "cooldown", new CooldownEffect(StatusEffectCategory.NEUTRAL, 0x000000));
+            "cooldown", new CooldownEffect(StatusEffectCategory.NEUTRAL, 0xFFFFFF));
     public static final StatusEffect COOLDOWN2 = register(
-            "cooldown2", new Cooldown2Effect(StatusEffectCategory.NEUTRAL, 0x000000));
+            "cooldown2", new Cooldown2Effect(StatusEffectCategory.NEUTRAL, 0xFFFFFF));
     //无敌效果
     public static final StatusEffect INVULNERABLE = register(
             "invulnerable", new InvulnerableEffect(StatusEffectCategory.BENEFICIAL,0x35F5DF));
     //下落攻击效果
     public static final StatusEffect FALLING_ATTACK = register(
-            "falling_attack", new FallingEffect(StatusEffectCategory.BENEFICIAL, 0x000000));
+            "falling_attack", new FallingEffect(StatusEffectCategory.BENEFICIAL, 0xFFFFFF));
+    //翻面效果
+    public static final StatusEffect TURNOVER = register(
+            "turn_over", new TurnOverEffect(StatusEffectCategory.HARMFUL, 0x07050F));
+    //铁骑效果
+    public static final StatusEffect TIEJI = register("tieji", new CommonEffect(StatusEffectCategory.HARMFUL, 0x07050F));
 
     private static Item register(String name,Item item){
         return Registry.register(Registries.ITEM, new Identifier("dabaosword", name), item);
@@ -171,6 +176,9 @@ public class ModItems {
                 entries.add(DILU);
                 //魏
                 entries.add(SkillCards.DUANLIANG);
+                entries.add(SkillCards.FANGZHU);
+                entries.add(SkillCards.XINGSHANG);
+                entries.add(SkillCards.GANGLIE);
                 entries.add(SkillCards.GONGAO);
                 entries.add(SkillCards.JUEQING);
                 entries.add(SkillCards.LUOSHEN);
@@ -186,6 +194,7 @@ public class ModItems {
                 entries.add(SkillCards.JIZHI);
                 entries.add(SkillCards.KUANGGU);
                 entries.add(SkillCards.LIEGONG);
+                entries.add(SkillCards.TIEJI);
                 //吴
                 entries.add(SkillCards.GUOSE);
                 entries.add(SkillCards.LIULI);

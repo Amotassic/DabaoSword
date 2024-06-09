@@ -26,6 +26,78 @@
     ],
     "subtitle": "sounds.dabaosword.nahida"
   },
+  "tieji1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/tieji1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.tieji"
+  },
+  "tieji2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/tieji2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.tieji"
+  },
+  "ganglie1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/ganglie1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.ganglie"
+  },
+  "ganglie2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/ganglie2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.ganglie"
+  },
+  "fangzhu1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/fangzhu1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.fangzhu"
+  },
+  "fangzhu2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/fangzhu2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.fangzhu"
+  },
+  "xingshang1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/xingshang1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.xingshang"
+  },
+  "xingshang2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/xingshang2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.xingshang"
+  },
   "xuyou": {
     "sounds": [
       {
