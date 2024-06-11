@@ -33,7 +33,7 @@ public class ActiveSkill extends SkillItem implements ModTools {
     public ActiveSkill(Settings settings) {super(settings);}
 
     public static void active(PlayerEntity user, ItemStack stack) {
-        if (!user.getWorld().isClient) {
+        if (!user.getWorld().isClient && !user.hasStatusEffect(ModItems.TIEJI)) {
 
             if (stack.getItem() == SkillCards.LUOSHEN) {
                 int cd = stack.getNbt() == null ? 0 : stack.getNbt().getInt("cooldown");

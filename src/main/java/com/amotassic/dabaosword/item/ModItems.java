@@ -128,6 +128,8 @@ public class ModItems {
     //翻面效果
     public static final StatusEffect TURNOVER = register(
             "turn_over", new TurnOverEffect(StatusEffectCategory.HARMFUL, 0x07050F));
+    //铁骑效果
+    public static final StatusEffect TIEJI = register("tieji", new CommonEffect(StatusEffectCategory.HARMFUL, 0x07050F));
 
     private static Item register(String name,Item item){
         return Registry.register(Registries.ITEM, new Identifier("dabaosword", name), item);
@@ -191,6 +193,7 @@ public class ModItems {
                 entries.add(SkillCards.JIZHI);
                 entries.add(SkillCards.KUANGGU);
                 entries.add(SkillCards.LIEGONG);
+                entries.add(SkillCards.TIEJI);
                 //吴
                 entries.add(SkillCards.GUOSE);
                 entries.add(SkillCards.LIULI);

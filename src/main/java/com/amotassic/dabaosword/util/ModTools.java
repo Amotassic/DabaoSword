@@ -1,6 +1,8 @@
 package com.amotassic.dabaosword.util;
 
+import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
+import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import dev.emi.trinkets.api.TrinketComponent;
@@ -29,8 +31,15 @@ import java.util.UUID;
 import static com.amotassic.dabaosword.item.card.GainCardItem.draw;
 
 public interface ModTools {
+    default boolean noTieji(LivingEntity entity) {
+        return !entity.hasStatusEffect(ModItems.TIEJI);
+    }
+
     //判断是否有某个饰品
     default boolean hasTrinket(Item item, PlayerEntity player) {
+        if (item instanceof SkillItem) {
+            if (item.getDefaultStack().isIn(Tags.Items.LOCK_SKILL)) return trinketItem(item, player) != null;
+            else return trinketItem(item, player) != null && noTieji(player);}
         return trinketItem(item, player) != null;
     }
 

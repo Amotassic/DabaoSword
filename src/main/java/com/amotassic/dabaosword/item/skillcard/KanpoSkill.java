@@ -17,7 +17,7 @@ public class KanpoSkill extends SkillItem implements ModTools {
     private final NbtCompound nbt = new NbtCompound();
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-        if (!entity.getWorld().isClient && entity instanceof PlayerEntity player) {
+        if (!entity.getWorld().isClient && entity instanceof PlayerEntity player && noTieji(entity)) {
             ItemStack stack1 = player.getStackInHand(Hand.OFF_HAND);
             int cd = stack.getNbt() == null ? 0 : stack.getNbt().getInt("cooldown");
             if (cd == 0 && !stack1.isEmpty() && nonBasic(stack1)) {
