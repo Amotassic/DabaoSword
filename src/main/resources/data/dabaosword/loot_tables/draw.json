@@ -1,0 +1,120 @@
+{
+  "results": [
+    {
+      "weight": 24.0,
+      "item": "dabaosword:shan"
+    },
+    {
+      "weight": 12.0,
+      "item": "dabaosword:peach"
+    },
+    {
+      "weight": 5.0,
+      "item": "dabaosword:jiu"
+    },
+    {
+      "weight": 1.0,
+      "item": "dabaosword:guding_dao"
+    },
+    {
+      "weight": 1.0,
+      "item": "dabaosword:fangtian"
+    },
+    {
+      "weight": 1.0,
+      "item": "dabaosword:hanbing"
+    },
+    {
+      "weight": 1.0,
+      "item": "dabaosword:qinggang"
+    },
+    {
+      "weight": 1.0,
+      "item": "dabaosword:qinglong"
+    },
+    {
+      "weight": 2.0,
+      "item": "dabaosword:bagua"
+    },
+    {
+      "weight": 1.0,
+      "item": "dabaosword:baiyin"
+    },
+    {
+      "weight": 1.0,
+      "item": "dabaosword:wanjian"
+    },
+    {
+      "weight": 2.0,
+      "item": "dabaosword:rattan_armor"
+    },
+    {
+      "weight": 3.0,
+      "item": "dabaosword:nanman"
+    },
+    {
+      "weight": 3.0,
+      "item": "dabaosword:chitu"
+    },
+    {
+      "weight": 4.0,
+      "item": "dabaosword:dilu"
+    },
+    {
+      "weight": 4.0,
+      "item": "dabaosword:wuzhong"
+    },
+    {
+      "weight": 6.0,
+      "item": "dabaosword:tiesuo"
+    },
+    {
+      "weight": 3.0,
+      "item": "dabaosword:juedou"
+    },
+    {
+      "weight": 2.0,
+      "item": "dabaosword:jiedao"
+    },
+    {
+      "weight": 1.0,
+      "item": "dabaosword:taoyuan"
+    },
+    {
+      "weight": 3.0,
+      "item": "dabaosword:huogong"
+    },
+    {
+      "weight": 5.0,
+      "item": "dabaosword:steal"
+    },
+    {
+      "weight": 6.0,
+      "item": "dabaosword:discard"
+    },
+    {
+      "weight": 3.0,
+      "item": "dabaosword:too_happy"
+    },
+    {
+      "weight": 2.0,
+      "item": "dabaosword:bingliang"
+    },
+    {
+      "weight": 7.0,
+      "item": "dabaosword:wuxie"
+    },
+    {
+      "weight": 9.0,
+      "item": "dabaosword:fire_sha"
+    },
+    {
+      "weight": 5.0,
+      "item": "dabaosword:thunder_sha"
+    },
+    {
+      "weight": 30.0,
+      "item": "dabaosword:sha"
+    }
+  ]
+}
