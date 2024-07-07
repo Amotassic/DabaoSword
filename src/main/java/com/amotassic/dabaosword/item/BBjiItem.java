@@ -1,6 +1,5 @@
 package com.amotassic.dabaosword.item;
 
-import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
@@ -17,7 +16,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Random;
 
-public class BBjiItem extends Item implements ModTools {
+import static com.amotassic.dabaosword.util.ModTools.voice;
+
+public class BBjiItem extends Item {
     public BBjiItem(Settings settings) {super(settings);}
 
     @Override

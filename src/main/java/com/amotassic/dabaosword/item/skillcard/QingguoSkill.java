@@ -1,7 +1,6 @@
 package com.amotassic.dabaosword.item.skillcard;
 
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import dev.emi.trinkets.api.SlotReference;
 import net.minecraft.entity.LivingEntity;
@@ -12,7 +11,9 @@ import net.minecraft.util.Hand;
 
 import java.util.Random;
 
-public class QingguoSkill extends SkillItem implements ModTools {
+import static com.amotassic.dabaosword.util.ModTools.*;
+
+public class QingguoSkill extends SkillItem {
     public QingguoSkill(Settings settings) {super(settings);}
 
     private final NbtCompound nbt = new NbtCompound();

@@ -2,7 +2,6 @@ package com.amotassic.dabaosword.command;
 
 import com.amotassic.dabaosword.item.equipment.EquipmentItem;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
-import com.amotassic.dabaosword.util.ModTools;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import dev.emi.trinkets.api.SlotReference;
@@ -21,7 +20,7 @@ import java.util.Optional;
 import static net.minecraft.server.command.CommandManager.literal;
 import static net.minecraft.server.command.CommandManager.argument;
 
-public class InfoCommand implements ModTools {
+public class InfoCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         dispatcher.register(literal("info")
                 .then(argument("target", EntityArgumentType.player())

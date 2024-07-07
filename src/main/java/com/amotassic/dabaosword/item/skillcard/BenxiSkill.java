@@ -1,7 +1,6 @@
 package com.amotassic.dabaosword.item.skillcard;
 
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.util.ModTools;
 import dev.emi.trinkets.api.SlotReference;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
@@ -15,7 +14,9 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class BenxiSkill extends SkillItem implements ModTools {
+import static com.amotassic.dabaosword.util.ModTools.*;
+
+public class BenxiSkill extends SkillItem {
     public BenxiSkill(Settings settings) {super(settings);}
 
     @Override

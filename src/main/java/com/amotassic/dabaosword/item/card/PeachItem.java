@@ -1,6 +1,5 @@
 package com.amotassic.dabaosword.item.card;
 
-import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -10,7 +9,9 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
-public class PeachItem extends CardItem implements ModTools {
+import static com.amotassic.dabaosword.util.ModTools.*;
+
+public class PeachItem extends CardItem {
     public PeachItem(Settings settings) {super(settings);}
 
     //非潜行时右键，给自己回血

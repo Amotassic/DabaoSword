@@ -2,7 +2,6 @@ package com.amotassic.dabaosword.item.card;
 
 import com.amotassic.dabaosword.util.LootEntry;
 import com.amotassic.dabaosword.util.LootTableParser;
-import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,7 +21,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Random;
 
-public class GiftBoxItem extends Item implements ModTools {
+import static com.amotassic.dabaosword.util.ModTools.*;
+
+public class GiftBoxItem extends Item {
     public GiftBoxItem(Settings settings) {super(settings);}
 
     @Override

@@ -10,6 +10,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Pair;
@@ -18,7 +19,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
-public class PlayerDeathHandler implements PlayerDeathCallback, ModTools {
+import static com.amotassic.dabaosword.util.ModTools.*;
+
+public class PlayerDeathHandler implements PlayerDeathCallback {
     @Override
     public void onDeath(ServerPlayerEntity player, DamageSource source) {
 
@@ -64,6 +67,14 @@ public class PlayerDeathHandler implements PlayerDeathCallback, ModTools {
             }
 
             if (hasItem(player, ModItems.BBJI)) voice(player, Sounds.XUYOU);
+
+            if (hasTrinket(SkillCards.BUQU, player)) {
+                ItemStack stack = trinketItem(SkillCards.BUQU, player);
+                int c = stack.getNbt() == null ? 0 : stack.getNbt().getInt("buqu");
+                if (c > 1) {
+                    NbtCompound nbt = new NbtCompound(); nbt.putInt("buqu", (c+1)/2); stack.setNbt(nbt);
+                }
+            }
         }
     }
 }

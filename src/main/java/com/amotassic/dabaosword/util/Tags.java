@@ -9,13 +9,13 @@ public class Tags {
 
     public static class Items {
 
-        public static final TagKey<Item> CARD = Tags.Items.createTag("card");
-        public static final TagKey<Item> BASIC_CARD = Tags.Items.createTag("basic_card");
-        public static final TagKey<Item> ARMOURY_CARD = Tags.Items.createTag("armoury_card");
-        public static final TagKey<Item> SKILL = Tags.Items.createTag("skill");
-        public static final TagKey<Item> SHA = Tags.Items.createTag("sha");
-        public static final TagKey<Item> RECOVER = Tags.Items.createTag("recover");
-        public static final TagKey<Item> LOCK_SKILL = Tags.Items.createTag("lock_skill");
+        public static final TagKey<Item> CARD = createTag("card");
+        public static final TagKey<Item> BASIC_CARD = createTag("basic_card");
+        public static final TagKey<Item> ARMOURY_CARD = createTag("armoury_card");
+        public static final TagKey<Item> SKILL = createTag("skill");
+        public static final TagKey<Item> SHA = createTag("sha");
+        public static final TagKey<Item> RECOVER = createTag("recover");
+        public static final TagKey<Item> LOCK_SKILL = createTag("lock_skill");
 
         private static TagKey<Item> createTag(String name) {
             return TagKey.of(RegistryKeys.ITEM, new Identifier("dabaosword", name));

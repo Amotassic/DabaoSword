@@ -1,7 +1,6 @@
 package com.amotassic.dabaosword.item.skillcard;
 
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
 import dev.emi.trinkets.api.SlotReference;
@@ -13,7 +12,9 @@ import net.minecraft.util.Hand;
 
 import java.util.Random;
 
-public class LuanjiSkill extends SkillItem implements ModTools {
+import static com.amotassic.dabaosword.util.ModTools.*;
+
+public class LuanjiSkill extends SkillItem {
     public LuanjiSkill(Settings settings) {super(settings);}
 
     private final NbtCompound nbt = new NbtCompound();

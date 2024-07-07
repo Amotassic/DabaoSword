@@ -23,7 +23,7 @@ public class SkillCards {
     public static final Item QICE = register("qice", new ActiveSkill(new Item.Settings().maxCount(1)));
     public static final ScreenHandlerType<QiceScreenHandler> QICE_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "qice", new ExtendedScreenHandlerType<>(QiceScreenHandler::new));
     public static final Item QUANJI = register("quanji", new QuanjiSkill(new Item.Settings().maxCount(1)));
-    public static final Item YIJI = register("yiji",new SkillItem(new Item.Settings().maxCount(1)));
+    public static final Item YIJI = register("yiji",new ActiveSkill(new Item.Settings().maxCount(1)));
     //蜀
     public static final Item BENXI = register("benxi", new BenxiSkill(new Item.Settings().maxCount(1)));
     public static final Item HUOJI = register("huoji", new HuojiSkill(new Item.Settings().maxCount(1)));
@@ -33,11 +33,13 @@ public class SkillCards {
     public static final Item LIEGONG = register("liegong", new LiegongSkill(new Item.Settings().maxCount(1)));
     public static final Item TIEJI = register("tieji", new SkillItem(new Item.Settings().maxCount(1)));
     //吴
+    public static final Item BUQU = register("buqu", new SkillItem(new Item.Settings().maxCount(1)));
     public static final Item GUOSE = register("guose", new GuoseSkill(new Item.Settings().maxCount(1)));
     public static final Item LIULI = register("liuli", new SkillItem(new Item.Settings().maxCount(1)));
     public static final Item KUROU = register("kurou", new ActiveSkill(new Item.Settings().maxCount(1)));
     public static final Item POJUN = register("pojun", new SkillItem(new Item.Settings().maxCount(1)));
     public static final Item QIXI = register("qixi", new QixiSkill(new Item.Settings().maxCount(1)));
+    public static final Item ZHIHENG = register("zhiheng", new ZhihengSkill(new Item.Settings().maxCount(1)));
     //群
     public static final Item LEIJI = register("leiji", new SkillItem(new Item.Settings().maxCount(1)));
     public static final Item LUANJI = register("luanji", new LuanjiSkill(new Item.Settings().maxCount(1)));

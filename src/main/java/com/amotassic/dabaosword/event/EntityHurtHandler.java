@@ -3,7 +3,6 @@ package com.amotassic.dabaosword.event;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.EntityHurtCallback;
-import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
 import dev.emi.trinkets.api.SlotReference;
@@ -23,6 +22,7 @@ import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
 import net.minecraft.util.collection.DefaultedList;
 
@@ -32,8 +32,28 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.stream.IntStream;
 
-public class EntityHurtHandler implements EntityHurtCallback, ModTools {
+import static com.amotassic.dabaosword.util.ModTools.*;
+
+public class EntityHurtHandler implements EntityHurtCallback {
     NbtCompound quanji = new NbtCompound();
+
+    private static void save(PlayerEntity player, float amount) {
+        if (hasItemInTag(Tags.Items.RECOVER, player)) {
+            //濒死自动使用酒、桃结算：首先计算需要回复的体力为(受到的伤害amount - 玩家当前生命值）
+            float recover = amount - player.getHealth(); int need = (int) (recover/5) + 1;
+            int tao = count(player, Tags.Items.RECOVER);//数玩家背包中回血卡牌的数量（只包含酒、桃）
+            if (tao >= need) {//如果剩余回血牌大于需要的桃的数量，则进行下一步，否则直接趋势
+                for (int i = 0; i < need; i++) {//循环移除背包中的酒、桃
+                    ItemStack stack = stackInTag(Tags.Items.RECOVER, player);
+                    if (stack.getItem() == ModItems.PEACH) voice(player, Sounds.RECOVER);
+                    if (stack.getItem() == ModItems.JIU) voice(player, Sounds.JIU);
+                    stack.decrement(1);
+                }
+                //最后将玩家的体力设置为 受伤前生命值 - 伤害值 + 回复量
+                player.setHealth(player.getHealth() - amount + 5 * need);
+            }
+        }
+    }
 
     @Override
     public ActionResult hurtEntity(LivingEntity entity, DamageSource source, float amount) {
@@ -46,20 +66,20 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
         if (entity.getWorld() instanceof ServerWorld world) {
 
             if (entity instanceof PlayerEntity player) {
-                if (player.isDead() && hasItemInTag(Tags.Items.RECOVER, player)) {
-                    //濒死自动使用酒、桃结算：首先计算需要回复的体力为(受到的伤害amount - 玩家当前生命值）
-                    float recover = amount - player.getHealth(); int need = (int) (recover/5) + 1;
-                    int tao = count(player, Tags.Items.RECOVER);//数玩家背包中回血卡牌的数量（只包含酒、桃）
-                    if (tao >= need) {//如果剩余回血牌大于需要的桃的数量，则进行下一步，否则直接趋势
-                        for (int i = 0; i < need; i++) {//循环移除背包中的酒、桃
-                            ItemStack stack = stackInTag(Tags.Items.RECOVER, player);
-                            if (stack.getItem() == ModItems.PEACH) voice(player, Sounds.RECOVER);
-                            if (stack.getItem() == ModItems.JIU) voice(player, Sounds.JIU);
-                            stack.decrement(1);
+                if (player.isDead()) {
+                    if (hasTrinket(SkillCards.BUQU, player)) {
+                        ItemStack stack = trinketItem(SkillCards.BUQU, player);
+                        int c = stack.getNbt() == null ? 0 : stack.getNbt().getInt("buqu");
+                        if (new Random().nextFloat() < 0.5) {voice(player, Sounds.BUQU1);} else {voice(player, Sounds.BUQU2);}
+                        if (new Random().nextFloat() >= (float) c /13) {
+                            player.sendMessage(Text.translatable("buqu.tip1").formatted(Formatting.GREEN).append(String.valueOf(c + 1)));
+                            NbtCompound nbt = new NbtCompound(); nbt.putInt("buqu", c + 1); stack.setNbt(nbt);
+                            player.setHealth(5);
+                        } else {
+                            player.sendMessage(Text.translatable("buqu.tip2").formatted(Formatting.RED));
+                            save(player, amount);
                         }
-                        //最后将玩家的体力设置为 受伤前生命值 - 伤害值 + 回复量
-                        player.setHealth(player.getHealth() - amount + 5 * need);
-                    }
+                    } else save(player, amount);
                 }
 
                 //穿藤甲时，若承受火焰伤害，则 战火燃尽，嘤熊胆！
@@ -86,6 +106,7 @@ public class EntityHurtHandler implements EntityHurtCallback, ModTools {
                 if (hasTrinket(SkillCards.YIJI, player) && !player.hasStatusEffect(ModItems.COOLDOWN) && player.getHealth() <= 12) {
                     player.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
                     player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 20, 0, false, false, true));
+                    NbtCompound nbt = new NbtCompound(); nbt.putInt("yiji", 2); trinketItem(SkillCards.YIJI, player).setNbt(nbt);
                     if (new Random().nextFloat() < 0.5) {voice(player, Sounds.YIJI1);} else {voice(player, Sounds.YIJI2);}
                 }
 

@@ -2,7 +2,6 @@ package com.amotassic.dabaosword.event;
 
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
-import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.minecraft.entity.Entity;
@@ -24,7 +23,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
 
-public class AttackEntityHandler implements ModTools, AttackEntityCallback {
+import static com.amotassic.dabaosword.util.ModTools.*;
+
+public class AttackEntityHandler implements AttackEntityCallback {
 
     @Override
     public ActionResult interact(PlayerEntity player, World world, Hand hand, Entity entity, @Nullable EntityHitResult hitResult) {
@@ -80,7 +81,7 @@ public class AttackEntityHandler implements ModTools, AttackEntityCallback {
                     target.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2,2,0,false,false,false));
                     float f = Math.max(13 - player.distanceTo(target), 5);
                     player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, (int) (40 * f),0,false,false,true));
-                    target.damage(player.getDamageSources().playerAttack(player), f); target.timeUntilRegen = 0;
+                    target.timeUntilRegen = 0; target.damage(player.getDamageSources().playerAttack(player), f);
                     if (new Random().nextFloat() < 0.5) {voice(player, Sounds.LIEGONG1);} else {voice(player, Sounds.LIEGONG2);}
                 }
 

@@ -1,12 +1,14 @@
 package com.amotassic.dabaosword.item.skillcard;
 
-import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import dev.emi.trinkets.api.SlotReference;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.attribute.EntityAttribute;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
@@ -14,8 +16,11 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 import java.util.Random;
+import java.util.UUID;
 
-public class LuoyiSkill extends SkillItem implements ModTools {
+import static com.amotassic.dabaosword.util.ModTools.voice;
+
+public class LuoyiSkill extends SkillItem {
     public LuoyiSkill(Settings settings) {super(settings);}
 
     @Override
@@ -26,9 +31,8 @@ public class LuoyiSkill extends SkillItem implements ModTools {
             ItemStack stack3 = player.getEquippedStack(EquipmentSlot.LEGS);
             ItemStack stack4 = player.getEquippedStack(EquipmentSlot.FEET);
             boolean noArmor = stack1.isEmpty() && stack2.isEmpty() && stack3.isEmpty() && stack4.isEmpty();
-            if (noArmor) {
-                player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 1,1,false,true,true));
-            }
+            if (noArmor) gainStrength(player, 5);
+            else gainStrength(player, 0);
         }
         super.tick(stack, slot, entity);
     }
@@ -39,5 +43,13 @@ public class LuoyiSkill extends SkillItem implements ModTools {
             if (new Random().nextFloat() < 0.5) {voice(user, Sounds.LUOYI1);} else {voice(user, Sounds.LUOYI2);}
         }
         return super.use(world, user, hand);
+    }
+
+    public static void gainStrength(LivingEntity entity, int value) {
+        Multimap<EntityAttribute, EntityAttributeModifier> attack = HashMultimap.create();
+        final UUID A_UUID = UUID.fromString("b29c34f3-1450-48ff-ab28-639647e11864");
+        attack.put(EntityAttributes.GENERIC_ATTACK_DAMAGE, new EntityAttributeModifier(
+                A_UUID, "Attack Damage", value, EntityAttributeModifier.Operation.ADDITION));
+        entity.getAttributes().addTemporaryModifiers(attack);
     }
 }

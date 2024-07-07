@@ -26,6 +26,42 @@
     ],
     "subtitle": "sounds.dabaosword.nahida"
   },
+  "zhiheng1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/zhiheng1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.zhiheng"
+  },
+  "zhiheng2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/zhiheng2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.zhiheng"
+  },
+  "buqu1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/buqu1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.buqu"
+  },
+  "buqu2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/buqu2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.buqu"
+  },
   "tieji1": {
     "sounds": [
       {

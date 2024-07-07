@@ -1,7 +1,6 @@
 package com.amotassic.dabaosword.item.skillcard;
 
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.util.ModTools;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableMultimap;
@@ -14,7 +13,9 @@ import net.minecraft.item.ItemStack;
 
 import java.util.UUID;
 
-public class LiegongSkill extends SkillItem implements ModTools {
+import static com.amotassic.dabaosword.util.ModTools.*;
+
+public class LiegongSkill extends SkillItem {
     public LiegongSkill(Settings settings) {super(settings);}
 
     @Override

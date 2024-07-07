@@ -1,7 +1,6 @@
 package com.amotassic.dabaosword.item.card;
 
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -10,7 +9,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 
-public class BingliangItem extends CardItem implements ModTools {
+import static com.amotassic.dabaosword.util.ModTools.*;
+
+public class BingliangItem extends CardItem {
     public BingliangItem(Settings settings) {
         super(settings);
     }

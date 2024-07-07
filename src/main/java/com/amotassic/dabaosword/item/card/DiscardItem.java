@@ -1,7 +1,6 @@
 package com.amotassic.dabaosword.item.card;
 
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
 import dev.emi.trinkets.api.SlotReference;
@@ -25,7 +24,9 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.stream.IntStream;
 
-public class DiscardItem extends CardItem implements ModTools {
+import static com.amotassic.dabaosword.util.ModTools.*;
+
+public class DiscardItem extends CardItem {
     public DiscardItem(Settings settings) {super(settings);}
 
     @Override

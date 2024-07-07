@@ -3,14 +3,9 @@ package com.amotassic.dabaosword.util;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketsApi;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
@@ -26,24 +21,23 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.Random;
-import java.util.UUID;
 
 import static com.amotassic.dabaosword.item.card.GainCardItem.draw;
 
-public interface ModTools {
-    default boolean noTieji(LivingEntity entity) {
+public class ModTools {
+    public static boolean noTieji(LivingEntity entity) {
         return !entity.hasStatusEffect(ModItems.TIEJI);
     }
 
     //判断是否有某个饰品
-    default boolean hasTrinket(Item item, PlayerEntity player) {
+    public static boolean hasTrinket(Item item, PlayerEntity player) {
         if (item instanceof SkillItem) {
             if (item.getDefaultStack().isIn(Tags.Items.LOCK_SKILL)) return trinketItem(item, player) != null;
             else return trinketItem(item, player) != null && noTieji(player);}
         return trinketItem(item, player) != null;
     }
 
-    default ItemStack trinketItem(Item item, PlayerEntity player) {
+    public static ItemStack trinketItem(Item item, PlayerEntity player) {
         Optional<TrinketComponent> optionalComponent = TrinketsApi.getTrinketComponent(player);
         if(optionalComponent.isEmpty()) return null;
 
@@ -51,8 +45,16 @@ public interface ModTools {
         return component.getEquipped(item).stream().map(Pair::getRight).findFirst().orElse(null);
     }
 
+    //判断是否有某些饰品（以数组形式判断）中的一个
+    public static boolean hasTrinkets(Item[] items, PlayerEntity player) {
+        for (Item item : items) {
+            if (trinketItem(item, player) != null) return true;
+        }
+        return false;
+    }
+
     //判断玩家是否有某个物品
-    default boolean hasItem(@NotNull PlayerEntity player, @NotNull Item item) {
+    public static boolean hasItem(@NotNull PlayerEntity player, @NotNull Item item) {
         for (int i = 0; i < player.getInventory().size(); ++i) {
             ItemStack stack = player.getInventory().getStack(i);
             if (stack.isEmpty() || stack.getItem() != item) continue;
@@ -61,29 +63,29 @@ public interface ModTools {
         return false;
     }
     //移除玩家的1个物品
-    default void removeItem(@NotNull PlayerEntity player, @NotNull Item item) {
+    public static void removeItem(@NotNull PlayerEntity player, @NotNull Item item) {
         PlayerInventory inv = player.getInventory();
         int i = inv.getSlotWithStack(item.getDefaultStack());
         inv.removeStack(i, 1);
     }
 
     //判断是否是非基本牌
-    default boolean nonBasic(ItemStack stack) {
+    public static boolean nonBasic(ItemStack stack) {
         return stack.isIn(Tags.Items.CARD) && !stack.isIn(Tags.Items.BASIC_CARD);
     }
 
-    default ItemStack stackWith(Item item, PlayerEntity player) {
+    public static ItemStack stackWith(Item item, PlayerEntity player) {
         PlayerInventory inv = player.getInventory();
         int i = inv.getSlotWithStack(item.getDefaultStack());
         return inv.getStack(i);
     }
 
     //判断是否有含某个标签的物品
-    default Boolean hasItemInTag(TagKey<Item> tag, @NotNull PlayerEntity player) {
+    public static Boolean hasItemInTag(TagKey<Item> tag, @NotNull PlayerEntity player) {
         return player.getInventory().contains(tag);
     }
 
-    default int getSlotInTag(TagKey<Item> tag, @NotNull PlayerEntity player) {
+    public static int getSlotInTag(TagKey<Item> tag, @NotNull PlayerEntity player) {
         for (int i = 0; i < player.getInventory().size(); ++i) {
             ItemStack stack = player.getInventory().getStack(i);
             if (stack.isEmpty() || !stack.isIn(tag)) continue;
@@ -93,13 +95,13 @@ public interface ModTools {
     }
 
     //获取背包中第一个含有含某个标签的物品
-    default ItemStack stackInTag(TagKey<Item> tag, @NotNull PlayerEntity player) {
+    public static ItemStack stackInTag(TagKey<Item> tag, @NotNull PlayerEntity player) {
         PlayerInventory inv = player.getInventory();
         int i = getSlotInTag(tag, player);
         return inv.getStack(i);
     }
 
-    default int getShaSlot(@NotNull PlayerEntity player) {
+    public static int getShaSlot(@NotNull PlayerEntity player) {
         for (int i = 0; i < 18; ++i) {
             ItemStack stack = player.getInventory().getStack(i);
             if (stack.isEmpty() || !stack.isIn(Tags.Items.SHA)) continue;
@@ -108,22 +110,22 @@ public interface ModTools {
         return -1;
     }
     //只检测玩家物品栏前18格是否有杀
-    default ItemStack shaStack(@NotNull PlayerEntity player) {
+    public static ItemStack shaStack(@NotNull PlayerEntity player) {
         return player.getInventory().getStack(getShaSlot(player));
     }
     //播放语音
-    default void voice(@NotNull LivingEntity entity, SoundEvent sound) {
+    public static void voice(@NotNull LivingEntity entity, SoundEvent sound) {
         if (entity.getWorld() instanceof ServerWorld world) {
             world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), sound, SoundCategory.PLAYERS, 2.0F, 1.0F);
         }
     }
-    default void voice(@NotNull LivingEntity entity, SoundEvent sound, float volume) {
+    public static void voice(@NotNull LivingEntity entity, SoundEvent sound, float volume) {
         if (entity.getWorld() instanceof ServerWorld world) {
             world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), sound, SoundCategory.PLAYERS, volume, 1.0F);
         }
     }
     //视为类技能方法
-    default void viewAs(@NotNull PlayerEntity player, TagKey<Item> tag, Item item, SoundEvent sound1, SoundEvent sound2) {
+    public static void viewAs(@NotNull PlayerEntity player, TagKey<Item> tag, Item item, SoundEvent sound1, SoundEvent sound2) {
         ItemStack stack = player.getStackInHand(Hand.OFF_HAND);
         if (!stack.isEmpty() && stack.isIn(tag)) {
             stack.decrement(1);
@@ -132,14 +134,14 @@ public interface ModTools {
         }
     }
     //集智技能触发
-    default void jizhi(PlayerEntity player) {
+    public static void jizhi(PlayerEntity player) {
         if (hasTrinket(SkillCards.JIZHI, player)) {
             draw(player, 1);
             if (new Random().nextFloat() < 0.5) {voice(player, Sounds.JIZHI1);} else {voice(player, Sounds.JIZHI2);}
         }
     }
     //奔袭技能触发
-    default void benxi(PlayerEntity player) {
+    public static void benxi(PlayerEntity player) {
         if (hasTrinket(SkillCards.BENXI, player)) {
             ItemStack stack = trinketItem(SkillCards.BENXI, player);
             NbtCompound nbt = new NbtCompound();
@@ -153,7 +155,7 @@ public interface ModTools {
         }
     }
 
-    default int count(PlayerEntity player, TagKey<Item> tag) {
+    public static int count(PlayerEntity player, TagKey<Item> tag) {
         PlayerInventory inv = player.getInventory();
         int n = 0;
         for (int i = 0; i < inv.size(); i++) {
@@ -163,7 +165,7 @@ public interface ModTools {
         return n;
     }
 
-    default int count(PlayerEntity player, Item item) {
+    public static int count(PlayerEntity player, Item item) {
         PlayerInventory inv = player.getInventory();
         int n = 0;
         for (int i = 0; i < inv.size(); i++) {
@@ -171,14 +173,6 @@ public interface ModTools {
             if (stack.getItem() == item) n += stack.getCount();
         }
         return n;
-    }
-
-    default void gainMaxHp(LivingEntity entity, int hp) {
-        Multimap<EntityAttribute, EntityAttributeModifier> maxHP = HashMultimap.create();
-        final UUID HP_UUID = UUID.fromString("b29c34f3-1450-48ff-ab28-639647e11862");
-        maxHP.put(EntityAttributes.GENERIC_MAX_HEALTH, new EntityAttributeModifier(
-                HP_UUID, "Max Hp", hp, EntityAttributeModifier.Operation.ADDITION));
-        entity.getAttributes().addTemporaryModifiers(maxHP);
     }
 
 }

@@ -33,8 +33,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.Objects;
 import java.util.Random;
 
+import static com.amotassic.dabaosword.util.ModTools.*;
+
 @Mixin(PlayerEntity.class)
-public abstract class PlayerEntityMixin extends LivingEntity implements ModTools {
+public abstract class PlayerEntityMixin extends LivingEntity {
     protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {super(entityType, world);}
 
     @Unique PlayerEntity player = (PlayerEntity) (Object) this;
@@ -99,12 +101,6 @@ public abstract class PlayerEntityMixin extends LivingEntity implements ModTools
                     }
                 }
 
-                if (hasTrinket(ModItems.BAIYIN,player) && !this.getCommandTags().contains("baiyin")) {
-                    cir.setReturnValue(false);
-                    this.addCommandTag("baiyin");
-                    this.damage(source, 0.4f * amount);
-                    this.getCommandTags().remove("baiyin");
-                }
             }
 
             //流离

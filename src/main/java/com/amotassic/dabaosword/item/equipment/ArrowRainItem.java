@@ -20,14 +20,14 @@ public class ArrowRainItem extends CardItem {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
         ItemStack stack = playerEntity.getStackInHand(hand);
         if (!world.isClient && hand == Hand.MAIN_HAND) {
-            arrowRain(playerEntity);
+            arrowRain(playerEntity, 5);
             if (!playerEntity.isCreative()) stack.damage(1, playerEntity,player -> player.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
             return TypedActionResult.success(stack);
         }
         return TypedActionResult.pass(stack);
     }
 
-    public static void arrowRain(PlayerEntity player) {
+    public static void arrowRain(PlayerEntity player, float speed) {
         Text a = Text.of("a");
         ServerWorld world = (ServerWorld) player.getWorld();
         ArrowEntity arrow1 = new ArrowEntity(world, player);arrow1.setCustomName(a);
@@ -35,11 +35,11 @@ public class ArrowRainItem extends CardItem {
         ArrowEntity arrow3 = new ArrowEntity(world, player);arrow3.setCustomName(a);
         ArrowEntity arrow4 = new ArrowEntity(world, player);arrow4.setCustomName(a);
         ArrowEntity arrow5 = new ArrowEntity(world, player);arrow5.setCustomName(a);
-        arrow1.setVelocity(player, player.getPitch(), player.getYaw()+10, 0.0F, 3.0F, 1.0F);
-        arrow2.setVelocity(player, player.getPitch(), player.getYaw()+5, 0.0F, 3.0F, 1.0F);
-        arrow3.setVelocity(player, player.getPitch(), player.getYaw(), 0.0F, 3.0F, 1.0F);
-        arrow4.setVelocity(player, player.getPitch(), player.getYaw()-5, 0.0F, 3.0F, 1.0F);
-        arrow5.setVelocity(player, player.getPitch(), player.getYaw()-10, 0.0F, 3.0F, 1.0F);
+        arrow1.setVelocity(player, player.getPitch(), player.getYaw()+10, 0.0F, speed, 1.0F);
+        arrow2.setVelocity(player, player.getPitch(), player.getYaw()+5, 0.0F, speed, 1.0F);
+        arrow3.setVelocity(player, player.getPitch(), player.getYaw(), 0.0F, speed, 1.0F);
+        arrow4.setVelocity(player, player.getPitch(), player.getYaw()-5, 0.0F, speed, 1.0F);
+        arrow5.setVelocity(player, player.getPitch(), player.getYaw()-10, 0.0F, speed, 1.0F);
         arrow1.setCritical(true);arrow2.setCritical(true);arrow3.setCritical(true);arrow4.setCritical(true);arrow5.setCritical(true);
         world.spawnEntity(arrow1);world.spawnEntity(arrow2);world.spawnEntity(arrow3);world.spawnEntity(arrow4);world.spawnEntity(arrow5);
         world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0F, 1.0F / (world.getRandom().nextFloat() * 0.4F + 1.2F) + 0.5F);

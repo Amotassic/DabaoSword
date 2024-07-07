@@ -3,7 +3,6 @@ package com.amotassic.dabaosword.item.card;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.LootEntry;
 import com.amotassic.dabaosword.util.LootTableParser;
-import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -17,7 +16,9 @@ import net.minecraft.world.World;
 import java.util.List;
 import java.util.Random;
 
-public class GainCardItem extends CardItem implements ModTools {
+import static com.amotassic.dabaosword.util.ModTools.*;
+
+public class GainCardItem extends CardItem {
     public GainCardItem(Settings settings) {super(settings);}
 
     @Override

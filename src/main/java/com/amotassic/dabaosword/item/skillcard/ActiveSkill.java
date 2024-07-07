@@ -3,23 +3,17 @@ package com.amotassic.dabaosword.item.skillcard;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.ui.QiceScreenHandler;
 import com.amotassic.dabaosword.ui.TaoluanScreenHandler;
-import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.SimpleInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.registry.tag.TagKey;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
@@ -28,18 +22,59 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Random;
 
 import static com.amotassic.dabaosword.item.card.GainCardItem.draw;
+import static com.amotassic.dabaosword.util.ModTools.*;
 
-public class ActiveSkill extends SkillItem implements ModTools {
+public class ActiveSkill extends SkillItem {
     public ActiveSkill(Settings settings) {super(settings);}
+
+    public static void active(PlayerEntity user, ItemStack stack, PlayerEntity target) {
+        if (!user.getWorld().isClient && !user.hasStatusEffect(ModItems.TIEJI)) {
+
+            if (stack.getItem() == SkillCards.YIJI) {
+                int i = stack.getNbt() == null ? 0 : stack.getNbt().getInt("yiji");
+                ItemStack stack1 = user.getStackInHand(Hand.MAIN_HAND);
+                if (i > 0 && (stack1.isIn(Tags.Items.CARD) || stack1.getItem() == ModItems.GAIN_CARD)) {
+                    target.giveItemStack(stack1.copyWithCount(1));
+                    target.sendMessage(Text.literal(user.getEntityName()).append(Text.translatable("yiji.tip", target.getDisplayName())));
+                    user.sendMessage(Text.literal(user.getEntityName()).append(Text.translatable("yiji.tip", target.getDisplayName())));
+                    stack1.decrement(1);
+                    NbtCompound nbt = new NbtCompound(); nbt.putInt("yiji", i - 1); stack.setNbt(nbt);
+                }
+            }
+
+            if (stack.getItem() == SkillCards.LUOYI) {
+                ItemStack stack1 = user.getStackInHand(Hand.MAIN_HAND);
+                target.giveItemStack(stack1.copyWithCount(1));
+                stack1.decrement(1);
+            }
+        }
+
+    }
 
     public static void active(PlayerEntity user, ItemStack stack) {
         if (!user.getWorld().isClient && !user.hasStatusEffect(ModItems.TIEJI)) {
+
+            if (stack.getItem() == SkillCards.ZHIHENG) {
+                int z = stack.getNbt() == null ? 0 : stack.getNbt().getInt("zhi");
+                ItemStack stack1 = user.getStackInHand(Hand.MAIN_HAND);
+                if (stack1.isIn(Tags.Items.CARD)) {
+                    if (z > 0) {
+                        if (new Random().nextFloat() < 0.5) {voice(user, Sounds.ZHIHENG1);} else {voice(user, Sounds.ZHIHENG2);}
+                        stack1.decrement(1);
+                        if (new Random().nextFloat() < 0.1) {
+                            user.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
+                            user.sendMessage(Text.translatable("zhiheng.extra").formatted(Formatting.GREEN), true);
+                        } else user.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 1));
+                        NbtCompound nbt = new NbtCompound(); nbt.putInt("zhi", z - 1); stack.setNbt(nbt);
+                    } else user.sendMessage(Text.translatable("zhiheng.fail").formatted(Formatting.RED), true);
+                }
+            }
 
             if (stack.getItem() == SkillCards.LUOSHEN) {
                 int cd = stack.getNbt() == null ? 0 : stack.getNbt().getInt("cooldown");
                 if (cd > 0) user.sendMessage(Text.translatable("dabaosword.cooldown").formatted(Formatting.RED), true);
                 else {
-                    if (new Random().nextFloat() < 0.5) {voice(Sounds.LUOSHEN1, user);} else {voice(Sounds.LUOSHEN2, user);}
+                    if (new Random().nextFloat() < 0.5) {voice(user, Sounds.LUOSHEN1);} else {voice(user, Sounds.LUOSHEN2);}
                     if (new Random().nextFloat() < 0.5) {
                         draw(user,1);
                         user.sendMessage(Text.translatable("item.dabaosword.luoshen.win").formatted(Formatting.GREEN), true);
@@ -52,13 +87,13 @@ public class ActiveSkill extends SkillItem implements ModTools {
             }
 
             if (stack.getItem() == SkillCards.KUROU) {
-                if (user.getHealth() + 5 * count(Tags.Items.RECOVER, user) > 4.99) {
+                if (user.getHealth() + 5 * count(user, Tags.Items.RECOVER) > 4.99) {
                     user.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
                     if (!user.isCreative()) {
                         user.timeUntilRegen = 0;
                         user.damage(user.getDamageSources().genericKill(), 4.99f);
                     }
-                    if (new Random().nextFloat() < 0.5) {voice(Sounds.KUROU1, user);} else {voice(Sounds.KUROU2, user);}
+                    if (new Random().nextFloat() < 0.5) {voice(user, Sounds.KUROU1);} else {voice(user, Sounds.KUROU2);}
                 } else {user.sendMessage(Text.translatable("item.dabaosword.kurou.tip").formatted(Formatting.RED), true);}
             }
 
@@ -72,7 +107,7 @@ public class ActiveSkill extends SkillItem implements ModTools {
             }
 
             if (stack.getItem() == SkillCards.TAOLUAN) {
-                if (user.getHealth() + 5 * count(Tags.Items.RECOVER, user) > 4.99) {openTaoluanScreen(user, stack);}
+                if (user.getHealth() + 5 * count(user, Tags.Items.RECOVER) > 4.99) {openTaoluanScreen(user, stack);}
                 else {user.sendMessage(Text.translatable("item.dabaosword.taoluan.tip").formatted(Formatting.RED), true);}
             }
         }
@@ -114,21 +149,5 @@ public class ActiveSkill extends SkillItem implements ModTools {
                 }
             });
         }
-    }
-
-    public static void voice(SoundEvent sound, PlayerEntity player) {
-        if (player.getWorld() instanceof ServerWorld world) {
-            world.playSound(null, player.getX(), player.getY(), player.getZ(), sound, SoundCategory.PLAYERS, 2.0F, 1.0F);
-        }
-    }
-
-    public static int count(TagKey<Item> tag, PlayerEntity player) {
-        PlayerInventory inv = player.getInventory();
-        int n = 0;
-        for (int i = 0; i < inv.size(); ++i) {
-            ItemStack stack = player.getInventory().getStack(i);
-            if (stack.isIn(tag)) n += stack.getCount();
-        }
-        return n;
     }
 }

@@ -12,8 +12,9 @@ import net.minecraft.util.Identifier;
 import java.util.List;
 
 import static com.amotassic.dabaosword.item.card.GiftBoxItem.selectRandomEntry;
+import static com.amotassic.dabaosword.util.ModTools.*;
 
-public class PlayerConnectHandler implements PlayerConnectCallback, ModTools {
+public class PlayerConnectHandler implements PlayerConnectCallback {
     @Override
     public void onPlayerConnect(ClientConnection connection, ServerPlayerEntity player) {
 

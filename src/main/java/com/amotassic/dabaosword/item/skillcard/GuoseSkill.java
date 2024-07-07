@@ -1,7 +1,6 @@
 package com.amotassic.dabaosword.item.skillcard;
 
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import dev.emi.trinkets.api.SlotReference;
 import net.minecraft.entity.LivingEntity;
@@ -12,10 +11,11 @@ import net.minecraft.util.Hand;
 
 import java.util.Random;
 
-public class GuoseSkill extends SkillItem implements ModTools {
+import static com.amotassic.dabaosword.util.ModTools.*;
+
+public class GuoseSkill extends SkillItem {
     public GuoseSkill(Settings settings) {super(settings);}
 
-    private int tick = 0;
     private final NbtCompound nbt = new NbtCompound();
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
@@ -27,10 +27,6 @@ public class GuoseSkill extends SkillItem implements ModTools {
                 stack1.decrement(1);
                 player.giveItemStack(ModItems.TOO_HAPPY_ITEM.getDefaultStack());
                 if (new Random().nextFloat() < 0.5) {voice(player, Sounds.GUOSE1);} else {voice(player, Sounds.GUOSE2);}
-            }
-            if (++tick >= 20) {
-                tick = 0;
-                if (cd > 0) {cd--; nbt.putInt("cooldown", cd); stack.setNbt(nbt);}
             }
         }
         super.tick(stack, slot, entity);

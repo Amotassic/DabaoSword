@@ -3,6 +3,7 @@ package com.amotassic.dabaosword.item.skillcard;
 import com.amotassic.dabaosword.util.*;
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketItem;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -21,12 +22,35 @@ import net.minecraft.world.World;
 import java.util.List;
 
 import static com.amotassic.dabaosword.item.card.GiftBoxItem.selectRandomEntry;
+import static com.amotassic.dabaosword.util.ModTools.voice;
 
-public class SkillItem extends TrinketItem implements ModTools {
+public class SkillItem extends TrinketItem {
     public SkillItem(Settings settings) {super(settings);}
 
     @Override
     public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
+
+        if (stack.getItem() == SkillCards.ZHIHENG) {
+            int z = stack.getNbt() == null ? 0 : stack.getNbt().getInt("zhi");
+            tooltip.add(Text.literal("可用次数：" + z));
+            tooltip.add(Text.translatable("item.dabaosword.zhiheng.tooltip1").formatted(Formatting.GREEN));
+            tooltip.add(Text.translatable("item.dabaosword.zhiheng.tooltip2").formatted(Formatting.GREEN));
+        }
+
+        if (stack.getItem() == SkillCards.BUQU) {
+            int c = stack.getNbt() == null ? 0 : stack.getNbt().getInt("buqu");
+            if(Screen.hasShiftDown()) {
+                tooltip.add(Text.translatable("item.dabaosword.buqu.tooltip1").formatted(Formatting.GREEN));
+                tooltip.add(Text.translatable("item.dabaosword.buqu.tooltip2").formatted(Formatting.GREEN));
+                tooltip.add(Text.translatable("item.dabaosword.buqu.tooltip3").formatted(Formatting.GREEN));
+                tooltip.add(Text.translatable("item.dabaosword.buqu.tooltip4").formatted(Formatting.GREEN));
+                tooltip.add(Text.translatable("item.dabaosword.buqu.tooltip5").formatted(Formatting.GREEN));
+            } else {
+                tooltip.add(Text.literal("创：" + c));
+                tooltip.add(Text.translatable("item.dabaosword.buqu.tooltip").formatted(Formatting.GREEN));
+                tooltip.add(Text.translatable("dabaosword.shifttooltip"));
+            }
+        }
 
         if (stack.getItem() == SkillCards.TIEJI) {
             tooltip.add(Text.translatable("item.dabaosword.tieji.tooltip1").formatted(Formatting.RED));
@@ -114,6 +138,7 @@ public class SkillItem extends TrinketItem implements ModTools {
         if (stack.getItem() == SkillCards.YIJI) {
             tooltip.add(Text.literal("CD: 20s"));
             tooltip.add(Text.translatable("item.dabaosword.yiji.tooltip").formatted(Formatting.BLUE));
+            tooltip.add(Text.translatable("item.dabaosword.yiji.tooltip2").formatted(Formatting.BLUE));
         }
 
         if (stack.getItem() == SkillCards.JIZHI) {

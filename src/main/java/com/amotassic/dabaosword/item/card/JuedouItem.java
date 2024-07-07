@@ -1,7 +1,6 @@
 package com.amotassic.dabaosword.item.card;
 
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
 import net.minecraft.entity.Entity;
@@ -16,7 +15,9 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 
-public class JuedouItem extends CardItem implements ModTools {
+import static com.amotassic.dabaosword.util.ModTools.*;
+
+public class JuedouItem extends CardItem {
     public JuedouItem(Settings settings) {super(settings);}
 
     @Override
@@ -29,7 +30,7 @@ public class JuedouItem extends CardItem implements ModTools {
 
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (!user.getWorld().isClient && hand == Hand.MAIN_HAND && !entity.isDead()) {
+        if (!user.getWorld().isClient && hand == Hand.MAIN_HAND && entity.isAlive()) {
             user.addCommandTag("juedou");
             if (entity instanceof PlayerEntity player && hasItem(player, ModItems.WUXIE)) {
                 removeItem(player, ModItems.WUXIE);

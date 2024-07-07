@@ -1,6 +1,5 @@
 package com.amotassic.dabaosword.item.skillcard;
 
-import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,7 +13,9 @@ import net.minecraft.world.World;
 import java.util.List;
 import java.util.Random;
 
-public class QuanjiSkill extends SkillItem implements ModTools {
+import static com.amotassic.dabaosword.util.ModTools.voice;
+
+public class QuanjiSkill extends SkillItem {
     public QuanjiSkill(Settings settings) {super(settings);}
 
     @Override

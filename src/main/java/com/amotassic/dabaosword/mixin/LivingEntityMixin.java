@@ -3,7 +3,6 @@ package com.amotassic.dabaosword.mixin;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.EntityHurtCallback;
-import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.EntityAttribute;
@@ -38,8 +37,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.Objects;
 import java.util.Random;
 
+import static com.amotassic.dabaosword.util.ModTools.*;
+
 @Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin extends Entity implements ModTools {
+public abstract class LivingEntityMixin extends Entity {
 
     @Shadow public abstract double getAttributeValue(EntityAttribute attribute);
 
@@ -114,8 +115,8 @@ public abstract class LivingEntityMixin extends Entity implements ModTools {
                         player.addCommandTag("sha");
                         if (stack.getItem() == ModItems.SHA) {
                             voice(player, Sounds.SHA);
-                            if (!(entity instanceof PlayerEntity && hasTrinket(ModItems.RATTAN_ARMOR, (PlayerEntity) entity))) {
-                                entity.damage(source, 5); entity.timeUntilRegen = 0;
+                            if (!(livingEntity instanceof PlayerEntity && hasTrinket(ModItems.RATTAN_ARMOR, (PlayerEntity) livingEntity))) {
+                                livingEntity.timeUntilRegen = 0; livingEntity.damage(source, 5);
                             }
                         }
                         if (stack.getItem() == ModItems.FIRE_SHA) voice(player, Sounds.SHA_FIRE);
@@ -124,14 +125,14 @@ public abstract class LivingEntityMixin extends Entity implements ModTools {
                         for (LivingEntity nearbyEntity : world.getEntitiesByClass(LivingEntity.class, box, LivingEntity::isGlowing)) {
                             //处理杀的效果
                             if (stack.getItem() == ModItems.FIRE_SHA) {
-                                nearbyEntity.setOnFireFor(5);
                                 nearbyEntity.timeUntilRegen = 0;
+                                nearbyEntity.setOnFireFor(5);
                                 nearbyEntity.removeStatusEffect(StatusEffects.GLOWING);
                                 nearbyEntity.damage(source, amount);
                             }
                             if (stack.getItem() == ModItems.THUNDER_SHA) {
-                                nearbyEntity.damage(player.getDamageSources().magic(), 5);
                                 nearbyEntity.timeUntilRegen = 0;
+                                nearbyEntity.damage(player.getDamageSources().magic(), 5);
                                 LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(world);
                                 if (lightningEntity != null) {
                                     lightningEntity.refreshPositionAfterTeleport(nearbyEntity.getX(), nearbyEntity.getY(), nearbyEntity.getZ());
@@ -186,11 +187,19 @@ public abstract class LivingEntityMixin extends Entity implements ModTools {
     }
 
     @Inject(at = @At("TAIL"), method = "applyDamage", cancellable = true)
-    private void onEntityHurt (final DamageSource source, final float amount, CallbackInfo ci) {
+    private void onEntityHurt (final DamageSource source, float amount, CallbackInfo ci) {
         ActionResult result = EntityHurtCallback.EVENT.invoker().hurtEntity((LivingEntity) (Object) this, source,
                 amount);
         if (result == ActionResult.FAIL) {
             ci.cancel();
+        }
+    }
+
+    @Inject(method = "modifyAppliedDamage", at = @At(value = "TAIL"), cancellable = true)
+    protected void modifyAppliedDamage(DamageSource source, float amount, CallbackInfoReturnable<Float> cir) {
+        //白银狮子减伤
+        if (source.getAttacker() instanceof LivingEntity && livingEntity instanceof PlayerEntity player && hasTrinket(ModItems.BAIYIN, player)) {
+            cir.setReturnValue(0.4f * amount);
         }
     }
 }

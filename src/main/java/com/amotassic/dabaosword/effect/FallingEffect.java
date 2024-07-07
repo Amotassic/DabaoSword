@@ -1,7 +1,6 @@
 package com.amotassic.dabaosword.effect;
 
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AttributeContainer;
@@ -11,7 +10,9 @@ import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Box;
 
-public class FallingEffect extends StatusEffect implements ModTools {
+import static com.amotassic.dabaosword.util.ModTools.*;
+
+public class FallingEffect extends StatusEffect {
     public FallingEffect(StatusEffectCategory category, int color) {super(category, color);}
 
     @Override

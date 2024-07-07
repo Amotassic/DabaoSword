@@ -2,7 +2,6 @@ package com.amotassic.dabaosword.ui;
 
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
-import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,7 +16,9 @@ import net.minecraft.screen.slot.SlotActionType;
 
 import java.util.Random;
 
-public class TaoluanScreenHandler extends ScreenHandler implements ModTools {
+import static com.amotassic.dabaosword.util.ModTools.voice;
+
+public class TaoluanScreenHandler extends ScreenHandler {
     private final ItemStack stack;
 
     public TaoluanScreenHandler(int syncId, Inventory inventory, PacketByteBuf buf) {
