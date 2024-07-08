@@ -15,6 +15,7 @@ import net.minecraft.nbt.NbtCompound;
 
 import java.util.UUID;
 
+import static com.amotassic.dabaosword.util.ModTools.give;
 import static com.amotassic.dabaosword.util.ModTools.voice;
 
 public class GongaoSkill extends SkillItem {
@@ -34,7 +35,7 @@ public class GongaoSkill extends SkillItem {
             if (entity.getWorld().getTime() % 6000 == 0) { // 每30s触发扣体力上限
                 if (entity instanceof PlayerEntity player) {
                     if (extraHP >= 5 && !player.isCreative() && !player.isSpectator()) {
-                        player.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
+                        give(player, new ItemStack(ModItems.GAIN_CARD, 2));
                         NbtCompound nbt = new NbtCompound();
                         nbt.putInt("extraHP", extraHP - 5); stack.setNbt(nbt);
                         voice(player, Sounds.WEIZHONG);

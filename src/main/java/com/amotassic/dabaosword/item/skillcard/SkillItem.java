@@ -22,6 +22,7 @@ import net.minecraft.world.World;
 import java.util.List;
 
 import static com.amotassic.dabaosword.item.card.GiftBoxItem.selectRandomEntry;
+import static com.amotassic.dabaosword.util.ModTools.give;
 import static com.amotassic.dabaosword.util.ModTools.voice;
 
 public class SkillItem extends TrinketItem {
@@ -29,6 +30,13 @@ public class SkillItem extends TrinketItem {
 
     @Override
     public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
+
+        if (stack.getItem() == SkillCards.RENDE) {
+            int cd = stack.getNbt() == null ? 0 : stack.getNbt().getInt("cooldown");
+            tooltip.add(Text.literal(cd == 0 ? "CD: 30s" : "CD: 30s   left: "+ cd +"s"));
+            tooltip.add(Text.translatable("item.dabaosword.rende.tooltip1").formatted(Formatting.RED));
+            tooltip.add(Text.translatable("item.dabaosword.rende.tooltip2").formatted(Formatting.RED));
+        }
 
         if (stack.getItem() == SkillCards.ZHIHENG) {
             int z = stack.getNbt() == null ? 0 : stack.getNbt().getInt("zhi");
@@ -119,6 +127,20 @@ public class SkillItem extends TrinketItem {
             int cd = stack.getNbt() == null ? 0 : stack.getNbt().getInt("cooldown");
             tooltip.add(Text.literal(cd == 0 ? "CD: 15s" : "CD: 15s   left: "+ cd +"s"));
             tooltip.add(Text.translatable("item.dabaosword.guose.tooltip").formatted(Formatting.GREEN));
+        }
+
+        if (stack.getItem() == SkillCards.BENXI) {
+            int benxi = stack.getNbt() == null ? 0 : stack.getNbt().getInt("benxi");
+            tooltip.add(Text.of("奔袭：" + benxi));
+            tooltip.add(Text.translatable("item.dabaosword.benxi.tooltip1").formatted(Formatting.RED));
+            tooltip.add(Text.translatable("item.dabaosword.benxi.tooltip2").formatted(Formatting.RED));
+        }
+
+        if (stack.getItem() == SkillCards.QUANJI) {
+            int quan = stack.getNbt() == null ? 0 : stack.getNbt().getInt("quanji");
+            tooltip.add(Text.of("权："+quan));
+            tooltip.add(Text.translatable("item.dabaosword.quanji.tooltip1").formatted(Formatting.BLUE));
+            tooltip.add(Text.translatable("item.dabaosword.quanji.tooltip2").formatted(Formatting.BLUE));
         }
 
         if (stack.getItem() == SkillCards.GONGAO) {
@@ -224,12 +246,12 @@ public class SkillItem extends TrinketItem {
         super.tick(stack, slot, entity);
     }
 
-    public void changeSkill(PlayerEntity player) {
+    public static void changeSkill(PlayerEntity player) {
         List<LootEntry> lootEntries = LootTableParser.parseLootTable(new Identifier("dabaosword", "loot_tables/change_skill.json"));
         LootEntry selectedEntry = selectRandomEntry(lootEntries);
 
         ItemStack stack = new ItemStack(Registries.ITEM.get(selectedEntry.item()));
         if (stack.getItem() != Items.AIR) voice(player, Sounds.GIFTBOX,3);
-        player.giveItemStack(stack);
+        give(player, stack);
     }
 }

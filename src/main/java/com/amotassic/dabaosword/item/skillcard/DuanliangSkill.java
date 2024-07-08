@@ -25,7 +25,7 @@ public class DuanliangSkill extends SkillItem {
             if (cd == 0 && !stack1.isEmpty() && nonBasic(stack1)) {
                 cd = 5; nbt.putInt("cooldown", cd); stack.setNbt(nbt);
                 stack1.decrement(1);
-                player.giveItemStack(ModItems.BINGLIANG_ITEM.getDefaultStack());
+                give(player, ModItems.BINGLIANG_ITEM.getDefaultStack());
                 if (new Random().nextFloat() < 0.5) {voice(player, Sounds.DUANLIANG1);} else {voice(player, Sounds.DUANLIANG2);}
             }
         }

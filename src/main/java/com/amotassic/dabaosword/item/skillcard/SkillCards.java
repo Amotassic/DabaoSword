@@ -31,6 +31,7 @@ public class SkillCards {
     public static final Item JIZHI = register("jizhi", new SkillItem(new Item.Settings().maxCount(1)));
     public static final Item KUANGGU = register("kuanggu", new SkillItem(new Item.Settings().maxCount(1)));
     public static final Item LIEGONG = register("liegong", new LiegongSkill(new Item.Settings().maxCount(1)));
+    public static final Item RENDE = register("rende", new ActiveSkill(new Item.Settings().maxCount(1)));
     public static final Item TIEJI = register("tieji", new SkillItem(new Item.Settings().maxCount(1)));
     //吴
     public static final Item BUQU = register("buqu", new SkillItem(new Item.Settings().maxCount(1)));

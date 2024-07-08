@@ -41,7 +41,7 @@ public class QiceScreenHandler extends ScreenHandler {
     public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
         Item[] items = {ModItems.BINGLIANG_ITEM, ModItems.TOO_HAPPY_ITEM, ModItems.DISCARD, ModItems.FIRE_ATTACK, ModItems.JIEDAO, ModItems.JUEDOU, ModItems.NANMAN, ModItems.STEAL, ModItems.TAOYUAN, ModItems.TIESUO, ModItems.WANJIAN, ModItems.WUXIE, ModItems.WUZHONG};
         if (0 <= slotIndex && slotIndex <items.length) {
-            player.giveItemStack(new ItemStack(items[slotIndex]));
+            give(player, new ItemStack(items[slotIndex]));
             if (!player.isCreative()) player.getStackInHand(Hand.OFF_HAND).decrement(2);
             player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 1,2,false,false,false));
             ItemStack stack1 = trinketItem(SkillCards.QICE, player);

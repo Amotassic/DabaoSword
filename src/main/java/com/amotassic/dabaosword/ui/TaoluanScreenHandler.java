@@ -16,6 +16,7 @@ import net.minecraft.screen.slot.SlotActionType;
 
 import java.util.Random;
 
+import static com.amotassic.dabaosword.util.ModTools.give;
 import static com.amotassic.dabaosword.util.ModTools.voice;
 
 public class TaoluanScreenHandler extends ScreenHandler {
@@ -40,7 +41,7 @@ public class TaoluanScreenHandler extends ScreenHandler {
     public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
         Item[] items = {ModItems.THUNDER_SHA, ModItems.FIRE_SHA, ModItems.SHAN, ModItems.PEACH, ModItems.JIU, ModItems.BINGLIANG_ITEM, ModItems.TOO_HAPPY_ITEM, ModItems.DISCARD, ModItems.FIRE_ATTACK, ModItems.JIEDAO, ModItems.JUEDOU, ModItems.NANMAN, ModItems.STEAL, ModItems.TAOYUAN, ModItems.TIESUO, ModItems.WANJIAN, ModItems.WUXIE, ModItems.WUZHONG};
         if (0 <= slotIndex && slotIndex <items.length) {
-            player.giveItemStack(new ItemStack(items[slotIndex]));
+            give(player, new ItemStack(items[slotIndex]));
             if (!player.isCreative()) {
                 player.timeUntilRegen = 0;
                 player.damage(player.getDamageSources().genericKill(), 4.99f);

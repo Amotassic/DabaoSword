@@ -9,6 +9,8 @@ public class Sounds {
     public static final SoundEvent NAHIDA1 = register("nahida1");
     public static final SoundEvent NAHIDA2 = register("nahida2");
     public static final SoundEvent NAHIDA3 = register("nahida3");
+    public static final SoundEvent RENDE1 = register("rende1");
+    public static final SoundEvent RENDE2 = register("rende2");
     public static final SoundEvent ZHIHENG1 = register("zhiheng1");
     public static final SoundEvent ZHIHENG2 = register("zhiheng2");
     public static final SoundEvent BUQU1 = register("buqu1");

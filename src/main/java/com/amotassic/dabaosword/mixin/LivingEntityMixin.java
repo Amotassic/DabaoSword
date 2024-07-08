@@ -4,6 +4,7 @@ import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.EntityHurtCallback;
 import com.amotassic.dabaosword.util.Sounds;
+import com.amotassic.dabaosword.util.Tags;
 import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -111,7 +112,7 @@ public abstract class LivingEntityMixin extends Entity {
                     }
 
                     if (this.isGlowing() && shouldSha(player)) {//实现铁索连环的效果，大概是好了吧
-                        ItemStack stack = shaStack(player);
+                        ItemStack stack = player.getMainHandStack().isIn(Tags.Items.SHA) ? player.getMainHandStack() : shaStack(player);
                         player.addCommandTag("sha");
                         if (stack.getItem() == ModItems.SHA) {
                             voice(player, Sounds.SHA);
@@ -166,14 +167,12 @@ public abstract class LivingEntityMixin extends Entity {
         PlayerEntity closestPlayer = getEntityWorld().getClosestPlayer(this, 5);
         if (closestPlayer != null && hasTrinket(ModItems.FANGTIAN, closestPlayer) && !getWorld().isClient && !isDead()) {
             ItemStack stack = trinketItem(ModItems.FANGTIAN, closestPlayer);
-            if (stack.getNbt() != null) {
-                int time = stack.getNbt().getInt("time");
-                if (time > 0 && closestPlayer.handSwingTicks == 1) {
-                    //给玩家本人一个极短的无敌效果，以防止被误伤
-                    closestPlayer.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE,2,0,false,false,false));
-                    float i = (float) closestPlayer.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-                    this.damage(getDamageSources().playerAttack(closestPlayer), i);
-                }
+            int time = stack.getNbt() == null ? 0 : stack.getNbt().getInt("cd");
+            if (time > 15 && closestPlayer.handSwingTicks == 1) {
+                //给玩家本人一个极短的无敌效果，以防止被误伤
+                closestPlayer.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE,2,0,false,false,false));
+                float i = (float) closestPlayer.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+                this.damage(getDamageSources().playerAttack(closestPlayer), i);
             }
         }
 
@@ -198,7 +197,7 @@ public abstract class LivingEntityMixin extends Entity {
     @Inject(method = "modifyAppliedDamage", at = @At(value = "TAIL"), cancellable = true)
     protected void modifyAppliedDamage(DamageSource source, float amount, CallbackInfoReturnable<Float> cir) {
         //白银狮子减伤
-        if (source.getAttacker() instanceof LivingEntity && livingEntity instanceof PlayerEntity player && hasTrinket(ModItems.BAIYIN, player)) {
+        if (!source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY) && source.getAttacker() instanceof LivingEntity && livingEntity instanceof PlayerEntity player && hasTrinket(ModItems.BAIYIN, player)) {
             cir.setReturnValue(0.4f * amount);
         }
     }

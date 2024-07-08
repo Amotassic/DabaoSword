@@ -64,7 +64,7 @@ public class StealItem extends CardItem {
                     if (!user.isCreative()) {stack.decrement(1);}
                     jizhi(user); benxi(user);
                     target.sendMessage(Text.literal(user.getEntityName()).append(Text.translatable("dabaosword.steal")).append(chosen.getName()));
-                    user.giveItemStack(chosen.copyWithCount(1)); /*顺手：复制一个物品*/ chosen.decrement(1);
+                    give(user, chosen.copyWithCount(1)); /*顺手：复制一个物品*/ chosen.decrement(1);
                     return ActionResult.SUCCESS;
                 }
             }

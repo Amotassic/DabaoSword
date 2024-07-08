@@ -38,7 +38,7 @@ public class PlayerDeathHandler implements PlayerDeathCallback {
                                     if (new Random().nextFloat() < 0.5) voice(player1, Sounds.XINGSHANG1); else voice(player1, Sounds.XINGSHANG2);
                                 }
                                 player1.addCommandTag("xingshang");
-                                player1.giveItemStack(stack); break;
+                                give(player1, stack); break;
                             }
                         }
                         inv.removeStack(i);
@@ -57,7 +57,7 @@ public class PlayerDeathHandler implements PlayerDeathCallback {
                                         if (new Random().nextFloat() < 0.5) voice(player1, Sounds.XINGSHANG1); else voice(player1, Sounds.XINGSHANG2);
                                     }
                                     player1.addCommandTag("xingshang");
-                                    player1.giveItemStack(stack); break;
+                                    give(player1, stack); break;
                                 }
                             }
                             stack.setCount(0);

@@ -43,10 +43,6 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
     @Shadow public abstract boolean isCreative();
 
-    @Shadow public abstract boolean damage(DamageSource source, float amount);
-
-    @Shadow public abstract void sendMessage(Text message, boolean overlay);
-
     @Inject(method = "damage",at = @At("HEAD"), cancellable = true)
     private void damagemixin(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
 
@@ -148,10 +144,10 @@ public abstract class PlayerEntityMixin extends LivingEntity {
                 tick = 0;
                 if (hasTrinket(ModItems.CARD_PILE, player) && !player.isCreative() && !player.isSpectator()) {
                     if (count(player, Tags.Items.CARD) + count(player, ModItems.GAIN_CARD) <= player.getMaxHealth()) {
-                        player.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
+                        give(player, new ItemStack(ModItems.GAIN_CARD, 2));
                         player.sendMessage(Text.translatable("dabaosword.draw"),true);
                     } else if (!enableLimit) {//如果不限制摸牌就继续发牌
-                        player.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
+                        give(player, new ItemStack(ModItems.GAIN_CARD, 2));
                         player.sendMessage(Text.translatable("dabaosword.draw"),true);
                     }
                 }

@@ -25,7 +25,7 @@ public class GuoseSkill extends SkillItem {
             if (cd == 0 && !stack1.isEmpty() && stack1.getItem() == ModItems.SHAN) {
                 cd = 15; nbt.putInt("cooldown", cd); stack.setNbt(nbt);
                 stack1.decrement(1);
-                player.giveItemStack(ModItems.TOO_HAPPY_ITEM.getDefaultStack());
+                give(player, ModItems.TOO_HAPPY_ITEM.getDefaultStack());
                 if (new Random().nextFloat() < 0.5) {voice(player, Sounds.GUOSE1);} else {voice(player, Sounds.GUOSE2);}
             }
         }

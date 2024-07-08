@@ -25,7 +25,7 @@ public class QixiSkill extends SkillItem {
             if (cd == 0 && !stack1.isEmpty() && nonBasic(stack1)) {
                 cd = 5; nbt.putInt("cooldown", cd); stack.setNbt(nbt);
                 stack1.decrement(1);
-                player.giveItemStack(ModItems.DISCARD.getDefaultStack());
+                give(player, ModItems.DISCARD.getDefaultStack());
                 if (new Random().nextFloat() < 0.5) {voice(player, Sounds.QIXI1);} else {voice(player, Sounds.QIXI2);}
             }
         }

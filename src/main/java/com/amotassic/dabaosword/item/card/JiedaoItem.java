@@ -22,8 +22,8 @@ public class JiedaoItem extends CardItem {
                     voice(player, Sounds.WUXIE);
                     removeItem(player, ModItems.WUXIE);
                     jizhi(player); benxi(player);
-                } else {user.giveItemStack(stack1.copy()); stack1.setCount(0);}
-            } else {user.giveItemStack(stack1.copy()); stack1.setCount(0);}
+                } else {give(user, stack1.copy()); stack1.setCount(0);}
+            } else {give(user, stack1.copy()); stack1.setCount(0);}
             voice(user, Sounds.JIEDAO);
             if (!user.isCreative()) {stack.decrement(1);}
             jizhi(user); benxi(user);

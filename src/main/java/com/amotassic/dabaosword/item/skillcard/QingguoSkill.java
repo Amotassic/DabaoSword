@@ -25,7 +25,7 @@ public class QingguoSkill extends SkillItem {
             if (cd == 0 && !stack1.isEmpty() && nonBasic(stack1)) {
                 cd = 5; nbt.putInt("cooldown", cd); stack.setNbt(nbt);
                 stack1.decrement(1);
-                player.giveItemStack(ModItems.SHAN.getDefaultStack());
+                give(player, ModItems.SHAN.getDefaultStack());
                 if (new Random().nextFloat() < 0.5) {voice(player, Sounds.QINGGUO1);} else {voice(player, Sounds.QINGGUO2);}
             }
         }

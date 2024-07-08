@@ -26,7 +26,7 @@ public class LuanjiSkill extends SkillItem {
             if (cd == 0 && !stack1.isEmpty() && stack1.isIn(Tags.Items.CARD) && stack1.getCount() > 1) {
                 cd = 15; nbt.putInt("cooldown", cd); stack.setNbt(nbt);
                 stack1.decrement(2);
-                player.giveItemStack(ModItems.WANJIAN.getDefaultStack());
+                give(player, ModItems.WANJIAN.getDefaultStack());
                 float i = new Random().nextFloat();
                 if (i < 0.25) {voice(player, Sounds.LUANJI1);
                 } else if (0.25 <= i && i < 0.5) {voice(player, Sounds.LUANJI2);

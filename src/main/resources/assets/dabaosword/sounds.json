@@ -26,6 +26,24 @@
     ],
     "subtitle": "sounds.dabaosword.nahida"
   },
+  "rende1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/rende1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.rende"
+  },
+  "rende2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/rende2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.rende"
+  },
   "zhiheng1": {
     "sounds": [
       {

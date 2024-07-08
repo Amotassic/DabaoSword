@@ -104,7 +104,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
 
                 //遗计
                 if (hasTrinket(SkillCards.YIJI, player) && !player.hasStatusEffect(ModItems.COOLDOWN) && player.getHealth() <= 12) {
-                    player.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
+                    give(player, new ItemStack(ModItems.GAIN_CARD, 2));
                     player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 20, 0, false, false, true));
                     NbtCompound nbt = new NbtCompound(); nbt.putInt("yiji", 2); trinketItem(SkillCards.YIJI, player).setNbt(nbt);
                     if (new Random().nextFloat() < 0.5) {voice(player, Sounds.YIJI1);} else {voice(player, Sounds.YIJI2);}
@@ -165,7 +165,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
             if (source.getAttacker() instanceof PlayerEntity player && entity.getHealth() <= 0) {
                 if (entity instanceof HostileEntity) {
                     if (new Random().nextFloat() < 0.1) {
-                        player.giveItemStack(new ItemStack(ModItems.GAIN_CARD));
+                        give(player, new ItemStack(ModItems.GAIN_CARD));
                         player.sendMessage(Text.translatable("dabaosword.draw.monster"),true);
                     }
                     //功獒技能触发
@@ -179,7 +179,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
                     }
                 }
                 if (entity instanceof PlayerEntity) {
-                    player.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
+                    give(player, new ItemStack(ModItems.GAIN_CARD, 2));
                     player.sendMessage(Text.translatable("dabaosword.draw.player"),true);
                     //功獒技能触发
                     if (hasTrinket(SkillCards.GONGAO, player)) {
@@ -197,7 +197,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
                 //狂骨：攻击命中敌人时，如果受伤超过5则回血，否则摸一张牌
                 if (hasTrinket(SkillCards.KUANGGU, player) && !player.hasStatusEffect(ModItems.COOLDOWN)) {
                     if (player.getMaxHealth()-player.getHealth()>=5) {player.heal(5);}
-                    else {player.giveItemStack(new ItemStack(ModItems.GAIN_CARD));}
+                    else give(player, new ItemStack(ModItems.GAIN_CARD));
                     if (new Random().nextFloat() < 0.5) {voice(player, Sounds.KUANGGU1);} else {voice(player, Sounds.KUANGGU2);}
                     player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 8,0,false,false,true));
                 }
@@ -228,20 +228,12 @@ public class EntityHurtHandler implements EntityHurtCallback {
                     }
                 }
 
-                //青釭剑额外伤害
-                if (hasTrinket(ModItems.QINGGANG, player) && !player.getCommandTags().contains("guding") && !player.getCommandTags().contains("sha")) {
-                    player.addCommandTag("guding");
-                    float extraDamage = Math.min(20, 0.2f * entity.getMaxHealth());
-                    entity.timeUntilRegen = 0; entity.damage(player.getDamageSources().genericKill(), extraDamage);
-                    player.getCommandTags().remove("guding");
-                }
-
                 //寒冰剑冻伤
                 if (hasTrinket(ModItems.HANBING, player)) {entity.timeUntilRegen = 0; entity.setFrozenTicks(500);}
 
                 //杀的相关结算
                 if (shouldSha(player) && !entity.isGlowing()) {
-                    ItemStack stack = shaStack(player);
+                    ItemStack stack = player.getMainHandStack().isIn(Tags.Items.SHA) ? player.getMainHandStack() : shaStack(player);
                     player.addCommandTag("sha");
                     if (stack.getItem() == ModItems.SHA) {
                         voice(player, Sounds.SHA);
@@ -270,37 +262,33 @@ public class EntityHurtHandler implements EntityHurtCallback {
                 //排异技能：攻击伤害增加
                 if (hasTrinket(SkillCards.QUANJI, player) && !player.getCommandTags().contains("quanji")) {
                     ItemStack stack = trinketItem(SkillCards.QUANJI, player);
-                    if (stack.getNbt() != null) {
-                        int quan = stack.getNbt().getInt("quanji");
-                        if (quan > 0) {
-                            player.addCommandTag("quanji");
-                            entity.timeUntilRegen = 0; entity.damage(source, quan);
-                            if (quan > 4 && entity instanceof PlayerEntity) {
-                                ((PlayerEntity) entity).giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
-                            }
-                            int quan1 = quan/2;
-                            quanji.putInt("quanji", quan1); stack.setNbt(quanji);
-                            float j = new Random().nextFloat();
-                            if (j < 0.25) {voice(player, Sounds.PAIYI1);
-                            } else if (0.25 <= j && j < 0.5) {voice(player, Sounds.PAIYI2,3);
-                            } else if (0.5 <= j && j < 0.75) {voice(player, Sounds.PAIYI3);
-                            } else {voice(player, Sounds.PAIYI4,3);}
+                    int quan = stack.getNbt() == null ? 0 : stack.getNbt().getInt("quanji");
+                    if (quan > 0) {
+                        player.addCommandTag("quanji");
+                        entity.timeUntilRegen = 0; entity.damage(source, quan);
+                        if (quan > 4 && entity instanceof PlayerEntity) {
+                            give((PlayerEntity) entity, new ItemStack(ModItems.GAIN_CARD, 2));
                         }
+                        int quan1 = quan/2;
+                        quanji.putInt("quanji", quan1); stack.setNbt(quanji);
+                        float j = new Random().nextFloat();
+                        if (j < 0.25) {voice(player, Sounds.PAIYI1);
+                        } else if (0.25 <= j && j < 0.5) {voice(player, Sounds.PAIYI2,3);
+                        } else if (0.5 <= j && j < 0.75) {voice(player, Sounds.PAIYI3);
+                        } else {voice(player, Sounds.PAIYI4,3);}
                     }
                 }
 
                 //奔袭：命中后减少2手长，摸一张牌
                 if (hasTrinket(SkillCards.BENXI, player) && !player.getCommandTags().contains("benxi")) {
                     ItemStack stack = trinketItem(SkillCards.BENXI, player);
-                    if (stack.getNbt() != null) {
-                        NbtCompound benxi = new NbtCompound();
-                        int ben = stack.getNbt().getInt("benxi");
-                        if (ben > 1) {
-                            player.addCommandTag("benxi");
-                            benxi.putInt("benxi", ben - 2); stack.setNbt(benxi);
-                            player.giveItemStack(new ItemStack(ModItems.GAIN_CARD));
-                            if (new Random().nextFloat() < 0.5) {voice(player, Sounds.BENXI1);} else {voice(player, Sounds.BENXI2);}
-                        }
+                    NbtCompound benxi = new NbtCompound();
+                    int ben = stack.getNbt() == null ? 0 : stack.getNbt().getInt("benxi");
+                    if (ben > 1) {
+                        player.addCommandTag("benxi");
+                        benxi.putInt("benxi", ben - 2); stack.setNbt(benxi);
+                        give(player, new ItemStack(ModItems.GAIN_CARD));
+                        if (new Random().nextFloat() < 0.5) {voice(player, Sounds.BENXI1);} else {voice(player, Sounds.BENXI2);}
                     }
                 }
 

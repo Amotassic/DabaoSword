@@ -59,7 +59,7 @@ public class GiftBoxItem extends Item {
 
             ItemStack stack = new ItemStack(Registries.ITEM.get(selectedEntry.item()));
             if (stack.getItem() != Items.AIR) voice(player, Sounds.GIFTBOX,3);
-            player.giveItemStack(stack);
+            give(player, stack);
         }
     }
 

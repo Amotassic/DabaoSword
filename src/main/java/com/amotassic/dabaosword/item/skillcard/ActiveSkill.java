@@ -34,18 +34,30 @@ public class ActiveSkill extends SkillItem {
                 int i = stack.getNbt() == null ? 0 : stack.getNbt().getInt("yiji");
                 ItemStack stack1 = user.getStackInHand(Hand.MAIN_HAND);
                 if (i > 0 && (stack1.isIn(Tags.Items.CARD) || stack1.getItem() == ModItems.GAIN_CARD)) {
-                    target.giveItemStack(stack1.copyWithCount(1));
-                    target.sendMessage(Text.literal(user.getEntityName()).append(Text.translatable("yiji.tip", target.getDisplayName())));
-                    user.sendMessage(Text.literal(user.getEntityName()).append(Text.translatable("yiji.tip", target.getDisplayName())));
+                    give(target, stack1.copyWithCount(1));
+                    target.sendMessage(Text.literal(user.getEntityName()).append(Text.translatable("give_card.tip", stack.getName(), target.getDisplayName())));
+                    user.sendMessage(Text.literal(user.getEntityName()).append(Text.translatable("give_card.tip", stack.getName(), target.getDisplayName())));
                     stack1.decrement(1);
                     NbtCompound nbt = new NbtCompound(); nbt.putInt("yiji", i - 1); stack.setNbt(nbt);
                 }
             }
 
-            if (stack.getItem() == SkillCards.LUOYI) {
+            if (stack.getItem() == SkillCards.RENDE) {
                 ItemStack stack1 = user.getStackInHand(Hand.MAIN_HAND);
-                target.giveItemStack(stack1.copyWithCount(1));
-                stack1.decrement(1);
+                if (stack1.isIn(Tags.Items.CARD) || stack1.getItem() == ModItems.GAIN_CARD) {
+                    if (new Random().nextFloat() < 0.5) {voice(user, Sounds.RENDE1);} else {voice(user, Sounds.RENDE2);}
+                    give(target, stack1.copyWithCount(1));
+                    target.sendMessage(Text.literal(user.getEntityName()).append(Text.translatable("give_card.tip", stack.getName(), target.getDisplayName())));
+                    user.sendMessage(Text.literal(user.getEntityName()).append(Text.translatable("give_card.tip", stack.getName(), target.getDisplayName())));
+                    stack1.decrement(1);
+                    int cd = stack.getNbt() == null ? 0 : stack.getNbt().getInt("cooldown");
+                    if (cd == 0 && new Random().nextFloat() < 0.5) {
+                        user.heal(5); voice(user, Sounds.RECOVER);
+                        user.sendMessage(Text.translatable("recover.tip").formatted(Formatting.GREEN),true);
+                        NbtCompound nbt = new NbtCompound();
+                        nbt.putInt("cooldown", 30); stack.setNbt(nbt);
+                    }
+                }
             }
         }
 
@@ -62,9 +74,9 @@ public class ActiveSkill extends SkillItem {
                         if (new Random().nextFloat() < 0.5) {voice(user, Sounds.ZHIHENG1);} else {voice(user, Sounds.ZHIHENG2);}
                         stack1.decrement(1);
                         if (new Random().nextFloat() < 0.1) {
-                            user.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
+                            give(user, new ItemStack(ModItems.GAIN_CARD, 2));
                             user.sendMessage(Text.translatable("zhiheng.extra").formatted(Formatting.GREEN), true);
-                        } else user.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 1));
+                        } else give(user, new ItemStack(ModItems.GAIN_CARD, 1));
                         NbtCompound nbt = new NbtCompound(); nbt.putInt("zhi", z - 1); stack.setNbt(nbt);
                     } else user.sendMessage(Text.translatable("zhiheng.fail").formatted(Formatting.RED), true);
                 }
@@ -88,7 +100,7 @@ public class ActiveSkill extends SkillItem {
 
             if (stack.getItem() == SkillCards.KUROU) {
                 if (user.getHealth() + 5 * count(user, Tags.Items.RECOVER) > 4.99) {
-                    user.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
+                    give(user, new ItemStack(ModItems.GAIN_CARD, 2));
                     if (!user.isCreative()) {
                         user.timeUntilRegen = 0;
                         user.damage(user.getDamageSources().genericKill(), 4.99f);

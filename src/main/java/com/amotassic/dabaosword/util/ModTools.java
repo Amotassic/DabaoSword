@@ -5,6 +5,7 @@ import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketsApi;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -129,7 +130,7 @@ public class ModTools {
         ItemStack stack = player.getStackInHand(Hand.OFF_HAND);
         if (!stack.isEmpty() && stack.isIn(tag)) {
             stack.decrement(1);
-            player.giveItemStack(item.getDefaultStack());
+            give(player, item.getDefaultStack());
             if (new Random().nextFloat() < 0.5) {voice(player, sound1);} else {voice(player, sound2);}
         }
     }
@@ -173,6 +174,13 @@ public class ModTools {
             if (stack.getItem() == item) n += stack.getCount();
         }
         return n;
+    }
+
+    public static void give(PlayerEntity player, ItemStack stack) {
+        ItemEntity item = player.dropItem(stack, false);
+        if (item == null) return;
+        item.resetPickupDelay();
+        item.setOwner(player.getUuid());
     }
 
 }

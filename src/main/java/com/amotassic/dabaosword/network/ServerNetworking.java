@@ -25,7 +25,7 @@ import java.util.UUID;
 public class ServerNetworking {
     public static Identifier ACTIVE_SKILL = new Identifier("dabaosword:active_skill");
     public static Identifier ACTIVE_SKILL_TARGET = new Identifier("dabaosword:active_skill_target");
-    public static Item[] active_skills_with_target = {SkillCards.YIJI};
+    public static Item[] active_skills_with_target = {SkillCards.RENDE, SkillCards.YIJI};
     public static Item[] active_skills = {SkillCards.ZHIHENG, SkillCards.QICE, SkillCards.TAOLUAN, SkillCards.LUOSHEN, SkillCards.KUROU};
 
     public static void registerActiveSkillPacketHandler() {

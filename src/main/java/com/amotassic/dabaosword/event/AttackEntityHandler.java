@@ -40,10 +40,10 @@ public class AttackEntityHandler implements AttackEntityCallback {
                     ItemStack legs = target.getEquippedStack(EquipmentSlot.LEGS);
                     ItemStack feet = target.getEquippedStack(EquipmentSlot.FEET);
                     if (target instanceof PlayerEntity player1) {
-                        if (!head.isEmpty()) {player1.giveItemStack(head.copy());head.setCount(0);}
-                        if (!chest.isEmpty()) {player1.giveItemStack(chest.copy());chest.setCount(0);}
-                        if (!legs.isEmpty()) {player1.giveItemStack(legs.copy());legs.setCount(0);}
-                        if (!feet.isEmpty()) {player1.giveItemStack(feet.copy());feet.setCount(0);}
+                        if (!head.isEmpty()) {give(player1, head.copy()); head.setCount(0);}
+                        if (!chest.isEmpty()) {give(player1, chest.copy()); chest.setCount(0);}
+                        if (!legs.isEmpty()) {give(player1, legs.copy()); legs.setCount(0);}
+                        if (!feet.isEmpty()) {give(player1, feet.copy()); feet.setCount(0);}
                     } else {
                         if (!head.isEmpty()) {target.dropStack(head.copy());head.setCount(0);}
                         if (!chest.isEmpty()) {target.dropStack(chest.copy());chest.setCount(0);}
@@ -55,6 +55,11 @@ public class AttackEntityHandler implements AttackEntityCallback {
                     player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, i,0, false,false,true));
                 }
 
+                if (hasTrinket(ModItems.QINGGANG, player)) {//青釭剑额外伤害
+                    float extraDamage = Math.min(20, 0.2f * target.getMaxHealth());
+                    target.timeUntilRegen = 0; target.damage(player.getDamageSources().genericKill(), extraDamage);
+                }
+
                 if (hasTrinket(ModItems.QINGLONG, player) && player.getAttackCooldownProgress(0) >= 0.9) {
                     player.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE,10,0,false,false,false));
                     player.teleport(target.getX(), target.getY(), target.getZ());
@@ -62,17 +67,14 @@ public class AttackEntityHandler implements AttackEntityCallback {
                     target.velocityModified = true; target.setVelocity(momentum.getX(),0 ,momentum.getZ());
                 }
 
-
                 if (hasTrinket(ModItems.FANGTIAN, player)) {
                     //方天画戟：打中生物后触发特效，给予CD和持续时间
                     ItemStack stack = trinketItem(ModItems.FANGTIAN, player);
-                    if (stack.getNbt() != null) {
-                        NbtCompound nbt = new NbtCompound();
-                        int cd = stack.getNbt().getInt("cd");
-                        if (cd == 0) {
-                            nbt.putInt("time", 100); nbt.putInt("cd", 400); stack.setNbt(nbt);
-                            player.sendMessage(Text.translatable("dabaosword.fangtian").formatted(Formatting.RED), true);
-                        }
+                    NbtCompound nbt = new NbtCompound();
+                    int cd = stack.getNbt() == null ? 0 : stack.getNbt().getInt("cd");
+                    if (cd == 0) {
+                        nbt.putInt("cd", 20); stack.setNbt(nbt);
+                        player.sendMessage(Text.translatable("dabaosword.fangtian").formatted(Formatting.RED), true);
                     }
                 }
 

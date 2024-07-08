@@ -47,7 +47,7 @@ public class GainCardItem extends CardItem {
             List<LootEntry> lootEntries = LootTableParser.parseLootTable(new Identifier("dabaosword", "loot_tables/draw.json"));
             LootEntry selectedEntry = selectRandomEntry(lootEntries);
 
-            player.giveItemStack(new ItemStack(Registries.ITEM.get(selectedEntry.item())));
+            give(player, new ItemStack(Registries.ITEM.get(selectedEntry.item())));
         }
     }
 
