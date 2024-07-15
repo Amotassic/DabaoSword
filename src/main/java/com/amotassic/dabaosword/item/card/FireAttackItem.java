@@ -1,6 +1,5 @@
 package com.amotassic.dabaosword.item.card;
 
-import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireballEntity;
@@ -10,7 +9,9 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class FireAttackItem extends CardItem implements ModTools {
+import static com.amotassic.dabaosword.util.ModTools.*;
+
+public class FireAttackItem extends CardItem {
     public FireAttackItem(Settings settings) {super(settings);}
 
     @Override

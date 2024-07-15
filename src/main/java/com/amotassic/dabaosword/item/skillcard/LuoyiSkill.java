@@ -1,21 +1,24 @@
 package com.amotassic.dabaosword.item.skillcard;
 
-import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import dev.emi.trinkets.api.SlotReference;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
+import java.util.Objects;
 import java.util.Random;
 
-public class LuoyiSkill extends SkillItem implements ModTools {
+import static com.amotassic.dabaosword.util.ModTools.voice;
+
+public class LuoyiSkill extends SkillItem {
     public LuoyiSkill(Settings settings) {super(settings);}
 
     @Override
@@ -26,9 +29,8 @@ public class LuoyiSkill extends SkillItem implements ModTools {
             ItemStack stack3 = player.getEquippedStack(EquipmentSlot.LEGS);
             ItemStack stack4 = player.getEquippedStack(EquipmentSlot.FEET);
             boolean noArmor = stack1.isEmpty() && stack2.isEmpty() && stack3.isEmpty() && stack4.isEmpty();
-            if (noArmor) {
-                player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 1,1,false,true,true));
-            }
+            if (noArmor) gainStrength(player, 5);
+            else gainStrength(player, 0);
         }
         super.tick(stack, slot, entity);
     }
@@ -39,5 +41,10 @@ public class LuoyiSkill extends SkillItem implements ModTools {
             if (new Random().nextFloat() < 0.5) {voice(user, Sounds.LUOYI1);} else {voice(user, Sounds.LUOYI2);}
         }
         return super.use(world, user, hand);
+    }
+
+    private void gainStrength(LivingEntity entity, int value) {
+        EntityAttributeModifier AttributeModifier = new EntityAttributeModifier(Identifier.of("attack_damage"), value, EntityAttributeModifier.Operation.ADD_VALUE);
+        Objects.requireNonNull(entity.getAttributes().getCustomInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE)).updateModifier(AttributeModifier);
     }
 }

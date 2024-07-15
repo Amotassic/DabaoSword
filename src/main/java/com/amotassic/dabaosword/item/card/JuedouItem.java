@@ -1,7 +1,6 @@
 package com.amotassic.dabaosword.item.card;
 
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
 import net.minecraft.entity.Entity;
@@ -16,7 +15,9 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 
-public class JuedouItem extends CardItem implements ModTools {
+import static com.amotassic.dabaosword.util.ModTools.*;
+
+public class JuedouItem extends CardItem {
     public JuedouItem(Settings settings) {super(settings);}
 
     @Override

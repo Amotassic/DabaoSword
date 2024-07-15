@@ -209,12 +209,16 @@ public class ModItems {
                 entries.add(SkillCards.JIZHI);
                 entries.add(SkillCards.KUANGGU);
                 entries.add(SkillCards.LIEGONG);
+                entries.add(SkillCards.RENDE);
+                entries.add(SkillCards.TIEJI);
                 //吴
+                entries.add(SkillCards.BUQU);
                 entries.add(SkillCards.GUOSE);
                 entries.add(SkillCards.LIULI);
                 entries.add(SkillCards.KUROU);
                 entries.add(SkillCards.POJUN);
                 entries.add(SkillCards.QIXI);
+                entries.add(SkillCards.ZHIHENG);
                 //群
                 entries.add(SkillCards.LEIJI);
                 entries.add(SkillCards.LUANJI);

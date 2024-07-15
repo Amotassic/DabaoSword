@@ -2,7 +2,6 @@ package com.amotassic.dabaosword.item.card;
 
 import com.amotassic.dabaosword.util.LootEntry;
 import com.amotassic.dabaosword.util.LootTableParser;
-import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -21,7 +20,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Random;
 
-public class GiftBoxItem extends Item implements ModTools {
+import static com.amotassic.dabaosword.util.ModTools.give;
+import static com.amotassic.dabaosword.util.ModTools.voice;
+
+public class GiftBoxItem extends Item {
     public GiftBoxItem(Settings settings) {super(settings);}
 
     @Override
@@ -57,7 +59,7 @@ public class GiftBoxItem extends Item implements ModTools {
 
             ItemStack stack = new ItemStack(Registries.ITEM.get(selectedEntry.item()));
             if (stack.getItem() != Items.AIR) voice(player, Sounds.GIFTBOX,3);
-            player.giveItemStack(stack);
+            give(player, stack);
         }
     }
 

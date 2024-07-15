@@ -2,7 +2,6 @@ package com.amotassic.dabaosword.event;
 
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
-import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.minecraft.entity.Entity;
@@ -24,7 +23,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 import java.util.Random;
 
-public class AttackEntityHandler implements ModTools, AttackEntityCallback {
+import static com.amotassic.dabaosword.util.ModTools.*;
+
+public class AttackEntityHandler implements AttackEntityCallback {
 
     @Override
     public ActionResult interact(PlayerEntity player, World world, Hand hand, Entity entity, @Nullable EntityHitResult hitResult) {
@@ -39,10 +40,10 @@ public class AttackEntityHandler implements ModTools, AttackEntityCallback {
                     ItemStack legs = target.getEquippedStack(EquipmentSlot.LEGS);
                     ItemStack feet = target.getEquippedStack(EquipmentSlot.FEET);
                     if (target instanceof PlayerEntity player1) {
-                        if (!head.isEmpty()) {player1.giveItemStack(head.copy());head.setCount(0);}
-                        if (!chest.isEmpty()) {player1.giveItemStack(chest.copy());chest.setCount(0);}
-                        if (!legs.isEmpty()) {player1.giveItemStack(legs.copy());legs.setCount(0);}
-                        if (!feet.isEmpty()) {player1.giveItemStack(feet.copy());feet.setCount(0);}
+                        if (!head.isEmpty()) {give(player1, head.copy()); head.setCount(0);}
+                        if (!chest.isEmpty()) {give(player1, chest.copy()); chest.setCount(0);}
+                        if (!legs.isEmpty()) {give(player1, legs.copy()); legs.setCount(0);}
+                        if (!feet.isEmpty()) {give(player1, feet.copy()); feet.setCount(0);}
                     } else {
                         if (!head.isEmpty()) {target.dropStack(head.copy());head.setCount(0);}
                         if (!chest.isEmpty()) {target.dropStack(chest.copy());chest.setCount(0);}
@@ -54,6 +55,11 @@ public class AttackEntityHandler implements ModTools, AttackEntityCallback {
                     player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, i,0, false,false,true));
                 }
 
+                if (hasTrinket(ModItems.QINGGANG, player)) {//青釭剑额外伤害
+                    float extraDamage = Math.min(20, 0.2f * target.getMaxHealth());
+                    target.damage(player.getDamageSources().genericKill(), extraDamage); target.timeUntilRegen = 0;
+                }
+
                 if (hasTrinket(ModItems.QINGLONG, player) && player.getAttackCooldownProgress(0) >= 0.9) {
                     player.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE,10,0,false,false,false));
                     player.teleport(target.getX(), target.getY(), target.getZ(),false);
@@ -61,13 +67,12 @@ public class AttackEntityHandler implements ModTools, AttackEntityCallback {
                     target.velocityModified = true; target.setVelocity(momentum.getX(),0 ,momentum.getZ());
                 }
 
-
                 if (hasTrinket(ModItems.FANGTIAN, player)) {
                     //方天画戟：打中生物后触发特效，给予CD和持续时间
                     ItemStack stack = trinketItem(ModItems.FANGTIAN, player);
                     int cd = stack.get(ModItems.CD) == null ? 0 : Objects.requireNonNull(stack.get(ModItems.CD));
                     if (cd == 0) {
-                        stack.set(ModItems.CD, 400);stack.set(ModItems.TAGS, 100);
+                        stack.set(ModItems.CD, 20);
                         player.sendMessage(Text.translatable("dabaosword.fangtian").formatted(Formatting.RED), true);
                     }
                 }

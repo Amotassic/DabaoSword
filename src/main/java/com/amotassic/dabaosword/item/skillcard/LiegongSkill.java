@@ -1,7 +1,6 @@
 package com.amotassic.dabaosword.item.skillcard;
 
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.util.ModTools;
 import dev.emi.trinkets.api.SlotReference;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -10,9 +9,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
 import java.util.Objects;
-import java.util.UUID;
 
-public class LiegongSkill extends SkillItem implements ModTools {
+import static com.amotassic.dabaosword.util.ModTools.noTieji;
+
+public class LiegongSkill extends SkillItem {
     public LiegongSkill(Settings settings) {super(settings);}
 
     @Override

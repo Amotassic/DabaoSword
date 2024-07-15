@@ -2,7 +2,6 @@ package com.amotassic.dabaosword.item.card;
 
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
-import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
@@ -12,7 +11,9 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class ShanItem extends CardItem implements ModTools {
+import static com.amotassic.dabaosword.util.ModTools.*;
+
+public class ShanItem extends CardItem {
 
     public ShanItem(Settings settings) {super(settings);}
     //使用后，向前冲刺一段距离，无敌0.5秒，冷却时间1秒

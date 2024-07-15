@@ -15,10 +15,13 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Pair;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 
-public class PlayerDeathHandler implements PlayerDeathCallback, ModTools {
+import static com.amotassic.dabaosword.util.ModTools.*;
+
+public class PlayerDeathHandler implements PlayerDeathCallback {
     @Override
     public void onDeath(ServerPlayerEntity player, DamageSource source) {
 
@@ -35,7 +38,7 @@ public class PlayerDeathHandler implements PlayerDeathCallback, ModTools {
                                     if (new Random().nextFloat() < 0.5) voice(player1, Sounds.XINGSHANG1); else voice(player1, Sounds.XINGSHANG2);
                                 }
                                 player1.addCommandTag("xingshang");
-                                player1.giveItemStack(stack); break;
+                                give(player1, stack); break;
                             }
                         }
                         inv.removeStack(i);
@@ -54,7 +57,7 @@ public class PlayerDeathHandler implements PlayerDeathCallback, ModTools {
                                         if (new Random().nextFloat() < 0.5) voice(player1, Sounds.XINGSHANG1); else voice(player1, Sounds.XINGSHANG2);
                                     }
                                     player1.addCommandTag("xingshang");
-                                    player1.giveItemStack(stack); break;
+                                    give(player1, stack); break;
                                 }
                             }
                             stack.setCount(0);
@@ -64,6 +67,12 @@ public class PlayerDeathHandler implements PlayerDeathCallback, ModTools {
             }
 
             if (hasItem(player, ModItems.BBJI)) voice(player, Sounds.XUYOU);
+
+            if (hasTrinket(SkillCards.BUQU, player)) {
+                ItemStack stack = trinketItem(SkillCards.BUQU, player);
+                int c = stack.get(ModItems.TAGS) != null ? Objects.requireNonNull(stack.get(ModItems.TAGS)) : 0;
+                if (c > 1) stack.set(ModItems.TAGS, (c+1)/2);
+            }
         }
     }
 }

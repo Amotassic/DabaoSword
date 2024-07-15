@@ -19,10 +19,10 @@ public class SkillCards {
     public static final Item GANGLIE = register("ganglie", new SkillItem(new Item.Settings().maxCount(1)));
     public static final Item GONGAO = register("gongao", new GongaoSkill(new Item.Settings().maxCount(1)));
     public static final Item JUEQING = register("jueqing", new SkillItem(new Item.Settings().maxCount(1)));
-    public static final Item LUOSHEN = register("luoshen", new ActiveSkill(new Item.Settings().maxCount(1)));
+    public static final Item LUOSHEN = register("luoshen", new SkillItem(new Item.Settings().maxCount(1)));
     public static final Item QINGGUO = register("qingguo", new QingguoSkill(new Item.Settings().maxCount(1)));
     public static final Item LUOYI = register("luoyi", new LuoyiSkill(new Item.Settings().maxCount(1)));
-    public static final Item QICE = register("qice", new ActiveSkill(new Item.Settings().maxCount(1)));
+    public static final Item QICE = register("qice", new SkillItem(new Item.Settings().maxCount(1)));
     public static final ScreenHandlerType<QiceScreenHandler> QICE_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "qice", new ExtendedScreenHandlerType<>((syncId, inv, data) -> new QiceScreenHandler(syncId, inv), QicePayload.QICECODEC));
     public static final Item QUANJI = register("quanji", new QuanjiSkill(new Item.Settings().maxCount(1)));
     public static final Item YIJI = register("yiji",new SkillItem(new Item.Settings().maxCount(1)));
@@ -33,17 +33,20 @@ public class SkillCards {
     public static final Item JIZHI = register("jizhi", new SkillItem(new Item.Settings().maxCount(1)));
     public static final Item KUANGGU = register("kuanggu", new SkillItem(new Item.Settings().maxCount(1)));
     public static final Item LIEGONG = register("liegong", new LiegongSkill(new Item.Settings().maxCount(1)));
+    public static final Item RENDE = register("rende", new SkillItem(new Item.Settings().maxCount(1)));
     public static final Item TIEJI = register("tieji", new SkillItem(new Item.Settings().maxCount(1)));
     //吴
+    public static final Item BUQU = register("buqu", new SkillItem(new Item.Settings().maxCount(1)));
     public static final Item GUOSE = register("guose", new GuoseSkill(new Item.Settings().maxCount(1)));
     public static final Item LIULI = register("liuli", new SkillItem(new Item.Settings().maxCount(1)));
-    public static final Item KUROU = register("kurou", new ActiveSkill(new Item.Settings().maxCount(1)));
+    public static final Item KUROU = register("kurou", new SkillItem(new Item.Settings().maxCount(1)));
     public static final Item POJUN = register("pojun", new SkillItem(new Item.Settings().maxCount(1)));
     public static final Item QIXI = register("qixi", new QixiSkill(new Item.Settings().maxCount(1)));
+    public static final Item ZHIHENG = register("zhiheng", new ZhihengSkill(new Item.Settings().maxCount(1)));
     //群
     public static final Item LEIJI = register("leiji", new SkillItem(new Item.Settings().maxCount(1)));
     public static final Item LUANJI = register("luanji", new LuanjiSkill(new Item.Settings().maxCount(1)));
-    public static final Item TAOLUAN = register("taoluan", new ActiveSkill(new Item.Settings().maxCount(1)));
+    public static final Item TAOLUAN = register("taoluan", new SkillItem(new Item.Settings().maxCount(1)));
     public static final ScreenHandlerType<TaoluanScreenHandler> TAOLUAN_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "taoluan", new ExtendedScreenHandlerType<>((syncId, inv, data) -> new TaoluanScreenHandler(syncId, inv), TaoluanPayload.TAOLUANCODEC));
     public static final Item MASHU = register("mashu", new SkillItem(new Item.Settings().maxCount(1)));
 

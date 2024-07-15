@@ -2,7 +2,6 @@ package com.amotassic.dabaosword.effect;
 
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
-import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -16,8 +15,10 @@ import java.util.Objects;
 import java.util.Random;
 
 import static com.amotassic.dabaosword.item.equipment.ArrowRainItem.arrowRain;
+import static com.amotassic.dabaosword.util.ModTools.hasTrinket;
+import static com.amotassic.dabaosword.util.ModTools.voice;
 
-public class Cooldown2Effect extends StatusEffect implements ModTools {
+public class Cooldown2Effect extends StatusEffect {
     public Cooldown2Effect(StatusEffectCategory category, int color) {super(category, color);}
 
     @Override
@@ -29,7 +30,7 @@ public class Cooldown2Effect extends StatusEffect implements ModTools {
             int restTime = Objects.requireNonNull(entity.getStatusEffect(ModItems.COOLDOWN2)).getDuration();
             //一级效果被用于万箭齐发
             if (amplifier == 1) {
-                if (restTime % 3 == 0) arrowRain(player);
+                arrowRain(player,3);
                 if (restTime <= 1) player.getCommandTags().remove("wanjian");
             }
 

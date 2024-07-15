@@ -1,33 +1,18 @@
 package com.amotassic.dabaosword.item.skillcard;
 
-import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
-import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 
-public class QuanjiSkill extends SkillItem implements ModTools {
-    public QuanjiSkill(Settings settings) {super(settings);}
+import static com.amotassic.dabaosword.util.ModTools.voice;
 
-    @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        if (stack.get(ModItems.TAGS) != null) {
-            int quan = Objects.requireNonNull(stack.get(ModItems.TAGS));
-            tooltip.add(Text.of("权："+quan));
-        }
-        tooltip.add(Text.translatable("item.dabaosword.quanji.tooltip1").formatted(Formatting.BLUE));
-        tooltip.add(Text.translatable("item.dabaosword.quanji.tooltip2").formatted(Formatting.BLUE));
-    }
+public class QuanjiSkill extends SkillItem {
+    public QuanjiSkill(Settings settings) {super(settings);}
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {

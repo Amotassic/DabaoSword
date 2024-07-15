@@ -3,8 +3,8 @@ package com.amotassic.dabaosword.mixin;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.EntityHurtCallback;
-import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
+import com.amotassic.dabaosword.util.Tags;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
@@ -42,8 +42,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.Objects;
 import java.util.Random;
 
+import static com.amotassic.dabaosword.util.ModTools.*;
+
 @Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin extends Entity implements ModTools {
+public abstract class LivingEntityMixin extends Entity {
 
     @Shadow public abstract boolean isGlowing();
 
@@ -114,7 +116,7 @@ public abstract class LivingEntityMixin extends Entity implements ModTools {
                     }
 
                     if (this.isGlowing() && shouldSha(player)) {//实现铁索连环的效果，大概是好了吧
-                        ItemStack stack = shaStack(player);
+                        ItemStack stack = player.getMainHandStack().isIn(Tags.Items.SHA) ? player.getMainHandStack() : shaStack(player);
                         player.addCommandTag("sha");
                         if (stack.getItem() == ModItems.SHA) {
                             voice(player, Sounds.SHA);
@@ -170,14 +172,12 @@ public abstract class LivingEntityMixin extends Entity implements ModTools {
         PlayerEntity closestPlayer = getEntityWorld().getClosestPlayer(this, 5);
         if (closestPlayer != null && hasTrinket(ModItems.FANGTIAN, closestPlayer) && !getWorld().isClient && !isDead()) {
             ItemStack stack = trinketItem(ModItems.FANGTIAN, closestPlayer);
-            if (stack.get(ModItems.TAGS) != null) {
-                int time = Objects.requireNonNull(stack.get(ModItems.TAGS));
-                if (time > 0 && closestPlayer.handSwingTicks == 1) {
-                    //给玩家本人一个极短的无敌效果，以防止被误伤
-                    closestPlayer.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE,2,0,false,false,false));
-                    float i = (float) closestPlayer.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-                    this.damage(getDamageSources().playerAttack(closestPlayer), i);
-                }
+            int time = stack.get(ModItems.CD) == null ? 0 : Objects.requireNonNull(stack.get(ModItems.CD));
+            if (time > 15 && closestPlayer.handSwingTicks == 1) {
+                //给玩家本人一个极短的无敌效果，以防止被误伤
+                closestPlayer.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE,2,0,false,false,false));
+                float i = (float) closestPlayer.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
+                this.damage(getDamageSources().playerAttack(closestPlayer), i);
             }
         }
 
@@ -196,6 +196,14 @@ public abstract class LivingEntityMixin extends Entity implements ModTools {
                 amount);
         if (result == ActionResult.FAIL) {
             ci.cancel();
+        }
+    }
+
+    @Inject(method = "modifyAppliedDamage", at = @At(value = "TAIL"), cancellable = true)
+    protected void modifyAppliedDamage(DamageSource source, float amount, CallbackInfoReturnable<Float> cir) {
+        //白银狮子减伤
+        if (!source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY) && source.getAttacker() instanceof LivingEntity && livingEntity instanceof PlayerEntity player && hasTrinket(ModItems.BAIYIN, player)) {
+            cir.setReturnValue(0.4f * amount);
         }
     }
 }

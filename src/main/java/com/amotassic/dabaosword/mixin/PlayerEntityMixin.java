@@ -33,8 +33,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.Objects;
 import java.util.Random;
 
+import static com.amotassic.dabaosword.util.ModTools.*;
+
 @Mixin(PlayerEntity.class)
-public abstract class PlayerEntityMixin extends LivingEntity implements ModTools {
+public abstract class PlayerEntityMixin extends LivingEntity {
     protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {super(entityType, world);}
 
     @Unique PlayerEntity player = (PlayerEntity) (Object) this;
@@ -98,13 +100,6 @@ public abstract class PlayerEntityMixin extends LivingEntity implements ModTools
                         if (!player1.isCreative()) stack.decrement(1);
                     }
                 }
-
-                if (hasTrinket(ModItems.BAIYIN,player) && !this.getCommandTags().contains("baiyin")) {
-                    cir.setReturnValue(false);
-                    this.addCommandTag("baiyin");
-                    this.damage(source, 0.4f * amount);
-                    this.getCommandTags().remove("baiyin");
-                }
             }
 
             //流离
@@ -152,10 +147,10 @@ public abstract class PlayerEntityMixin extends LivingEntity implements ModTools
                 tick = 0;
                 if (hasTrinket(ModItems.CARD_PILE, player) && !player.isCreative() && !player.isSpectator()) {
                     if (count(player, Tags.Items.CARD) + count(player, ModItems.GAIN_CARD) <= player.getMaxHealth()) {
-                        player.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
+                        give(player, new ItemStack(ModItems.GAIN_CARD, 2));
                         player.sendMessage(Text.translatable("dabaosword.draw"),true);
                     } else if (!enableLimit) {//如果不限制摸牌就继续发牌
-                        player.giveItemStack(new ItemStack(ModItems.GAIN_CARD, 2));
+                        give(player, new ItemStack(ModItems.GAIN_CARD, 2));
                         player.sendMessage(Text.translatable("dabaosword.draw"),true);
                     }
                 }

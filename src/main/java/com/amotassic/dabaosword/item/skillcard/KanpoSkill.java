@@ -1,7 +1,6 @@
 package com.amotassic.dabaosword.item.skillcard;
 
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
 import dev.emi.trinkets.api.SlotReference;
@@ -12,7 +11,10 @@ import net.minecraft.util.Hand;
 
 import java.util.Objects;
 
-public class KanpoSkill extends SkillItem implements ModTools {
+import static com.amotassic.dabaosword.util.ModTools.noTieji;
+import static com.amotassic.dabaosword.util.ModTools.viewAs;
+
+public class KanpoSkill extends SkillItem {
 
     public KanpoSkill(Settings settings) {super(settings);}
 

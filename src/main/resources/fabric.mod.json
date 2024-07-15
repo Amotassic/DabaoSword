@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "dabaosword",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "name": "DabaoSword",
   "description": "\\u542c\\u8bf4\\u4f60\\u60f3\\u72af\\u5927\\u5434\\u7586\\u571f\\uff1f",
   "authors": ["Amotassic"],
@@ -28,6 +28,6 @@
     "fabricloader": ">=0.15.11",
     "fabric": "*",
     "minecraft": ">=1.21-",
-    "trinkets": ">=0.3.10"
+    "trinkets": ">=3.10.0"
   }
 }

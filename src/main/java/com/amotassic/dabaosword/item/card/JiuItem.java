@@ -1,6 +1,5 @@
 package com.amotassic.dabaosword.item.card;
 
-import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -10,7 +9,10 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
-public class JiuItem extends CardItem implements ModTools {
+import static com.amotassic.dabaosword.util.ModTools.benxi;
+import static com.amotassic.dabaosword.util.ModTools.voice;
+
+public class JiuItem extends CardItem {
     public JiuItem(Settings settings) {super(settings);}
 
     @Override
