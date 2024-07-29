@@ -6,14 +6,15 @@ import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 
+import java.util.Objects;
 import java.util.Random;
 
 import static com.amotassic.dabaosword.util.ModTools.give;
@@ -23,7 +24,7 @@ public class TaoluanScreenHandler extends ScreenHandler {
     private final ItemStack stack;
 
     public TaoluanScreenHandler(int syncId, Inventory inventory, PacketByteBuf buf) {
-        this(syncId, buf.readItemStack(), inventory);
+        this(syncId, buf.readItemStack(), new SimpleInventory(18));
     }
 
     public TaoluanScreenHandler(int syncId, ItemStack stack, Inventory inventory) {
@@ -32,7 +33,7 @@ public class TaoluanScreenHandler extends ScreenHandler {
         int i;
         for (i = 0; i < 2; ++i) {
             for (int j = 0; j < 9; ++j) {
-                this.addSlot(new Slot(inventory, j + i * 9 + 9, 8 + j * 18, 16 + i * 18));
+                this.addSlot(new Slot(inventory, j + i * 9, 8 + j * 18, 16 + i * 18));
             }
         }
     }
@@ -54,8 +55,10 @@ public class TaoluanScreenHandler extends ScreenHandler {
     public ItemStack getStack() {return stack;}
 
     @Override
-    public ItemStack quickMove(PlayerEntity player, int slot) {return Items.AIR.getDefaultStack();}
+    public ItemStack quickMove(PlayerEntity player, int slot) {return ItemStack.EMPTY;}
 
     @Override
-    public boolean canUse(PlayerEntity player) {return !player.hasStatusEffect(ModItems.COOLDOWN2);}
+    public boolean canUse(PlayerEntity player) {
+        return !player.hasStatusEffect(ModItems.COOLDOWN2) || (player.hasStatusEffect(ModItems.COOLDOWN2) && Objects.requireNonNull(player.getStatusEffect(ModItems.COOLDOWN2)).getAmplifier() != 2);
+    }
 }

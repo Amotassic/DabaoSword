@@ -48,4 +48,9 @@ public class TaoluanHandledScreen extends HandledScreen<TaoluanScreenHandler> {
         this.renderBackground(context);
         super.render(context, mouseX, mouseY, delta);
     }
+
+    @Override
+    protected void drawForeground(DrawContext context, int mouseX, int mouseY) {
+        context.drawText(this.textRenderer, this.title, this.titleX, this.titleY, 0x404040, false);
+    }
 }

@@ -6,7 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 
-public class ZhihengSkill extends ActiveSkill {
+public class ZhihengSkill extends SkillItem {
     public ZhihengSkill(Settings settings) {super(settings);}
 
     @Override

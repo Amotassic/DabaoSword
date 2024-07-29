@@ -57,7 +57,7 @@ public class AttackEntityHandler implements AttackEntityCallback {
 
                 if (hasTrinket(ModItems.QINGGANG, player)) {//青釭剑额外伤害
                     float extraDamage = Math.min(20, 0.2f * target.getMaxHealth());
-                    target.timeUntilRegen = 0; target.damage(player.getDamageSources().genericKill(), extraDamage);
+                    target.damage(player.getDamageSources().genericKill(), extraDamage); target.timeUntilRegen = 0;
                 }
 
                 if (hasTrinket(ModItems.QINGLONG, player) && player.getAttackCooldownProgress(0) >= 0.9) {

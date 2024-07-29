@@ -6,9 +6,9 @@ import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
@@ -16,6 +16,7 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.Hand;
 
+import java.util.Objects;
 import java.util.Random;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
@@ -24,7 +25,7 @@ public class QiceScreenHandler extends ScreenHandler {
     private final ItemStack stack;
 
     public QiceScreenHandler(int syncId, Inventory inv, PacketByteBuf buf) {
-        this(syncId, inv, buf.readItemStack());
+        this(syncId, new SimpleInventory(18), buf.readItemStack());
     }
 
     public QiceScreenHandler(int syncId, Inventory inventory, ItemStack stack) {
@@ -32,7 +33,7 @@ public class QiceScreenHandler extends ScreenHandler {
         this.stack = stack;
         for (int i = 0; i < 2; ++i) {
             for (int j = 0; j < 9; ++j) {
-                this.addSlot(new Slot(inventory, j + i * 9 + 9, 8 + j * 18, 16 + i * 18));
+                this.addSlot(new Slot(inventory, j + i * 9, 8 + j * 18, 16 + i * 18));
             }
         }
     }
@@ -53,8 +54,10 @@ public class QiceScreenHandler extends ScreenHandler {
     public ItemStack getStack() {return stack;}
 
     @Override
-    public ItemStack quickMove(PlayerEntity player, int slot) {return Items.AIR.getDefaultStack();}
+    public ItemStack quickMove(PlayerEntity player, int slot) {return ItemStack.EMPTY;}
 
     @Override
-    public boolean canUse(PlayerEntity player) {return !player.hasStatusEffect(ModItems.COOLDOWN2);}
+    public boolean canUse(PlayerEntity player) {
+        return !player.hasStatusEffect(ModItems.COOLDOWN2) || (player.hasStatusEffect(ModItems.COOLDOWN2) && Objects.requireNonNull(player.getStatusEffect(ModItems.COOLDOWN2)).getAmplifier() != 2);
+    }
 }

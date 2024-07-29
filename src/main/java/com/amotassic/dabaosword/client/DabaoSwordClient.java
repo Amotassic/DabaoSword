@@ -1,6 +1,8 @@
 package com.amotassic.dabaosword.client;
 
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
+import com.amotassic.dabaosword.network.ServerNetworking;
+import com.amotassic.dabaosword.ui.PlayerInvHandledScreen;
 import com.amotassic.dabaosword.ui.QiceHandledScreen;
 import com.amotassic.dabaosword.ui.TaoluanHandledScreen;
 import net.fabricmc.api.ClientModInitializer;
@@ -23,6 +25,7 @@ public class DabaoSwordClient implements ClientModInitializer {
         HudRenderCallback.EVENT.register(new TiesuoHud());
         HandledScreens.register(SkillCards.TAOLUAN_SCREEN_HANDLER, TaoluanHandledScreen::new);
         HandledScreens.register(SkillCards.QICE_SCREEN_HANDLER, QiceHandledScreen::new);
+        HandledScreens.register(ServerNetworking.PLAYER_INV_SCREEN_HANDLER, PlayerInvHandledScreen::new);
         SkillKeyBinds.initialize();
         WorldRenderEvents.BEFORE_DEBUG_RENDER.register(context -> {
             MinecraftClient client = MinecraftClient.getInstance();
