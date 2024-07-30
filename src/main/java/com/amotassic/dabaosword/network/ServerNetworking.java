@@ -98,32 +98,11 @@ public class ServerNetworking {
 
             if (stack.getItem() == SkillCards.YIJI) {
                 int i = stack.getNbt() == null ? 0 : stack.getNbt().getInt("yiji");
-                ItemStack stack1 = user.getStackInHand(Hand.MAIN_HAND);
-                if (i > 0 && (stack1.isIn(Tags.Items.CARD) || stack1.getItem() == ModItems.GAIN_CARD)) {
-                    give(target, stack1.copyWithCount(1));
-                    target.sendMessage(Text.literal(user.getEntityName()).append(Text.translatable("give_card.tip", stack.getName(), target.getDisplayName())));
-                    user.sendMessage(Text.literal(user.getEntityName()).append(Text.translatable("give_card.tip", stack.getName(), target.getDisplayName())));
-                    stack1.decrement(1);
-                    NbtCompound nbt = new NbtCompound(); nbt.putInt("yiji", i - 1); stack.setNbt(nbt);
-                }
+                if (i > 0 ) openInv(user, target, true, Text.translatable("give_card.title", stack.getName()), stack, false, false, 2);
             }
 
             if (stack.getItem() == SkillCards.RENDE) {
-                ItemStack stack1 = user.getStackInHand(Hand.MAIN_HAND);
-                if (stack1.isIn(Tags.Items.CARD) || stack1.getItem() == ModItems.GAIN_CARD) {
-                    if (new Random().nextFloat() < 0.5) {voice(user, Sounds.RENDE1);} else {voice(user, Sounds.RENDE2);}
-                    give(target, stack1.copyWithCount(1));
-                    target.sendMessage(Text.literal(user.getEntityName()).append(Text.translatable("give_card.tip", stack.getName(), target.getDisplayName())));
-                    user.sendMessage(Text.literal(user.getEntityName()).append(Text.translatable("give_card.tip", stack.getName(), target.getDisplayName())));
-                    stack1.decrement(1);
-                    int cd = stack.getNbt() == null ? 0 : stack.getNbt().getInt("cooldown");
-                    if (user.getHealth() < user.getMaxHealth() && cd == 0 && new Random().nextFloat() < 0.5) {
-                        user.heal(5); voice(user, Sounds.RECOVER);
-                        user.sendMessage(Text.translatable("recover.tip").formatted(Formatting.GREEN),true);
-                        NbtCompound nbt = new NbtCompound();
-                        nbt.putInt("cooldown", 30); stack.setNbt(nbt);
-                    }
-                }
+                openInv(user, target, true, Text.translatable("give_card.title", stack.getName()), stack, false, false, 2);
             }
         }
 
@@ -134,18 +113,8 @@ public class ServerNetworking {
 
             if (stack.getItem() == SkillCards.ZHIHENG) {
                 int z = stack.getNbt() == null ? 0 : stack.getNbt().getInt("zhi");
-                ItemStack stack1 = user.getStackInHand(Hand.MAIN_HAND);
-                if (stack1.isIn(Tags.Items.CARD)) {
-                    if (z > 0) {
-                        if (new Random().nextFloat() < 0.5) {voice(user, Sounds.ZHIHENG1);} else {voice(user, Sounds.ZHIHENG2);}
-                        stack1.decrement(1);
-                        if (new Random().nextFloat() < 0.1) {
-                            give(user, new ItemStack(ModItems.GAIN_CARD, 2));
-                            user.sendMessage(Text.translatable("zhiheng.extra").formatted(Formatting.GREEN), true);
-                        } else give(user, new ItemStack(ModItems.GAIN_CARD, 1));
-                        NbtCompound nbt = new NbtCompound(); nbt.putInt("zhi", z - 1); stack.setNbt(nbt);
-                    } else user.sendMessage(Text.translatable("zhiheng.fail").formatted(Formatting.RED), true);
-                }
+                if (z > 0) openInv(user, user, Text.translatable("zhiheng.title"), stack, true, false, 2);
+                else user.sendMessage(Text.translatable("zhiheng.fail").formatted(Formatting.RED), true);
             }
 
             if (stack.getItem() == SkillCards.LUOSHEN) {
@@ -191,7 +160,8 @@ public class ServerNetworking {
         }
     }
 
-    public static void openInv(PlayerEntity player, PlayerEntity target, Text title, ItemStack stack, Boolean equip, Boolean armor, int cards) {
+    public static void openInv(PlayerEntity player, PlayerEntity target, Boolean openSelfInv, Text title, ItemStack stack, Boolean equip, Boolean armor, int cards) {
+        PlayerEntity openInvTarget = openSelfInv ? player : target; //查看谁的物品栏？如果无需其他玩家作为目标，则无需使用openSelfInv
         if (!player.getWorld().isClient) {
             player.openHandledScreen(new ExtendedScreenHandlerFactory() {
                 @Override
@@ -205,11 +175,13 @@ public class ServerNetworking {
 
                 @Override
                 public @NotNull ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                    return new PlayerInvScreenHandler(syncId, targetInv(target, equip, armor, cards), target, stack);
+                    return new PlayerInvScreenHandler(syncId, targetInv(openInvTarget, equip, armor, cards), target, stack);
                 }
             });
         }
     }
+
+    public static void openInv(PlayerEntity player, PlayerEntity target, Text title, ItemStack stack, Boolean equip, Boolean armor, int cards) {openInv(player, target, false, title, stack, equip, armor, cards);}
 
     public static final ScreenHandlerType<PlayerInvScreenHandler> PLAYER_INV_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "player_inv", new ExtendedScreenHandlerType<>(PlayerInvScreenHandler::new));
 

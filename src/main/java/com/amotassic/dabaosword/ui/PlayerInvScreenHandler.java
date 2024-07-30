@@ -14,19 +14,21 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
 import net.minecraft.util.collection.DefaultedList;
 
 import java.util.*;
 import java.util.stream.IntStream;
 
+import static com.amotassic.dabaosword.item.card.GainCardItem.draw;
 import static com.amotassic.dabaosword.util.ModTools.*;
-import static com.amotassic.dabaosword.util.ModTools.benxi;
 
 public class PlayerInvScreenHandler extends ScreenHandler {
     private final PlayerEntity target;
@@ -52,8 +54,48 @@ public class PlayerInvScreenHandler extends ScreenHandler {
     @Override
     public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
         if (slotIndex >= 0 && slotIndex < 54) {
-            var targetStack = selected(slotIndex);
+            var targetStack = selected(target, slotIndex); //openSelfInv 为 false 时
+            var selfStack = selected(player, slotIndex); //openSelfInv 为 true 时
+            if (selfStack != ItemStack.EMPTY) {
+
+                if (stack.getItem() == SkillCards.RENDE) {
+                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.RENDE1);} else {voice(player, Sounds.RENDE2);}
+                    give(target, selfStack.copyWithCount(1));
+                    target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.getName(), target.getDisplayName())));
+                    player.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.getName(), target.getDisplayName())));
+                    selfStack.decrement(1);
+                    int cd = stack.getNbt() == null ? 0 : stack.getNbt().getInt("cooldown");
+                    if (player.getHealth() < player.getMaxHealth() && cd == 0 && new Random().nextFloat() < 0.5) {
+                        player.heal(5); voice(player, Sounds.RECOVER);
+                        player.sendMessage(Text.translatable("recover.tip").formatted(Formatting.GREEN), true);
+                        NbtCompound nbt = new NbtCompound(); nbt.putInt("cooldown", 30); stack.setNbt(nbt);
+                    }
+                }
+
+                if (stack.getItem() == SkillCards.YIJI) {
+                    int i = stack.getNbt() == null ? 0 : stack.getNbt().getInt("yiji");
+                    give(target, selfStack.copyWithCount(1));
+                    target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.getName(), target.getDisplayName())));
+                    player.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.getName(), target.getDisplayName())));
+                    selfStack.decrement(1);
+                    NbtCompound nbt = new NbtCompound(); nbt.putInt("yiji", i - 1); stack.setNbt(nbt);
+                    if (i - 1 == 0) closeGUI(player);
+                }
+            }
+
             if (targetStack != ItemStack.EMPTY) {
+
+                if (stack.getItem() == SkillCards.ZHIHENG) {
+                    int z = stack.getNbt() == null ? 0 : stack.getNbt().getInt("zhi");
+                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.ZHIHENG1);} else {voice(player, Sounds.ZHIHENG2);}
+                    targetStack.decrement(1);
+                    if (new Random().nextFloat() < 0.1) {
+                        draw(player, 2);
+                        player.sendMessage(Text.translatable("zhiheng.extra").formatted(Formatting.GREEN), true);
+                    } else draw(player, 1);
+                    NbtCompound nbt = new NbtCompound(); nbt.putInt("zhi", z - 1); stack.setNbt(nbt);
+                    if (z - 1 == 0) closeGUI(player);
+                }
 
                 if (stack.getItem() == ModItems.STEAL) {
                     voice(player, Sounds.SHUNSHOU);
@@ -61,7 +103,7 @@ public class PlayerInvScreenHandler extends ScreenHandler {
                     jizhi(player); benxi(player);
                     target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("dabaosword.steal")).append(targetStack.getName()));
                     give(player, targetStack.copyWithCount(1)); /*顺手：复制一个物品*/ targetStack.decrement(1);
-                    player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 1,2,false,false,false));
+                    closeGUI(player);
                 }
 
                 if (stack.getItem() == ModItems.DISCARD) {
@@ -70,7 +112,7 @@ public class PlayerInvScreenHandler extends ScreenHandler {
                     jizhi(player); benxi(player);
                     target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("dabaosword.discard")).append(targetStack.getName()));
                     targetStack.decrement(1);
-                    player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 1,2,false,false,false));
+                    closeGUI(player);
                 }
 
                 if (stack.getItem() == SkillCards.LUOYI) {
@@ -81,11 +123,11 @@ public class PlayerInvScreenHandler extends ScreenHandler {
         }
     }
 
-    private ItemStack selected(int slotIndex) {
+    private ItemStack selected(PlayerEntity player, int slotIndex) {
         var itemStack = getSlot(slotIndex).getStack();
         if (!itemStack.isEmpty()) {
             if (slotIndex < 4) {
-                Optional<TrinketComponent> component = TrinketsApi.getTrinketComponent(target);
+                Optional<TrinketComponent> component = TrinketsApi.getTrinketComponent(player);
                 if(component.isPresent()) {
                     List<Pair<SlotReference, ItemStack>> allEquipped = component.get().getAllEquipped();
                     for(Pair<SlotReference, ItemStack> entry : allEquipped) {
@@ -95,25 +137,25 @@ public class PlayerInvScreenHandler extends ScreenHandler {
                 }
             }
             if (slotIndex > 3 && slotIndex < 8) {
-                for (ItemStack stack : target.getArmorItems()) {
+                for (ItemStack stack : player.getArmorItems()) {
                     if (itemStack.equals(stack)) return stack;
                 }
             }
             if (slotIndex >= 8) {
-                DefaultedList<ItemStack> inventory = target.getInventory().main;
+                DefaultedList<ItemStack> inventory = player.getInventory().main;
                 for (ItemStack stack : inventory) {
                     if (itemStack.equals(stack)) return stack;
                 }
-                if (target.getOffHandStack().equals(itemStack)) return target.getOffHandStack();
+                if (player.getOffHandStack().equals(itemStack)) return player.getOffHandStack();
             }
         } else if (cards == 1) {
             List<ItemStack> candidate = new ArrayList<>();
-            DefaultedList<ItemStack> inventory = target.getInventory().main;
+            DefaultedList<ItemStack> inventory = player.getInventory().main;
             List<Integer> cardSlots = IntStream.range(0, inventory.size()).filter(
                             i -> inventory.get(i).isIn(Tags.Items.CARD) || inventory.get(i).getItem() == ModItems.GAIN_CARD)
                     .boxed().toList();
             for (Integer slot : cardSlots) {candidate.add(inventory.get(slot));}
-            ItemStack off = target.getOffHandStack();
+            ItemStack off = player.getOffHandStack();
             if (off.isIn(Tags.Items.CARD) || off.getItem() == ModItems.GAIN_CARD) candidate.add(off);
             if(!candidate.isEmpty()) {
                 Random r = new Random();
@@ -130,6 +172,10 @@ public class PlayerInvScreenHandler extends ScreenHandler {
     @Override
     public boolean canUse(PlayerEntity player) {
         return !player.hasStatusEffect(ModItems.COOLDOWN2) || (player.hasStatusEffect(ModItems.COOLDOWN2) && Objects.requireNonNull(player.getStatusEffect(ModItems.COOLDOWN2)).getAmplifier() != 2);
+    }
+
+    private void closeGUI(PlayerEntity player) {
+        player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 1,2,false,false,false));
     }
 
     private void addPlayerInventorySlots(PlayerInventory playerInventory) {
