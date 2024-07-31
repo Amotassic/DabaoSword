@@ -10,7 +10,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Pair;
@@ -70,9 +69,9 @@ public class PlayerDeathHandler implements PlayerDeathCallback {
 
             if (hasTrinket(SkillCards.BUQU, player)) {
                 ItemStack stack = trinketItem(SkillCards.BUQU, player);
-                int c = stack.getNbt() == null ? 0 : stack.getNbt().getInt("buqu");
+                int c = getTag(stack);
                 if (c > 1) {
-                    NbtCompound nbt = new NbtCompound(); nbt.putInt("buqu", (c+1)/2); stack.setNbt(nbt);
+                    setTag(stack, (c+1)/2);
                 }
             }
         }

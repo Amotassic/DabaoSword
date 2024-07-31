@@ -197,6 +197,7 @@ public class ModItems {
                 entries.add(SkillCards.TIEJI);
                 //吴
                 entries.add(SkillCards.BUQU);
+                entries.add(SkillCards.GONGXIN);
                 entries.add(SkillCards.GUOSE);
                 entries.add(SkillCards.LIULI);
                 entries.add(SkillCards.KUROU);

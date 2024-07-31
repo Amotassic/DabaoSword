@@ -145,13 +145,10 @@ public class ModTools {
     public static void benxi(PlayerEntity player) {
         if (hasTrinket(SkillCards.BENXI, player)) {
             ItemStack stack = trinketItem(SkillCards.BENXI, player);
-            NbtCompound nbt = new NbtCompound();
-            if (stack.getNbt() != null) {
-                int benxi = stack.getNbt().getInt("benxi");
-                if (benxi < 5) {
-                    nbt.putInt("benxi", benxi + 1); stack.setNbt(nbt);
-                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.BENXI1);} else {voice(player, Sounds.BENXI2);}
-                }
+            int benxi = getTag(stack);
+            if (benxi < 5) {
+                benxi ++; setTag(stack, benxi);
+                if (new Random().nextFloat() < 0.5) {voice(player, Sounds.BENXI1);} else {voice(player, Sounds.BENXI2);}
             }
         }
     }
@@ -181,6 +178,26 @@ public class ModTools {
         if (item == null) return;
         item.resetPickupDelay();
         item.setOwner(player.getUuid());
+    }
+
+    public static int getCD(ItemStack stack) { //获取物品的内置冷却时间
+        return stack.getNbt() == null ? 0 : stack.getNbt().getInt("cooldown");
+    }
+
+    public static void setCD(ItemStack stack, int seconds) { //设置物品的内置冷却时间
+        NbtCompound nbt = new NbtCompound();
+        nbt.putInt("cooldown", seconds);
+        stack.setNbt(nbt);
+    }
+
+    public static int getTag(ItemStack stack) { //获取物品的标签的数量
+        return stack.getNbt() == null ? 0 : stack.getNbt().getInt("tags");
+    }
+
+    public static void setTag(ItemStack stack, int value) { //设置物品的标签的数量
+        NbtCompound nbt = new NbtCompound();
+        nbt.putInt("tags", value);
+        stack.setNbt(nbt);
     }
 
 }

@@ -21,7 +21,6 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -47,7 +46,7 @@ import static com.amotassic.dabaosword.util.ModTools.*;
 public class ServerNetworking {
     public static Identifier ACTIVE_SKILL = new Identifier("dabaosword:active_skill");
     public static Identifier ACTIVE_SKILL_TARGET = new Identifier("dabaosword:active_skill_target");
-    public static Item[] active_skills_with_target = {SkillCards.RENDE, SkillCards.YIJI, SkillCards.LUOYI};
+    public static Item[] active_skills_with_target = {SkillCards.RENDE, SkillCards.YIJI, SkillCards.GONGXIN, SkillCards.LUOYI};
     public static Item[] active_skills = {SkillCards.ZHIHENG, SkillCards.QICE, SkillCards.TAOLUAN, SkillCards.LUOSHEN, SkillCards.KUROU};
 
     public static void registerActiveSkillPacketHandler() {
@@ -96,8 +95,18 @@ public class ServerNetworking {
                 openInv(user, target, Text.literal("玩家背包"), stack, true, true, 3);
             }
 
+            if (stack.getItem() == SkillCards.GONGXIN) {
+                int cd = getCD(stack);
+                if (cd > 0) user.sendMessage(Text.translatable("dabaosword.cooldown").formatted(Formatting.RED), true);
+                else {
+                    if (new Random().nextFloat() < 0.5) {voice(user, Sounds.GONGXIN1);} else {voice(user, Sounds.GONGXIN2);}
+                    openInv(user, target, Text.translatable("gongxin.title"), stack, false, false, 2);
+                    setCD(stack, 30);
+                }
+            }
+
             if (stack.getItem() == SkillCards.YIJI) {
-                int i = stack.getNbt() == null ? 0 : stack.getNbt().getInt("yiji");
+                int i = getTag(stack);
                 if (i > 0 ) openInv(user, target, true, Text.translatable("give_card.title", stack.getName()), stack, false, false, 2);
             }
 
@@ -112,13 +121,13 @@ public class ServerNetworking {
         if (!user.getWorld().isClient && !user.hasStatusEffect(ModItems.TIEJI)) {
 
             if (stack.getItem() == SkillCards.ZHIHENG) {
-                int z = stack.getNbt() == null ? 0 : stack.getNbt().getInt("zhi");
+                int z = getTag(stack);
                 if (z > 0) openInv(user, user, Text.translatable("zhiheng.title"), stack, true, false, 2);
                 else user.sendMessage(Text.translatable("zhiheng.fail").formatted(Formatting.RED), true);
             }
 
             if (stack.getItem() == SkillCards.LUOSHEN) {
-                int cd = stack.getNbt() == null ? 0 : stack.getNbt().getInt("cooldown");
+                int cd = getCD(stack);
                 if (cd > 0) user.sendMessage(Text.translatable("dabaosword.cooldown").formatted(Formatting.RED), true);
                 else {
                     if (new Random().nextFloat() < 0.5) {voice(user, Sounds.LUOSHEN1);} else {voice(user, Sounds.LUOSHEN2);}
@@ -126,8 +135,7 @@ public class ServerNetworking {
                         draw(user,1);
                         user.sendMessage(Text.translatable("item.dabaosword.luoshen.win").formatted(Formatting.GREEN), true);
                     } else {
-                        NbtCompound nbt = new NbtCompound();
-                        nbt.putInt("cooldown", 30); stack.setNbt(nbt);
+                        setCD(stack, 30);
                         user.sendMessage(Text.translatable("item.dabaosword.luoshen.lose").formatted(Formatting.RED), true);
                     }
                 }
@@ -146,7 +154,7 @@ public class ServerNetworking {
 
             if (stack.getItem() == SkillCards.QICE) {
                 ItemStack offStack = user.getStackInHand(Hand.OFF_HAND);
-                int cd = stack.getNbt() == null ? 0 : stack.getNbt().getInt("cooldown");
+                int cd = getCD(stack);
                 if (!offStack.isEmpty() && offStack.isIn(Tags.Items.CARD) && offStack.getCount() > 1) {
                     if (cd == 0) openQiceScreen(user, stack);
                     else {user.sendMessage(Text.translatable("dabaosword.cooldown").formatted(Formatting.RED), true);}

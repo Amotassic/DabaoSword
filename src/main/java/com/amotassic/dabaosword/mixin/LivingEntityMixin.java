@@ -167,7 +167,7 @@ public abstract class LivingEntityMixin extends Entity {
         PlayerEntity closestPlayer = getEntityWorld().getClosestPlayer(this, 5);
         if (closestPlayer != null && hasTrinket(ModItems.FANGTIAN, closestPlayer) && !getWorld().isClient && !isDead()) {
             ItemStack stack = trinketItem(ModItems.FANGTIAN, closestPlayer);
-            int time = stack.getNbt() == null ? 0 : stack.getNbt().getInt("cd");
+            int time = getCD(stack);
             if (time > 15 && closestPlayer.handSwingTicks == 1) {
                 //给玩家本人一个极短的无敌效果，以防止被误伤
                 closestPlayer.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE,2,0,false,false,false));

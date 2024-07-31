@@ -9,7 +9,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -22,8 +21,7 @@ import net.minecraft.world.World;
 import java.util.List;
 
 import static com.amotassic.dabaosword.item.card.GiftBoxItem.selectRandomEntry;
-import static com.amotassic.dabaosword.util.ModTools.give;
-import static com.amotassic.dabaosword.util.ModTools.voice;
+import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class SkillItem extends TrinketItem {
     public SkillItem(Settings settings) {super(settings);}
@@ -31,22 +29,28 @@ public class SkillItem extends TrinketItem {
     @Override
     public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
 
+        if (stack.getItem() == SkillCards.GONGXIN) {
+            int cd = getCD(stack);
+            tooltip.add(Text.literal(cd == 0 ? "CD: 30s" : "CD: 30s   left: "+ cd +"s"));
+            tooltip.add(Text.translatable("item.dabaosword.gongxin.tooltip").formatted(Formatting.GREEN));
+        }
+
         if (stack.getItem() == SkillCards.RENDE) {
-            int cd = stack.getNbt() == null ? 0 : stack.getNbt().getInt("cooldown");
+            int cd = getCD(stack);
             tooltip.add(Text.literal(cd == 0 ? "CD: 30s" : "CD: 30s   left: "+ cd +"s"));
             tooltip.add(Text.translatable("item.dabaosword.rende.tooltip1").formatted(Formatting.RED));
             tooltip.add(Text.translatable("item.dabaosword.rende.tooltip2").formatted(Formatting.RED));
         }
 
         if (stack.getItem() == SkillCards.ZHIHENG) {
-            int z = stack.getNbt() == null ? 0 : stack.getNbt().getInt("zhi");
+            int z = getTag(stack);
             tooltip.add(Text.literal("可用次数：" + z));
             tooltip.add(Text.translatable("item.dabaosword.zhiheng.tooltip1").formatted(Formatting.GREEN));
             tooltip.add(Text.translatable("item.dabaosword.zhiheng.tooltip2").formatted(Formatting.GREEN));
         }
 
         if (stack.getItem() == SkillCards.BUQU) {
-            int c = stack.getNbt() == null ? 0 : stack.getNbt().getInt("buqu");
+            int c = getTag(stack);
             if(Screen.hasShiftDown()) {
                 tooltip.add(Text.translatable("item.dabaosword.buqu.tooltip1").formatted(Formatting.GREEN));
                 tooltip.add(Text.translatable("item.dabaosword.buqu.tooltip2").formatted(Formatting.GREEN));
@@ -84,7 +88,7 @@ public class SkillItem extends TrinketItem {
         }
 
         if (stack.getItem() == SkillCards.LUOSHEN) {
-            int cd = stack.getNbt() == null ? 0 : stack.getNbt().getInt("cooldown");
+            int cd = getCD(stack);
             tooltip.add(Text.literal(cd == 0 ? "CD: 30s" : "CD: 30s   left: "+ cd +"s"));
             tooltip.add(Text.translatable("item.dabaosword.luoshen.tooltip").formatted(Formatting.BLUE));
         }
@@ -100,44 +104,44 @@ public class SkillItem extends TrinketItem {
         }
 
         if (stack.getItem() == SkillCards.HUOJI) {
-            int cd = stack.getNbt() == null ? 0 : stack.getNbt().getInt("cooldown");
+            int cd = getCD(stack);
             tooltip.add(Text.literal(cd == 0 ? "CD: 15s" : "CD: 15s   left: "+ cd +"s"));
             tooltip.add(Text.translatable("item.dabaosword.huoji.tooltip").formatted(Formatting.RED));
         }
 
         if (stack.getItem() == SkillCards.LUANJI) {
-            int cd = stack.getNbt() == null ? 0 : stack.getNbt().getInt("cooldown");
+            int cd = getCD(stack);
             tooltip.add(Text.literal(cd == 0 ? "CD: 15s" : "CD: 15s   left: "+ cd +"s"));
             tooltip.add(Text.translatable("item.dabaosword.luanji.tooltip"));
         }
 
         if (stack.getItem() == SkillCards.QICE) {
-            int cd = stack.getNbt() == null ? 0 : stack.getNbt().getInt("cooldown");
+            int cd = getCD(stack);
             tooltip.add(Text.literal(cd == 0 ? "CD: 20s" : "CD: 20s   left: "+ cd +"s"));
             tooltip.add(Text.translatable("item.dabaosword.qice.tooltip").formatted(Formatting.BLUE));
         }
 
         if (stack.getItem() == SkillCards.KANPO) {
-            int cd = stack.getNbt() == null ? 0 : stack.getNbt().getInt("cooldown");
+            int cd = getCD(stack);
             tooltip.add(Text.literal(cd == 0 ? "CD: 10s" : "CD: 10s   left: "+ cd +"s"));
             tooltip.add(Text.translatable("item.dabaosword.kanpo.tooltip").formatted(Formatting.RED));
         }
 
         if (stack.getItem() == SkillCards.GUOSE) {
-            int cd = stack.getNbt() == null ? 0 : stack.getNbt().getInt("cooldown");
+            int cd = getCD(stack);
             tooltip.add(Text.literal(cd == 0 ? "CD: 15s" : "CD: 15s   left: "+ cd +"s"));
             tooltip.add(Text.translatable("item.dabaosword.guose.tooltip").formatted(Formatting.GREEN));
         }
 
         if (stack.getItem() == SkillCards.BENXI) {
-            int benxi = stack.getNbt() == null ? 0 : stack.getNbt().getInt("benxi");
+            int benxi = getTag(stack);
             tooltip.add(Text.of("奔袭：" + benxi));
             tooltip.add(Text.translatable("item.dabaosword.benxi.tooltip1").formatted(Formatting.RED));
             tooltip.add(Text.translatable("item.dabaosword.benxi.tooltip2").formatted(Formatting.RED));
         }
 
         if (stack.getItem() == SkillCards.QUANJI) {
-            int quan = stack.getNbt() == null ? 0 : stack.getNbt().getInt("quanji");
+            int quan = getTag(stack);
             tooltip.add(Text.of("权："+quan));
             tooltip.add(Text.translatable("item.dabaosword.quanji.tooltip1").formatted(Formatting.BLUE));
             tooltip.add(Text.translatable("item.dabaosword.quanji.tooltip2").formatted(Formatting.BLUE));
@@ -214,7 +218,6 @@ public class SkillItem extends TrinketItem {
                     Text.literal(entity.getEntityName()).append(Text.literal("装备了 ").append(stack.getName()))
             ));
         }
-        super.onEquip(stack, slot, entity);
     }
 
     @Override
@@ -236,9 +239,8 @@ public class SkillItem extends TrinketItem {
             if (stack.getNbt() != null) {
                 if (stack.getNbt().contains("cooldown")) {
                     int cd = stack.getNbt().getInt("cooldown");
-                    if (world.getTime() % 20 == 0) {//世界时间除以20取余为0时，技能内置CD减一秒
-                        NbtCompound nbt = new NbtCompound();
-                        if (cd > 0) {cd--; nbt.putInt("cooldown", cd); stack.setNbt(nbt);}
+                    if (world.getTime() % 20 == 0) { //世界时间除以20取余为0时，技能内置CD减一秒
+                        if (cd > 0) cd--; setCD(stack, cd);
                     }
                 }
             }

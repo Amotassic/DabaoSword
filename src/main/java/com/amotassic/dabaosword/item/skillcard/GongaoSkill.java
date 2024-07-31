@@ -11,12 +11,10 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 
 import java.util.UUID;
 
-import static com.amotassic.dabaosword.util.ModTools.give;
-import static com.amotassic.dabaosword.util.ModTools.voice;
+import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class GongaoSkill extends SkillItem {
     public GongaoSkill(Settings settings) {super(settings);}
@@ -29,15 +27,14 @@ public class GongaoSkill extends SkillItem {
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
         if (!entity.getWorld().isClient) {
-            int extraHP = stack.getNbt() != null ? stack.getNbt().getInt("extraHP") : 0;
+            int extraHP = getTag(stack);
 
             gainMaxHp(entity, extraHP);
             if (entity.getWorld().getTime() % 6000 == 0) { // 每30s触发扣体力上限
                 if (entity instanceof PlayerEntity player) {
                     if (extraHP >= 5 && !player.isCreative() && !player.isSpectator()) {
                         give(player, new ItemStack(ModItems.GAIN_CARD, 2));
-                        NbtCompound nbt = new NbtCompound();
-                        nbt.putInt("extraHP", extraHP - 5); stack.setNbt(nbt);
+                        setTag(stack, extraHP - 5);
                         voice(player, Sounds.WEIZHONG);
                     }
                 }

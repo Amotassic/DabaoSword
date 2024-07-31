@@ -14,7 +14,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
@@ -64,36 +63,41 @@ public class PlayerInvScreenHandler extends ScreenHandler {
                     target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.getName(), target.getDisplayName())));
                     player.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.getName(), target.getDisplayName())));
                     selfStack.decrement(1);
-                    int cd = stack.getNbt() == null ? 0 : stack.getNbt().getInt("cooldown");
+                    int cd = getCD(stack);
                     if (player.getHealth() < player.getMaxHealth() && cd == 0 && new Random().nextFloat() < 0.5) {
                         player.heal(5); voice(player, Sounds.RECOVER);
                         player.sendMessage(Text.translatable("recover.tip").formatted(Formatting.GREEN), true);
-                        NbtCompound nbt = new NbtCompound(); nbt.putInt("cooldown", 30); stack.setNbt(nbt);
+                        setCD(stack, 30);
                     }
                 }
 
                 if (stack.getItem() == SkillCards.YIJI) {
-                    int i = stack.getNbt() == null ? 0 : stack.getNbt().getInt("yiji");
+                    int i = getTag(stack);
                     give(target, selfStack.copyWithCount(1));
                     target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.getName(), target.getDisplayName())));
                     player.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.getName(), target.getDisplayName())));
                     selfStack.decrement(1);
-                    NbtCompound nbt = new NbtCompound(); nbt.putInt("yiji", i - 1); stack.setNbt(nbt);
+                    setTag(stack, i - 1);
                     if (i - 1 == 0) closeGUI(player);
                 }
             }
 
             if (targetStack != ItemStack.EMPTY) {
 
+                if (stack.getItem() == SkillCards.GONGXIN) {
+                    targetStack.decrement(1);
+                    closeGUI(player);
+                }
+
                 if (stack.getItem() == SkillCards.ZHIHENG) {
-                    int z = stack.getNbt() == null ? 0 : stack.getNbt().getInt("zhi");
+                    int z = getTag(stack);
                     if (new Random().nextFloat() < 0.5) {voice(player, Sounds.ZHIHENG1);} else {voice(player, Sounds.ZHIHENG2);}
                     targetStack.decrement(1);
                     if (new Random().nextFloat() < 0.1) {
                         draw(player, 2);
                         player.sendMessage(Text.translatable("zhiheng.extra").formatted(Formatting.GREEN), true);
                     } else draw(player, 1);
-                    NbtCompound nbt = new NbtCompound(); nbt.putInt("zhi", z - 1); stack.setNbt(nbt);
+                    setTag(stack, z - 1);
                     if (z - 1 == 0) closeGUI(player);
                 }
 

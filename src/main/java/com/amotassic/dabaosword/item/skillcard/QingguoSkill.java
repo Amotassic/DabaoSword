@@ -6,7 +6,6 @@ import dev.emi.trinkets.api.SlotReference;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Hand;
 
 import java.util.Random;
@@ -16,14 +15,13 @@ import static com.amotassic.dabaosword.util.ModTools.*;
 public class QingguoSkill extends SkillItem {
     public QingguoSkill(Settings settings) {super(settings);}
 
-    private final NbtCompound nbt = new NbtCompound();
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
         if (!entity.getWorld().isClient && entity instanceof PlayerEntity player && noTieji(entity)) {
             ItemStack stack1 = player.getStackInHand(Hand.OFF_HAND);
-            int cd = stack.getNbt() == null ? 0 : stack.getNbt().getInt("cooldown");
+            int cd = getCD(stack);
             if (cd == 0 && !stack1.isEmpty() && nonBasic(stack1)) {
-                cd = 5; nbt.putInt("cooldown", cd); stack.setNbt(nbt);
+                setCD(stack, 5);
                 stack1.decrement(1);
                 give(player, ModItems.SHAN.getDefaultStack());
                 if (new Random().nextFloat() < 0.5) {voice(player, Sounds.QINGGUO1);} else {voice(player, Sounds.QINGGUO2);}

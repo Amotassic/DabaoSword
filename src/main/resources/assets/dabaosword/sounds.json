@@ -26,6 +26,60 @@
     ],
     "subtitle": "sounds.dabaosword.nahida"
   },
+  "shanzhuan1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/shanzhuan1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.shanzhuan"
+  },
+  "shanzhuan2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/shanzhuan2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.shanzhuan"
+  },
+  "zhijian1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/zhijian1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.zhijian"
+  },
+  "zhijian2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/zhijian2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.zhijian"
+  },
+  "gongxin1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/gongxin1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.gongxin"
+  },
+  "gongxin2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/gongxin2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.gongxin"
+  },
   "rende1": {
     "sounds": [
       {

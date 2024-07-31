@@ -224,9 +224,15 @@
   "item.dabaosword.rende.tooltip1": "主动技，你可以将任意手牌交给其他玩家",
   "item.dabaosword.rende.tooltip2": "然后你有概率回复5点生命值（回血CD 30s）",
   "recover.tip": "你回复了5点生命值",
+  "item.dabaosword.gongxin": "攻心",
+  "item.dabaosword.gongxin.tooltip": "主动技，你可以观看一名其他角色的手牌并弃置其中一张",
+  "gongxin.title": "攻心：观看并弃置对方的一张手牌",
 
   //"配音"
   "sounds.dabaosword.nahida": "纳西妲：所闻遍计",
+  "sounds.dabaosword.gongxin": "攻心：发动",
+  "sounds.dabaosword.zhijian": "直谏：发动",
+  "sounds.dabaosword.shanzhuan": "擅专：发动",
   "sounds.dabaosword.rende": "仁德：发动",
   "sounds.dabaosword.zhiheng": "制衡：发动",
   "sounds.dabaosword.buqu": "不屈：发动",

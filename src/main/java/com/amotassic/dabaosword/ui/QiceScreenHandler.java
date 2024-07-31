@@ -9,7 +9,6 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
@@ -46,7 +45,7 @@ public class QiceScreenHandler extends ScreenHandler {
             if (!player.isCreative()) player.getStackInHand(Hand.OFF_HAND).decrement(2);
             player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 1,2,false,false,false));
             ItemStack stack1 = trinketItem(SkillCards.QICE, player);
-            NbtCompound nbt = new NbtCompound();nbt.putInt("cooldown", 20);stack1.setNbt(nbt);
+            setCD(stack1, 20);
             if (new Random().nextFloat() < 0.5) {voice(player, Sounds.QICE1);} else {voice(player, Sounds.QICE2);}
         }
     }
