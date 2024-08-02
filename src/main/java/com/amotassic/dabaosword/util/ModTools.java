@@ -185,7 +185,7 @@ public class ModTools {
     }
 
     public static void setCD(ItemStack stack, int seconds) { //设置物品的内置冷却时间
-        NbtCompound nbt = new NbtCompound();
+        NbtCompound nbt = stack.getOrCreateNbt();
         nbt.putInt("cooldown", seconds);
         stack.setNbt(nbt);
     }
@@ -195,7 +195,7 @@ public class ModTools {
     }
 
     public static void setTag(ItemStack stack, int value) { //设置物品的标签的数量
-        NbtCompound nbt = new NbtCompound();
+        NbtCompound nbt = stack.getOrCreateNbt();
         nbt.putInt("tags", value);
         stack.setNbt(nbt);
     }

@@ -1,7 +1,9 @@
 package com.amotassic.dabaosword.client;
 
+import com.amotassic.dabaosword.command.InfoCommand;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.network.ServerNetworking;
+import com.amotassic.dabaosword.ui.FullInvHandledScreen;
 import com.amotassic.dabaosword.ui.PlayerInvHandledScreen;
 import com.amotassic.dabaosword.ui.QiceHandledScreen;
 import com.amotassic.dabaosword.ui.TaoluanHandledScreen;
@@ -26,6 +28,7 @@ public class DabaoSwordClient implements ClientModInitializer {
         HandledScreens.register(SkillCards.TAOLUAN_SCREEN_HANDLER, TaoluanHandledScreen::new);
         HandledScreens.register(SkillCards.QICE_SCREEN_HANDLER, QiceHandledScreen::new);
         HandledScreens.register(ServerNetworking.PLAYER_INV_SCREEN_HANDLER, PlayerInvHandledScreen::new);
+        HandledScreens.register(InfoCommand.FULL_INV_SCREEN_HANDLER, FullInvHandledScreen::new);
         SkillKeyBinds.initialize();
         WorldRenderEvents.BEFORE_DEBUG_RENDER.register(context -> {
             MinecraftClient client = MinecraftClient.getInstance();

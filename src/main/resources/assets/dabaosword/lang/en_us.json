@@ -6,8 +6,6 @@
   "dabaosword.draw.player": "You killed a player and drew two cards",
   "dabaosword.change_skill": "You can now change your skill",
   "dabaosword.change_skill2": "Place the skill you want to change to in your off-hand and right-click while sneaking to change.",
-  "info.item": " is equipped with the following items:",
-  "info.none": " has no skills or horses equipped",
   "item.dabaosword.gudingdao": "DabaoSword",
   "item.dabaosword.guding_dao": "DabaoSword",
   "item.dabaosword.gudingdao.tooltip": "Those who encroach upon the territory of Wu will surely be vanquished!",

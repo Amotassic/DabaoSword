@@ -38,6 +38,13 @@ public class LuoyiSkill extends SkillItem {
     }
 
     @Override
+    public void onUnequip(ItemStack stack, SlotReference slot, LivingEntity entity) {
+        if (!entity.getWorld().isClient){
+            gainStrength(entity,0);
+        }
+    }
+
+    @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         if (!world.isClient && !user.isSneaking()) {
             if (new Random().nextFloat() < 0.5) {voice(user, Sounds.LUOYI1);} else {voice(user, Sounds.LUOYI2);}

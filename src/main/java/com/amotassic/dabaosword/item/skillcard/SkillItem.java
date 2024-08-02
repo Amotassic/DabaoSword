@@ -5,10 +5,12 @@ import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketItem;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -213,11 +215,31 @@ public class SkillItem extends TrinketItem {
 
     @Override
     public void onEquip(ItemStack stack, SlotReference slot, LivingEntity entity) {
-        if (entity.getWorld() instanceof ServerWorld world) {
+        if (entity.getWorld() instanceof ServerWorld world && !equipped(stack)) {
             world.getPlayers().forEach(player -> player.sendMessage(
                     Text.literal(entity.getEntityName()).append(Text.literal("装备了 ").append(stack.getName()))
             ));
+            setEquipped(stack, true);
         }
+    }
+
+    @Override
+    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
+        if (!world.isClient && equipped(stack)) setEquipped(stack, false);
+    }
+
+    private boolean equipped(ItemStack stack) {
+        if (stack.getNbt() != null) {
+            return stack.getNbt().contains("equipped");
+        }
+        return false;
+    }
+
+    private void setEquipped(ItemStack stack, boolean equipped) {
+        if (equipped) {
+            NbtCompound nbt = stack.getOrCreateNbt(); nbt.putBoolean("equipped", true);
+            stack.setNbt(nbt);
+        } else if (stack.getNbt() != null) stack.getNbt().remove("equipped");
     }
 
     @Override

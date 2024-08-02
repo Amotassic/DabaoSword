@@ -91,10 +91,6 @@ public class ServerNetworking {
     public static void active(PlayerEntity user, ItemStack stack, PlayerEntity target) {
         if (!user.getWorld().isClient && !user.hasStatusEffect(ModItems.TIEJI)) {
 
-            if (stack.getItem() == SkillCards.LUOYI) {
-                openInv(user, target, Text.literal("玩家背包"), stack, true, true, 3);
-            }
-
             if (stack.getItem() == SkillCards.GONGXIN) {
                 int cd = getCD(stack);
                 if (cd > 0) user.sendMessage(Text.translatable("dabaosword.cooldown").formatted(Formatting.RED), true);

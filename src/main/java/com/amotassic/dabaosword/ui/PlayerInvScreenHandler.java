@@ -118,11 +118,6 @@ public class PlayerInvScreenHandler extends ScreenHandler {
                     targetStack.decrement(1);
                     closeGUI(player);
                 }
-
-                if (stack.getItem() == SkillCards.LUOYI) {
-                    give(player, targetStack.copyWithCount(1));
-                    targetStack.decrement(1);
-                }
             }
         }
     }
