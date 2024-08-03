@@ -13,6 +13,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 
 import static com.amotassic.dabaosword.network.ServerNetworking.openInv;
+import static com.amotassic.dabaosword.network.ServerNetworking.targetInv;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class DiscardItem extends CardItem {
@@ -37,7 +38,7 @@ public class DiscardItem extends CardItem {
                 if (!user.isCreative()) {stack.decrement(1);}
                 jizhi(user); benxi(user);
             } else {
-                openInv(user, target, Text.translatable("dabaosword.discard.title"), stack, true, false, 1);
+                openInv(user, target, Text.translatable("dabaosword.discard.title"), stack, targetInv(target, true, false, 1));
             }
             return ActionResult.SUCCESS;
         }

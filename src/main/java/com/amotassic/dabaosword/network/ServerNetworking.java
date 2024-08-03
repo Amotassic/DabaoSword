@@ -1,10 +1,10 @@
 package com.amotassic.dabaosword.network;
 
 import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.item.equipment.EquipmentItem;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.ui.PlayerInvScreenHandler;
-import com.amotassic.dabaosword.ui.QiceScreenHandler;
-import com.amotassic.dabaosword.ui.TaoluanScreenHandler;
+import com.amotassic.dabaosword.ui.SimpleMenuHandler;
 import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
 import dev.emi.trinkets.api.SlotReference;
@@ -41,12 +41,14 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 import static com.amotassic.dabaosword.item.card.GainCardItem.draw;
+import static com.amotassic.dabaosword.item.equipment.EquipmentItem.replaceEquip;
 import static com.amotassic.dabaosword.util.ModTools.*;
+import static dev.emi.trinkets.api.TrinketItem.equipItem;
 
 public class ServerNetworking {
     public static Identifier ACTIVE_SKILL = new Identifier("dabaosword:active_skill");
     public static Identifier ACTIVE_SKILL_TARGET = new Identifier("dabaosword:active_skill_target");
-    public static Item[] active_skills_with_target = {SkillCards.RENDE, SkillCards.YIJI, SkillCards.GONGXIN, SkillCards.LUOYI};
+    public static Item[] active_skills_with_target = {SkillCards.RENDE, SkillCards.YIJI, SkillCards.GONGXIN, SkillCards.ZHIJIAN};
     public static Item[] active_skills = {SkillCards.ZHIHENG, SkillCards.QICE, SkillCards.TAOLUAN, SkillCards.LUOSHEN, SkillCards.KUROU};
 
     public static void registerActiveSkillPacketHandler() {
@@ -91,23 +93,36 @@ public class ServerNetworking {
     public static void active(PlayerEntity user, ItemStack stack, PlayerEntity target) {
         if (!user.getWorld().isClient && !user.hasStatusEffect(ModItems.TIEJI)) {
 
+            if (stack.getItem() == SkillCards.ZHIJIAN) {
+                ItemStack itemStack = user.getMainHandStack();
+                if (itemStack.getItem() instanceof EquipmentItem && itemStack.getItem() != ModItems.CARD_PILE) {
+                    if (equipItem(target, itemStack)) {
+                        if (new Random().nextFloat() < 0.5) {voice(user, Sounds.ZHIJIAN1);} else {voice(user, Sounds.ZHIJIAN2);}
+                        draw(user, 1);
+                    } else if (replaceEquip(target, itemStack)) {
+                        if (new Random().nextFloat() < 0.5) {voice(user, Sounds.ZHIJIAN1);} else {voice(user, Sounds.ZHIJIAN2);}
+                        draw(user, 1);
+                    }
+                } else user.sendMessage(Text.translatable("zhijian.fail").formatted(Formatting.RED), true);
+            }
+
             if (stack.getItem() == SkillCards.GONGXIN) {
                 int cd = getCD(stack);
                 if (cd > 0) user.sendMessage(Text.translatable("dabaosword.cooldown").formatted(Formatting.RED), true);
                 else {
                     if (new Random().nextFloat() < 0.5) {voice(user, Sounds.GONGXIN1);} else {voice(user, Sounds.GONGXIN2);}
-                    openInv(user, target, Text.translatable("gongxin.title"), stack, false, false, 2);
+                    openInv(user, target, Text.translatable("gongxin.title"), stack, targetInv(target, false, false, 2));
                     setCD(stack, 30);
                 }
             }
 
             if (stack.getItem() == SkillCards.YIJI) {
                 int i = getTag(stack);
-                if (i > 0 ) openInv(user, target, true, Text.translatable("give_card.title", stack.getName()), stack, false, false, 2);
+                if (i > 0 ) openInv(user, target, Text.translatable("give_card.title", stack.getName()), stack, targetInv(user, false, false, 2));
             }
 
             if (stack.getItem() == SkillCards.RENDE) {
-                openInv(user, target, true, Text.translatable("give_card.title", stack.getName()), stack, false, false, 2);
+                openInv(user, target, Text.translatable("give_card.title", stack.getName()), stack, targetInv(user, false, false, 2));
             }
         }
 
@@ -118,7 +133,7 @@ public class ServerNetworking {
 
             if (stack.getItem() == SkillCards.ZHIHENG) {
                 int z = getTag(stack);
-                if (z > 0) openInv(user, user, Text.translatable("zhiheng.title"), stack, true, false, 2);
+                if (z > 0) openInv(user, user, Text.translatable("zhiheng.title"), stack, targetInv(user, true, false, 2));
                 else user.sendMessage(Text.translatable("zhiheng.fail").formatted(Formatting.RED), true);
             }
 
@@ -152,20 +167,33 @@ public class ServerNetworking {
                 ItemStack offStack = user.getStackInHand(Hand.OFF_HAND);
                 int cd = getCD(stack);
                 if (!offStack.isEmpty() && offStack.isIn(Tags.Items.CARD) && offStack.getCount() > 1) {
-                    if (cd == 0) openQiceScreen(user, stack);
+                    if (cd == 0) {
+
+                        ItemStack[] stacks = {new ItemStack(ModItems.BINGLIANG_ITEM), new ItemStack(ModItems.TOO_HAPPY_ITEM), new ItemStack(ModItems.DISCARD), new ItemStack(ModItems.FIRE_ATTACK), new ItemStack(ModItems.JIEDAO), new ItemStack(ModItems.JUEDOU), new ItemStack(ModItems.NANMAN), new ItemStack(ModItems.STEAL), new ItemStack(ModItems.TAOYUAN), new ItemStack(ModItems.TIESUO), new ItemStack(ModItems.WANJIAN), new ItemStack(ModItems.WUXIE), new ItemStack(ModItems.WUZHONG)};
+                        Inventory inventory = new SimpleInventory(20);
+                        for (var stack1 : stacks) inventory.setStack(Arrays.stream(stacks).toList().indexOf(stack1), stack1);
+
+                        openSimpleMenu(user, stack, inventory, Text.translatable("item.dabaosword.qice.screen"));
+                    }
                     else {user.sendMessage(Text.translatable("dabaosword.cooldown").formatted(Formatting.RED), true);}
                 } else {user.sendMessage(Text.translatable("item.dabaosword.qice.tip").formatted(Formatting.RED), true);}
             }
 
             if (stack.getItem() == SkillCards.TAOLUAN) {
-                if (user.getHealth() + 5 * count(user, Tags.Items.RECOVER) > 4.99) {openTaoluanScreen(user, stack);}
+                if (user.getHealth() + 5 * count(user, Tags.Items.RECOVER) > 4.99) {
+
+                    ItemStack[] stacks = {new ItemStack(ModItems.THUNDER_SHA), new ItemStack(ModItems.FIRE_SHA), new ItemStack(ModItems.SHAN), new ItemStack(ModItems.PEACH), new ItemStack(ModItems.JIU), new ItemStack(ModItems.BINGLIANG_ITEM), new ItemStack(ModItems.TOO_HAPPY_ITEM), new ItemStack(ModItems.DISCARD), new ItemStack(ModItems.FIRE_ATTACK), new ItemStack(ModItems.JIEDAO), new ItemStack(ModItems.JUEDOU), new ItemStack(ModItems.NANMAN), new ItemStack(ModItems.STEAL), new ItemStack(ModItems.TAOYUAN), new ItemStack(ModItems.TIESUO), new ItemStack(ModItems.WANJIAN), new ItemStack(ModItems.WUXIE), new ItemStack(ModItems.WUZHONG)};
+                    Inventory inventory = new SimpleInventory(20);
+                    for (var stack1 : stacks) inventory.setStack(Arrays.stream(stacks).toList().indexOf(stack1), stack1);
+
+                    openSimpleMenu(user, stack, inventory, Text.translatable("item.dabaosword.taoluan.screen"));
+                }
                 else {user.sendMessage(Text.translatable("item.dabaosword.taoluan.tip").formatted(Formatting.RED), true);}
             }
         }
     }
 
-    public static void openInv(PlayerEntity player, PlayerEntity target, Boolean openSelfInv, Text title, ItemStack stack, Boolean equip, Boolean armor, int cards) {
-        PlayerEntity openInvTarget = openSelfInv ? player : target; //查看谁的物品栏？如果无需其他玩家作为目标，则无需使用openSelfInv
+    public static void openInv(PlayerEntity player, PlayerEntity target, Text title, ItemStack stack, Inventory targetInv) {
         if (!player.getWorld().isClient) {
             player.openHandledScreen(new ExtendedScreenHandlerFactory() {
                 @Override
@@ -179,13 +207,11 @@ public class ServerNetworking {
 
                 @Override
                 public @NotNull ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                    return new PlayerInvScreenHandler(syncId, targetInv(openInvTarget, equip, armor, cards), target, stack);
+                    return new PlayerInvScreenHandler(syncId, targetInv, target, stack);
                 }
             });
         }
     }
-
-    public static void openInv(PlayerEntity player, PlayerEntity target, Text title, ItemStack stack, Boolean equip, Boolean armor, int cards) {openInv(player, target, false, title, stack, equip, armor, cards);}
 
     public static final ScreenHandlerType<PlayerInvScreenHandler> PLAYER_INV_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "player_inv", new ExtendedScreenHandlerType<>(PlayerInvScreenHandler::new));
 
@@ -235,7 +261,9 @@ public class ServerNetworking {
         return targetInv;
     }
 
-    public static void openQiceScreen(PlayerEntity player, ItemStack stack) {
+    public static final ScreenHandlerType<SimpleMenuHandler> SIMPLE_MENU_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "simple_menu", new ExtendedScreenHandlerType<>((syncId, inv, buf) -> new SimpleMenuHandler(syncId, buf)));
+
+    public static void openSimpleMenu(PlayerEntity player, ItemStack stack, Inventory inventory, Text title) {
         if (!player.getWorld().isClient) {
             player.openHandledScreen(new ExtendedScreenHandlerFactory() {
                 @Override
@@ -244,30 +272,11 @@ public class ServerNetworking {
                 }
 
                 @Override
-                public Text getDisplayName() {return Text.translatable("item.dabaosword.qice.screen");}
+                public Text getDisplayName() {return title;}
 
                 @Override
                 public @NotNull ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                    return new QiceScreenHandler(syncId, new SimpleInventory(18), stack);
-                }
-            });
-        }
-    }
-
-    public static void openTaoluanScreen(PlayerEntity player, ItemStack stack) {
-        if (!player.getWorld().isClient) {
-            player.openHandledScreen(new ExtendedScreenHandlerFactory() {
-                @Override
-                public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
-                    buf.writeItemStack(stack);
-                }
-
-                @Override
-                public Text getDisplayName() {return Text.translatable("item.dabaosword.taoluan.screen");}
-
-                @Override
-                public @NotNull ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                    return new TaoluanScreenHandler(syncId, stack, new SimpleInventory(18));
+                    return new SimpleMenuHandler(syncId, inventory, stack);
                 }
             });
         }

@@ -4,6 +4,7 @@ import com.amotassic.dabaosword.item.ModItems;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import dev.emi.trinkets.api.*;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -76,6 +77,13 @@ public class EquipmentItem extends TrinketItem {
         if (stack.getItem() == ModItems.CARD_PILE) {
             tooltip.add(Text.translatable("item.dabaosword.card_pile.tooltip"));
         }
+
+        if (stack.getItem() != ModItems.CARD_PILE) {
+            if(Screen.hasShiftDown()) {
+                tooltip.add(Text.translatable("equipment.tip1").formatted(Formatting.BOLD));
+                tooltip.add(Text.translatable("equipment.tip2").formatted(Formatting.BOLD));
+            } else tooltip.add(Text.translatable("dabaosword.shifttooltip"));
+        }
     }
 
     @Override
@@ -125,39 +133,30 @@ public class EquipmentItem extends TrinketItem {
         return TypedActionResult.pass(stack);
     }
 
-    private boolean replaceEquip(PlayerEntity player, ItemStack stack) {
-        var optional = TrinketsApi.getTrinketComponent(player);
-        Map<Integer, Map<String, TrinketInventory>> map = replaceSlot(player, stack);
-        if (!map.isEmpty() && stack.getItem() != ModItems.CARD_PILE && optional.isPresent()) {
-            TrinketComponent comp = optional.get();
-            for (var group : comp.getInventory().values()) {
-                if (map.values().stream().findFirst().get().equals(group)) {//如果饰品组相同，则继续下一步
-                    for (TrinketInventory inv : group.values()) {
-                        List<Integer> slots = map.keySet().stream().toList();
-                        if (!slots.isEmpty()) {
-                            Random r = new Random(); int index = r.nextInt(slots.size()); int i = slots.get(index);
-                            ItemStack newStack = stack.copy();
-                            inv.setStack(i, newStack); stack.setCount(0);
-                            return true;
-                        }
-                    }
-                }
-            }
+    public static boolean replaceEquip(PlayerEntity player, ItemStack stack) {
+        Map<Integer, TrinketInventory> map = replaceSlot(player, stack);
+        if (!map.isEmpty() && stack.getItem() != ModItems.CARD_PILE) {
+            List<Integer> slots = map.keySet().stream().toList();
+            Random r = new Random(); int index = r.nextInt(slots.size()); int i = slots.get(index);
+            ItemStack newStack = stack.copy();
+            map.values().stream().toList().get(index).setStack(i, newStack);
+            stack.setCount(0);
+            return true;
         }
         return false;
     }
 
-    private Map<Integer, Map<String, TrinketInventory>> replaceSlot(PlayerEntity player, ItemStack stack) {
-        Map<Integer, Map<String, TrinketInventory>> m = new HashMap<>();
+    private static Map<Integer, TrinketInventory> replaceSlot(PlayerEntity player, ItemStack stack) {
+        Map<Integer, TrinketInventory> m = new HashMap<>();
         var optional = TrinketsApi.getTrinketComponent(player);
         if (optional.isPresent()) {
             TrinketComponent comp = optional.get();
             for (var group : comp.getInventory().values()) {
                 for (TrinketInventory inv : group.values()) {
                     for (int i = 0; i < inv.size(); i++) {
-                        //如果对应装备栏的物品与待装备的物品有完全相同的标签，则添加到map中
+                        //如果对应装备栏的物品与待装备的物品有完全相同的标签，则将该饰品栏添加到map中
                         if (!inv.getStack(i).isEmpty() && inv.getStack(i).streamTags().toList().equals(stack.streamTags().toList())) {
-                            m.put(i, group);
+                            m.put(i, inv);
                         }
                     }
                 }

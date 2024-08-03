@@ -116,9 +116,7 @@ public class ModTools {
     }
     //播放语音
     public static void voice(@NotNull LivingEntity entity, SoundEvent sound) {
-        if (entity.getWorld() instanceof ServerWorld world) {
-            world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), sound, SoundCategory.PLAYERS, 2.0F, 1.0F);
-        }
+        voice(entity, sound, 2);
     }
     public static void voice(@NotNull LivingEntity entity, SoundEvent sound, float volume) {
         if (entity.getWorld() instanceof ServerWorld world) {

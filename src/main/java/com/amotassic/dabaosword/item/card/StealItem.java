@@ -10,6 +10,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 
 import static com.amotassic.dabaosword.network.ServerNetworking.openInv;
+import static com.amotassic.dabaosword.network.ServerNetworking.targetInv;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class StealItem extends CardItem {
@@ -26,7 +27,7 @@ public class StealItem extends CardItem {
                 removeItem(target, ModItems.WUXIE);
                 jizhi(target); benxi(target);
             } else {
-                openInv(user, target, Text.translatable("dabaosword.steal.title"), stack, true, true, 1);
+                openInv(user, target, Text.translatable("dabaosword.steal.title"), stack, targetInv(target, true, true, 1));
             }
             return ActionResult.SUCCESS;
         }
