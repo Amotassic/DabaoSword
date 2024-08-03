@@ -1,12 +1,8 @@
 package com.amotassic.dabaosword.item.skillcard;
 
-import com.amotassic.dabaosword.ui.QiceScreenHandler;
-import com.amotassic.dabaosword.ui.TaoluanScreenHandler;
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
-import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.util.Identifier;
 
 public class SkillCards {
@@ -21,7 +17,6 @@ public class SkillCards {
     public static final Item QINGGUO = register("qingguo", new QingguoSkill(new Item.Settings().maxCount(1)));
     public static final Item LUOYI = register("luoyi", new LuoyiSkill(new Item.Settings().maxCount(1)));
     public static final Item QICE = register("qice", new SkillItem(new Item.Settings().maxCount(1)));
-    public static final ScreenHandlerType<QiceScreenHandler> QICE_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "qice", new ExtendedScreenHandlerType<>(QiceScreenHandler::new));
     public static final Item QUANJI = register("quanji", new QuanjiSkill(new Item.Settings().maxCount(1)));
     public static final Item YIJI = register("yiji",new SkillItem(new Item.Settings().maxCount(1)));
     //蜀
@@ -42,11 +37,11 @@ public class SkillCards {
     public static final Item POJUN = register("pojun", new SkillItem(new Item.Settings().maxCount(1)));
     public static final Item QIXI = register("qixi", new QixiSkill(new Item.Settings().maxCount(1)));
     public static final Item ZHIHENG = register("zhiheng", new ZhihengSkill(new Item.Settings().maxCount(1)));
+    public static final Item ZHIJIAN = register("zhijian", new SkillItem(new Item.Settings().maxCount(1)));
     //群
     public static final Item LEIJI = register("leiji", new SkillItem(new Item.Settings().maxCount(1)));
     public static final Item LUANJI = register("luanji", new LuanjiSkill(new Item.Settings().maxCount(1)));
     public static final Item TAOLUAN = register("taoluan", new SkillItem(new Item.Settings().maxCount(1)));
-    public static final ScreenHandlerType<TaoluanScreenHandler> TAOLUAN_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "taoluan", new ExtendedScreenHandlerType<>(TaoluanScreenHandler::new));
     public static final Item MASHU = register("mashu", new SkillItem(new Item.Settings().maxCount(1)));
 
     public static final Item FEIYING = register("feiying", new SkillItem(new Item.Settings().maxCount(1)));

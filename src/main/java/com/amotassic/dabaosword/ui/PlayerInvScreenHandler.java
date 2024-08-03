@@ -53,8 +53,8 @@ public class PlayerInvScreenHandler extends ScreenHandler {
     @Override
     public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
         if (slotIndex >= 0 && slotIndex < 54) {
-            var targetStack = selected(target, slotIndex); //openSelfInv 为 false 时
-            var selfStack = selected(player, slotIndex); //openSelfInv 为 true 时
+            var targetStack = selected(target, slotIndex); //根据情况来判断需要选择自己的stack还是目标的stack
+            var selfStack = selected(player, slotIndex);
             if (selfStack != ItemStack.EMPTY) {
 
                 if (stack.getItem() == SkillCards.RENDE) {
@@ -177,15 +177,4 @@ public class PlayerInvScreenHandler extends ScreenHandler {
         player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 1,2,false,false,false));
     }
 
-    private void addPlayerInventorySlots(PlayerInventory playerInventory) {
-        int i;
-        for (i = 0; i < 3; ++i) {
-            for (int j = 0; j < 9; ++j) {
-                this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
-            }
-        }
-        for (i = 0; i < 9; ++i) {
-            this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
-        }
-    }
 }

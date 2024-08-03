@@ -204,6 +204,7 @@ public class ModItems {
                 entries.add(SkillCards.POJUN);
                 entries.add(SkillCards.QIXI);
                 entries.add(SkillCards.ZHIHENG);
+                entries.add(SkillCards.ZHIJIAN);
                 //群
                 entries.add(SkillCards.LEIJI);
                 entries.add(SkillCards.LUANJI);

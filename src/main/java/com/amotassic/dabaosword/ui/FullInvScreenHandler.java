@@ -1,7 +1,7 @@
 package com.amotassic.dabaosword.ui;
 
-import com.amotassic.dabaosword.command.InfoCommand;
 import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.network.ServerNetworking;
 import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketInventory;
 import dev.emi.trinkets.api.TrinketsApi;
@@ -32,7 +32,7 @@ public class FullInvScreenHandler extends ScreenHandler {
     }
 
     public FullInvScreenHandler(int syncId, PlayerInventory playerInv, Inventory inventory, LivingEntity target) {
-        super(InfoCommand.FULL_INV_SCREEN_HANDLER, syncId);
+        super(ServerNetworking.FULL_INV_SCREEN_HANDLER, syncId);
         this.inventory =inventory;
         this.target = target;
         this.editable = !inventory.getStack(61).isEmpty();
