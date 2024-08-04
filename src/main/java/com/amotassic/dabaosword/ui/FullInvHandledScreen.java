@@ -37,6 +37,6 @@ public class FullInvHandledScreen extends HandledScreen<FullInvScreenHandler> {
     protected void drawForeground(DrawContext context, int mouseX, int mouseY) {
         context.drawText(this.textRenderer, this.title, this.titleX, this.titleY, 0x404040, false);
         context.drawText(this.textRenderer, this.playerInventoryTitle, 17, 147, 0x404040, false);
-        context.drawText(this.textRenderer, Text.literal("饰品栏"), 8, 94, 0x404040, false);
+        context.drawText(this.textRenderer, Text.translatable("trinkets"), 8, 94, 0x404040, false);
     }
 }

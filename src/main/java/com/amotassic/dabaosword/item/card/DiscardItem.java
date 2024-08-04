@@ -38,7 +38,7 @@ public class DiscardItem extends CardItem {
                 if (!user.isCreative()) {stack.decrement(1);}
                 jizhi(user); benxi(user);
             } else {
-                openInv(user, target, Text.translatable("dabaosword.discard.title"), stack, targetInv(target, true, false, 1));
+                openInv(user, target, Text.translatable("dabaosword.discard.title", stack.getName()), stack, targetInv(target, true, false, 1));
             }
             return ActionResult.SUCCESS;
         }

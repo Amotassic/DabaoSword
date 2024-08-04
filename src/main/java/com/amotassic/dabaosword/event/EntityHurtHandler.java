@@ -28,6 +28,8 @@ import net.minecraft.util.collection.DefaultedList;
 import java.util.*;
 import java.util.stream.IntStream;
 
+import static com.amotassic.dabaosword.network.ServerNetworking.openInv;
+import static com.amotassic.dabaosword.network.ServerNetworking.targetInv;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class EntityHurtHandler implements EntityHurtCallback {
@@ -188,6 +190,22 @@ public class EntityHurtHandler implements EntityHurtCallback {
                     else give(player, new ItemStack(ModItems.GAIN_CARD));
                     if (new Random().nextFloat() < 0.5) {voice(player, Sounds.KUANGGU1);} else {voice(player, Sounds.KUANGGU2);}
                     player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 8,0,false,false,true));
+                }
+
+                //擅专：我言既出，谁敢不从！
+                if (hasTrinket(SkillCards.SHANZHUAN, player) && !player.hasStatusEffect(ModItems.COOLDOWN)) {
+                    var stack = trinketItem(SkillCards.SHANZHUAN, player);
+                    if (entity instanceof PlayerEntity target) openInv(player, target, Text.translatable("dabaosword.discard.title", stack.getName()), stack, targetInv(target, true, false, 1));
+                    else {
+                        if (new Random().nextFloat() < 0.5) {
+                            voice(player, Sounds.SHANZHUAN1);
+                            entity.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, StatusEffectInstance.INFINITE,1));
+                        } else {
+                            voice(player, Sounds.SHANZHUAN2);
+                            entity.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 5));
+                        }
+                        player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 5,0,false,false,true));
+                    }
                 }
 
                 if (player.getCommandTags().contains("px")) {

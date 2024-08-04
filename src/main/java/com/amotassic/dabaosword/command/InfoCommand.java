@@ -54,7 +54,7 @@ public class InfoCommand {
         var player = context.getSource().getPlayer();
         if (player != null) {
             if (entity instanceof LivingEntity target) openFullInv(player, target, editable);
-            else player.sendMessage(Text.literal("请选择一个生物实体！").formatted(Formatting.RED));
+            else player.sendMessage(Text.translatable("info.fail").formatted(Formatting.RED));
         }
         return 1;
     }

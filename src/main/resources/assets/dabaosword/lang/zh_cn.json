@@ -43,7 +43,7 @@
   "item.dabaosword.discard.tooltip1": "随机弃置对方的一张卡牌（会直接消失！）",
   "item.dabaosword.discard.tooltip2": "“你休得顺水推船，偏不许我过河拆桥”  ——康进之",
   "dabaosword.discard": "拆掉了你的 ",
-  "dabaosword.discard.title": "过河拆桥：弃置对方的一张牌",
+  "dabaosword.discard.title": "%1$s：弃置对方的一张牌",
   "effect.dabaosword.cooldown": "技能冷却",
   "effect.dabaosword.cooldown2": "独立冷却",
   "effect.dabaosword.invulnerable": "无敌",
@@ -130,6 +130,8 @@
   "effect.dabaosword.tieji": "非锁定技失效",
   "equipment.tip1": "装备后不可以直接脱下",
   "equipment.tip2": "手持新的装备牌右键使用，可替换掉旧的装备",
+  "info.fail": "请选择一个生物实体！",
+  "trinkets": "饰品栏",
 
   //"技能"
   "item.dabaosword.guose": "国色",
@@ -231,9 +233,13 @@
   "item.dabaosword.zhijian.tooltip1": "主动技，你可以将主手上的装备牌装备给其他玩家",
   "item.dabaosword.zhijian.tooltip2": "（可替换原装备）然后你摸一张牌",
   "zhijian.fail": "直谏：需要主手拿装备牌才能发动！",
+  "item.dabaosword.shanzhuan": "擅专",
+  "item.dabaosword.shanzhuan.tooltip1": "攻击命中后，你可以弃置对方的一张牌",
+  "item.dabaosword.shanzhuan.tooltip2": "然后其获得兵粮寸断或乐不思蜀效果",
 
   //"配音"
   "sounds.dabaosword.nahida": "纳西妲：所闻遍计",
+  "sounds.dabaosword.longdan": "龙胆：发动",
   "sounds.dabaosword.gongxin": "攻心：发动",
   "sounds.dabaosword.zhijian": "直谏：发动",
   "sounds.dabaosword.shanzhuan": "擅专：发动",

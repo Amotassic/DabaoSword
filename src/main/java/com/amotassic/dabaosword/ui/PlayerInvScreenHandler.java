@@ -84,6 +84,16 @@ public class PlayerInvScreenHandler extends ScreenHandler {
 
             if (targetStack != ItemStack.EMPTY) {
 
+                if (stack.getItem() == SkillCards.SHANZHUAN) {
+                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.SHANZHUAN1);} else {voice(player, Sounds.SHANZHUAN2);}
+                    if (targetStack.isIn(Tags.Items.BASIC_CARD)) target.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 5));
+                    else target.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, StatusEffectInstance.INFINITE,1));
+                    targetStack.decrement(1);
+                    target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("dabaosword.discard")).append(targetStack.getName()));
+                    player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 8,0,false,false,true));
+                    closeGUI(player);
+                }
+
                 if (stack.getItem() == SkillCards.GONGXIN) {
                     targetStack.decrement(1);
                     closeGUI(player);

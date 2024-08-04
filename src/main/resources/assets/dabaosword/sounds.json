@@ -26,6 +26,24 @@
     ],
     "subtitle": "sounds.dabaosword.nahida"
   },
+  "longdan1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/longdan1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.longdan"
+  },
+  "longdan2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/longdan2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.longdan"
+  },
   "shanzhuan1": {
     "sounds": [
       {

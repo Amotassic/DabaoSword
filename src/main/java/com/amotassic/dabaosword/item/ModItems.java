@@ -185,6 +185,7 @@ public class ModItems {
                 entries.add(SkillCards.LUOYI);
                 entries.add(SkillCards.QICE);
                 entries.add(SkillCards.QUANJI);
+                entries.add(SkillCards.SHANZHUAN);
                 entries.add(SkillCards.YIJI);
                 //蜀
                 entries.add(SkillCards.BENXI);

@@ -48,7 +48,7 @@ public class FullInvScreenHandler extends ScreenHandler {
                 addSlot(new Slot(inventory, j + i * 10 + 41, 8 + j * 18, 108 + i * 18));
             }
         }
-        addPlayerInventorySlots(playerInv);
+        if (playerInv.player != target) addPlayerInventorySlots(playerInv);
     }
 
     @Override
