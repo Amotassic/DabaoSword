@@ -194,6 +194,7 @@ public class ModItems {
                 entries.add(SkillCards.JIZHI);
                 entries.add(SkillCards.KUANGGU);
                 entries.add(SkillCards.LIEGONG);
+                entries.add(SkillCards.LONGDAN);
                 entries.add(SkillCards.RENDE);
                 entries.add(SkillCards.TIEJI);
                 //吴

@@ -236,6 +236,9 @@
   "item.dabaosword.shanzhuan": "擅专",
   "item.dabaosword.shanzhuan.tooltip1": "攻击命中后，你可以弃置对方的一张牌",
   "item.dabaosword.shanzhuan.tooltip2": "然后其获得兵粮寸断或乐不思蜀效果",
+  "item.dabaosword.longdan": "龙胆",
+  "item.dabaosword.longdan.tooltip1": "你可以将副手上的杀转化为闪",
+  "item.dabaosword.longdan.tooltip2": "闪→杀 桃→酒 酒→桃",
 
   //"配音"
   "sounds.dabaosword.nahida": "纳西妲：所闻遍计",
@@ -302,7 +305,7 @@
   "gamerule.give_card_interval": "牌堆发牌时间间隔",
   "gamerule.change_skill_interval": "更换技能时间间隔",
   "gamerule.enable_falling_attack": "启用下落攻击",
-  "enable_cards_limit": "启用牌堆发牌限制",
+  "gamerule.enable_cards_limit": "启用牌堆发牌限制",
 
   "trinkets.slot.chest.armor": "防具",
   "trinkets.slot.hand.weapon": "武器",
