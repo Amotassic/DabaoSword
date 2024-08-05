@@ -12,8 +12,7 @@ import net.minecraft.util.Identifier;
 
 import java.util.Objects;
 
-import static com.amotassic.dabaosword.util.ModTools.give;
-import static com.amotassic.dabaosword.util.ModTools.voice;
+import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class GongaoSkill extends SkillItem {
     public GongaoSkill(Settings settings) {super(settings);}
@@ -26,7 +25,7 @@ public class GongaoSkill extends SkillItem {
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
         if (!entity.getWorld().isClient) {
-            int extraHP = stack.get(ModItems.TAGS) != null ? Objects.requireNonNull(stack.get(ModItems.TAGS)) : 0;
+            int extraHP = getTag(stack);
 
             gainMaxHp(entity, extraHP);
             if (entity.getWorld().getTime() % 6000 == 0) { // 每30s触发扣体力上限

@@ -12,7 +12,7 @@ public class Tags {
         public static final TagKey<Item> CARD = of("card");
         public static final TagKey<Item> BASIC_CARD = of("basic_card");
         public static final TagKey<Item> ARMOURY_CARD = of("armoury_card");
-        public static final TagKey<Item> SKILL = of("skill");
+        public static final TagKey<Item> SKILL = of("skills");
         public static final TagKey<Item> SHA = of("sha");
         public static final TagKey<Item> RECOVER = of("recover");
         public static final TagKey<Item> LOCK_SKILL = of("lock_skill");

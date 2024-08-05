@@ -1,3 +1,3 @@
-kill @e[limit=1,distance=..1,nbt={Item:{id:"minecraft:bow",Count:1b}}]
+kill @e[limit=1,distance=..1,nbt={Item:{id:"minecraft:bow",count:1}}]
 kill @s
-summon minecraft:item ~ ~ ~ {Item:{id:"dabaosword:arrow_rain",Count:1b}}
+summon minecraft:item ~ ~ ~ {Item:{id:"dabaosword:arrow_rain",count:1}}

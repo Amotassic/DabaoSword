@@ -28,6 +28,8 @@ import net.minecraft.util.collection.DefaultedList;
 import java.util.*;
 import java.util.stream.IntStream;
 
+import static com.amotassic.dabaosword.network.ServerNetworking.openInv;
+import static com.amotassic.dabaosword.network.ServerNetworking.targetInv;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class EntityHurtHandler implements EntityHurtCallback {
@@ -64,11 +66,11 @@ public class EntityHurtHandler implements EntityHurtCallback {
                 if (player.isDead()) {
                     if (hasTrinket(SkillCards.BUQU, player)) {
                         ItemStack stack = trinketItem(SkillCards.BUQU, player);
-                        int c = stack.get(ModItems.TAGS) != null ? Objects.requireNonNull(stack.get(ModItems.TAGS)) : 0;
+                        int c = getTag(stack);
                         if (new Random().nextFloat() < 0.5) {voice(player, Sounds.BUQU1);} else {voice(player, Sounds.BUQU2);}
                         if (new Random().nextFloat() >= (float) c /13) {
                             player.sendMessage(Text.translatable("buqu.tip1").formatted(Formatting.GREEN).append(String.valueOf(c + 1)));
-                            stack.set(ModItems.TAGS, c + 1);
+                            setTag(stack, c + 1);
                             player.setHealth(5);
                         } else {
                             player.sendMessage(Text.translatable("buqu.tip2").formatted(Formatting.RED));
@@ -87,12 +89,8 @@ public class EntityHurtHandler implements EntityHurtCallback {
                 //权计技能：受到生物伤害获得权
                 if (hasTrinket(SkillCards.QUANJI, player) && source.getAttacker() instanceof LivingEntity) {
                     ItemStack stack = trinketItem(SkillCards.QUANJI, player);
-                    if (stack.get(ModItems.TAGS) == null) {
-                        stack.set(ModItems.TAGS, 1);
-                    } else {
-                        int quan = Objects.requireNonNull(stack.get(ModItems.TAGS));
-                        quan++; stack.set(ModItems.TAGS, quan);
-                    }
+                    int quan = getTag(stack);
+                    quan++; setTag(stack, quan);
                     if (new Random().nextFloat() < 0.5) {voice(player, Sounds.QUANJI1);} else {voice(player, Sounds.QUANJI2);}
                 }
 
@@ -165,7 +163,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
                     //功獒技能触发
                     if (hasTrinket(SkillCards.GONGAO, player)) {
                         ItemStack stack = trinketItem(SkillCards.GONGAO, player);
-                        int extraHP = stack.get(ModItems.TAGS) != null ? Objects.requireNonNull(stack.get(ModItems.TAGS)) : 0;
+                        int extraHP = getTag(stack);
                         stack.set(ModItems.TAGS, extraHP + 1);
                         player.setHealth(player.getHealth() + 1);
                         if (new Random().nextFloat() < 0.5) {voice(player, Sounds.GONGAO1);} else {voice(player, Sounds.GONGAO2);}
@@ -177,7 +175,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
                     //功獒技能触发
                     if (hasTrinket(SkillCards.GONGAO, player)) {
                         ItemStack stack = trinketItem(SkillCards.GONGAO, player);
-                        int extraHP = stack.get(ModItems.TAGS) != null ? Objects.requireNonNull(stack.get(ModItems.TAGS)) : 0;
+                        int extraHP = getTag(stack);
                         stack.set(ModItems.TAGS, extraHP + 5);
                         player.setHealth(player.getHealth() + 5);
                         if (new Random().nextFloat() < 0.5) {voice(player, Sounds.GONGAO1);} else {voice(player, Sounds.GONGAO2);}
@@ -192,6 +190,22 @@ public class EntityHurtHandler implements EntityHurtCallback {
                     else give(player, new ItemStack(ModItems.GAIN_CARD, 1));
                     if (new Random().nextFloat() < 0.5) {voice(player, Sounds.KUANGGU1);} else {voice(player, Sounds.KUANGGU2);}
                     player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 8,0,false,false,true));
+                }
+
+                //擅专：我言既出，谁敢不从！
+                if (hasTrinket(SkillCards.SHANZHUAN, player) && !player.hasStatusEffect(ModItems.COOLDOWN)) {
+                    var stack = trinketItem(SkillCards.SHANZHUAN, player);
+                    if (entity instanceof PlayerEntity target) openInv(player, target, Text.translatable("dabaosword.discard.title", stack.getName()), targetInv(target, true, false, 1, stack));
+                    else {
+                        if (new Random().nextFloat() < 0.5) {
+                            voice(player, Sounds.SHANZHUAN1);
+                            entity.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, StatusEffectInstance.INFINITE,1));
+                        } else {
+                            voice(player, Sounds.SHANZHUAN2);
+                            entity.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 5));
+                        }
+                        player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 5,0,false,false,true));
+                    }
                 }
 
                 if (player.getCommandTags().contains("px")) {
@@ -254,7 +268,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
                 //排异技能：攻击伤害增加
                 if (hasTrinket(SkillCards.QUANJI, player) && !player.getCommandTags().contains("quanji")) {
                     ItemStack stack = trinketItem(SkillCards.QUANJI, player);
-                    int quan = stack.get(ModItems.TAGS) == null ? 0 : Objects.requireNonNull(stack.get(ModItems.TAGS));
+                    int quan = getTag(stack);
                     if (quan > 0) {
                         player.addCommandTag("quanji");
                         entity.timeUntilRegen = 0; entity.damage(source, quan);
@@ -273,7 +287,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
                 //奔袭：命中后减少2手长，摸一张牌
                 if (hasTrinket(SkillCards.BENXI, player) && !player.getCommandTags().contains("benxi")) {
                     ItemStack stack = trinketItem(SkillCards.BENXI, player);
-                    int ben = stack.get(ModItems.TAGS) == null ? 0 : Objects.requireNonNull(stack.get(ModItems.TAGS));
+                    int ben = getTag(stack);
                     if (ben > 1) {
                         player.addCommandTag("benxi"); stack.set(ModItems.TAGS, ben - 2);
                         give(player, new ItemStack(ModItems.GAIN_CARD));

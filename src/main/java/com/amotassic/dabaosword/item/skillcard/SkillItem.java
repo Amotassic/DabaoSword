@@ -5,11 +5,15 @@ import com.amotassic.dabaosword.util.*;
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketItem;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -23,8 +27,7 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.amotassic.dabaosword.item.card.GiftBoxItem.selectRandomEntry;
-import static com.amotassic.dabaosword.util.ModTools.give;
-import static com.amotassic.dabaosword.util.ModTools.voice;
+import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class SkillItem extends TrinketItem {
     public SkillItem(Settings settings) {super(settings);}
@@ -32,22 +35,44 @@ public class SkillItem extends TrinketItem {
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
 
+        if (stack.getItem() == SkillCards.LONGDAN) {
+            tooltip.add(Text.translatable("item.dabaosword.longdan.tooltip1").formatted(Formatting.RED));
+            tooltip.add(Text.translatable("item.dabaosword.longdan.tooltip2").formatted(Formatting.RED));
+        }
+
+        if (stack.getItem() == SkillCards.SHANZHUAN) {
+            tooltip.add(Text.literal("CD: 8s"));
+            tooltip.add(Text.translatable("item.dabaosword.shanzhuan.tooltip1").formatted(Formatting.BLUE));
+            tooltip.add(Text.translatable("item.dabaosword.shanzhuan.tooltip2").formatted(Formatting.BLUE));
+        }
+
+        if (stack.getItem() == SkillCards.ZHIJIAN) {
+            tooltip.add(Text.translatable("item.dabaosword.zhijian.tooltip1").formatted(Formatting.GREEN));
+            tooltip.add(Text.translatable("item.dabaosword.zhijian.tooltip2").formatted(Formatting.GREEN));
+        }
+
+        if (stack.getItem() == SkillCards.GONGXIN) {
+            int cd = getCD(stack);
+            tooltip.add(Text.literal(cd == 0 ? "CD: 30s" : "CD: 30s   left: "+ cd +"s"));
+            tooltip.add(Text.translatable("item.dabaosword.gongxin.tooltip").formatted(Formatting.GREEN));
+        }
+
         if (stack.getItem() == SkillCards.RENDE) {
-            int cd = stack.get(ModItems.CD) == null ? 0 : Objects.requireNonNull(stack.get(ModItems.CD));
+            int cd = getCD(stack);
             tooltip.add(Text.literal(cd == 0 ? "CD: 30s" : "CD: 30s   left: "+ cd +"s"));
             tooltip.add(Text.translatable("item.dabaosword.rende.tooltip1").formatted(Formatting.RED));
             tooltip.add(Text.translatable("item.dabaosword.rende.tooltip2").formatted(Formatting.RED));
         }
 
         if (stack.getItem() == SkillCards.ZHIHENG) {
-            int z = stack.get(ModItems.TAGS) == null ? 0 : Objects.requireNonNull(stack.get(ModItems.TAGS));
+            int z = getTag(stack);
             tooltip.add(Text.literal("可用次数：" + z));
             tooltip.add(Text.translatable("item.dabaosword.zhiheng.tooltip1").formatted(Formatting.GREEN));
             tooltip.add(Text.translatable("item.dabaosword.zhiheng.tooltip2").formatted(Formatting.GREEN));
         }
 
         if (stack.getItem() == SkillCards.BUQU) {
-            int c = stack.get(ModItems.TAGS) == null ? 0 : Objects.requireNonNull(stack.get(ModItems.TAGS));
+            int c = getTag(stack);
             if(Screen.hasShiftDown()) {
                 tooltip.add(Text.translatable("item.dabaosword.buqu.tooltip1").formatted(Formatting.GREEN));
                 tooltip.add(Text.translatable("item.dabaosword.buqu.tooltip2").formatted(Formatting.GREEN));
@@ -85,7 +110,7 @@ public class SkillItem extends TrinketItem {
         }
 
         if (stack.getItem() == SkillCards.LUOSHEN) {
-            int cd = stack.get(ModItems.CD) == null ? 0 : Objects.requireNonNull(stack.get(ModItems.CD));
+            int cd = getCD(stack);
             tooltip.add(Text.literal(cd == 0 ? "CD: 30s" : "CD: 30s   left: "+ cd +"s"));
             tooltip.add(Text.translatable("item.dabaosword.luoshen.tooltip").formatted(Formatting.BLUE));
         }
@@ -101,44 +126,44 @@ public class SkillItem extends TrinketItem {
         }
 
         if (stack.getItem() == SkillCards.HUOJI) {
-            int cd = stack.get(ModItems.CD) == null ? 0 : Objects.requireNonNull(stack.get(ModItems.CD));
+            int cd = getCD(stack);
             tooltip.add(Text.literal(cd == 0 ? "CD: 15s" : "CD: 15s   left: "+ cd +"s"));
             tooltip.add(Text.translatable("item.dabaosword.huoji.tooltip").formatted(Formatting.RED));
         }
 
         if (stack.getItem() == SkillCards.LUANJI) {
-            int cd = stack.get(ModItems.CD) == null ? 0 : Objects.requireNonNull(stack.get(ModItems.CD));
+            int cd = getCD(stack);
             tooltip.add(Text.literal(cd == 0 ? "CD: 15s" : "CD: 15s   left: "+ cd +"s"));
             tooltip.add(Text.translatable("item.dabaosword.luanji.tooltip"));
         }
 
         if (stack.getItem() == SkillCards.QICE) {
-            int cd = stack.get(ModItems.CD) == null ? 0 : Objects.requireNonNull(stack.get(ModItems.CD));
+            int cd = getCD(stack);
             tooltip.add(Text.literal(cd == 0 ? "CD: 20s" : "CD: 20s   left: "+ cd +"s"));
             tooltip.add(Text.translatable("item.dabaosword.qice.tooltip").formatted(Formatting.BLUE));
         }
 
         if (stack.getItem() == SkillCards.KANPO) {
-            int cd = stack.get(ModItems.CD) == null ? 0 : Objects.requireNonNull(stack.get(ModItems.CD));
+            int cd = getCD(stack);
             tooltip.add(Text.literal(cd == 0 ? "CD: 10s" : "CD: 10s   left: "+ cd +"s"));
             tooltip.add(Text.translatable("item.dabaosword.kanpo.tooltip").formatted(Formatting.RED));
         }
 
         if (stack.getItem() == SkillCards.GUOSE) {
-            int cd = stack.get(ModItems.CD) == null ? 0 : Objects.requireNonNull(stack.get(ModItems.CD));
+            int cd = getCD(stack);
             tooltip.add(Text.literal(cd == 0 ? "CD: 15s" : "CD: 15s   left: "+ cd +"s"));
             tooltip.add(Text.translatable("item.dabaosword.guose.tooltip").formatted(Formatting.GREEN));
         }
 
         if (stack.getItem() == SkillCards.BENXI) {
-            int benxi = stack.get(ModItems.TAGS) == null ? 0 : Objects.requireNonNull(stack.get(ModItems.TAGS));
+            int benxi = getTag(stack);
             tooltip.add(Text.of("奔袭：" + benxi));
             tooltip.add(Text.translatable("item.dabaosword.benxi.tooltip1").formatted(Formatting.RED));
             tooltip.add(Text.translatable("item.dabaosword.benxi.tooltip2").formatted(Formatting.RED));
         }
 
         if (stack.getItem() == SkillCards.QUANJI) {
-            int quan = stack.get(ModItems.TAGS) == null ? 0 : Objects.requireNonNull(stack.get(ModItems.TAGS));
+            int quan = getTag(stack);
             tooltip.add(Text.of("权："+quan));
             tooltip.add(Text.translatable("item.dabaosword.quanji.tooltip1").formatted(Formatting.BLUE));
             tooltip.add(Text.translatable("item.dabaosword.quanji.tooltip2").formatted(Formatting.BLUE));
@@ -210,12 +235,31 @@ public class SkillItem extends TrinketItem {
 
     @Override
     public void onEquip(ItemStack stack, SlotReference slot, LivingEntity entity) {
-        if (entity.getWorld() instanceof ServerWorld world) {
+        if (entity.getWorld() instanceof ServerWorld world && !equipped(stack)) {
             world.getPlayers().forEach(player -> player.sendMessage(
                     Text.literal(entity.getNameForScoreboard()).append(Text.literal("装备了 ").append(stack.getName()))
             ));
+            setEquipped(stack, true);
         }
-        super.onEquip(stack, slot, entity);
+    }
+
+    @Override
+    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
+        if (!world.isClient && equipped(stack)) setEquipped(stack, false);
+    }
+
+    private boolean equipped(ItemStack stack) {
+        if (stack.get(DataComponentTypes.CUSTOM_DATA) != null) {
+            return Objects.requireNonNull(stack.get(DataComponentTypes.CUSTOM_DATA)).contains("equipped");
+        }
+        return false;
+    }
+
+    private void setEquipped(ItemStack stack, boolean equipped) {
+        if (equipped) {
+            NbtCompound nbt = new NbtCompound(); nbt.putBoolean("equipped", true);
+            stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
+        } else if (stack.get(DataComponentTypes.CUSTOM_DATA) != null) stack.remove(DataComponentTypes.CUSTOM_DATA);
     }
 
     @Override

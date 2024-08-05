@@ -6,7 +6,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 
-import java.util.Objects;
+import static com.amotassic.dabaosword.util.ModTools.getCD;
 
 public class FangtianWeapon extends EquipmentItem {
     public FangtianWeapon(Settings settings) {super(settings);}
@@ -14,7 +14,7 @@ public class FangtianWeapon extends EquipmentItem {
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
         if (entity.getWorld() instanceof ServerWorld world) {
-            int cd = stack.get(ModItems.CD) == null ? 0 : Objects.requireNonNull(stack.get(ModItems.CD));
+            int cd = getCD(stack);
             if (cd > 0 && world.getTime() % 20 == 0) cd--; stack.set(ModItems.CD, cd);
         }
         super.tick(stack, slot, entity);

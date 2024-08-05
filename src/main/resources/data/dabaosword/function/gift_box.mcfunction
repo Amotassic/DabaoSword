@@ -1,2 +1,2 @@
-kill @e[limit=1,distance=..1,nbt={Item:{id:"minecraft:emerald",Count:64b}}]
-summon minecraft:item ~ ~ ~ {Item:{id:"dabaosword:gift_box",Count:1b}}
+kill @e[limit=1,distance=..1,nbt={Item:{id:"minecraft:emerald",count:64}}]
+summon minecraft:item ~ ~ ~ {Item:{id:"dabaosword:gift_box",count:1}}

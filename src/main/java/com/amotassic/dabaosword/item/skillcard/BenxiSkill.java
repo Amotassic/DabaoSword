@@ -7,10 +7,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 
-import java.util.Objects;
-
-import static com.amotassic.dabaosword.util.ModTools.hasTrinket;
-import static com.amotassic.dabaosword.util.ModTools.noTieji;
+import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class BenxiSkill extends SkillItem {
     public BenxiSkill(Settings settings) {super(settings);}
@@ -18,16 +15,13 @@ public class BenxiSkill extends SkillItem {
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
         if (!entity.getWorld().isClient && entity instanceof PlayerEntity player && noLongHand(player) && noTieji(entity)) {
-            if (stack.get(ModItems.TAGS) == null) stack.set(ModItems.TAGS, 0);
-            else {
-                int benxi = Objects.requireNonNull(stack.get(ModItems.TAGS));
-                if (hasTrinket(ModItems.CHITU, player) && hasTrinket(SkillCards.MASHU, player)) {
-                    player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,benxi + 2,false,false,true));
-                } else if (hasTrinket(ModItems.CHITU, player) || hasTrinket(SkillCards.MASHU, player)) {
-                    player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,benxi + 1,false,false,true));
-                } else if (benxi != 0) {
-                    player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,benxi - 1,false,false,true));
-                }
+            int benxi = getTag(stack);
+            if (hasTrinket(ModItems.CHITU, player) && hasTrinket(SkillCards.MASHU, player)) {
+                player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,benxi + 2,false,false,true));
+            } else if (hasTrinket(ModItems.CHITU, player) || hasTrinket(SkillCards.MASHU, player)) {
+                player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,benxi + 1,false,false,true));
+            } else if (benxi != 0) {
+                player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,benxi - 1,false,false,true));
             }
         }
         super.tick(stack, slot, entity);

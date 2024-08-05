@@ -9,10 +9,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 
-import java.util.Objects;
-
-import static com.amotassic.dabaosword.util.ModTools.noTieji;
-import static com.amotassic.dabaosword.util.ModTools.viewAs;
+import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class HuojiSkill extends SkillItem {
 
@@ -22,9 +19,9 @@ public class HuojiSkill extends SkillItem {
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
         if (!entity.getWorld().isClient && entity instanceof PlayerEntity player && noTieji(entity)) {
             ItemStack stack1 = player.getStackInHand(Hand.OFF_HAND);
-            int cd = stack.get(ModItems.CD) == null ? 0 : Objects.requireNonNull(stack.get(ModItems.CD));
+            int cd = getCD(stack);
             if (cd == 0 && !stack1.isEmpty() && stack1.isIn(Tags.Items.BASIC_CARD)) {
-                stack.set(ModItems.CD, 15);
+                setCD(stack, 15);
                 viewAs(player, Tags.Items.BASIC_CARD, ModItems.FIRE_ATTACK, Sounds.HUOJI1, Sounds.HUOJI2);
             }
         }

@@ -9,10 +9,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 
-import java.util.Objects;
-
-import static com.amotassic.dabaosword.util.ModTools.noTieji;
-import static com.amotassic.dabaosword.util.ModTools.viewAs;
+import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class KanpoSkill extends SkillItem {
 
@@ -22,9 +19,9 @@ public class KanpoSkill extends SkillItem {
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
         if (!entity.getWorld().isClient && entity instanceof PlayerEntity player && noTieji(entity)) {
             ItemStack stack1 = player.getStackInHand(Hand.OFF_HAND);
-            int cd = stack.get(ModItems.CD) == null ? 0 : Objects.requireNonNull(stack.get(ModItems.CD));
+            int cd = getCD(stack);
             if (cd == 0 && !stack1.isEmpty() && stack1.isIn(Tags.Items.ARMOURY_CARD)) {
-                stack.set(ModItems.CD, 10);
+                setCD(stack, 10);
                 viewAs(player, Tags.Items.ARMOURY_CARD, ModItems.WUXIE, Sounds.KANPO1, Sounds.KANPO2);
             }
         }

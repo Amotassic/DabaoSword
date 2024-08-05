@@ -15,7 +15,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Pair;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 
@@ -70,8 +69,8 @@ public class PlayerDeathHandler implements PlayerDeathCallback {
 
             if (hasTrinket(SkillCards.BUQU, player)) {
                 ItemStack stack = trinketItem(SkillCards.BUQU, player);
-                int c = stack.get(ModItems.TAGS) != null ? Objects.requireNonNull(stack.get(ModItems.TAGS)) : 0;
-                if (c > 1) stack.set(ModItems.TAGS, (c+1)/2);
+                int c = getTag(stack);
+                if (c > 1) setTag(stack, (c+1)/2);
             }
         }
     }

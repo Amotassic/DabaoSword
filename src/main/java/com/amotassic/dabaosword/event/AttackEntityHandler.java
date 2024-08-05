@@ -20,7 +20,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Objects;
 import java.util.Random;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
@@ -70,9 +69,9 @@ public class AttackEntityHandler implements AttackEntityCallback {
                 if (hasTrinket(ModItems.FANGTIAN, player)) {
                     //方天画戟：打中生物后触发特效，给予CD和持续时间
                     ItemStack stack = trinketItem(ModItems.FANGTIAN, player);
-                    int cd = stack.get(ModItems.CD) == null ? 0 : Objects.requireNonNull(stack.get(ModItems.CD));
+                    int cd = getCD(stack);
                     if (cd == 0) {
-                        stack.set(ModItems.CD, 20);
+                        setCD(stack, 20);
                         player.sendMessage(Text.translatable("dabaosword.fangtian").formatted(Formatting.RED), true);
                     }
                 }

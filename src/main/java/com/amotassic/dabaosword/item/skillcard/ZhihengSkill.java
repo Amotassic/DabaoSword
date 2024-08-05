@@ -6,7 +6,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 
-import java.util.Objects;
+import static com.amotassic.dabaosword.util.ModTools.getTag;
 
 public class ZhihengSkill extends SkillItem {
     public ZhihengSkill(Settings settings) {super(settings);}
@@ -14,12 +14,9 @@ public class ZhihengSkill extends SkillItem {
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
         if (entity.getWorld() instanceof ServerWorld world) {
-            if (stack.get(ModItems.TAGS) == null) stack.set(ModItems.TAGS, 0);
-            else {
-                int z = Objects.requireNonNull(stack.get(ModItems.TAGS));
-                if (z < 10) {
-                    if (world.getTime() % 100 == 0) {z++; stack.set(ModItems.TAGS, z);}
-                }
+            int z = getTag(stack);
+            if (z < 10) {
+                if (world.getTime() % 100 == 0) {z++; stack.set(ModItems.TAGS, z);}
             }
         }
         super.tick(stack, slot, entity);

@@ -115,14 +115,12 @@ public class ModTools {
         return player.getInventory().getStack(getShaSlot(player));
     }
     //播放语音
-    public static void voice(@NotNull LivingEntity player, SoundEvent sound) {
-        if (player.getWorld() instanceof ServerWorld world) {
-            world.playSound(null, player.getX(), player.getY(), player.getZ(), sound, SoundCategory.PLAYERS, 2.0F, 1.0F);
-        }
+    public static void voice(@NotNull LivingEntity entity, SoundEvent sound) {
+        voice(entity, sound, 2);
     }
-    public static void voice(@NotNull LivingEntity player, SoundEvent sound, float volume) {
-        if (player.getWorld() instanceof ServerWorld world) {
-            world.playSound(null, player.getX(), player.getY(), player.getZ(), sound, SoundCategory.PLAYERS, volume, 1.0F);
+    public static void voice(@NotNull LivingEntity entity, SoundEvent sound, float volume) {
+        if (entity.getWorld() instanceof ServerWorld world) {
+            world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), sound, SoundCategory.PLAYERS, volume, 1.0F);
         }
     }
     //视为类技能方法
@@ -145,11 +143,10 @@ public class ModTools {
     public static void benxi(PlayerEntity player) {
         if (hasTrinket(SkillCards.BENXI, player)) {
             ItemStack stack = trinketItem(SkillCards.BENXI, player);
-            if (stack.getComponents().contains(ModItems.TAGS)) {
-                int benxi = Objects.requireNonNull(stack.get(ModItems.TAGS));
-                if (benxi < 5) {stack.set(ModItems.TAGS, benxi + 1);
-                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.BENXI1);} else {voice(player, Sounds.BENXI2);}
-                }
+            int benxi = getTag(stack);
+            if (benxi < 5) {
+                setTag(stack, benxi + 1);
+                if (new Random().nextFloat() < 0.5) {voice(player, Sounds.BENXI1);} else {voice(player, Sounds.BENXI2);}
             }
         }
     }
@@ -179,6 +176,22 @@ public class ModTools {
         if (item == null) return;
         item.resetPickupDelay();
         item.setOwner(player.getUuid());
+    }
+
+    public static int getCD(ItemStack stack) { //获取物品的内置冷却时间
+        return stack.get(ModItems.CD) == null ? 0 : Objects.requireNonNull(stack.get(ModItems.CD));
+    }
+
+    public static void setCD(ItemStack stack, int seconds) { //设置物品的内置冷却时间
+        stack.set(ModItems.CD, seconds);
+    }
+
+    public static int getTag(ItemStack stack) { //获取物品的标签的数量
+        return stack.get(ModItems.TAGS) == null ? 0 : Objects.requireNonNull(stack.get(ModItems.TAGS));
+    }
+
+    public static void setTag(ItemStack stack, int value) { //设置物品的标签的数量
+        stack.set(ModItems.TAGS, value);
     }
 
 }
