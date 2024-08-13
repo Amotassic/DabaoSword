@@ -239,9 +239,12 @@
   "item.dabaosword.longdan": "龙胆",
   "item.dabaosword.longdan.tooltip1": "你可以将副手上的杀转化为闪",
   "item.dabaosword.longdan.tooltip2": "闪→杀 桃→酒 酒→桃",
+  "item.dabaosword.let_me_cc": "让我康康",
+  "item.dabaosword.let_me_cc.tooltip": "让我看看你发育正不正常",
 
   //"配音"
   "sounds.dabaosword.nahida": "纳西妲：所闻遍计",
+  "sounds.dabaosword.letmecc": "杰哥：让我看看！",
   "sounds.dabaosword.longdan": "龙胆：发动",
   "sounds.dabaosword.gongxin": "攻心：发动",
   "sounds.dabaosword.zhijian": "直谏：发动",

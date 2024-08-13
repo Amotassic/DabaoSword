@@ -91,6 +91,8 @@ public class ModItems {
     public static final Item GIFTBOX = register("gift_box", new GiftBoxItem(new Item.Settings()));
     //BB机
     public static final Item BBJI = register("bbji", new BBjiItem(new Item.Settings().maxDamage(250)));
+    //让我康康
+    public static final Item LET_ME_CC = register("let_me_cc", new LetMeCCItem(new Item.Settings().maxCount(1)));
 
     //注册部分
     public static void register() {
@@ -216,5 +218,6 @@ public class ModItems {
 
                 entries.add(GIFTBOX);
                 entries.add(BBJI);
+                entries.add(LET_ME_CC);
             }).build();
 }

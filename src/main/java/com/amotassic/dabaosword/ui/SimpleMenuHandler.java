@@ -13,7 +13,6 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.util.Hand;
 
 import java.util.Objects;
 import java.util.Random;
@@ -46,7 +45,7 @@ public class SimpleMenuHandler extends ScreenHandler {
 
             if (stack.getItem() == SkillCards.QICE) {
                 give(player, itemStack);
-                if (!player.isCreative()) player.getStackInHand(Hand.OFF_HAND).decrement(2);
+                if (!player.isCreative()) player.getOffHandStack().decrement(2);
                 setCD(stack, 20);
                 if (new Random().nextFloat() < 0.5) {voice(player, Sounds.QICE1);} else {voice(player, Sounds.QICE2);}
                 closeGUI(player);

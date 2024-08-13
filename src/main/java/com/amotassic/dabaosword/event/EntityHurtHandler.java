@@ -165,7 +165,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
                         ItemStack stack = trinketItem(SkillCards.GONGAO, player);
                         int extraHP = getTag(stack);
                         extraHP++; setTag(stack, extraHP);
-                        player.setHealth(player.getHealth() + 1);
+                        player.heal(1);
                         if (new Random().nextFloat() < 0.5) {voice(player, Sounds.GONGAO1);} else {voice(player, Sounds.GONGAO2);}
                     }
                 }
@@ -177,7 +177,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
                         ItemStack stack = trinketItem(SkillCards.GONGAO, player);
                         int extraHP = getTag(stack);
                         setTag(stack, extraHP + 5);
-                        player.setHealth(player.getHealth() + 5);
+                        player.heal(5);
                         if (new Random().nextFloat() < 0.5) {voice(player, Sounds.GONGAO1);} else {voice(player, Sounds.GONGAO2);}
                     }
                 }

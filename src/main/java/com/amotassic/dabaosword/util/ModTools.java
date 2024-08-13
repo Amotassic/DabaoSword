@@ -75,12 +75,6 @@ public class ModTools {
         return stack.isIn(Tags.Items.CARD) && !stack.isIn(Tags.Items.BASIC_CARD);
     }
 
-    public static ItemStack stackWith(Item item, PlayerEntity player) {
-        PlayerInventory inv = player.getInventory();
-        int i = inv.getSlotWithStack(item.getDefaultStack());
-        return inv.getStack(i);
-    }
-
     //判断是否有含某个标签的物品
     public static Boolean hasItemInTag(TagKey<Item> tag, @NotNull PlayerEntity player) {
         return player.getInventory().contains(tag);
