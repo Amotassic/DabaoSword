@@ -89,9 +89,9 @@ public abstract class PlayerEntityMixin extends LivingEntity {
                     //虽然没有因为杀而触发闪，但如果攻击者的杀处于自动触发状态，则仍会消耗
                     if (source.getSource() instanceof PlayerEntity player1 && getShaSlot(player1) != -1) {
                         ItemStack stack = shaStack(player1);
-                        if (stack.getItem() == ModItems.SHA) voice(player, Sounds.SHA);
-                        if (stack.getItem() == ModItems.FIRE_SHA) voice(player, Sounds.SHA_FIRE);
-                        if (stack.getItem() == ModItems.THUNDER_SHA) voice(player, Sounds.SHA_THUNDER);
+                        if (stack.getItem() == ModItems.SHA) voice(player1, Sounds.SHA);
+                        if (stack.getItem() == ModItems.FIRE_SHA) voice(player1, Sounds.SHA_FIRE);
+                        if (stack.getItem() == ModItems.THUNDER_SHA) voice(player1, Sounds.SHA_THUNDER);
                         benxi(player1);
                         if (!player1.isCreative()) stack.decrement(1);
                     }

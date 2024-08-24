@@ -24,9 +24,7 @@ public class BingliangItem extends CardItem {
                 removeItem(player, ModItems.WUXIE);
                 jizhi(player); benxi(player);
                 voice(player, Sounds.WUXIE);
-            } else {
-                entity.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, StatusEffectInstance.INFINITE,1));
-            }
+            } else entity.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, StatusEffectInstance.INFINITE,1));
             if (!user.isCreative()) {stack.decrement(1);}
             jizhi(user); benxi(user);
             voice(user, Sounds.BINGLIANG);

@@ -55,6 +55,12 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Shadow public abstract boolean isDead();
 
+    @Shadow public abstract ItemStack getOffHandStack();
+
+    @Shadow public abstract boolean addStatusEffect(StatusEffectInstance effect);
+
+    @Unique LivingEntity living = (LivingEntity) (Object) this;
+
     public LivingEntityMixin(EntityType<?> type, World world) {super(type, world);}
 
     @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
@@ -85,6 +91,28 @@ public abstract class LivingEntityMixin extends Entity {
             }
 
             if (source.getAttacker() instanceof LivingEntity entity) {
+
+                if (!(living instanceof PlayerEntity)) {//livingEntity的闪的被动效果
+                    boolean hasShan = getOffHandStack().getItem() == ModItems.SHAN;
+                    boolean shouldShan = !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY) && hasShan && !hasStatusEffect(ModItems.COOLDOWN2) && !hasStatusEffect(ModItems.INVULNERABLE);
+                    if (shouldShan) {
+                        cir.setReturnValue(false);
+                        addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 20,0,false,false,false));
+                        addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 40,0,false,false,false));
+                        voice(living, Sounds.SHAN);
+                        getOffHandStack().decrement(1);
+                        //虽然没有因为杀而触发闪，但如果攻击者的杀处于自动触发状态，则仍会消耗
+                        if (source.getSource() instanceof PlayerEntity player1 && getShaSlot(player1) != -1) {
+                            ItemStack stack = shaStack(player1);
+                            if (stack.getItem() == ModItems.SHA) voice(player1, Sounds.SHA);
+                            if (stack.getItem() == ModItems.FIRE_SHA) voice(player1, Sounds.SHA_FIRE);
+                            if (stack.getItem() == ModItems.THUNDER_SHA) voice(player1, Sounds.SHA_THUNDER);
+                            benxi(player1);
+                            if (!player1.isCreative()) stack.decrement(1);
+                        }
+                    }
+                }
+
                 //翻面的生物（除了玩家）无法造成伤害
                 if (!(entity instanceof PlayerEntity) && entity.hasStatusEffect(ModItems.TURNOVER)) cir.setReturnValue(false);
 

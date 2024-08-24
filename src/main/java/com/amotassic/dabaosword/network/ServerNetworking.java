@@ -165,7 +165,7 @@ public class ServerNetworking {
             }
 
             if (stack.getItem() == SkillCards.QICE) {
-                ItemStack offStack = user.getStackInHand(Hand.OFF_HAND);
+                ItemStack offStack = user.getOffHandStack();
                 int cd = getCD(stack);
                 if (!offStack.isEmpty() && offStack.isIn(Tags.Items.CARD) && offStack.getCount() > 1) {
                     if (cd == 0) {

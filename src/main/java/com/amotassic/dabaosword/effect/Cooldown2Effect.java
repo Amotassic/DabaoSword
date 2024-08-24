@@ -25,15 +25,15 @@ public class Cooldown2Effect extends StatusEffect {
     public boolean canApplyUpdateEffect(int duration, int amplifier) {return true;}
     @Override
     public void applyUpdateEffect(LivingEntity entity, int amplifier) {
-        if (entity instanceof PlayerEntity player && player.getWorld() instanceof ServerWorld world) {
+        if (entity.getWorld() instanceof ServerWorld world) {
             int restTime = Objects.requireNonNull(entity.getStatusEffect(ModItems.COOLDOWN2)).getDuration();
             //一级效果被用于万箭齐发
             if (amplifier == 1) {
-                arrowRain(player, 3);
-                if (restTime <= 1) player.getCommandTags().remove("wanjian");
+                arrowRain(entity, 3);
+                if (restTime <= 1) entity.getCommandTags().remove("wanjian");
             }
 
-            if (amplifier == 3 && hasTrinket(SkillCards.LEIJI, player) && restTime >= 15) {//雷击的效果
+            if (amplifier == 3 && entity instanceof PlayerEntity player && hasTrinket(SkillCards.LEIJI, player) && restTime >= 15) {//雷击的效果
                 EntityType.LIGHTNING_BOLT.spawn(world, new BlockPos((int) player.getX(), (int) player.getY(), (int) player.getZ()),null);
             }
         }

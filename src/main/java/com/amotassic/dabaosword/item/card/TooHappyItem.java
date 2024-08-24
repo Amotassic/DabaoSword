@@ -23,8 +23,8 @@ public class TooHappyItem extends CardItem {
                     removeItem(player, ModItems.WUXIE);
                     jizhi(player); benxi(player);
                     voice(player, Sounds.WUXIE);
-                } else {player.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 5));}
-            } else {entity.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 15));}
+                } else player.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 5));
+            } else entity.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 15));
             if (!user.isCreative()) {stack.decrement(1);}
             jizhi(user); benxi(user);
             voice(user, Sounds.LEBU);
