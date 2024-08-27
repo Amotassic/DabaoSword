@@ -233,7 +233,7 @@ public class SkillItem extends TrinketItem {
     public void onEquip(ItemStack stack, SlotReference slot, LivingEntity entity) {
         if (entity.getWorld() instanceof ServerWorld world && !equipped(stack)) {
             world.getPlayers().forEach(player -> player.sendMessage(
-                    Text.literal(entity.getEntityName()).append(Text.literal("装备了 ").append(stack.getName()))
+                    Text.literal(entity.getEntityName()).append(Text.literal("装备了 ").append(stack.toHoverableText()))
             ));
             setEquipped(stack, true);
         }
@@ -293,5 +293,13 @@ public class SkillItem extends TrinketItem {
         ItemStack stack = new ItemStack(Registries.ITEM.get(selectedEntry.item()));
         if (stack.getItem() != Items.AIR) voice(player, Sounds.GIFTBOX,3);
         give(player, stack);
+    }
+
+    public static class ActiveSkill extends SkillItem {
+        public ActiveSkill(Settings settings) {super(settings);}
+    }
+
+    public static class ActiveSkillWithTarget extends SkillItem {
+        public ActiveSkillWithTarget(Settings settings) {super(settings);}
     }
 }

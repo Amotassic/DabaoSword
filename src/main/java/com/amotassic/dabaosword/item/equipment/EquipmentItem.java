@@ -90,7 +90,7 @@ public class EquipmentItem extends TrinketItem {
     public void onEquip(ItemStack stack, SlotReference slot, LivingEntity entity) {
         if (entity.getWorld() instanceof ServerWorld world) {
             world.getPlayers().forEach(player -> player.sendMessage(
-                    Text.literal(entity.getEntityName()).append(Text.literal("装备了 ").append(stack.getName()))
+                    Text.literal(entity.getEntityName()).append(Text.literal("装备了 ").append(stack.toHoverableText()))
             ));
         }
         super.onEquip(stack, slot, entity);

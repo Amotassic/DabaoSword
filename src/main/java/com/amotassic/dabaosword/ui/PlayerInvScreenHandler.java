@@ -2,7 +2,6 @@ package com.amotassic.dabaosword.ui;
 
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
-import com.amotassic.dabaosword.network.ServerNetworking;
 import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
 import dev.emi.trinkets.api.SlotReference;
@@ -39,7 +38,7 @@ public class PlayerInvScreenHandler extends ScreenHandler {
     }
 
     public PlayerInvScreenHandler(int syncId, Inventory inventory, PlayerEntity target, ItemStack stack) {
-        super(ServerNetworking.PLAYER_INV_SCREEN_HANDLER, syncId);
+        super(ModItems.PLAYER_INV_SCREEN_HANDLER, syncId);
         this.target = target;
         this.stack = stack;
         this.cards = inventory.getStack(54).getCount();

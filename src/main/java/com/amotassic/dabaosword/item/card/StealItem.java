@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.item.card;
 
+import com.amotassic.dabaosword.event.ActiveSkillHandler;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.LivingEntity;
@@ -9,8 +10,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 
-import static com.amotassic.dabaosword.network.ServerNetworking.openInv;
-import static com.amotassic.dabaosword.network.ServerNetworking.targetInv;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class StealItem extends CardItem {
@@ -27,7 +26,7 @@ public class StealItem extends CardItem {
                 removeItem(target, ModItems.WUXIE);
                 jizhi(target); benxi(target);
             } else {
-                openInv(user, target, Text.translatable("dabaosword.steal.title"), stack, targetInv(target, true, true, 1));
+                ActiveSkillHandler.openInv(user, target, Text.translatable("dabaosword.steal.title"), stack, ActiveSkillHandler.targetInv(target, true, true, 1));
             }
             return ActionResult.SUCCESS;
         }

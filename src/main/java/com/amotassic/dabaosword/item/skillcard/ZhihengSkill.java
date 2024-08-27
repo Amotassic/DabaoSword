@@ -8,7 +8,7 @@ import net.minecraft.server.world.ServerWorld;
 import static com.amotassic.dabaosword.util.ModTools.getTag;
 import static com.amotassic.dabaosword.util.ModTools.setTag;
 
-public class ZhihengSkill extends SkillItem {
+public class ZhihengSkill extends SkillItem.ActiveSkill {
     public ZhihengSkill(Settings settings) {super(settings);}
 
     @Override

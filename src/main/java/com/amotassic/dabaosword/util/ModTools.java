@@ -1,6 +1,7 @@
 package com.amotassic.dabaosword.util;
 
 import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.item.card.GainCardItem;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import dev.emi.trinkets.api.TrinketComponent;
@@ -23,35 +24,23 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 import java.util.Random;
 
-import static com.amotassic.dabaosword.item.card.GainCardItem.draw;
-
 public class ModTools {
-    public static boolean noTieji(LivingEntity entity) {
-        return !entity.hasStatusEffect(ModItems.TIEJI);
-    }
+    public static boolean noTieji(LivingEntity entity) {return !entity.hasStatusEffect(ModItems.TIEJI);}
 
     //判断是否有某个饰品
-    public static boolean hasTrinket(Item item, PlayerEntity player) {
+    public static boolean hasTrinket(Item item, LivingEntity entity) {
         if (item instanceof SkillItem) {
-            if (item.getDefaultStack().isIn(Tags.Items.LOCK_SKILL)) return trinketItem(item, player) != null;
-            else return trinketItem(item, player) != null && noTieji(player);}
-        return trinketItem(item, player) != null;
+            if (item.getDefaultStack().isIn(Tags.Items.LOCK_SKILL)) return trinketItem(item, entity) != null;
+            else return trinketItem(item, entity) != null && noTieji(entity);}
+        return trinketItem(item, entity) != null;
     }
 
-    public static ItemStack trinketItem(Item item, PlayerEntity player) {
-        Optional<TrinketComponent> optionalComponent = TrinketsApi.getTrinketComponent(player);
+    public static ItemStack trinketItem(Item item, LivingEntity entity) {
+        Optional<TrinketComponent> optionalComponent = TrinketsApi.getTrinketComponent(entity);
         if(optionalComponent.isEmpty()) return null;
 
         TrinketComponent component = optionalComponent.get();
         return component.getEquipped(item).stream().map(Pair::getRight).findFirst().orElse(null);
-    }
-
-    //判断是否有某些饰品（以数组形式判断）中的一个
-    public static boolean hasTrinkets(Item[] items, PlayerEntity player) {
-        for (Item item : items) {
-            if (trinketItem(item, player) != null) return true;
-        }
-        return false;
     }
 
     //判断玩家是否有某个物品
@@ -129,7 +118,7 @@ public class ModTools {
     //集智技能触发
     public static void jizhi(PlayerEntity player) {
         if (hasTrinket(SkillCards.JIZHI, player)) {
-            draw(player, 1);
+            GainCardItem.draw(player, 1);
             if (new Random().nextFloat() < 0.5) {voice(player, Sounds.JIZHI1);} else {voice(player, Sounds.JIZHI2);}
         }
     }

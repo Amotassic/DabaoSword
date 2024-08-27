@@ -2,7 +2,7 @@ package com.amotassic.dabaosword.event;
 
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
-import com.amotassic.dabaosword.util.EntityHurtCallback;
+import com.amotassic.dabaosword.event.callback.EntityHurtCallback;
 import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
 import dev.emi.trinkets.api.SlotReference;
@@ -28,8 +28,6 @@ import net.minecraft.util.collection.DefaultedList;
 import java.util.*;
 import java.util.stream.IntStream;
 
-import static com.amotassic.dabaosword.network.ServerNetworking.openInv;
-import static com.amotassic.dabaosword.network.ServerNetworking.targetInv;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class EntityHurtHandler implements EntityHurtCallback {
@@ -195,7 +193,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
                 //擅专：我言既出，谁敢不从！
                 if (hasTrinket(SkillCards.SHANZHUAN, player) && !player.hasStatusEffect(ModItems.COOLDOWN)) {
                     var stack = trinketItem(SkillCards.SHANZHUAN, player);
-                    if (entity instanceof PlayerEntity target) openInv(player, target, Text.translatable("dabaosword.discard.title", stack.getName()), stack, targetInv(target, true, false, 1));
+                    if (entity instanceof PlayerEntity target) ActiveSkillHandler.openInv(player, target, Text.translatable("dabaosword.discard.title", stack.getName()), stack, ActiveSkillHandler.targetInv(target, true, false, 1));
                     else {
                         if (new Random().nextFloat() < 0.5) {
                             voice(player, Sounds.SHANZHUAN1);
@@ -216,7 +214,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
             if (source.getSource() instanceof LivingEntity attacker) {
                 //古锭刀对没有装备的生物伤害增加 限定版翻倍
                 if (attacker.getMainHandStack().getItem() == ModItems.GUDINGDAO && !attacker.getCommandTags().contains("guding")) {
-                    if (noArmor || hasTrinket(SkillCards.POJUN, (PlayerEntity) attacker)) {
+                    if (noArmor || hasTrinket(SkillCards.POJUN, attacker)) {
                         attacker.addCommandTag("guding");
                         entity.timeUntilRegen = 0; entity.damage(source, amount);
                         attacker.getCommandTags().remove("guding");
@@ -243,7 +241,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
                     player.addCommandTag("sha");
                     if (stack.getItem() == ModItems.SHA) {
                         voice(player, Sounds.SHA);
-                        if (!(entity instanceof PlayerEntity && hasTrinket(ModItems.RATTAN_ARMOR, (PlayerEntity) entity))) {
+                        if (!hasTrinket(ModItems.RATTAN_ARMOR, entity)) {
                             entity.timeUntilRegen = 0; entity.damage(source, 5);
                         }
                     }

@@ -1,12 +1,22 @@
 package com.amotassic.dabaosword.item;
 
 import com.amotassic.dabaosword.effect.*;
+import com.amotassic.dabaosword.event.ActiveSkillHandler;
+import com.amotassic.dabaosword.event.AttackEntityHandler;
+import com.amotassic.dabaosword.event.EntityHurtHandler;
+import com.amotassic.dabaosword.event.PlayerEvents;
+import com.amotassic.dabaosword.event.callback.*;
 import com.amotassic.dabaosword.item.card.*;
 import com.amotassic.dabaosword.item.card.GiftBoxItem;
 import com.amotassic.dabaosword.item.equipment.*;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
+import com.amotassic.dabaosword.ui.FullInvScreenHandler;
+import com.amotassic.dabaosword.ui.PlayerInvScreenHandler;
+import com.amotassic.dabaosword.ui.SimpleMenuHandler;
 import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffect;
@@ -14,8 +24,10 @@ import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Rarity;
 
 public class ModItems {
     //摸牌
@@ -81,7 +93,7 @@ public class ModItems {
     //铁锁连环
     public static final Item TIESUO = register("tiesuo",new TiesuoItem(new Item.Settings()));
     //万箭齐发
-    public static final Item ARROW_RAIN = register("arrow_rain", new ArrowRainItem(new Item.Settings().maxDamage(50)));
+    public static final Item ARROW_RAIN = register("arrow_rain", new ArrowRainItem(new Item.Settings().maxDamage(50).rarity(Rarity.UNCOMMON)));
     public static final Item WANJIAN = register("wanjian", new WanjianItem(new Item.Settings()));
     //无懈可击
     public static final Item WUXIE = register("wuxie", new CardItem(new Item.Settings()));
@@ -97,6 +109,12 @@ public class ModItems {
     //注册部分
     public static void register() {
         Registry.register(Registries.ITEM_GROUP, new Identifier("dabaosword", "item_group"), DABAOSWORD_GROUP);
+        AttackEntityCallback.EVENT.register(new AttackEntityHandler());
+        EntityHurtCallback.EVENT.register(new EntityHurtHandler());
+        PlayerConnectCallback.EVENT.register(new PlayerEvents());
+        PlayerDeathCallback.EVENT.register(new PlayerEvents());
+        PlayerRespawnCallback.EVENT.register(new PlayerEvents());
+        ActiveSkillCallback.EVENT.register(new ActiveSkillHandler());
     }
 
     private static StatusEffect register(String id, StatusEffect entry) {
@@ -136,8 +154,6 @@ public class ModItems {
     private static Item register(String name,Item item){
         return Registry.register(Registries.ITEM, new Identifier("dabaosword", name), item);
     }
-
-    public static void registerItems() {}
 
     //物品组添加
     public static final ItemGroup DABAOSWORD_GROUP = FabricItemGroup.builder()
@@ -220,4 +236,10 @@ public class ModItems {
                 entries.add(BBJI);
                 entries.add(LET_ME_CC);
             }).build();
+
+    public static final ScreenHandlerType<SimpleMenuHandler> SIMPLE_MENU_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "simple_menu", new ExtendedScreenHandlerType<>((syncId, inv, buf) -> new SimpleMenuHandler(syncId, buf)));
+
+    public static final ScreenHandlerType<PlayerInvScreenHandler> PLAYER_INV_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "player_inv", new ExtendedScreenHandlerType<>(PlayerInvScreenHandler::new));
+
+    public static final ScreenHandlerType<FullInvScreenHandler> FULL_INV_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "full_inv", new ExtendedScreenHandlerType<>(FullInvScreenHandler::new));
 }

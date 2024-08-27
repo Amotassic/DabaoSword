@@ -2,7 +2,6 @@ package com.amotassic.dabaosword.ui;
 
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
-import com.amotassic.dabaosword.network.ServerNetworking;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
@@ -28,7 +27,7 @@ public class SimpleMenuHandler extends ScreenHandler {
     }
 
     public SimpleMenuHandler(int syncId, Inventory inventory, ItemStack stack) {
-        super(ServerNetworking.SIMPLE_MENU_HANDLER, syncId);
+        super(ModItems.SIMPLE_MENU_HANDLER, syncId);
         this.stack = stack;
         this.inventory = inventory;
         for (int i = 0; i < 2; ++i) {

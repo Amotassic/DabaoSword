@@ -2,7 +2,7 @@ package com.amotassic.dabaosword.mixin;
 
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
-import com.amotassic.dabaosword.util.EntityHurtCallback;
+import com.amotassic.dabaosword.event.callback.EntityHurtCallback;
 import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
 import net.minecraft.entity.*;
@@ -144,8 +144,8 @@ public abstract class LivingEntityMixin extends Entity {
                         player.addCommandTag("sha");
                         if (stack.getItem() == ModItems.SHA) {
                             voice(player, Sounds.SHA);
-                            if (!(livingEntity instanceof PlayerEntity && hasTrinket(ModItems.RATTAN_ARMOR, (PlayerEntity) livingEntity))) {
-                                livingEntity.timeUntilRegen = 0; livingEntity.damage(source, 5);
+                            if (!hasTrinket(ModItems.RATTAN_ARMOR, living)) {
+                                living.timeUntilRegen = 0; living.damage(source, 5);
                             }
                         }
                         if (stack.getItem() == ModItems.FIRE_SHA) voice(player, Sounds.SHA_FIRE);
@@ -204,9 +204,8 @@ public abstract class LivingEntityMixin extends Entity {
             }
         }
 
-        if (livingEntity instanceof MobEntity mob && mob.hasStatusEffect(ModItems.TURNOVER)) mob.setTarget(null);
+        if (living instanceof MobEntity mob && mob.hasStatusEffect(ModItems.TURNOVER)) mob.setTarget(null);
     }
-    @Unique LivingEntity livingEntity = (LivingEntity) (Object) this;
 
     @Unique
     boolean shouldSha(PlayerEntity player) {
@@ -225,8 +224,6 @@ public abstract class LivingEntityMixin extends Entity {
     @Inject(method = "modifyAppliedDamage", at = @At(value = "TAIL"), cancellable = true)
     protected void modifyAppliedDamage(DamageSource source, float amount, CallbackInfoReturnable<Float> cir) {
         //白银狮子减伤
-        if (!source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY) && source.getAttacker() instanceof LivingEntity && livingEntity instanceof PlayerEntity player && hasTrinket(ModItems.BAIYIN, player)) {
-            cir.setReturnValue(0.4f * amount);
-        }
+        if (!source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY) && source.getAttacker() instanceof LivingEntity && hasTrinket(ModItems.BAIYIN, living)) cir.setReturnValue(0.4f * amount);
     }
 }

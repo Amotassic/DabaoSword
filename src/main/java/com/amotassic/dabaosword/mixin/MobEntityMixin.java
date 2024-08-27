@@ -69,7 +69,7 @@ public abstract class MobEntityMixin extends LivingEntity {
     @Unique
     private void tryUseCard(ItemStack stack, LivingEntity target) {
         if (stack.getItem() == ModItems.SHA) {
-            if (!(target instanceof PlayerEntity && hasTrinket(ModItems.RATTAN_ARMOR, (PlayerEntity) target))) {
+            if (!hasTrinket(ModItems.RATTAN_ARMOR, target)) {
                 target.timeUntilRegen = 0; target.damage(mob.getDamageSources().mobAttack(mob), 5);
             }
             voice(mob, Sounds.SHA); stack.decrement(1);

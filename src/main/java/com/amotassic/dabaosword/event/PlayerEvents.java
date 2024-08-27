@@ -1,7 +1,11 @@
 package com.amotassic.dabaosword.event;
 
+import com.amotassic.dabaosword.event.callback.PlayerConnectCallback;
+import com.amotassic.dabaosword.event.callback.PlayerDeathCallback;
+import com.amotassic.dabaosword.event.callback.PlayerRespawnCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
+import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.util.*;
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketComponent;
@@ -10,6 +14,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.ClientConnection;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Pair;
@@ -20,7 +25,17 @@ import java.util.Random;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
 
-public class PlayerDeathHandler implements PlayerDeathCallback {
+public class PlayerEvents implements PlayerConnectCallback, PlayerDeathCallback, PlayerRespawnCallback {
+    @Override
+    public void onPlayerConnect(ClientConnection connection, ServerPlayerEntity player) {
+
+        if (!player.getCommandTags().contains("given_skill")) {
+            SkillItem.changeSkill(player);
+            player.addCommandTag("given_skill");
+        }
+
+    }
+
     @Override
     public void onDeath(ServerPlayerEntity player, DamageSource source) {
 
@@ -74,6 +89,20 @@ public class PlayerDeathHandler implements PlayerDeathCallback {
                     setTag(stack, (c+1)/2);
                 }
             }
+        }
+    }
+
+    @Override
+    public void onPlayerRespawn(ServerPlayerEntity oldPlayer, ServerPlayerEntity player) {
+        if (player.getWorld() instanceof ServerWorld world) {
+
+            boolean card = world.getGameRules().getBoolean(Gamerule.CLEAR_CARDS_AFTER_DEATH);
+            if (card) {
+                give(player, new ItemStack(ModItems.SHA));
+                give(player, new ItemStack(ModItems.SHAN));
+                give(player, new ItemStack(ModItems.PEACH));
+            }
+
         }
     }
 }

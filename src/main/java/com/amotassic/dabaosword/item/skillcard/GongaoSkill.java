@@ -30,7 +30,7 @@ public class GongaoSkill extends SkillItem {
             int extraHP = getTag(stack);
 
             gainMaxHp(entity, extraHP);
-            if (entity.getWorld().getTime() % 6000 == 0) { // 每30s触发扣体力上限
+            if (entity.getWorld().getTime() % 600 == 0) { // 每30s触发扣体力上限
                 if (entity instanceof PlayerEntity player) {
                     if (extraHP >= 5 && !player.isCreative() && !player.isSpectator()) {
                         give(player, new ItemStack(ModItems.GAIN_CARD, 2));
