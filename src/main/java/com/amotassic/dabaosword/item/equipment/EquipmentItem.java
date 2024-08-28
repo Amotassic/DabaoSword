@@ -1,8 +1,11 @@
 package com.amotassic.dabaosword.item.equipment;
 
+import com.amotassic.dabaosword.event.callback.CardDiscardCallback;
+import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import dev.emi.trinkets.TrinketSlot;
 import dev.emi.trinkets.api.*;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;
@@ -13,13 +16,16 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Equipment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -128,9 +134,37 @@ public class EquipmentItem extends TrinketItem {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
-        if (equipItem(user, stack)) return TypedActionResult.success(stack, world.isClient);
+        if (useEquip(user, stack)) return TypedActionResult.success(stack, world.isClient);
         if (replaceEquip(user, stack)) return TypedActionResult.success(stack, world.isClient);
         return TypedActionResult.pass(stack);
+    }
+
+    public static boolean useEquip(PlayerEntity user, ItemStack stack) {
+        var optional = TrinketsApi.getTrinketComponent(user);
+        if (optional.isPresent()) {
+            TrinketComponent comp = optional.get();
+            for (var group : comp.getInventory().values()) {
+                for (TrinketInventory inv : group.values()) {
+                    for (int i = 0; i < inv.size(); i++) {
+                        if (inv.getStack(i).isEmpty()) {
+                            SlotReference ref = new SlotReference(inv, i);
+                            if (TrinketSlot.canInsert(stack, ref, user)) {
+                                ItemStack newStack = stack.copy();
+                                inv.setStack(i, newStack);
+                                SoundEvent soundEvent = stack.getItem() instanceof Equipment eq ? eq.getEquipSound() : null;
+                                if (!stack.isEmpty() && soundEvent != null) {
+                                    user.emitGameEvent(GameEvent.EQUIP);
+                                    user.playSound(soundEvent, 1.0F, 1.0F);
+                                }
+                                CardUsePostCallback.EVENT.invoker().cardUsePost(user, stack, user);
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     public static boolean replaceEquip(PlayerEntity player, ItemStack stack) {
@@ -138,9 +172,11 @@ public class EquipmentItem extends TrinketItem {
         if (!map.isEmpty() && stack.getItem() != ModItems.CARD_PILE) {
             List<Integer> slots = map.keySet().stream().toList();
             Random r = new Random(); int index = r.nextInt(slots.size()); int i = slots.get(index);
+            ItemStack preStack = map.values().stream().toList().get(index).getStack(i);
+            CardDiscardCallback.EVENT.invoker().cardDiscard(player, preStack, preStack.getCount(), true);
             ItemStack newStack = stack.copy();
             map.values().stream().toList().get(index).setStack(i, newStack);
-            stack.setCount(0);
+            CardUsePostCallback.EVENT.invoker().cardUsePost(player, stack, player);
             return true;
         }
         return false;

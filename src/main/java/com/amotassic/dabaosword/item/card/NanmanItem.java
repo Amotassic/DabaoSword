@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.item.card;
 
+import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.EntityType;
@@ -50,8 +51,7 @@ public class NanmanItem extends CardItem {
             wolf3.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 20 * 20,1,false,false,false));
             wolf3.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 20 * 20,1,false,false,false));
 
-            if (!user.isCreative()) {user.getStackInHand(hand).decrement(1);}
-            jizhi(user); benxi(user);
+            CardUsePostCallback.EVENT.invoker().cardUsePost(user, user.getStackInHand(hand), null);
             voice(user, Sounds.NANMAN);
         }
         return TypedActionResult.success(user.getStackInHand(hand));

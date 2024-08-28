@@ -1,5 +1,7 @@
 package com.amotassic.dabaosword.mixin;
 
+import com.amotassic.dabaosword.event.callback.CardDiscardCallback;
+import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
@@ -39,7 +41,6 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
-import static com.amotassic.dabaosword.util.ModTools.benxi;
 
 @Mixin(MobEntity.class)
 public abstract class MobEntityMixin extends LivingEntity {
@@ -77,8 +78,7 @@ public abstract class MobEntityMixin extends LivingEntity {
 
         if (stack.getItem() == ModItems.BINGLIANG_ITEM) {
             if (target instanceof PlayerEntity player && hasItem(player, ModItems.WUXIE)) {
-                removeItem(player, ModItems.WUXIE);
-                jizhi(player); benxi(player);
+                CardUsePostCallback.EVENT.invoker().cardUsePost(player, getItem(player, ModItems.WUXIE), null);
                 voice(player, Sounds.WUXIE);
             } else target.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, StatusEffectInstance.INFINITE,1));
             voice(mob, Sounds.BINGLIANG); stack.decrement(1);
@@ -87,8 +87,7 @@ public abstract class MobEntityMixin extends LivingEntity {
         if (stack.getItem() == ModItems.TOO_HAPPY_ITEM) {
             if (target instanceof PlayerEntity player) {
                 if (hasItem(player, ModItems.WUXIE)) {
-                    removeItem(player, ModItems.WUXIE);
-                    jizhi(player); benxi(player);
+                    CardUsePostCallback.EVENT.invoker().cardUsePost(player, getItem(player, ModItems.WUXIE), null);
                     voice(player, Sounds.WUXIE);
                 } else player.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 5));
             } else target.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 15));
@@ -98,9 +97,8 @@ public abstract class MobEntityMixin extends LivingEntity {
         if (stack.getItem() == ModItems.DISCARD) {
             if (target instanceof PlayerEntity player) {//如果是玩家则弃牌
                 if (hasItem(player, ModItems.WUXIE)) {
+                    CardUsePostCallback.EVENT.invoker().cardUsePost(player, getItem(player, ModItems.WUXIE), null);
                     voice(player, Sounds.WUXIE);
-                    removeItem(player, ModItems.WUXIE);
-                    jizhi(player); benxi(player);
                     voice(mob, Sounds.GUOHE); stack.decrement(1);
                 } else {
                     List<ItemStack> candidate = new ArrayList<>();
@@ -109,17 +107,19 @@ public abstract class MobEntityMixin extends LivingEntity {
                     List<Integer> cardSlots = IntStream.range(0, inventory.size()).filter(j -> inventory.get(j).isIn(Tags.Items.CARD) || inventory.get(j).getItem() == ModItems.GAIN_CARD).boxed().toList();
                     for (Integer slot : cardSlots) {candidate.add(inventory.get(slot));}
                     //把饰品栏的卡牌添加到待选物品中
+                    int equip = 0; //用于标记装备区牌的数量
                     Optional<TrinketComponent> component = TrinketsApi.getTrinketComponent(player);
                     if(component.isPresent()) {
                         List<Pair<SlotReference, ItemStack>> allEquipped = component.get().getAllEquipped();
                         for(Pair<SlotReference, ItemStack> entry : allEquipped) {
-                            ItemStack stack1 = entry.getRight(); if(stack1.isIn(Tags.Items.CARD)) candidate.add(stack1);
+                            ItemStack stack1 = entry.getRight();
+                            if(stack1.isIn(Tags.Items.CARD)) candidate.add(stack1); equip++;
                         }
                     }
                     if(!candidate.isEmpty()) {
                         java.util.Random r = new java.util.Random(); int index = r.nextInt(candidate.size()); ItemStack chosen = candidate.get(index);
-                        player.sendMessage(Text.literal(mob.getEntityName()).append(Text.translatable("dabaosword.discard")).append(chosen.getName()));
-                        chosen.decrement(1);
+                        player.sendMessage(Text.literal(mob.getEntityName()).append(Text.translatable("dabaosword.discard")).append(chosen.toHoverableText()));
+                        CardDiscardCallback.EVENT.invoker().cardDiscard(player, chosen, 1, index > candidate.size() - equip);
                         voice(mob, Sounds.GUOHE); stack.decrement(1);
                     }
                 }
@@ -150,9 +150,8 @@ public abstract class MobEntityMixin extends LivingEntity {
             if (!stack1.isEmpty()) {
                 if (target instanceof PlayerEntity player) {
                     if (hasItem(player, ModItems.WUXIE)) {
+                        CardUsePostCallback.EVENT.invoker().cardUsePost(player, getItem(player, ModItems.WUXIE), null);
                         voice(player, Sounds.WUXIE);
-                        removeItem(player, ModItems.WUXIE);
-                        jizhi(player); benxi(player);
                     } else mob.setStackInHand(Hand.MAIN_HAND, stack1);
                 } else mob.setStackInHand(Hand.MAIN_HAND, stack1);
                 voice(mob, Sounds.JIEDAO);

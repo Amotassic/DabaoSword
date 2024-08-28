@@ -20,7 +20,7 @@ public class KanpoSkill extends SkillItem {
             int cd = getCD(stack);
             if (cd == 0 && !stack1.isEmpty() && nonBasic(stack1)) {
                 setCD(stack,10);
-                viewAs(player, Tags.Items.ARMOURY_CARD, ModItems.WUXIE, Sounds.KANPO1, Sounds.KANPO2);
+                HuojiSkill.viewAs(player, Tags.Items.ARMOURY_CARD, ModItems.WUXIE, Sounds.KANPO1, Sounds.KANPO2);
             }
         }
         super.tick(stack, slot, entity);

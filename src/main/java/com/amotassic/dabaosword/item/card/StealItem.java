@@ -1,6 +1,7 @@
 package com.amotassic.dabaosword.item.card;
 
 import com.amotassic.dabaosword.event.ActiveSkillHandler;
+import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.LivingEntity;
@@ -20,11 +21,9 @@ public class StealItem extends CardItem {
         if (entity instanceof PlayerEntity target && !user.getWorld().isClient && hand == Hand.MAIN_HAND) {
             if (hasItem(target, ModItems.WUXIE)) {
                 voice(target, Sounds.WUXIE);
+                CardUsePostCallback.EVENT.invoker().cardUsePost(target, getItem(target, ModItems.WUXIE), null);
                 voice(user, Sounds.SHUNSHOU);
-                if (!user.isCreative()) {stack.decrement(1);}
-                jizhi(user); benxi(user);
-                removeItem(target, ModItems.WUXIE);
-                jizhi(target); benxi(target);
+                CardUsePostCallback.EVENT.invoker().cardUsePost(user, stack, entity);
             } else {
                 ActiveSkillHandler.openInv(user, target, Text.translatable("dabaosword.steal.title"), stack, ActiveSkillHandler.targetInv(target, true, true, 1));
             }

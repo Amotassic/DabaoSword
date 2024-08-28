@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.item.card;
 
+import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireballEntity;
@@ -21,9 +22,8 @@ public class FireAttackItem extends CardItem {
             FireballEntity fireballEntity = new FireballEntity(world, user, momentum.getX(), momentum.getY() ,momentum.getZ(), 3);
             fireballEntity.setPosition(user.getX(), user.getBodyY(0.5) + 0.5, user.getZ());
             world.spawnEntity(fireballEntity);
-            if (!user.isCreative()) {user.getStackInHand(hand).decrement(1);}
-            jizhi(user); benxi(user);
             voice(user, Sounds.HUOGONG);
+            CardUsePostCallback.EVENT.invoker().cardUsePost(user, user.getStackInHand(hand), null);
         }
         return TypedActionResult.success(user.getStackInHand(hand));
     }

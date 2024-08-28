@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.mixin;
 
+import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.event.callback.EntityHurtCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
@@ -93,8 +94,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
                         if (stack.getItem() == ModItems.SHA) voice(player1, Sounds.SHA);
                         if (stack.getItem() == ModItems.FIRE_SHA) voice(player1, Sounds.SHA_FIRE);
                         if (stack.getItem() == ModItems.THUNDER_SHA) voice(player1, Sounds.SHA_THUNDER);
-                        benxi(player1);
-                        if (!player1.isCreative()) stack.decrement(1);
+                        CardUsePostCallback.EVENT.invoker().cardUsePost(player1, stack, player);
                     }
                 }
 
@@ -243,14 +243,13 @@ public abstract class PlayerEntityMixin extends LivingEntity {
     }
     @Unique
     void shan(PlayerEntity player, boolean bl) {
-        ItemStack stack = bl ? trinketItem(ModItems.BAGUA, player) : shanStack(player);
+        ItemStack stack = bl ? ItemStack.EMPTY : shanStack(player);
         int cd = bl ? 60 : 40;
         player.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 20,0,false,false,false));
         player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, cd,0,false,false,false));
         voice(player, Sounds.SHAN);
-        benxi(player);
+        CardUsePostCallback.EVENT.invoker().cardUsePost(player, stack, null);
         if (bl) player.sendMessage(Text.translatable("dabaosword.bagua"),true);
-        else stack.decrement(1);
     }
 
     @Unique

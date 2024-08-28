@@ -1,10 +1,7 @@
 package com.amotassic.dabaosword.item;
 
 import com.amotassic.dabaosword.effect.*;
-import com.amotassic.dabaosword.event.ActiveSkillHandler;
-import com.amotassic.dabaosword.event.AttackEntityHandler;
-import com.amotassic.dabaosword.event.EntityHurtHandler;
-import com.amotassic.dabaosword.event.PlayerEvents;
+import com.amotassic.dabaosword.event.*;
 import com.amotassic.dabaosword.event.callback.*;
 import com.amotassic.dabaosword.item.card.*;
 import com.amotassic.dabaosword.item.card.GiftBoxItem;
@@ -115,6 +112,8 @@ public class ModItems {
         PlayerDeathCallback.EVENT.register(new PlayerEvents());
         PlayerRespawnCallback.EVENT.register(new PlayerEvents());
         ActiveSkillCallback.EVENT.register(new ActiveSkillHandler());
+        CardUsePostCallback.EVENT.register(new CardEvents());
+        CardDiscardCallback.EVENT.register(new CardEvents());
     }
 
     private static StatusEffect register(String id, StatusEffect entry) {

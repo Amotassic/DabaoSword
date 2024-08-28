@@ -1,5 +1,7 @@
 package com.amotassic.dabaosword.ui;
 
+import com.amotassic.dabaosword.event.callback.CardDiscardCallback;
+import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.Sounds;
@@ -59,8 +61,8 @@ public class PlayerInvScreenHandler extends ScreenHandler {
                 if (stack.getItem() == SkillCards.RENDE) {
                     if (new Random().nextFloat() < 0.5) {voice(player, Sounds.RENDE1);} else {voice(player, Sounds.RENDE2);}
                     give(target, selfStack.copyWithCount(1));
-                    target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.getName(), target.getDisplayName())));
-                    player.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.getName(), target.getDisplayName())));
+                    target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.toHoverableText(), target.getDisplayName())));
+                    player.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.toHoverableText(), target.getDisplayName())));
                     selfStack.decrement(1);
                     int cd = getCD(stack);
                     if (player.getHealth() < player.getMaxHealth() && cd == 0 && new Random().nextFloat() < 0.5) {
@@ -73,8 +75,8 @@ public class PlayerInvScreenHandler extends ScreenHandler {
                 if (stack.getItem() == SkillCards.YIJI) {
                     int i = getTag(stack);
                     give(target, selfStack.copyWithCount(1));
-                    target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.getName(), target.getDisplayName())));
-                    player.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.getName(), target.getDisplayName())));
+                    target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.toHoverableText(), target.getDisplayName())));
+                    player.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.toHoverableText(), target.getDisplayName())));
                     selfStack.decrement(1);
                     setTag(stack, i - 1);
                     if (i - 1 == 0) closeGUI(player);
@@ -87,21 +89,21 @@ public class PlayerInvScreenHandler extends ScreenHandler {
                     if (new Random().nextFloat() < 0.5) {voice(player, Sounds.SHANZHUAN1);} else {voice(player, Sounds.SHANZHUAN2);}
                     if (targetStack.isIn(Tags.Items.BASIC_CARD)) target.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 5));
                     else target.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, StatusEffectInstance.INFINITE,1));
-                    targetStack.decrement(1);
-                    target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("dabaosword.discard")).append(targetStack.getName()));
+                    CardDiscardCallback.EVENT.invoker().cardDiscard(target, targetStack, 1, slotIndex < 4);
+                    target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("dabaosword.discard")).append(targetStack.toHoverableText()));
                     player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 8,0,false,false,true));
                     closeGUI(player);
                 }
 
                 if (stack.getItem() == SkillCards.GONGXIN) {
-                    targetStack.decrement(1);
+                    CardDiscardCallback.EVENT.invoker().cardDiscard(target, targetStack, 1, false);
                     closeGUI(player);
                 }
 
                 if (stack.getItem() == SkillCards.ZHIHENG) {
                     int z = getTag(stack);
                     if (new Random().nextFloat() < 0.5) {voice(player, Sounds.ZHIHENG1);} else {voice(player, Sounds.ZHIHENG2);}
-                    targetStack.decrement(1);
+                    CardDiscardCallback.EVENT.invoker().cardDiscard(player, targetStack, 1, slotIndex < 4);
                     if (new Random().nextFloat() < 0.1) {
                         draw(player, 2);
                         player.sendMessage(Text.translatable("zhiheng.extra").formatted(Formatting.GREEN), true);
@@ -112,19 +114,17 @@ public class PlayerInvScreenHandler extends ScreenHandler {
 
                 if (stack.getItem() == ModItems.STEAL) {
                     voice(player, Sounds.SHUNSHOU);
-                    if (!player.isCreative()) {stack.decrement(1);}
-                    jizhi(player); benxi(player);
-                    target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("dabaosword.steal")).append(targetStack.getName()));
+                    target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("dabaosword.steal")).append(targetStack.toHoverableText()));
                     give(player, targetStack.copyWithCount(1)); /*顺手：复制一个物品*/ targetStack.decrement(1);
+                    CardUsePostCallback.EVENT.invoker().cardUsePost(player, stack, target);
                     closeGUI(player);
                 }
 
                 if (stack.getItem() == ModItems.DISCARD) {
                     voice(player, Sounds.GUOHE);
-                    if (!player.isCreative()) {stack.decrement(1);}
-                    jizhi(player); benxi(player);
-                    target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("dabaosword.discard")).append(targetStack.getName()));
-                    targetStack.decrement(1);
+                    target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("dabaosword.discard")).append(targetStack.toHoverableText()));
+                    CardDiscardCallback.EVENT.invoker().cardDiscard(target, targetStack, 1, slotIndex < 4);
+                    CardUsePostCallback.EVENT.invoker().cardUsePost(player, stack, target);
                     closeGUI(player);
                 }
             }
@@ -156,7 +156,7 @@ public class PlayerInvScreenHandler extends ScreenHandler {
                 }
                 if (player.getOffHandStack().equals(itemStack)) return player.getOffHandStack();
             }
-        } else if (cards == 1) {
+        } else if (cards == 1 && slotIndex >= 8) {
             List<ItemStack> candidate = new ArrayList<>();
             DefaultedList<ItemStack> inventory = player.getInventory().main;
             List<Integer> cardSlots = IntStream.range(0, inventory.size()).filter(

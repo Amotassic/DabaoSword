@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.item.card;
 
+import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.Sounds;
@@ -26,8 +27,8 @@ public class ShanItem extends CardItem {
             int i = hasTrinket(SkillCards.LEIJI, user) ? 3 : 0;
             user.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 20,0,false,false,false));
             user.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 20,i,false,false,false));
-            voice(user, Sounds.SHAN); benxi(user);
-            if (!user.isCreative()) {user.getStackInHand(hand).decrement(1);}
+            CardUsePostCallback.EVENT.invoker().cardUsePost(user, user.getStackInHand(hand), null);
+            voice(user, Sounds.SHAN);
         }
         return TypedActionResult.success(user.getStackInHand(hand));
     }

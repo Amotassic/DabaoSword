@@ -34,9 +34,7 @@ import java.util.Random;
 import java.util.stream.IntStream;
 
 import static com.amotassic.dabaosword.item.card.GainCardItem.draw;
-import static com.amotassic.dabaosword.item.equipment.EquipmentItem.replaceEquip;
 import static com.amotassic.dabaosword.util.ModTools.*;
-import static dev.emi.trinkets.api.TrinketItem.equipItem;
 
 public class ActiveSkillHandler implements ActiveSkillCallback {
     @Override
@@ -108,10 +106,10 @@ public class ActiveSkillHandler implements ActiveSkillCallback {
             if (stack.getItem() == SkillCards.ZHIJIAN) {
                 ItemStack itemStack = user.getMainHandStack();
                 if (itemStack.getItem() instanceof EquipmentItem && itemStack.getItem() != ModItems.CARD_PILE) {
-                    if (equipItem(target, itemStack)) {
+                    if (EquipmentItem.useEquip(target, itemStack)) {
                         if (new Random().nextFloat() < 0.5) {voice(user, Sounds.ZHIJIAN1);} else {voice(user, Sounds.ZHIJIAN2);}
                         draw(user, 1);
-                    } else if (replaceEquip(target, itemStack)) {
+                    } else if (EquipmentItem.replaceEquip(target, itemStack)) {
                         if (new Random().nextFloat() < 0.5) {voice(user, Sounds.ZHIJIAN1);} else {voice(user, Sounds.ZHIJIAN2);}
                         draw(user, 1);
                     }

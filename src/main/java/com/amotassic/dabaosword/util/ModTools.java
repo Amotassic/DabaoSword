@@ -1,8 +1,6 @@
 package com.amotassic.dabaosword.util;
 
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.item.card.GainCardItem;
-import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketsApi;
@@ -17,12 +15,10 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.Hand;
 import net.minecraft.util.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
-import java.util.Random;
 
 public class ModTools {
     public static boolean noTieji(LivingEntity entity) {return !entity.hasStatusEffect(ModItems.TIEJI);}
@@ -45,18 +41,15 @@ public class ModTools {
 
     //判断玩家是否有某个物品
     public static boolean hasItem(@NotNull PlayerEntity player, @NotNull Item item) {
+        return getItem(player, item) != ItemStack.EMPTY;
+    }
+
+    public static ItemStack getItem(PlayerEntity player, Item item) {
         for (int i = 0; i < player.getInventory().size(); ++i) {
             ItemStack stack = player.getInventory().getStack(i);
-            if (stack.isEmpty() || stack.getItem() != item) continue;
-            return true;
+            if (stack.getItem() == item) return stack;
         }
-        return false;
-    }
-    //移除玩家的1个物品
-    public static void removeItem(@NotNull PlayerEntity player, @NotNull Item item) {
-        PlayerInventory inv = player.getInventory();
-        int i = inv.getSlotWithStack(item.getDefaultStack());
-        inv.removeStack(i, 1);
+        return ItemStack.EMPTY;
     }
 
     //判断是否是非基本牌
@@ -97,6 +90,7 @@ public class ModTools {
     public static ItemStack shaStack(@NotNull PlayerEntity player) {
         return player.getInventory().getStack(getShaSlot(player));
     }
+
     //播放语音
     public static void voice(@NotNull LivingEntity entity, SoundEvent sound) {
         voice(entity, sound, 2);
@@ -104,33 +98,6 @@ public class ModTools {
     public static void voice(@NotNull LivingEntity entity, SoundEvent sound, float volume) {
         if (entity.getWorld() instanceof ServerWorld world) {
             world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), sound, SoundCategory.PLAYERS, volume, 1.0F);
-        }
-    }
-    //视为类技能方法
-    public static void viewAs(@NotNull PlayerEntity player, TagKey<Item> tag, Item item, SoundEvent sound1, SoundEvent sound2) {
-        ItemStack stack = player.getStackInHand(Hand.OFF_HAND);
-        if (!stack.isEmpty() && stack.isIn(tag)) {
-            stack.decrement(1);
-            give(player, item.getDefaultStack());
-            if (new Random().nextFloat() < 0.5) {voice(player, sound1);} else {voice(player, sound2);}
-        }
-    }
-    //集智技能触发
-    public static void jizhi(PlayerEntity player) {
-        if (hasTrinket(SkillCards.JIZHI, player)) {
-            GainCardItem.draw(player, 1);
-            if (new Random().nextFloat() < 0.5) {voice(player, Sounds.JIZHI1);} else {voice(player, Sounds.JIZHI2);}
-        }
-    }
-    //奔袭技能触发
-    public static void benxi(PlayerEntity player) {
-        if (hasTrinket(SkillCards.BENXI, player)) {
-            ItemStack stack = trinketItem(SkillCards.BENXI, player);
-            int benxi = getTag(stack);
-            if (benxi < 5) {
-                benxi ++; setTag(stack, benxi);
-                if (new Random().nextFloat() < 0.5) {voice(player, Sounds.BENXI1);} else {voice(player, Sounds.BENXI2);}
-            }
         }
     }
 

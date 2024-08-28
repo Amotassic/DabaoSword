@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.mixin;
 
+import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.event.callback.EntityHurtCallback;
@@ -107,8 +108,7 @@ public abstract class LivingEntityMixin extends Entity {
                             if (stack.getItem() == ModItems.SHA) voice(player1, Sounds.SHA);
                             if (stack.getItem() == ModItems.FIRE_SHA) voice(player1, Sounds.SHA_FIRE);
                             if (stack.getItem() == ModItems.THUNDER_SHA) voice(player1, Sounds.SHA_THUNDER);
-                            benxi(player1);
-                            if (!player1.isCreative()) stack.decrement(1);
+                            CardUsePostCallback.EVENT.invoker().cardUsePost(player1, stack, living);
                         }
                     }
                 }
@@ -171,8 +171,8 @@ public abstract class LivingEntityMixin extends Entity {
                                 nearbyEntity.removeStatusEffect(StatusEffects.GLOWING);
                                 nearbyEntity.damage(source, amount);
                             }
-                        } benxi(player);
-                        if (!player.isCreative()) {stack.decrement(1);}
+                        }
+                        CardUsePostCallback.EVENT.invoker().cardUsePost(player, stack, living);
                     }
 
                     //绝情效果
@@ -214,8 +214,7 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(at = @At("TAIL"), method = "applyDamage", cancellable = true)
     private void onEntityHurt (final DamageSource source, float amount, CallbackInfo ci) {
-        ActionResult result = EntityHurtCallback.EVENT.invoker().hurtEntity((LivingEntity) (Object) this, source,
-                amount);
+        ActionResult result = EntityHurtCallback.EVENT.invoker().hurtEntity((LivingEntity) (Object) this, source, amount);
         if (result == ActionResult.FAIL) {
             ci.cancel();
         }

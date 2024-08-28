@@ -21,7 +21,7 @@ public class BingliangEffect extends StatusEffect {
             //清除玩家的牌
             if(amplifier == 1) {
                 if (hasItem(player, ModItems.GAIN_CARD)) {
-                    removeItem(player, ModItems.GAIN_CARD);
+                    getItem(player, ModItems.GAIN_CARD).decrement(1);
                     //将2级效果换成1级
                     player.removeStatusEffect(ModItems.BINGLIANG);
                     player.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, StatusEffectInstance.INFINITE));
@@ -29,7 +29,7 @@ public class BingliangEffect extends StatusEffect {
             }
             if (amplifier == 0) {
                 if (hasItem(player, ModItems.GAIN_CARD)) {
-                    removeItem(player, ModItems.GAIN_CARD);
+                    getItem(player, ModItems.GAIN_CARD).decrement(1);
                     player.removeStatusEffect(ModItems.BINGLIANG);
                 }
             }

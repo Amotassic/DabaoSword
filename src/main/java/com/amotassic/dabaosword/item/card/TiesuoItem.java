@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.item.card;
 
+import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -28,8 +29,7 @@ public class TiesuoItem extends CardItem {
             for (LivingEntity nearbyEntity : user.getWorld().getEntitiesByClass(LivingEntity.class, box, nearbyEntity -> !nearbyEntity.isGlowing())) {
                 nearbyEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, StatusEffectInstance.INFINITE, 0, false, true,false));
             }
-            if (!user.isCreative()) {stack.decrement(1);}
-            jizhi(user); benxi(user);
+            CardUsePostCallback.EVENT.invoker().cardUsePost(user, stack, entity);
             voice(user, Sounds.TIESUO);
             user.removeStatusEffect(StatusEffects.GLOWING);
         }

@@ -6,7 +6,12 @@ import com.amotassic.dabaosword.util.Tags;
 import dev.emi.trinkets.api.SlotReference;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.tag.TagKey;
+import net.minecraft.sound.SoundEvent;
+
+import java.util.Random;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
 
@@ -24,5 +29,14 @@ public class HuojiSkill extends SkillItem {
             }
         }
         super.tick(stack, slot, entity);
+    }
+
+    public static void viewAs(PlayerEntity player, TagKey<Item> tag, Item item, SoundEvent sound1, SoundEvent sound2) {
+        ItemStack stack = player.getOffHandStack();
+        if (!stack.isEmpty() && stack.isIn(tag)) {
+            stack.decrement(1);
+            give(player, item.getDefaultStack());
+            if (new Random().nextFloat() < 0.5) {voice(player, sound1);} else {voice(player, sound2);}
+        }
     }
 }

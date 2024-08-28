@@ -1,5 +1,7 @@
 package com.amotassic.dabaosword.event;
 
+import com.amotassic.dabaosword.event.callback.CardDiscardCallback;
+import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.event.callback.EntityHurtCallback;
@@ -123,17 +125,19 @@ public class EntityHurtHandler implements EntityHurtCallback {
                                 List<Integer> cardSlots = IntStream.range(0, inventory.size()).filter(j -> inventory.get(j).isIn(Tags.Items.CARD) || inventory.get(j).getItem() == ModItems.GAIN_CARD).boxed().toList();
                                 for (Integer slot : cardSlots) {candidate.add(inventory.get(slot));}
                                 //把饰品栏的卡牌添加到待选物品中
+                                int equip = 0; //用于标记装备区牌的数量
                                 Optional<TrinketComponent> component = TrinketsApi.getTrinketComponent(target);
                                 if(component.isPresent()) {
                                     List<Pair<SlotReference, ItemStack>> allEquipped = component.get().getAllEquipped();
                                     for(Pair<SlotReference, ItemStack> entry : allEquipped) {
-                                        ItemStack stack1 = entry.getRight(); if(stack1.isIn(Tags.Items.CARD)) candidate.add(stack1);
+                                        ItemStack stack1 = entry.getRight();
+                                        if(stack1.isIn(Tags.Items.CARD)) candidate.add(stack1); equip++;
                                     }
                                 }
                                 if(!candidate.isEmpty()) {
                                     Random r = new Random(); int index = r.nextInt(candidate.size()); ItemStack chosen = candidate.get(index);
-                                    target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("dabaosword.discard")).append(chosen.getName()));
-                                    chosen.decrement(1);
+                                    target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("dabaosword.discard")).append(chosen.toHoverableText()));
+                                    CardDiscardCallback.EVENT.invoker().cardDiscard(target, chosen, 1, index > candidate.size() - equip);
                                 }
                             } else {//如果来源不是玩家则随机弃置它的主副手物品和装备
                                 List<ItemStack> candidate = new ArrayList<>();
@@ -259,8 +263,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
                         }
                         world.spawnEntity(lightningEntity);
                     }
-                    benxi(player);
-                    if (!player.isCreative()) {stack.decrement(1);}
+                    CardUsePostCallback.EVENT.invoker().cardUsePost(player, stack, entity);
                 }
 
                 //排异技能：攻击伤害增加

@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.event;
 
+import com.amotassic.dabaosword.event.callback.CardDiscardCallback;
 import com.amotassic.dabaosword.event.callback.PlayerConnectCallback;
 import com.amotassic.dabaosword.event.callback.PlayerDeathCallback;
 import com.amotassic.dabaosword.event.callback.PlayerRespawnCallback;
@@ -38,7 +39,6 @@ public class PlayerEvents implements PlayerConnectCallback, PlayerDeathCallback,
 
     @Override
     public void onDeath(ServerPlayerEntity player, DamageSource source) {
-
         if (player.getWorld() instanceof ServerWorld world) {
             boolean card = world.getGameRules().getBoolean(Gamerule.CLEAR_CARDS_AFTER_DEATH);
             if (card) {
@@ -46,16 +46,8 @@ public class PlayerEvents implements PlayerConnectCallback, PlayerDeathCallback,
                 for (int i = 0; i < inv.size(); ++i) {
                     ItemStack stack = inv.getStack(i);
                     if (stack.isIn(Tags.Items.CARD) || stack.getItem() == ModItems.GAIN_CARD) {
-                        for (PlayerEntity player1 : world.getPlayers()) {//行殇技能触发
-                            if (hasTrinket(SkillCards.XINGSHANG, player1) && player1.distanceTo(player) <= 25 && player1 != player) {
-                                if (!player1.getCommandTags().contains("xingshang")) {
-                                    if (new Random().nextFloat() < 0.5) voice(player1, Sounds.XINGSHANG1); else voice(player1, Sounds.XINGSHANG2);
-                                }
-                                player1.addCommandTag("xingshang");
-                                give(player1, stack); break;
-                            }
-                        }
-                        inv.removeStack(i);
+                        //如果没有触发行殇，才触发事件（即在玩家死亡弃牌事件中，行殇有最高触发优先级）
+                        if (XingshangTrigger(player, stack)) CardDiscardCallback.EVENT.invoker().cardDiscard(player, stack, stack.getCount(), false);
                     }
                 }
 
@@ -65,16 +57,7 @@ public class PlayerEvents implements PlayerConnectCallback, PlayerDeathCallback,
                     for(Pair<SlotReference, ItemStack> entry : allEquipped) {
                         ItemStack stack = entry.getRight();
                         if(stack.isIn(Tags.Items.CARD)) {
-                            for (PlayerEntity player1 : world.getPlayers()) {//行殇技能触发
-                                if (hasTrinket(SkillCards.XINGSHANG, player1) && player1.distanceTo(player) <= 25 && player1 != player) {
-                                    if (!player1.getCommandTags().contains("xingshang")) {
-                                        if (new Random().nextFloat() < 0.5) voice(player1, Sounds.XINGSHANG1); else voice(player1, Sounds.XINGSHANG2);
-                                    }
-                                    player1.addCommandTag("xingshang");
-                                    give(player1, stack); break;
-                                }
-                            }
-                            stack.setCount(0);
+                            if (XingshangTrigger(player, stack)) CardDiscardCallback.EVENT.invoker().cardDiscard(player, stack, stack.getCount(), true);
                         }
                     }
                 }
@@ -90,6 +73,21 @@ public class PlayerEvents implements PlayerConnectCallback, PlayerDeathCallback,
                 }
             }
         }
+    }
+
+    private static boolean XingshangTrigger(PlayerEntity player, ItemStack stack) {
+        for (PlayerEntity player1 : player.getWorld().getPlayers()) {//行殇技能触发
+            if (hasTrinket(SkillCards.XINGSHANG, player1) && player1.distanceTo(player) <= 25 && player1 != player) {
+                if (!player1.getCommandTags().contains("xingshang")) {
+                    if (new Random().nextFloat() < 0.5) voice(player1, Sounds.XINGSHANG1); else voice(player1, Sounds.XINGSHANG2);
+                }
+                player1.addCommandTag("xingshang");
+                give(player1, stack.copy());
+                stack.setCount(0);
+                return false;
+            }
+        }//为了简便，触发行殇后返回false
+        return true;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.item.card;
 
+import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
@@ -33,8 +34,7 @@ public class JuedouItem extends CardItem {
         if (!user.getWorld().isClient && hand == Hand.MAIN_HAND && entity.isAlive()) {
             user.addCommandTag("juedou");
             if (entity instanceof PlayerEntity player && hasItem(player, ModItems.WUXIE)) {
-                removeItem(player, ModItems.WUXIE);
-                jizhi(player); benxi(player);
+                CardUsePostCallback.EVENT.invoker().cardUsePost(player, getItem(player, ModItems.WUXIE), null);
                 voice(player, Sounds.WUXIE);
             } else {
                 if (entity instanceof PlayerEntity target) {
@@ -42,10 +42,10 @@ public class JuedouItem extends CardItem {
                     int userSha = count(user, tag);
                     int targetSha = count(target, tag);
                     if (userSha >= targetSha) { target.timeUntilRegen = 0;
-                        target.addCommandTag("juedou");
                         target.damage(user.getDamageSources().sonicBoom(user),5f);
                         target.sendMessage(Text.literal(user.getEntityName()).append(Text.translatable("dabaosword.juedou2")));
-                    } else { user.timeUntilRegen = 0;
+                    } else { target.addCommandTag("juedou"); //防止决斗触发杀
+                        user.timeUntilRegen = 0;
                         user.damage(target.getDamageSources().sonicBoom(target),5f);
                         user.sendMessage(Text.translatable("dabaosword.juedou1"));
                         if (targetSha != 0) {
@@ -56,8 +56,7 @@ public class JuedouItem extends CardItem {
                 } else { entity.timeUntilRegen = 0;
                     entity.damage(user.getDamageSources().sonicBoom(user),5f);}
             }
-            if (!user.isCreative()) {stack.decrement(1);}
-            jizhi(user); benxi(user);
+            CardUsePostCallback.EVENT.invoker().cardUsePost(user, stack, entity);
             voice(user, Sounds.JUEDOU);
             return ActionResult.SUCCESS;
         }
