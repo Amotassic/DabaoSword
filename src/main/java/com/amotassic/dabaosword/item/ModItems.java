@@ -114,6 +114,7 @@ public class ModItems {
         ActiveSkillCallback.EVENT.register(new ActiveSkillHandler());
         CardUsePostCallback.EVENT.register(new CardEvents());
         CardDiscardCallback.EVENT.register(new CardEvents());
+        CardMoveCallback.EVENT.register(new CardEvents());
     }
 
     private static StatusEffect register(String id, StatusEffect entry) {

@@ -18,7 +18,7 @@ public interface ActiveSkillCallback {
      *
      * @param player The player trying to active skill
      * @param stack The active skill trinket itemstack
-     * @param target The target player. If no target, the player is targeted
+     * @param target The target player. If no target, the player is the target
      */
     void activeSkill(PlayerEntity player, ItemStack stack, PlayerEntity target);
 }

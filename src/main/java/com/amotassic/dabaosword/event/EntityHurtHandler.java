@@ -44,7 +44,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
                     ItemStack stack = stackInTag(Tags.Items.RECOVER, player);
                     if (stack.getItem() == ModItems.PEACH) voice(player, Sounds.RECOVER);
                     if (stack.getItem() == ModItems.JIU) voice(player, Sounds.JIU);
-                    stack.decrement(1);
+                    CardUsePostCallback.EVENT.invoker().cardUsePost(player, stack, player);
                 }
                 //最后将玩家的体力设置为 受伤前生命值 - 伤害值 + 回复量
                 player.setHealth(player.getHealth() - amount + 5 * need);
@@ -122,7 +122,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
                                 List<ItemStack> candidate = new ArrayList<>();
                                 //把背包中的卡牌添加到待选物品中
                                 DefaultedList<ItemStack> inventory = target.getInventory().main;
-                                List<Integer> cardSlots = IntStream.range(0, inventory.size()).filter(j -> inventory.get(j).isIn(Tags.Items.CARD) || inventory.get(j).getItem() == ModItems.GAIN_CARD).boxed().toList();
+                                List<Integer> cardSlots = IntStream.range(0, inventory.size()).filter(j -> isCard(inventory.get(j))).boxed().toList();
                                 for (Integer slot : cardSlots) {candidate.add(inventory.get(slot));}
                                 //把饰品栏的卡牌添加到待选物品中
                                 int equip = 0; //用于标记装备区牌的数量
@@ -135,7 +135,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
                                     }
                                 }
                                 if(!candidate.isEmpty()) {
-                                    Random r = new Random(); int index = r.nextInt(candidate.size()); ItemStack chosen = candidate.get(index);
+                                    int index = new Random().nextInt(candidate.size()); ItemStack chosen = candidate.get(index);
                                     target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("dabaosword.discard")).append(chosen.toHoverableText()));
                                     CardDiscardCallback.EVENT.invoker().cardDiscard(target, chosen, 1, index > candidate.size() - equip);
                                 }
@@ -145,7 +145,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
                                 if (!attacker.getOffHandStack().isEmpty()) candidate.add(attacker.getOffHandStack());
                                 for (ItemStack armor : attacker.getArmorItems()) {if (!armor.isEmpty()) candidate.add(armor);}
                                 if(!candidate.isEmpty()) {
-                                    Random r = new Random(); int index = r.nextInt(candidate.size()); ItemStack chosen = candidate.get(index);
+                                    int index = new Random().nextInt(candidate.size()); ItemStack chosen = candidate.get(index);
                                     chosen.decrement(1);
                                 }
                             }

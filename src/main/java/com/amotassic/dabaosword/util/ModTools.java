@@ -57,6 +57,11 @@ public class ModTools {
         return stack.isIn(Tags.Items.CARD) && !stack.isIn(Tags.Items.BASIC_CARD);
     }
 
+    //判断是否是卡牌，包含GAIN_CARD
+    public static boolean isCard(ItemStack stack) {
+        return stack.isIn(Tags.Items.CARD) || stack.getItem() == ModItems.GAIN_CARD;
+    }
+
     //判断是否有含某个标签的物品
     public static Boolean hasItemInTag(TagKey<Item> tag, @NotNull PlayerEntity player) {
         return player.getInventory().contains(tag);

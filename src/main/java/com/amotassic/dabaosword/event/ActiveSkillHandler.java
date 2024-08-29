@@ -1,6 +1,7 @@
 package com.amotassic.dabaosword.event;
 
 import com.amotassic.dabaosword.event.callback.ActiveSkillCallback;
+import com.amotassic.dabaosword.event.callback.CardMoveCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.equipment.EquipmentItem;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
@@ -106,6 +107,7 @@ public class ActiveSkillHandler implements ActiveSkillCallback {
             if (stack.getItem() == SkillCards.ZHIJIAN) {
                 ItemStack itemStack = user.getMainHandStack();
                 if (itemStack.getItem() instanceof EquipmentItem && itemStack.getItem() != ModItems.CARD_PILE) {
+                    CardMoveCallback.EVENT.invoker().cardMove(user, target, itemStack, itemStack.getCount(), CardMoveCallback.Type.INV_TO_EQUIP);
                     if (EquipmentItem.useEquip(target, itemStack)) {
                         if (new Random().nextFloat() < 0.5) {voice(user, Sounds.ZHIJIAN1);} else {voice(user, Sounds.ZHIJIAN2);}
                         draw(user, 1);
@@ -182,16 +184,14 @@ public class ActiveSkillHandler implements ActiveSkillCallback {
         }//4件盔甲占5~8格
 
         DefaultedList<ItemStack> targetInventory = target.getInventory().main;
-        List<Integer> cardSlots = IntStream.range(0, targetInventory.size()).filter(
-                        i -> targetInventory.get(i).isIn(Tags.Items.CARD) || targetInventory.get(i).getItem() == ModItems.GAIN_CARD)
-                .boxed().toList();
+        List<Integer> cardSlots = IntStream.range(0, targetInventory.size()).filter(i -> isCard(targetInventory.get(i))).boxed().toList();
         if (cards == 2 && !cardSlots.isEmpty()) {
             for(Integer i : cardSlots) {
                 targetInv.setStack(i + 9, targetInventory.get(i));
             }
         }//副手物品在第9格，其他背包中的物品依次排列
         ItemStack off = target.getOffHandStack();
-        if (cards == 2 && (off.isIn(Tags.Items.CARD) || off.getItem() == ModItems.GAIN_CARD)) targetInv.setStack(8, off);
+        if (cards == 2 && isCard(off)) targetInv.setStack(8, off);
         if (cards == 3) {
             for (ItemStack stack : targetInventory) {
                 if (!stack.isEmpty()) targetInv.setStack(targetInventory.indexOf(stack) + 9, stack);

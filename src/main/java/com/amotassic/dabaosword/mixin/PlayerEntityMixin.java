@@ -189,19 +189,15 @@ public abstract class PlayerEntityMixin extends LivingEntity {
                 }
             }
 
-            //马术和飞影的效果
+            int level1 = 0; int level2 = 0; //马术和飞影的效果
             if (shouldMashu(player)) {
-                if (hasTrinket(ModItems.CHITU, player) && hasTrinket(SkillCards.MASHU, player)) {
-                    player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,2,false,false,true));
-                } else if (hasTrinket(ModItems.CHITU, player) || hasTrinket(SkillCards.MASHU, player)) {
-                    player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,1,false,false,true));
-                }
+                if (hasTrinket(ModItems.CHITU, player)) level1++;
+                if (hasTrinket(SkillCards.MASHU, player)) level1++;
+                if (level1 > 0) player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,level1,false,false,true));
             }
-            if (hasTrinket(ModItems.DILU, player) && hasTrinket(SkillCards.FEIYING, player)) {
-                player.addStatusEffect(new StatusEffectInstance(ModItems.DEFEND, 10,2,false,false,true));
-            } else if (hasTrinket(ModItems.DILU, player) || hasTrinket(SkillCards.FEIYING, player)) {
-                player.addStatusEffect(new StatusEffectInstance(ModItems.DEFEND, 10,1,false,false,true));
-            }
+            if (hasTrinket(ModItems.DILU, player)) level2++;
+            if (hasTrinket(SkillCards.FEIYING, player)) level2++;
+            if (level2 > 0) player.addStatusEffect(new StatusEffectInstance(ModItems.DEFEND, 10,level2,false,false,true));
 
             if (this.getCommandTags().contains("px")) {
                 this.lastAttackedTicks = 1145;

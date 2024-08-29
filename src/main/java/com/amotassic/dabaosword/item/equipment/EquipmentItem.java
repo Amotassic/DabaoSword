@@ -171,7 +171,7 @@ public class EquipmentItem extends TrinketItem {
         Map<Integer, TrinketInventory> map = replaceSlot(player, stack);
         if (!map.isEmpty() && stack.getItem() != ModItems.CARD_PILE) {
             List<Integer> slots = map.keySet().stream().toList();
-            Random r = new Random(); int index = r.nextInt(slots.size()); int i = slots.get(index);
+            int index = new Random().nextInt(slots.size()); int i = slots.get(index);
             ItemStack preStack = map.values().stream().toList().get(index).getStack(i);
             CardDiscardCallback.EVENT.invoker().cardDiscard(player, preStack, preStack.getCount(), true);
             ItemStack newStack = stack.copy();

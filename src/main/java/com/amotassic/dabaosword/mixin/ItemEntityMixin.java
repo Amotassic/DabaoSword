@@ -1,7 +1,6 @@
 package com.amotassic.dabaosword.mixin;
 
-import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.util.Tags;
+import com.amotassic.dabaosword.util.ModTools;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,6 +18,6 @@ public abstract class ItemEntityMixin {
 
     @Inject(method = "tick", at = @At("HEAD"))
     public void tick(CallbackInfo ci) {
-        if (this.getStack().isIn(Tags.Items.CARD) || this.getStack().getItem() == ModItems.GAIN_CARD) this.resetPickupDelay();
+        if (ModTools.isCard(this.getStack())) this.resetPickupDelay();
     }
 }

@@ -1,6 +1,7 @@
 package com.amotassic.dabaosword.ui;
 
 import com.amotassic.dabaosword.event.callback.CardDiscardCallback;
+import com.amotassic.dabaosword.event.callback.CardMoveCallback;
 import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
@@ -60,10 +61,9 @@ public class PlayerInvScreenHandler extends ScreenHandler {
 
                 if (stack.getItem() == SkillCards.RENDE) {
                     if (new Random().nextFloat() < 0.5) {voice(player, Sounds.RENDE1);} else {voice(player, Sounds.RENDE2);}
-                    give(target, selfStack.copyWithCount(1));
                     target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.toHoverableText(), target.getDisplayName())));
                     player.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.toHoverableText(), target.getDisplayName())));
-                    selfStack.decrement(1);
+                    CardMoveCallback.EVENT.invoker().cardMove(player, target, selfStack, 1, CardMoveCallback.Type.INV_TO_INV);
                     int cd = getCD(stack);
                     if (player.getHealth() < player.getMaxHealth() && cd == 0 && new Random().nextFloat() < 0.5) {
                         player.heal(5); voice(player, Sounds.RECOVER);
@@ -74,10 +74,9 @@ public class PlayerInvScreenHandler extends ScreenHandler {
 
                 if (stack.getItem() == SkillCards.YIJI) {
                     int i = getTag(stack);
-                    give(target, selfStack.copyWithCount(1));
                     target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.toHoverableText(), target.getDisplayName())));
                     player.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.toHoverableText(), target.getDisplayName())));
-                    selfStack.decrement(1);
+                    CardMoveCallback.EVENT.invoker().cardMove(player, target, selfStack, 1, CardMoveCallback.Type.INV_TO_INV);
                     setTag(stack, i - 1);
                     if (i - 1 == 0) closeGUI(player);
                 }
@@ -115,7 +114,11 @@ public class PlayerInvScreenHandler extends ScreenHandler {
                 if (stack.getItem() == ModItems.STEAL) {
                     voice(player, Sounds.SHUNSHOU);
                     target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("dabaosword.steal")).append(targetStack.toHoverableText()));
-                    give(player, targetStack.copyWithCount(1)); /*顺手：复制一个物品*/ targetStack.decrement(1);
+                    CardMoveCallback.Type type = slotIndex < 4 ? CardMoveCallback.Type.EQUIP_TO_INV : CardMoveCallback.Type.INV_TO_INV;
+                    if (isCard(targetStack)) CardMoveCallback.EVENT.invoker().cardMove(target, player, targetStack, 1, type);
+                    //如果选择的物品是卡牌才触发事件
+                    else {give(player, targetStack.copyWithCount(1)); /*顺手：复制一个物品*/
+                        targetStack.decrement(1);}
                     CardUsePostCallback.EVENT.invoker().cardUsePost(player, stack, target);
                     closeGUI(player);
                 }
@@ -159,15 +162,12 @@ public class PlayerInvScreenHandler extends ScreenHandler {
         } else if (cards == 1 && slotIndex >= 8) {
             List<ItemStack> candidate = new ArrayList<>();
             DefaultedList<ItemStack> inventory = player.getInventory().main;
-            List<Integer> cardSlots = IntStream.range(0, inventory.size()).filter(
-                            i -> inventory.get(i).isIn(Tags.Items.CARD) || inventory.get(i).getItem() == ModItems.GAIN_CARD)
-                    .boxed().toList();
+            List<Integer> cardSlots = IntStream.range(0, inventory.size()).filter(i -> isCard(inventory.get(i))).boxed().toList();
             for (Integer slot : cardSlots) {candidate.add(inventory.get(slot));}
             ItemStack off = player.getOffHandStack();
-            if (off.isIn(Tags.Items.CARD) || off.getItem() == ModItems.GAIN_CARD) candidate.add(off);
+            if (isCard(off)) candidate.add(off);
             if(!candidate.isEmpty()) {
-                Random r = new Random();
-                int index = r.nextInt(candidate.size());
+                int index = new Random().nextInt(candidate.size());
                 return candidate.get(index);
             }
         }

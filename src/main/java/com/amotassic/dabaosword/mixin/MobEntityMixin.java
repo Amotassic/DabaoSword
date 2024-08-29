@@ -104,7 +104,7 @@ public abstract class MobEntityMixin extends LivingEntity {
                     List<ItemStack> candidate = new ArrayList<>();
                     //把背包中的卡牌添加到待选物品中
                     DefaultedList<ItemStack> inventory = player.getInventory().main;
-                    List<Integer> cardSlots = IntStream.range(0, inventory.size()).filter(j -> inventory.get(j).isIn(Tags.Items.CARD) || inventory.get(j).getItem() == ModItems.GAIN_CARD).boxed().toList();
+                    List<Integer> cardSlots = IntStream.range(0, inventory.size()).filter(j -> isCard(inventory.get(j))).boxed().toList();
                     for (Integer slot : cardSlots) {candidate.add(inventory.get(slot));}
                     //把饰品栏的卡牌添加到待选物品中
                     int equip = 0; //用于标记装备区牌的数量
@@ -117,7 +117,7 @@ public abstract class MobEntityMixin extends LivingEntity {
                         }
                     }
                     if(!candidate.isEmpty()) {
-                        java.util.Random r = new java.util.Random(); int index = r.nextInt(candidate.size()); ItemStack chosen = candidate.get(index);
+                        int index = new java.util.Random().nextInt(candidate.size()); ItemStack chosen = candidate.get(index);
                         player.sendMessage(Text.literal(mob.getEntityName()).append(Text.translatable("dabaosword.discard")).append(chosen.toHoverableText()));
                         CardDiscardCallback.EVENT.invoker().cardDiscard(player, chosen, 1, index > candidate.size() - equip);
                         voice(mob, Sounds.GUOHE); stack.decrement(1);
@@ -129,7 +129,7 @@ public abstract class MobEntityMixin extends LivingEntity {
                 if (!target.getOffHandStack().isEmpty()) candidate.add(target.getOffHandStack());
                 for (ItemStack armor : target.getArmorItems()) {if (!armor.isEmpty()) candidate.add(armor);}
                 if(!candidate.isEmpty()) {
-                    java.util.Random r = new java.util.Random(); int index = r.nextInt(candidate.size()); ItemStack chosen = candidate.get(index);
+                    int index = new java.util.Random().nextInt(candidate.size()); ItemStack chosen = candidate.get(index);
                     chosen.decrement(1);
                     voice(mob, Sounds.GUOHE); stack.decrement(1);
                 }

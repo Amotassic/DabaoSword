@@ -45,7 +45,7 @@ public class PlayerEvents implements PlayerConnectCallback, PlayerDeathCallback,
                 PlayerInventory inv = player.getInventory();
                 for (int i = 0; i < inv.size(); ++i) {
                     ItemStack stack = inv.getStack(i);
-                    if (stack.isIn(Tags.Items.CARD) || stack.getItem() == ModItems.GAIN_CARD) {
+                    if (isCard(stack)) {
                         //如果没有触发行殇，才触发事件（即在玩家死亡弃牌事件中，行殇有最高触发优先级）
                         if (XingshangTrigger(player, stack)) CardDiscardCallback.EVENT.invoker().cardDiscard(player, stack, stack.getCount(), false);
                     }
