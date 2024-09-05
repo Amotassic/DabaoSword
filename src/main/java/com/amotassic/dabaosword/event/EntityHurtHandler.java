@@ -41,10 +41,12 @@ public class EntityHurtHandler implements EntityHurtCallback {
             int tao = count(player, Tags.Items.RECOVER);//数玩家背包中回血卡牌的数量（只包含酒、桃）
             if (tao >= need) {//如果剩余回血牌大于需要的桃的数量，则进行下一步，否则直接趋势
                 for (int i = 0; i < need; i++) {//循环移除背包中的酒、桃
-                    ItemStack stack = stackInTag(Tags.Items.RECOVER, player);
-                    if (stack.getItem() == ModItems.PEACH) voice(player, Sounds.RECOVER);
-                    if (stack.getItem() == ModItems.JIU) voice(player, Sounds.JIU);
-                    CardUsePostCallback.EVENT.invoker().cardUsePost(player, stack, player);
+                    if (player.timeUntilRegen > 9) {
+                        ItemStack stack = stackInTag(Tags.Items.RECOVER, player);
+                        if (stack.getItem() == ModItems.PEACH) voice(player, Sounds.RECOVER);
+                        if (stack.getItem() == ModItems.JIU) voice(player, Sounds.JIU);
+                        CardUsePostCallback.EVENT.invoker().cardUsePost(player, stack, player);
+                    }
                 }
                 //最后将玩家的体力设置为 受伤前生命值 - 伤害值 + 回复量
                 player.setHealth(player.getHealth() - amount + 5 * need);

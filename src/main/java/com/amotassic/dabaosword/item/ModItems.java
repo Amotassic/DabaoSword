@@ -219,6 +219,7 @@ public class ModItems {
                 entries.add(SkillCards.BUQU);
                 entries.add(SkillCards.GONGXIN);
                 entries.add(SkillCards.GUOSE);
+                entries.add(SkillCards.LIANYING);
                 entries.add(SkillCards.LIULI);
                 entries.add(SkillCards.KUROU);
                 entries.add(SkillCards.POJUN);

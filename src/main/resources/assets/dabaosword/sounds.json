@@ -35,6 +35,42 @@
     ],
     "subtitle": "sounds.dabaosword.letmecc"
   },
+  "lianying1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/lianying1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.lianying"
+  },
+  "lianying2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/lianying2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.lianying"
+  },
+  "xiaoji1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/xiaoji1"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.xiaoji"
+  },
+  "xiaoji2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:skill/xiaoji2"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.xiaoji"
+  },
   "longdan1": {
     "sounds": [
       {

@@ -9,8 +9,6 @@ import dev.emi.trinkets.TrinketSlot;
 import dev.emi.trinkets.api.*;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -106,10 +104,14 @@ public class EquipmentItem extends TrinketItem {
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
         if (!entity.getWorld().isClient) {
             if (armorTrinket(stack)) gainArmor(entity,5);
-            if (stack.getItem() != ModItems.CARD_PILE && !EnchantmentHelper.hasBindingCurse(stack)) {//给装备上绑定诅咒
-                stack.addEnchantment(Enchantments.BINDING_CURSE, 1);
-            }
         }
+    }
+
+    @Override
+    public boolean canUnequip(ItemStack stack, SlotReference slot, LivingEntity entity) {
+        if (entity instanceof PlayerEntity player && player.isCreative()) return true;
+        if (stack.getItem() != ModItems.CARD_PILE) return false;
+        return super.canUnequip(stack, slot, entity);
     }
 
     @Override

@@ -34,6 +34,7 @@ public class SkillCards {
     public static final Item BUQU = register("buqu", new SkillItem(new Item.Settings().maxCount(1)));
     public static final Item GONGXIN = register("gongxin", new SkillItem.ActiveSkillWithTarget(new Item.Settings().maxCount(1)));
     public static final Item GUOSE = register("guose", new GuoseSkill(new Item.Settings().maxCount(1)));
+    public static final Item LIANYING = register("lianying", new LianyingSkill(new Item.Settings().maxCount(1)));
     public static final Item LIULI = register("liuli", new SkillItem(new Item.Settings().maxCount(1)));
     public static final Item KUROU = register("kurou", new SkillItem.ActiveSkill(new Item.Settings().maxCount(1)));
     public static final Item POJUN = register("pojun", new SkillItem(new Item.Settings().maxCount(1)));

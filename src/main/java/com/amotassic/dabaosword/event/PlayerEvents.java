@@ -68,9 +68,12 @@ public class PlayerEvents implements PlayerConnectCallback, PlayerDeathCallback,
             if (hasTrinket(SkillCards.BUQU, player)) {
                 ItemStack stack = trinketItem(SkillCards.BUQU, player);
                 int c = getTag(stack);
-                if (c > 1) {
-                    setTag(stack, (c+1)/2);
-                }
+                if (c > 1) setTag(stack, (c+1)/2);
+            }
+
+            if (hasTrinket(SkillCards.LIANYING, player)) {
+                ItemStack stack = trinketItem(SkillCards.LIANYING, player);
+                if (stack != null) setCD(stack, 0);
             }
         }
     }

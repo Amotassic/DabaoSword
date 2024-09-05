@@ -88,8 +88,8 @@ public class PlayerInvScreenHandler extends ScreenHandler {
                     if (new Random().nextFloat() < 0.5) {voice(player, Sounds.SHANZHUAN1);} else {voice(player, Sounds.SHANZHUAN2);}
                     if (targetStack.isIn(Tags.Items.BASIC_CARD)) target.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 5));
                     else target.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, StatusEffectInstance.INFINITE,1));
-                    CardDiscardCallback.EVENT.invoker().cardDiscard(target, targetStack, 1, slotIndex < 4);
                     target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("dabaosword.discard")).append(targetStack.toHoverableText()));
+                    CardDiscardCallback.EVENT.invoker().cardDiscard(target, targetStack, 1, slotIndex < 4);
                     player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 8,0,false,false,true));
                     closeGUI(player);
                 }

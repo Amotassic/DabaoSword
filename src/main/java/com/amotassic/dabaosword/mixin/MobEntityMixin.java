@@ -148,12 +148,13 @@ public abstract class MobEntityMixin extends LivingEntity {
         if (stack.getItem() == ModItems.JIEDAO) {
             ItemStack stack1 = target.getMainHandStack();
             if (!stack1.isEmpty()) {
-                if (target instanceof PlayerEntity player) {
-                    if (hasItem(player, ModItems.WUXIE)) {
-                        CardUsePostCallback.EVENT.invoker().cardUsePost(player, getItem(player, ModItems.WUXIE), null);
-                        voice(player, Sounds.WUXIE);
-                    } else mob.setStackInHand(Hand.MAIN_HAND, stack1);
-                } else mob.setStackInHand(Hand.MAIN_HAND, stack1);
+                if (target instanceof PlayerEntity player && hasItem(player, ModItems.WUXIE)) {
+                    CardUsePostCallback.EVENT.invoker().cardUsePost(player, getItem(player, ModItems.WUXIE), null);
+                    voice(player, Sounds.WUXIE);
+                } else {
+                    mob.setStackInHand(Hand.MAIN_HAND, stack1.copy());
+                    stack1.setCount(0);
+                }
                 voice(mob, Sounds.JIEDAO);
             }
         }

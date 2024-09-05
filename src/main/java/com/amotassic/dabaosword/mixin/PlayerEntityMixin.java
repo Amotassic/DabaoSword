@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.mixin;
 
+import com.amotassic.dabaosword.event.callback.CardDiscardCallback;
 import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.event.callback.EntityHurtCallback;
 import com.amotassic.dabaosword.item.ModItems;
@@ -24,6 +25,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -32,8 +34,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
 
@@ -103,18 +104,16 @@ public abstract class PlayerEntityMixin extends LivingEntity {
             //流离
             if (hasTrinket(SkillCards.LIULI, player) && source.getAttacker() instanceof LivingEntity attacker && hasItemInTag(Tags.Items.CARD, player) && !this.hasStatusEffect(ModItems.INVULNERABLE) && !this.isCreative()) {
                 ItemStack stack = stackInTag(Tags.Items.CARD, player);
-                Box box = new Box(this.getBlockPos()).expand(10);
                 int i = 0;
-                for (LivingEntity nearbyEntity : world.getEntitiesByClass(LivingEntity.class, box, LivingEntity -> LivingEntity != attacker && LivingEntity != this)) {
-                    if (nearbyEntity != null) {
-                        cir.setReturnValue(false);
-                        this.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 10,0,false,false,false));
-                        this.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 10,0,false,false,false));
-                        stack.decrement(1);
-                        if (new Random().nextFloat() < 0.5) {voice(player, Sounds.LIULI1);} else {voice(player, Sounds.LIULI2);}
-                        nearbyEntity.timeUntilRegen = 0;
-                        nearbyEntity.damage(source, amount); i++; break;
-                    }
+                LivingEntity nearEntity = getLiuliEntity(player, attacker);
+                if (nearEntity != null) {
+                    cir.setReturnValue(false);
+                    this.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 10,0,false,false,false));
+                    this.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 10,0,false,false,false));
+                    CardDiscardCallback.EVENT.invoker().cardDiscard(player, stack, 1, false);
+                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.LIULI1);} else {voice(player, Sounds.LIULI2);}
+                    nearEntity.timeUntilRegen = 0;
+                    nearEntity.damage(source, amount); i++;
                 }
                 //避免闪自动触发，因此在这里额外判断
                 if (i == 0 && !this.hasStatusEffect(ModItems.COOLDOWN2)) {
@@ -128,6 +127,22 @@ public abstract class PlayerEntityMixin extends LivingEntity {
             }
 
         }
+    }
+
+    @Unique @Nullable LivingEntity getLiuliEntity(Entity entity, LivingEntity attacker) {
+        if (entity.getWorld() instanceof ServerWorld world) {
+            Box box = new Box(entity.getBlockPos()).expand(10);
+            List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, box, entity1 -> entity1 != entity && entity1 != attacker);
+            if (!entities.isEmpty()) {
+                Map<Float, LivingEntity> map = new HashMap<>();
+                for (var e : entities) {
+                    map.put(e.distanceTo(entity), e);
+                }
+                float min = Collections.min(map.keySet());
+                return map.values().stream().toList().get(map.keySet().stream().toList().indexOf(min));
+            }
+        }
+        return null;
     }
 
     @Unique private int tick = 0;
@@ -144,7 +159,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
             if (++tick >= giveCard) { // 每分钟摸两张牌
                 tick = 0;
                 if (hasTrinket(ModItems.CARD_PILE, player) && !player.isCreative() && !player.isSpectator()) {
-                    if (count(player, Tags.Items.CARD) + count(player, ModItems.GAIN_CARD) <= player.getMaxHealth()) {
+                    if (countAllCard(player) <= player.getMaxHealth()) {
                         give(player, new ItemStack(ModItems.GAIN_CARD, 2));
                         player.sendMessage(Text.translatable("dabaosword.draw"),true);
                     } else if (!enableLimit) {//如果不限制摸牌就继续发牌
@@ -158,7 +173,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
                 if (++skillChange >= skill) {//每5分钟可以切换技能
                     skillChange = 0;
                     player.addCommandTag("change_skill");
-                    if (skill >= 600) {
+                    if (skill >= 600 && hasTrinket(ModItems.CARD_PILE, player)) {
                         player.sendMessage(Text.translatable("dabaosword.change_skill").formatted(Formatting.BOLD));
                         player.sendMessage(Text.translatable("dabaosword.change_skill2"));
                     }
@@ -183,9 +198,9 @@ public abstract class PlayerEntityMixin extends LivingEntity {
                 //实现沈佳宜的效果：若玩家看到的玩家有近战防御效果，则给当前玩家攻击范围缩短效果
                 int amplifier = Objects.requireNonNull(nearbyPlayer.getStatusEffect(ModItems.DEFEND)).getAmplifier();
                 int attack = (int) (player.getAttributeValue(ReachEntityAttributes.ATTACK_RANGE) + 3);
-                int defensed = Math.min(amplifier, attack);
-                if (player != nearbyPlayer && islooking(player, nearbyPlayer)) {
-                    player.addStatusEffect(new StatusEffectInstance(ModItems.DEFENDED, 1,defensed,false,false,false));
+                int defended = Math.min(amplifier, attack);
+                if (player != nearbyPlayer && isLooking(player, nearbyPlayer)) {
+                    player.addStatusEffect(new StatusEffectInstance(ModItems.DEFENDED, 1, defended,false,false,false));
                 }
             }
 
@@ -219,7 +234,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
     }
 
     @Unique
-    boolean islooking(PlayerEntity player, Entity entity) {
+    boolean isLooking(PlayerEntity player, Entity entity) {
         Vec3d vec3d = player.getRotationVec(1.0f).normalize();
         Vec3d vec3d2 = new Vec3d(entity.getX() - player.getX(), entity.getEyeY() - player.getEyeY(), entity.getZ() - player.getZ());
         double d = vec3d2.length();
