@@ -1,7 +1,5 @@
 package com.amotassic.dabaosword.mixin;
 
-import com.amotassic.dabaosword.event.callback.CardDiscardCallback;
-import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.event.callback.EntityHurtCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
@@ -13,10 +11,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -25,14 +21,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.*;
 
@@ -43,107 +36,6 @@ public abstract class PlayerEntityMixin extends LivingEntity {
     protected PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {super(entityType, world);}
 
     @Unique PlayerEntity player = (PlayerEntity) (Object) this;
-
-    @Shadow public abstract boolean isCreative();
-
-    @Inject(method = "damage",at = @At("HEAD"), cancellable = true)
-    private void damagemixin(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-
-        if (this.getWorld() instanceof ServerWorld world) {
-
-            if (source.getSource() instanceof LivingEntity entity) {
-                //若攻击者主手没有物品，则无法击穿藤甲
-                if (inrattan(player)) {
-                    if (entity.getMainHandStack().isEmpty()) cir.setReturnValue(false);
-                    else if (getShanSlot(player) != -1 && !this.hasStatusEffect(ModItems.COOLDOWN2)) {
-                        cir.setReturnValue(false);
-                        shan(player,false);//闪的额外判断
-                    }
-                }
-            }
-            //弹射物对藤甲无效
-            if (source.isIn(DamageTypeTags.IS_PROJECTILE) && inrattan(player)) {cir.setReturnValue(false);}
-
-            if (source.getSource() instanceof WolfEntity dog && dog.hasStatusEffect(ModItems.INVULNERABLE)) {
-                //被南蛮入侵的狗打中可以消耗杀以免疫伤害
-                if (dog.getOwner() != this) {
-                    if (getShaSlot(player) != -1) {
-                        ItemStack stack = shaStack(player);
-                        cir.setReturnValue(false);
-                        if (stack.getItem() == ModItems.SHA) voice(player, Sounds.SHA);
-                        if (stack.getItem() == ModItems.FIRE_SHA) voice(player, Sounds.SHA_FIRE);
-                        if (stack.getItem() == ModItems.THUNDER_SHA) voice(player, Sounds.SHA_THUNDER);
-                        stack.decrement(1);
-                    }
-                    dog.setHealth(0);
-                }
-            }
-
-            if (source.getAttacker() instanceof LivingEntity) {
-
-                final boolean trigger = baguaTrigger(player);
-                boolean hasShan = getShanSlot(player) != -1 || trigger;
-                boolean shouldShan = !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY) && !getCommandTags().contains("juedou") && hasShan && !isCreative() && !hasStatusEffect(ModItems.COOLDOWN2) && !hasStatusEffect(ModItems.INVULNERABLE) && !hasTrinket(SkillCards.LIULI, player) && !hasTrinket(ModItems.RATTAN_ARMOR, player);
-
-                //闪的被动效果
-                if (shouldShan) {
-                    cir.setReturnValue(false);
-                    shan(player, trigger);
-                    //虽然没有因为杀而触发闪，但如果攻击者的杀处于自动触发状态，则仍会消耗
-                    if (source.getSource() instanceof PlayerEntity player1 && getShaSlot(player1) != -1) {
-                        ItemStack stack = shaStack(player1);
-                        if (stack.getItem() == ModItems.SHA) voice(player1, Sounds.SHA);
-                        if (stack.getItem() == ModItems.FIRE_SHA) voice(player1, Sounds.SHA_FIRE);
-                        if (stack.getItem() == ModItems.THUNDER_SHA) voice(player1, Sounds.SHA_THUNDER);
-                        CardUsePostCallback.EVENT.invoker().cardUsePost(player1, stack, player);
-                    }
-                }
-
-            }
-
-            //流离
-            if (hasTrinket(SkillCards.LIULI, player) && source.getAttacker() instanceof LivingEntity attacker && hasItemInTag(Tags.Items.CARD, player) && !this.hasStatusEffect(ModItems.INVULNERABLE) && !this.isCreative()) {
-                ItemStack stack = stackInTag(Tags.Items.CARD, player);
-                int i = 0;
-                LivingEntity nearEntity = getLiuliEntity(player, attacker);
-                if (nearEntity != null) {
-                    cir.setReturnValue(false);
-                    this.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 10,0,false,false,false));
-                    this.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 10,0,false,false,false));
-                    CardDiscardCallback.EVENT.invoker().cardDiscard(player, stack, 1, false);
-                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.LIULI1);} else {voice(player, Sounds.LIULI2);}
-                    nearEntity.timeUntilRegen = 0;
-                    nearEntity.damage(source, amount); i++;
-                }
-                //避免闪自动触发，因此在这里额外判断
-                if (i == 0 && !this.hasStatusEffect(ModItems.COOLDOWN2)) {
-                    final boolean trigger = baguaTrigger(player);
-                    boolean hasShan = getShanSlot(player) != -1 || trigger;
-                    if (hasShan) {
-                        cir.setReturnValue(false);
-                        shan(player, trigger);
-                    }
-                }
-            }
-
-        }
-    }
-
-    @Unique @Nullable LivingEntity getLiuliEntity(Entity entity, LivingEntity attacker) {
-        if (entity.getWorld() instanceof ServerWorld world) {
-            Box box = new Box(entity.getBlockPos()).expand(10);
-            List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, box, entity1 -> entity1 != entity && entity1 != attacker);
-            if (!entities.isEmpty()) {
-                Map<Float, LivingEntity> map = new HashMap<>();
-                for (var e : entities) {
-                    map.put(e.distanceTo(entity), e);
-                }
-                float min = Collections.min(map.keySet());
-                return map.values().stream().toList().get(map.keySet().stream().toList().indexOf(min));
-            }
-        }
-        return null;
-    }
 
     @Unique private int tick = 0;
     @Unique private int tick2 = 0;
@@ -243,39 +135,6 @@ public abstract class PlayerEntityMixin extends LivingEntity {
             return player.canSee(entity);
         }
         return false;
-    }
-
-    @Unique boolean inrattan(PlayerEntity player) {
-        return hasTrinket(ModItems.RATTAN_ARMOR, player);
-    }
-
-    @Unique boolean baguaTrigger(PlayerEntity player) {
-        return hasTrinket(ModItems.BAGUA, player) && new Random().nextFloat() < 0.5;
-    }
-    @Unique
-    void shan(PlayerEntity player, boolean bl) {
-        ItemStack stack = bl ? ItemStack.EMPTY : shanStack(player);
-        int cd = bl ? 60 : 40;
-        player.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 20,0,false,false,false));
-        player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, cd,0,false,false,false));
-        voice(player, Sounds.SHAN);
-        CardUsePostCallback.EVENT.invoker().cardUsePost(player, stack, null);
-        if (bl) player.sendMessage(Text.translatable("dabaosword.bagua"),true);
-    }
-
-    @Unique
-    int getShanSlot(PlayerEntity player) {
-        for (int i = 0; i < 18; ++i) {
-            ItemStack stack = player.getInventory().getStack(i);
-            if (stack.isEmpty() || stack.getItem() != ModItems.SHAN) continue;
-            return i;
-        }
-        return -1;
-    }
-
-    @Unique
-    ItemStack shanStack(PlayerEntity player) {
-        return player.getInventory().getStack(getShanSlot(player));
     }
 
     @Inject(at = @At("TAIL"), method = "applyDamage", cancellable = true)

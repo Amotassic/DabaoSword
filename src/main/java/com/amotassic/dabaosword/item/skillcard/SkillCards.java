@@ -39,6 +39,7 @@ public class SkillCards {
     public static final Item KUROU = register("kurou", new SkillItem.ActiveSkill(new Item.Settings().maxCount(1)));
     public static final Item POJUN = register("pojun", new SkillItem(new Item.Settings().maxCount(1)));
     public static final Item QIXI = register("qixi", new QixiSkill(new Item.Settings().maxCount(1)));
+    public static final Item XIAOJI = register("xiaoji", new SkillItem(new Item.Settings().maxCount(1)));
     public static final Item ZHIHENG = register("zhiheng", new ZhihengSkill(new Item.Settings().maxCount(1)));
     public static final Item ZHIJIAN = register("zhijian", new SkillItem.ActiveSkillWithTarget(new Item.Settings().maxCount(1)));
     //群

@@ -11,21 +11,21 @@ import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketsApi;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Pair;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.Box;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -56,12 +56,6 @@ public class EntityHurtHandler implements EntityHurtCallback {
 
     @Override
     public ActionResult hurtEntity(LivingEntity entity, DamageSource source, float amount) {
-        ItemStack head = entity.getEquippedStack(EquipmentSlot.HEAD);
-        ItemStack chest = entity.getEquippedStack(EquipmentSlot.CHEST);
-        ItemStack legs = entity.getEquippedStack(EquipmentSlot.LEGS);
-        ItemStack feet = entity.getEquippedStack(EquipmentSlot.FEET);
-        boolean noArmor = head.isEmpty() && chest.isEmpty() && legs.isEmpty() && feet.isEmpty();
-
         if (entity.getWorld() instanceof ServerWorld world) {
 
             if (entity instanceof PlayerEntity player) {
@@ -79,13 +73,6 @@ public class EntityHurtHandler implements EntityHurtCallback {
                             save(player, amount);
                         }
                     } else save(player, amount);
-                }
-
-                //穿藤甲时，若承受火焰伤害，则 战火燃尽，嘤熊胆！
-                if (source.isIn(DamageTypeTags.IS_FIRE) && hasTrinket(ModItems.RATTAN_ARMOR, player) && !player.getCommandTags().contains("rattan")) {
-                    player.addCommandTag("rattan");
-                    player.timeUntilRegen = 0; player.damage(source, amount > 5 ? 5 : amount);
-                    player.getCommandTags().remove("rattan");
                 }
 
                 //权计技能：受到生物伤害获得权
@@ -217,32 +204,12 @@ public class EntityHurtHandler implements EntityHurtCallback {
                 }
             }
 
-            if (source.getSource() instanceof LivingEntity attacker) {
-                //古锭刀对没有装备的生物伤害增加 限定版翻倍
-                if (attacker.getMainHandStack().getItem() == ModItems.GUDINGDAO && !attacker.getCommandTags().contains("guding")) {
-                    if (noArmor || hasTrinket(SkillCards.POJUN, attacker)) {
-                        attacker.addCommandTag("guding");
-                        entity.timeUntilRegen = 0; entity.damage(source, amount);
-                        attacker.getCommandTags().remove("guding");
-                    }
-                }
-            }
-
             if (source.getSource() instanceof PlayerEntity player) {
-                //古锭刀对没有装备的生物伤害增加 卡牌版加5
-                if (hasTrinket(ModItems.GUDING_WEAPON, player) && !player.getCommandTags().contains("guding")) {
-                    if (noArmor || hasTrinket(SkillCards.POJUN, player)) {
-                        player.addCommandTag("guding");
-                        entity.timeUntilRegen = 0; entity.damage(source,5);
-                        player.getCommandTags().remove("guding");
-                    }
-                }
-
                 //寒冰剑冻伤
                 if (hasTrinket(ModItems.HANBING, player)) {entity.timeUntilRegen = 0; entity.setFrozenTicks(500);}
 
                 //杀的相关结算
-                if (shouldSha(player) && !entity.isGlowing()) {
+                if (shouldSha(player)) {
                     ItemStack stack = player.getMainHandStack().isIn(Tags.Items.SHA) ? player.getMainHandStack() : shaStack(player);
                     player.addCommandTag("sha");
                     if (stack.getItem() == ModItems.SHA) {
@@ -265,27 +232,27 @@ public class EntityHurtHandler implements EntityHurtCallback {
                         }
                         world.spawnEntity(lightningEntity);
                     }
-                    CardUsePostCallback.EVENT.invoker().cardUsePost(player, stack, entity);
-                }
-
-                //排异技能：攻击伤害增加
-                if (hasTrinket(SkillCards.QUANJI, player) && !player.getCommandTags().contains("quanji")) {
-                    ItemStack stack = trinketItem(SkillCards.QUANJI, player);
-                    int quan = getTag(stack);
-                    if (quan > 0) {
-                        player.addCommandTag("quanji");
-                        entity.timeUntilRegen = 0; entity.damage(source, quan);
-                        if (quan > 4 && entity instanceof PlayerEntity) {
-                            give((PlayerEntity) entity, new ItemStack(ModItems.GAIN_CARD, 2));
+                    if (entity.isGlowing()) { //处理铁索连环的效果 铁索传导过去的伤害会触发2次加伤，这符合三国杀的逻辑，所以不改了
+                        if (stack.getItem() != ModItems.SHA) entity.removeStatusEffect(StatusEffects.GLOWING);
+                        Box box = new Box(player.getBlockPos()).expand(20); // 检测范围，根据需要修改
+                        for (LivingEntity nearbyEntity : world.getEntitiesByClass(LivingEntity.class, box, entities -> entities.isGlowing() && entities != entity)) {
+                            if (stack.getItem() == ModItems.FIRE_SHA) {
+                                nearbyEntity.removeStatusEffect(StatusEffects.GLOWING); nearbyEntity.damage(source, amount);
+                                nearbyEntity.timeUntilRegen = 0; nearbyEntity.setOnFireFor(5);
+                            }
+                            if (stack.getItem() == ModItems.THUNDER_SHA) {
+                                nearbyEntity.removeStatusEffect(StatusEffects.GLOWING); nearbyEntity.damage(source, amount);
+                                nearbyEntity.timeUntilRegen = 0; nearbyEntity.damage(player.getDamageSources().magic(), 5);
+                                LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(world);
+                                if (lightningEntity != null) {
+                                    lightningEntity.refreshPositionAfterTeleport(nearbyEntity.getX(), nearbyEntity.getY(), nearbyEntity.getZ());
+                                    lightningEntity.setCosmetic(true);
+                                }
+                                world.spawnEntity(lightningEntity);
+                            }
                         }
-                        int quan1 = quan/2;
-                        setTag(stack, quan1);
-                        float j = new Random().nextFloat();
-                        if (j < 0.25) {voice(player, Sounds.PAIYI1);
-                        } else if (0.25 <= j && j < 0.5) {voice(player, Sounds.PAIYI2,3);
-                        } else if (0.5 <= j && j < 0.75) {voice(player, Sounds.PAIYI3);
-                        } else {voice(player, Sounds.PAIYI4,3);}
                     }
+                    CardUsePostCallback.EVENT.invoker().cardUsePost(player, stack, entity);
                 }
 
                 //奔袭：命中后减少2手长，摸一张牌

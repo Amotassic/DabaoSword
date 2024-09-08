@@ -243,6 +243,8 @@
   "item.dabaosword.let_me_cc.tooltip": "让我看看你发育正不正常",
   "item.dabaosword.lianying": "连营",
   "item.dabaosword.lianying.tooltip": "当你失去最后的一张手牌5秒后，你摸一张牌",
+  "item.dabaosword.xiaoji": "枭姬",
+  "item.dabaosword.xiaoji.tooltip": "当你失去已装备的装备牌后，你摸两张牌",
 
   //"配音"
   "sounds.dabaosword.nahida": "纳西妲：所闻遍计",

@@ -50,7 +50,11 @@ public class CardEvents implements CardUsePostCallback, CardDiscardCallback, Car
         stack.decrement(count);
 
         //弃置牌后，玩家的死亡判断是有必要的
-        if (hasTrinket(SkillCards.LIANYING, player) && !fromEquip && player.isAlive() && countAllCard(player) == 0) lianyingTrigger(player);
+        if (player.isAlive()) {
+            if (hasTrinket(SkillCards.LIANYING, player) && !fromEquip && countAllCard(player) == 0) lianyingTrigger(player);
+
+            if (hasTrinket(SkillCards.XIAOJI, player) && fromEquip) xiaojiTrigger(player);
+        }
     }
 
     @Override
@@ -63,11 +67,22 @@ public class CardEvents implements CardUsePostCallback, CardDiscardCallback, Car
             stack.decrement(count);
         }
 
-        if (from instanceof PlayerEntity player && hasTrinket(SkillCards.LIANYING, player) && (type == Type.INV_TO_EQUIP || type == Type.INV_TO_INV) && countAllCard(player) == 0) lianyingTrigger(player);
+        if (type == Type.INV_TO_EQUIP || type == Type.INV_TO_INV) {
+            if (from instanceof PlayerEntity player && hasTrinket(SkillCards.LIANYING, player) && countAllCard(player) == 0) lianyingTrigger(player);
+        }
+
+        if (type == Type.EQUIP_TO_INV || type == Type.EQUIP_TO_EQUIP) {
+            if (from instanceof PlayerEntity player && hasTrinket(SkillCards.XIAOJI, player)) xiaojiTrigger(player);
+        }
     }
 
     private void lianyingTrigger(PlayerEntity player) {
         ItemStack stack = trinketItem(SkillCards.LIANYING, player);
         if (stack != null) setCD(stack, 5);
+    }
+
+    private void xiaojiTrigger(PlayerEntity player) {
+        give(player, new ItemStack(ModItems.GAIN_CARD, 2));
+        if (new Random().nextFloat() < 0.5) {voice(player, Sounds.XIAOJI1);} else {voice(player, Sounds.XIAOJI2);}
     }
 }

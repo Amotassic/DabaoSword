@@ -77,12 +77,8 @@ public class AttackEntityHandler implements AttackEntityCallback {
                 }
 
                 if (hasTrinket(SkillCards.LIEGONG, player) && !player.hasStatusEffect(ModItems.COOLDOWN)) {
-                    //烈弓：命中后加伤害，至少为5，给目标一个短暂的冷却效果，防止其自动触发闪
+                    //烈弓：命中后给目标一个短暂的冷却效果，防止其自动触发闪
                     target.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2,2,0,false,false,false));
-                    float f = Math.max(13 - player.distanceTo(target), 5);
-                    player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, (int) (40 * f),0,false,false,true));
-                    target.timeUntilRegen = 0; target.damage(player.getDamageSources().playerAttack(player), f);
-                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.LIEGONG1);} else {voice(player, Sounds.LIEGONG2);}
                 }
 
                 if (hasTrinket(SkillCards.TIEJI, player) && getShaSlot(player) != -1) {
