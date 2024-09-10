@@ -14,7 +14,6 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 
 import java.util.Objects;
-import java.util.Random;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
 
@@ -46,7 +45,7 @@ public class SimpleMenuHandler extends ScreenHandler {
                 give(player, itemStack);
                 if (!player.isCreative()) player.getOffHandStack().decrement(2);
                 setCD(stack, 20);
-                if (new Random().nextFloat() < 0.5) {voice(player, Sounds.QICE1);} else {voice(player, Sounds.QICE2);}
+                voice(player, Sounds.QICE);
                 closeGUI(player);
             }
 
@@ -56,7 +55,7 @@ public class SimpleMenuHandler extends ScreenHandler {
                     player.timeUntilRegen = 0;
                     player.damage(player.getDamageSources().genericKill(), 4.99f);
                 }
-                if (new Random().nextFloat() < 0.5) {voice(player, Sounds.TAOLUAN1);} else {voice(player, Sounds.TAOLUAN2);}
+                voice(player, Sounds.TAOLUAN);
                 closeGUI(player);
             }
         }

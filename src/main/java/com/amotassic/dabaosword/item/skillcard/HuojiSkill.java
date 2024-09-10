@@ -11,8 +11,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.sound.SoundEvent;
 
-import java.util.Random;
-
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class HuojiSkill extends SkillItem {
@@ -25,18 +23,18 @@ public class HuojiSkill extends SkillItem {
             int cd = getCD(stack);
             if (cd == 0 && !stack1.isEmpty() && stack1.isIn(Tags.Items.BASIC_CARD)) {
                 setCD(stack, 15);
-                viewAs(player, Tags.Items.BASIC_CARD, ModItems.FIRE_ATTACK, Sounds.HUOJI1, Sounds.HUOJI2);
+                viewAs(player, Tags.Items.BASIC_CARD, ModItems.FIRE_ATTACK, Sounds.HUOJI);
             }
         }
         super.tick(stack, slot, entity);
     }
 
-    public static void viewAs(PlayerEntity player, TagKey<Item> tag, Item item, SoundEvent sound1, SoundEvent sound2) {
+    public static void viewAs(PlayerEntity player, TagKey<Item> tag, Item item, SoundEvent sound) {
         ItemStack stack = player.getOffHandStack();
         if (!stack.isEmpty() && stack.isIn(tag)) {
             stack.decrement(1);
             give(player, item.getDefaultStack());
-            if (new Random().nextFloat() < 0.5) {voice(player, sound1);} else {voice(player, sound2);}
+            voice(player, sound);
         }
     }
 }

@@ -7,8 +7,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 
-import java.util.Random;
-
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class QixiSkill extends SkillItem {
@@ -23,7 +21,7 @@ public class QixiSkill extends SkillItem {
                 setCD(stack, 5);
                 stack1.decrement(1);
                 give(player, ModItems.DISCARD.getDefaultStack());
-                if (new Random().nextFloat() < 0.5) {voice(player, Sounds.QIXI1);} else {voice(player, Sounds.QIXI2);}
+                voice(player, Sounds.QIXI);
             }
         }
         super.tick(stack, slot, entity);

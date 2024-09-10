@@ -12,7 +12,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -51,11 +50,11 @@ public abstract class PlayerEntityMixin extends LivingEntity {
             if (++tick >= giveCard) { // 每分钟摸两张牌
                 tick = 0;
                 if (hasTrinket(ModItems.CARD_PILE, player) && !player.isCreative() && !player.isSpectator()) {
-                    if (countAllCard(player) <= player.getMaxHealth()) {
-                        give(player, new ItemStack(ModItems.GAIN_CARD, 2));
+                    if (countCards(player) <= player.getMaxHealth()) {
+                        draw(player, 2);
                         player.sendMessage(Text.translatable("dabaosword.draw"),true);
                     } else if (!enableLimit) {//如果不限制摸牌就继续发牌
-                        give(player, new ItemStack(ModItems.GAIN_CARD, 2));
+                        draw(player, 2);
                         player.sendMessage(Text.translatable("dabaosword.draw"),true);
                     }
                 }

@@ -15,7 +15,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
-import java.util.Random;
 import java.util.UUID;
 
 import static com.amotassic.dabaosword.util.ModTools.voice;
@@ -46,9 +45,7 @@ public class LuoyiSkill extends SkillItem {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        if (!world.isClient && !user.isSneaking()) {
-            if (new Random().nextFloat() < 0.5) {voice(user, Sounds.LUOYI1);} else {voice(user, Sounds.LUOYI2);}
-        }
+        if (!world.isClient && !user.isSneaking()) voice(user, Sounds.LUOYI);
         return super.use(world, user, hand);
     }
 

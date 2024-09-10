@@ -12,9 +12,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Random;
-
-import static com.amotassic.dabaosword.item.card.GainCardItem.draw;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class CardEvents implements CardUsePostCallback, CardDiscardCallback, CardMoveCallback {
@@ -27,8 +24,8 @@ public class CardEvents implements CardUsePostCallback, CardDiscardCallback, Car
 
         //集智技能触发
         if (hasTrinket(SkillCards.JIZHI, user) && copy.isIn(Tags.Items.ARMOURY_CARD)) {
-            draw(user, 1);
-            if (new Random().nextFloat() < 0.5) {voice(user, Sounds.JIZHI1);} else {voice(user, Sounds.JIZHI2);}
+            draw(user);
+            voice(user, Sounds.JIZHI);
         }
 
         //奔袭技能触发
@@ -36,12 +33,12 @@ public class CardEvents implements CardUsePostCallback, CardDiscardCallback, Car
             ItemStack trinketItem = trinketItem(SkillCards.BENXI, user);
             int benxi = getTag(trinketItem);
             if (benxi < 5) {
-                benxi ++; setTag(trinketItem, benxi);
-                if (new Random().nextFloat() < 0.5) {voice(user, Sounds.BENXI1);} else {voice(user, Sounds.BENXI2);}
+                setTag(trinketItem, benxi + 1);
+                voice(user, Sounds.BENXI);
             }
         }
 
-        if (hasTrinket(SkillCards.LIANYING, user) && countAllCard(user) == 0) lianyingTrigger(user);
+        if (hasTrinket(SkillCards.LIANYING, user) && countCards(user) == 0) lianyingTrigger(user);
     }
 
     @Override
@@ -51,7 +48,7 @@ public class CardEvents implements CardUsePostCallback, CardDiscardCallback, Car
 
         //弃置牌后，玩家的死亡判断是有必要的
         if (player.isAlive()) {
-            if (hasTrinket(SkillCards.LIANYING, player) && !fromEquip && countAllCard(player) == 0) lianyingTrigger(player);
+            if (hasTrinket(SkillCards.LIANYING, player) && !fromEquip && countCards(player) == 0) lianyingTrigger(player);
 
             if (hasTrinket(SkillCards.XIAOJI, player) && fromEquip) xiaojiTrigger(player);
         }
@@ -68,7 +65,7 @@ public class CardEvents implements CardUsePostCallback, CardDiscardCallback, Car
         }
 
         if (type == Type.INV_TO_EQUIP || type == Type.INV_TO_INV) {
-            if (from instanceof PlayerEntity player && hasTrinket(SkillCards.LIANYING, player) && countAllCard(player) == 0) lianyingTrigger(player);
+            if (from instanceof PlayerEntity player && hasTrinket(SkillCards.LIANYING, player) && countCards(player) == 0) lianyingTrigger(player);
         }
 
         if (type == Type.EQUIP_TO_INV || type == Type.EQUIP_TO_EQUIP) {
@@ -82,7 +79,7 @@ public class CardEvents implements CardUsePostCallback, CardDiscardCallback, Car
     }
 
     private void xiaojiTrigger(PlayerEntity player) {
-        give(player, new ItemStack(ModItems.GAIN_CARD, 2));
-        if (new Random().nextFloat() < 0.5) {voice(player, Sounds.XIAOJI1);} else {voice(player, Sounds.XIAOJI2);}
+        draw(player, 2);
+        voice(player, Sounds.XIAOJI);
     }
 }

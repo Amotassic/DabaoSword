@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.client;
 
+import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.network.ServerNetworking;
 import dev.emi.trinkets.api.TrinketComponent;
@@ -14,6 +15,7 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
@@ -47,6 +49,15 @@ public class SkillKeyBinds {
                     ClientPlayNetworking.send(ServerNetworking.ACTIVE_SKILL, buf);
                 }
             }
+/*
+            if (user != null && user.getOffHandStack().getItem() == ModItems.SHA) {
+                double dx = user.getX() - user.lastRenderX;
+                double dy = user.getY() - user.lastRenderY;
+                double dz = user.getZ() - user.lastRenderZ;
+                double dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+                user.sendMessage(Text.literal("Speed: " + dist * 20), true);
+            }*/
+
         });
     }
 

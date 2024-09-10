@@ -7,8 +7,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 
-import java.util.Random;
-
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class DuanliangSkill extends SkillItem {
@@ -23,7 +21,7 @@ public class DuanliangSkill extends SkillItem {
                 setCD(stack, 5);
                 stack1.decrement(1);
                 give(player, ModItems.BINGLIANG_ITEM.getDefaultStack());
-                if (new Random().nextFloat() < 0.5) {voice(player, Sounds.DUANLIANG1);} else {voice(player, Sounds.DUANLIANG2);}
+                voice(player, Sounds.DUANLIANG);
             }
         }
         super.tick(stack, slot, entity);

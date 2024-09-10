@@ -28,7 +28,6 @@ import net.minecraft.util.collection.DefaultedList;
 import java.util.*;
 import java.util.stream.IntStream;
 
-import static com.amotassic.dabaosword.item.card.GainCardItem.draw;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class PlayerInvScreenHandler extends ScreenHandler {
@@ -60,7 +59,7 @@ public class PlayerInvScreenHandler extends ScreenHandler {
             if (selfStack != ItemStack.EMPTY) {
 
                 if (stack.getItem() == SkillCards.RENDE) {
-                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.RENDE1);} else {voice(player, Sounds.RENDE2);}
+                    voice(player, Sounds.RENDE);
                     target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.toHoverableText(), target.getDisplayName())));
                     player.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.toHoverableText(), target.getDisplayName())));
                     CardMoveCallback.EVENT.invoker().cardMove(player, target, selfStack, 1, CardMoveCallback.Type.INV_TO_INV);
@@ -85,7 +84,7 @@ public class PlayerInvScreenHandler extends ScreenHandler {
             if (targetStack != ItemStack.EMPTY) {
 
                 if (stack.getItem() == SkillCards.SHANZHUAN) {
-                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.SHANZHUAN1);} else {voice(player, Sounds.SHANZHUAN2);}
+                    voice(player, Sounds.SHANZHUAN);
                     if (targetStack.isIn(Tags.Items.BASIC_CARD)) target.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 5));
                     else target.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, StatusEffectInstance.INFINITE,1));
                     target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("dabaosword.discard")).append(targetStack.toHoverableText()));
@@ -101,12 +100,12 @@ public class PlayerInvScreenHandler extends ScreenHandler {
 
                 if (stack.getItem() == SkillCards.ZHIHENG) {
                     int z = getTag(stack);
-                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.ZHIHENG1);} else {voice(player, Sounds.ZHIHENG2);}
+                    voice(player, Sounds.ZHIHENG);
                     CardDiscardCallback.EVENT.invoker().cardDiscard(player, targetStack, 1, slotIndex < 4);
                     if (new Random().nextFloat() < 0.1) {
                         draw(player, 2);
                         player.sendMessage(Text.translatable("zhiheng.extra").formatted(Formatting.GREEN), true);
-                    } else draw(player, 1);
+                    } else draw(player);
                     setTag(stack, z - 1);
                     if (z - 1 == 0) closeGUI(player);
                 }

@@ -22,7 +22,6 @@ import net.minecraft.util.Pair;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
 
@@ -81,9 +80,7 @@ public class PlayerEvents implements PlayerConnectCallback, PlayerDeathCallback,
     private static boolean XingshangTrigger(PlayerEntity player, ItemStack stack) {
         for (PlayerEntity player1 : player.getWorld().getPlayers()) {//行殇技能触发
             if (hasTrinket(SkillCards.XINGSHANG, player1) && player1.distanceTo(player) <= 25 && player1 != player) {
-                if (!player1.getCommandTags().contains("xingshang")) {
-                    if (new Random().nextFloat() < 0.5) voice(player1, Sounds.XINGSHANG1); else voice(player1, Sounds.XINGSHANG2);
-                }
+                if (!player1.getCommandTags().contains("xingshang")) voice(player1, Sounds.XINGSHANG);
                 player1.addCommandTag("xingshang");
                 give(player1, stack.copy());
                 stack.setCount(0);

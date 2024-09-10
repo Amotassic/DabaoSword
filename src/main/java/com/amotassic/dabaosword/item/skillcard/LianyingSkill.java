@@ -7,9 +7,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 
-import java.util.Random;
-
-import static com.amotassic.dabaosword.item.card.GainCardItem.draw;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class LianyingSkill extends SkillItem {
@@ -20,8 +17,8 @@ public class LianyingSkill extends SkillItem {
         if (entity.getWorld() instanceof ServerWorld world && entity instanceof PlayerEntity player) {
             int cd = getCD(stack);
             if (world.getTime() % 20 == 0 && cd == 1) { //确保一秒内只触发一次
-                draw(player, 1);
-                if (new Random().nextFloat() < 0.5) {voice(player, Sounds.LIANYING1);} else {voice(player, Sounds.LIANYING2);}
+                draw(player);
+                voice(player, Sounds.LIANYING);
             }
         }
         super.tick(stack, slot, entity);

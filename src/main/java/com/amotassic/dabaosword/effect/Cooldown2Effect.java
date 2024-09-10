@@ -13,7 +13,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.Objects;
-import java.util.Random;
 
 import static com.amotassic.dabaosword.item.equipment.ArrowRainItem.arrowRain;
 import static com.amotassic.dabaosword.util.ModTools.*;
@@ -44,7 +43,7 @@ public class Cooldown2Effect extends StatusEffect {
     public void onApplied(LivingEntity entity, AttributeContainer attributes, int amplifier) {
         if (entity instanceof PlayerEntity player && !player.getWorld().isClient && hasTrinket(SkillCards.LEIJI, player) && amplifier == 3) {
             //雷击语音播放
-            if (new Random().nextFloat() < 0.5) {voice(player, Sounds.LEIJI1);} else {voice(player, Sounds.LEIJI2);}
+            voice(player, Sounds.LEIJI);
         }
         super.onApplied(entity, attributes, amplifier);
     }

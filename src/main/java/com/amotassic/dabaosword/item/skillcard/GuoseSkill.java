@@ -7,8 +7,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 
-import java.util.Random;
-
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class GuoseSkill extends SkillItem {
@@ -23,7 +21,7 @@ public class GuoseSkill extends SkillItem {
                 setCD(stack, 15);
                 stack1.decrement(1);
                 give(player, ModItems.TOO_HAPPY_ITEM.getDefaultStack());
-                if (new Random().nextFloat() < 0.5) {voice(player, Sounds.GUOSE1);} else {voice(player, Sounds.GUOSE2);}
+                voice(player, Sounds.GUOSE);
             }
         }
         super.tick(stack, slot, entity);

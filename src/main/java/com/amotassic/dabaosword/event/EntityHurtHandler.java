@@ -63,7 +63,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
                     if (hasTrinket(SkillCards.BUQU, player)) {
                         ItemStack stack = trinketItem(SkillCards.BUQU, player);
                         int c = getTag(stack);
-                        if (new Random().nextFloat() < 0.5) {voice(player, Sounds.BUQU1);} else {voice(player, Sounds.BUQU2);}
+                        voice(player, Sounds.BUQU);
                         if (new Random().nextFloat() >= (float) c /13) {
                             player.sendMessage(Text.translatable("buqu.tip1").formatted(Formatting.GREEN).append(String.valueOf(c + 1)));
                             c++; setTag(stack, c);
@@ -79,28 +79,28 @@ public class EntityHurtHandler implements EntityHurtCallback {
                 if (hasTrinket(SkillCards.QUANJI, player) && source.getAttacker() instanceof LivingEntity) {
                     ItemStack stack = trinketItem(SkillCards.QUANJI, player);
                     int quan = getTag(stack);
-                    quan++; setTag(stack, quan);
-                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.QUANJI1);} else {voice(player, Sounds.QUANJI2);}
+                    setTag(stack, quan + 1);
+                    voice(player, Sounds.QUANJI);
                 }
 
                 //遗计
                 if (hasTrinket(SkillCards.YIJI, player) && !player.hasStatusEffect(ModItems.COOLDOWN) && player.getHealth() <= 12) {
-                    give(player, new ItemStack(ModItems.GAIN_CARD, 2));
+                    draw(player, 2);
                     player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 20, 0, false, false, true));
                     setTag(Objects.requireNonNull(trinketItem(SkillCards.YIJI, player)), 2);
-                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.YIJI1);} else {voice(player, Sounds.YIJI2);}
+                    voice(player, Sounds.YIJI);
                 }
 
                 //放逐
                 if (hasTrinket(SkillCards.FANGZHU, player) && source.getAttacker() instanceof LivingEntity attacker && player != attacker) {
                     int i = attacker instanceof PlayerEntity ? (int) (20 * amount + 60) : 300;
                     attacker.addStatusEffect(new StatusEffectInstance(ModItems.TURNOVER, i));
-                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.FANGZHU1);} else {voice(player, Sounds.FANGZHU2);}
+                    voice(player, Sounds.FANGZHU);
                 }
 
                 //刚烈
                 if (hasTrinket(SkillCards.GANGLIE, player) && source.getAttacker() instanceof LivingEntity attacker && player != attacker) {
-                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.GANGLIE1);} else {voice(player, Sounds.GANGLIE2);}
+                    voice(player, Sounds.GANGLIE);
                     for (int i = 0; i < amount; i += 5) {//造成伤害
                         if (new Random().nextFloat() < 0.5) {
                             player.addCommandTag("sha");//以此造成伤害不自动触发杀
@@ -148,7 +148,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
             if (source.getAttacker() instanceof PlayerEntity player && entity.getHealth() <= 0) {
                 if (entity instanceof HostileEntity) {
                     if (new Random().nextFloat() < 0.1) {
-                        give(player, new ItemStack(ModItems.GAIN_CARD));
+                        draw(player);
                         player.sendMessage(Text.translatable("dabaosword.draw.monster"),true);
                     }
                     //功獒技能触发
@@ -157,11 +157,11 @@ public class EntityHurtHandler implements EntityHurtCallback {
                         int extraHP = getTag(stack);
                         extraHP++; setTag(stack, extraHP);
                         player.heal(1);
-                        if (new Random().nextFloat() < 0.5) {voice(player, Sounds.GONGAO1);} else {voice(player, Sounds.GONGAO2);}
+                        voice(player, Sounds.GONGAO);
                     }
                 }
                 if (entity instanceof PlayerEntity) {
-                    give(player, new ItemStack(ModItems.GAIN_CARD, 2));
+                    draw(player, 2);
                     player.sendMessage(Text.translatable("dabaosword.draw.player"),true);
                     //功獒技能触发
                     if (hasTrinket(SkillCards.GONGAO, player)) {
@@ -169,7 +169,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
                         int extraHP = getTag(stack);
                         setTag(stack, extraHP + 5);
                         player.heal(5);
-                        if (new Random().nextFloat() < 0.5) {voice(player, Sounds.GONGAO1);} else {voice(player, Sounds.GONGAO2);}
+                        voice(player, Sounds.GONGAO);
                     }
                 }
             }
@@ -178,8 +178,8 @@ public class EntityHurtHandler implements EntityHurtCallback {
                 //狂骨：攻击命中敌人时，如果受伤超过5则回血，否则摸一张牌
                 if (hasTrinket(SkillCards.KUANGGU, player) && !player.hasStatusEffect(ModItems.COOLDOWN)) {
                     if (player.getMaxHealth()-player.getHealth()>=5) {player.heal(5);}
-                    else give(player, new ItemStack(ModItems.GAIN_CARD));
-                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.KUANGGU1);} else {voice(player, Sounds.KUANGGU2);}
+                    else draw(player);
+                    voice(player, Sounds.KUANGGU);
                     player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 8,0,false,false,true));
                 }
 
@@ -188,11 +188,10 @@ public class EntityHurtHandler implements EntityHurtCallback {
                     var stack = trinketItem(SkillCards.SHANZHUAN, player);
                     if (entity instanceof PlayerEntity target) ActiveSkillHandler.openInv(player, target, Text.translatable("dabaosword.discard.title", stack.getName()), stack, ActiveSkillHandler.targetInv(target, true, false, 1));
                     else {
+                        voice(player, Sounds.SHANZHUAN);
                         if (new Random().nextFloat() < 0.5) {
-                            voice(player, Sounds.SHANZHUAN1);
                             entity.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, StatusEffectInstance.INFINITE,1));
                         } else {
-                            voice(player, Sounds.SHANZHUAN2);
                             entity.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 5));
                         }
                         player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 5,0,false,false,true));
@@ -262,8 +261,8 @@ public class EntityHurtHandler implements EntityHurtCallback {
                     if (ben > 1) {
                         player.addCommandTag("benxi");
                         setTag(stack, ben - 2);
-                        give(player, new ItemStack(ModItems.GAIN_CARD));
-                        if (new Random().nextFloat() < 0.5) {voice(player, Sounds.BENXI1);} else {voice(player, Sounds.BENXI2);}
+                        draw(player);
+                        voice(player, Sounds.BENXI);
                     }
                 }
 

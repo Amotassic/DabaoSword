@@ -122,7 +122,7 @@ public class ModItems {
     }//状态效果注册
     //兵粮寸断效果
     public static final StatusEffect BINGLIANG = register("bingliang",
-            new BingliangEffect(StatusEffectCategory.HARMFUL, 0x46F732).addAttributeModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE,"22653B89-116E-49DC-9B6B-9971489B5BE5",-4, EntityAttributeModifier.Operation.ADDITION));
+            new CommonEffect(StatusEffectCategory.HARMFUL, 0x46F732).addAttributeModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE,"22653B89-116E-49DC-9B6B-9971489B5BE5",-4, EntityAttributeModifier.Operation.ADDITION));
     //乐不思蜀效果
     public static final StatusEffect TOO_HAPPY = register("too_happy",
             new TooHappyEffect(StatusEffectCategory.HARMFUL, 0xF73C0A).addAttributeModifier(EntityAttributes.GENERIC_MOVEMENT_SPEED,"7107DE5E-7CE8-4030-940E-514C1F160890",-10, EntityAttributeModifier.Operation.MULTIPLY_TOTAL));

@@ -49,7 +49,7 @@ public class AttackEntityHandler implements AttackEntityCallback {
                         if (!legs.isEmpty()) {target.dropStack(legs.copy());legs.setCount(0);}
                         if (!feet.isEmpty()) {target.dropStack(feet.copy());feet.setCount(0);}
                     }
-                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.POJUN1);} else {voice(player, Sounds.POJUN2);}
+                    voice(player, Sounds.POJUN);
                     int i = target instanceof PlayerEntity ? 200 : 40;
                     player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, i,0, false,false,true));
                 }
@@ -82,7 +82,7 @@ public class AttackEntityHandler implements AttackEntityCallback {
                 }
 
                 if (hasTrinket(SkillCards.TIEJI, player) && getShaSlot(player) != -1) {
-                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.TIEJI1);} else {voice(player, Sounds.TIEJI2);}
+                    voice(player, Sounds.TIEJI);
                     target.addStatusEffect(new StatusEffectInstance(ModItems.TIEJI,200,0,false,true,true));
                     if (new Random().nextFloat() < 0.75) target.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2,2,0,false,false,false));
                 }

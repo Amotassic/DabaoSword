@@ -7,8 +7,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 
-import java.util.Random;
-
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class QingguoSkill extends SkillItem {
@@ -23,7 +21,7 @@ public class QingguoSkill extends SkillItem {
                 setCD(stack, 5);
                 stack1.decrement(1);
                 give(player, ModItems.SHAN.getDefaultStack());
-                if (new Random().nextFloat() < 0.5) {voice(player, Sounds.QINGGUO1);} else {voice(player, Sounds.QINGGUO2);}
+                voice(player, Sounds.QINGGUO);
             }
         }
         super.tick(stack, slot, entity);

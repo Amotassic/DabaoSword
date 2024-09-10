@@ -8,8 +8,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 
-import java.util.Random;
-
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class LuanjiSkill extends SkillItem {
@@ -24,11 +22,7 @@ public class LuanjiSkill extends SkillItem {
                 setCD(stack, 15);
                 stack1.decrement(2);
                 give(player, ModItems.WANJIAN.getDefaultStack());
-                float i = new Random().nextFloat();
-                if (i < 0.25) {voice(player, Sounds.LUANJI1);
-                } else if (0.25 <= i && i < 0.5) {voice(player, Sounds.LUANJI2);
-                } else if (0.5 <= i && i < 0.75) {voice(player, Sounds.LUANJI3);
-                } else {voice(player, Sounds.LUANJI4);}
+                voice(player, Sounds.LUANJI);
             }
         }
         super.tick(stack, slot, entity);

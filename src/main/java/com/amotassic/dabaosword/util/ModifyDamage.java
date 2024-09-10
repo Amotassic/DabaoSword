@@ -45,11 +45,9 @@ public class ModifyDamage {
                 ItemStack stack = trinketItem(SkillCards.QUANJI, attacker);
                 int quan = getTag(stack);
                 if (quan > 0) {
-                    if (quan > 4 && entity instanceof PlayerEntity player) give(player, new ItemStack(ModItems.GAIN_CARD, 2));
+                    if (quan > 4 && entity instanceof PlayerEntity player) draw(player, 2);
                     setTag(stack, quan/2);
-                    float j = new Random().nextFloat();
-                    if (j < 0.25) {voice(attacker, Sounds.PAIYI1);} else if (0.25 <= j && j < 0.5) {voice(attacker, Sounds.PAIYI2,3);}
-                    else if (0.5 <= j && j < 0.75) {voice(attacker, Sounds.PAIYI3);} else {voice(attacker, Sounds.PAIYI4,3);}
+                    voice(attacker, Sounds.PAIYI);
                     value += quan;
                 }
             }
@@ -58,7 +56,7 @@ public class ModifyDamage {
             if (hasTrinket(SkillCards.LIEGONG, attacker) && !attacker.hasStatusEffect(ModItems.COOLDOWN)) {
                 float f = Math.max(13 - attacker.distanceTo(entity), 5);
                 attacker.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, (int) (40 * f),0,false,false,true));
-                if (new Random().nextFloat() < 0.5) {voice(attacker, Sounds.LIEGONG1);} else {voice(attacker, Sounds.LIEGONG2);}
+                voice(attacker, Sounds.LIEGONG);
                 value += f;
             }
         }
@@ -138,7 +136,7 @@ public class ModifyDamage {
                     if (nearEntity != null) {
                         player.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 10,0,false,false,false));
                         player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 10,0,false,false,false));
-                        if (new Random().nextFloat() < 0.5) {voice(player, Sounds.LIULI1);} else {voice(player, Sounds.LIULI2);}
+                        voice(player, Sounds.LIULI);
                         CardDiscardCallback.EVENT.invoker().cardDiscard(player, stack, 1, false);
                         nearEntity.timeUntilRegen = 0; nearEntity.damage(source, amount);
                         return true;
@@ -168,7 +166,7 @@ public class ModifyDamage {
 
             if (hasTrinket(SkillCards.JUEQING, attacker)) { //绝情效果
                 entity.damage(entity.getDamageSources().genericKill(), Math.min(7, amount));
-                if (new Random().nextFloat() < 0.5) {voice(attacker, Sounds.JUEQING1, 1);} else {voice(attacker, Sounds.JUEQING2, 1);}
+                voice(attacker, Sounds.JUEQING, 1);
                 return true;
             }
         }

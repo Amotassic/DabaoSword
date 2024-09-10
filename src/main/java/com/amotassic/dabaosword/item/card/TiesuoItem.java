@@ -15,8 +15,6 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 
-import java.util.Random;
-
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class TiesuoItem extends CardItem {
@@ -39,10 +37,7 @@ public class TiesuoItem extends CardItem {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         if (!world.isClient && user.getOffHandStack().getItem() == Items.KNOWLEDGE_BOOK) {
-            float i = new Random().nextFloat();
-            if (i < 0.333) {voice(user, Sounds.NAHIDA1, 3);}
-            else if (0.333<= i && i < 0.666) {voice(user, Sounds.NAHIDA2, 3);}
-            else {voice(user, Sounds.NAHIDA3, 3);}
+            voice(user, Sounds.NAHIDA, 3);
         }
         return ItemUsage.consumeHeldItem(world, user, hand);
     }

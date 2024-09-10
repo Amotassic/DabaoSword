@@ -34,7 +34,6 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.stream.IntStream;
 
-import static com.amotassic.dabaosword.item.card.GainCardItem.draw;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class ActiveSkillHandler implements ActiveSkillCallback {
@@ -52,9 +51,9 @@ public class ActiveSkillHandler implements ActiveSkillCallback {
                 int cd = getCD(stack);
                 if (cd > 0) user.sendMessage(Text.translatable("dabaosword.cooldown").formatted(Formatting.RED), true);
                 else {
-                    if (new Random().nextFloat() < 0.5) {voice(user, Sounds.LUOSHEN1);} else {voice(user, Sounds.LUOSHEN2);}
+                    voice(user, Sounds.LUOSHEN);
                     if (new Random().nextFloat() < 0.5) {
-                        draw(user,1);
+                        draw(user);
                         user.sendMessage(Text.translatable("item.dabaosword.luoshen.win").formatted(Formatting.GREEN), true);
                     } else {
                         setCD(stack, 30);
@@ -65,12 +64,12 @@ public class ActiveSkillHandler implements ActiveSkillCallback {
 
             if (stack.getItem() == SkillCards.KUROU) {
                 if (user.getHealth() + 5 * count(user, Tags.Items.RECOVER) > 4.99) {
-                    give(user, new ItemStack(ModItems.GAIN_CARD, 2));
+                    draw(user, 2);
                     if (!user.isCreative()) {
                         user.timeUntilRegen = 0;
                         user.damage(user.getDamageSources().genericKill(), 4.99f);
                     }
-                    if (new Random().nextFloat() < 0.5) {voice(user, Sounds.KUROU1);} else {voice(user, Sounds.KUROU2);}
+                    voice(user, Sounds.KUROU);
                 } else {user.sendMessage(Text.translatable("item.dabaosword.kurou.tip").formatted(Formatting.RED), true);}
             }
 
@@ -109,11 +108,11 @@ public class ActiveSkillHandler implements ActiveSkillCallback {
                 if (itemStack.getItem() instanceof EquipmentItem && itemStack.getItem() != ModItems.CARD_PILE) {
                     CardMoveCallback.EVENT.invoker().cardMove(user, target, itemStack, itemStack.getCount(), CardMoveCallback.Type.INV_TO_EQUIP);
                     if (EquipmentItem.useEquip(target, itemStack)) {
-                        if (new Random().nextFloat() < 0.5) {voice(user, Sounds.ZHIJIAN1);} else {voice(user, Sounds.ZHIJIAN2);}
-                        draw(user, 1);
+                        voice(user, Sounds.ZHIJIAN);
+                        draw(user);
                     } else if (EquipmentItem.replaceEquip(target, itemStack)) {
-                        if (new Random().nextFloat() < 0.5) {voice(user, Sounds.ZHIJIAN1);} else {voice(user, Sounds.ZHIJIAN2);}
-                        draw(user, 1);
+                        voice(user, Sounds.ZHIJIAN);
+                        draw(user);
                     }
                 } else user.sendMessage(Text.translatable("zhijian.fail").formatted(Formatting.RED), true);
             }
@@ -122,7 +121,7 @@ public class ActiveSkillHandler implements ActiveSkillCallback {
                 int cd = getCD(stack);
                 if (cd > 0) user.sendMessage(Text.translatable("dabaosword.cooldown").formatted(Formatting.RED), true);
                 else {
-                    if (new Random().nextFloat() < 0.5) {voice(user, Sounds.GONGXIN1);} else {voice(user, Sounds.GONGXIN2);}
+                    voice(user, Sounds.GONGXIN);
                     openInv(user, target, Text.translatable("gongxin.title"), stack, targetInv(target, false, false, 2));
                     setCD(stack, 30);
                 }
