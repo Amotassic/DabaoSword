@@ -1,7 +1,7 @@
 package com.amotassic.dabaosword.command;
 
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.network.FullInvPayload;
+import com.amotassic.dabaosword.network.OpenInvPayload;
 import com.amotassic.dabaosword.ui.FullInvScreenHandler;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
@@ -64,7 +64,7 @@ public class InfoCommand {
             player.openHandledScreen(new ExtendedScreenHandlerFactory<>() {
                 @Override
                 public Object getScreenOpeningData(ServerPlayerEntity player) {
-                    return new FullInvPayload(target.getId());
+                    return new OpenInvPayload(target.getId());
                 }
 
                 @Override

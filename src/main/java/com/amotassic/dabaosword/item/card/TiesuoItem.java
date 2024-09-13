@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.item.card;
 
+import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -14,8 +15,6 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 
-import java.util.Random;
-
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class TiesuoItem extends CardItem {
@@ -28,8 +27,7 @@ public class TiesuoItem extends CardItem {
             for (LivingEntity nearbyEntity : user.getWorld().getEntitiesByClass(LivingEntity.class, box, nearbyEntity -> !nearbyEntity.isGlowing())) {
                 nearbyEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, StatusEffectInstance.INFINITE, 0, false, true,false));
             }
-            if (!user.isCreative()) {stack.decrement(1);}
-            jizhi(user); benxi(user);
+            CardUsePostCallback.EVENT.invoker().cardUsePost(user, stack, entity);
             voice(user, Sounds.TIESUO);
             user.removeStatusEffect(StatusEffects.GLOWING);
         }
@@ -39,10 +37,7 @@ public class TiesuoItem extends CardItem {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         if (!world.isClient && user.getOffHandStack().getItem() == Items.KNOWLEDGE_BOOK) {
-            float i = new Random().nextFloat();
-            if (i < 0.333) {voice(user, Sounds.NAHIDA1, 3);}
-            else if (0.333<= i && i < 0.666) {voice(user, Sounds.NAHIDA2, 3);}
-            else {voice(user, Sounds.NAHIDA3, 3);}
+            voice(user, Sounds.NAHIDA, 3);
         }
         return ItemUsage.consumeHeldItem(world, user, hand);
     }

@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.item.card;
 
+import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
@@ -33,30 +34,32 @@ public class JuedouItem extends CardItem {
         if (!user.getWorld().isClient && hand == Hand.MAIN_HAND && !entity.isDead()) {
             user.addCommandTag("juedou");
             if (entity instanceof PlayerEntity player && hasItem(player, ModItems.WUXIE)) {
-                removeItem(player, ModItems.WUXIE);
-                jizhi(player); benxi(player);
+                CardUsePostCallback.EVENT.invoker().cardUsePost(player, getItem(player, ModItems.WUXIE), null);
                 voice(player, Sounds.WUXIE);
             } else {
                 if (entity instanceof PlayerEntity target) {
                     TagKey<Item> tag = Tags.Items.SHA;
                     int userSha = count(user, tag);
                     int targetSha = count(target, tag);
-                    if (userSha >= targetSha) { target.timeUntilRegen = 0;
+                    if (userSha >= targetSha) {
+                        target.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2,2,0,false,false,false));
+                        target.timeUntilRegen = 0;
                         target.damage(user.getDamageSources().sonicBoom(user),5f);
                         target.sendMessage(Text.literal(user.getNameForScoreboard()).append(Text.translatable("dabaosword.juedou2")));
-                    } else { user.timeUntilRegen = 0;
+                    } else { target.addCommandTag("juedou"); //防止决斗触发杀
+                        user.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2,2,0,false,false,false));
+                        user.timeUntilRegen = 0;
                         user.damage(target.getDamageSources().sonicBoom(target),5f);
                         user.sendMessage(Text.translatable("dabaosword.juedou1"));
-                        if (targetSha != 0) {
+                        if (targetSha != 0) { //如果目标的杀比使用者的杀多，反击使用者，则目标减少一张杀
                             ItemStack sha = stackInTag(tag, target);
-                            sha.decrement(1);
+                            CardUsePostCallback.EVENT.invoker().cardUsePost(target, sha, user);
                         }
                     }
                 } else { entity.timeUntilRegen = 0;
                     entity.damage(user.getDamageSources().sonicBoom(user),5f);}
             }
-            if (!user.isCreative()) {stack.decrement(1);}
-            jizhi(user); benxi(user);
+            CardUsePostCallback.EVENT.invoker().cardUsePost(user, stack, entity);
             voice(user, Sounds.JUEDOU);
             return ActionResult.SUCCESS;
         }

@@ -1,15 +1,26 @@
 package com.amotassic.dabaosword.item;
 
 import com.amotassic.dabaosword.effect.*;
+import com.amotassic.dabaosword.event.*;
+import com.amotassic.dabaosword.event.callback.*;
 import com.amotassic.dabaosword.item.card.*;
 import com.amotassic.dabaosword.item.equipment.*;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
+import com.amotassic.dabaosword.network.OpenInvPayload;
+import com.amotassic.dabaosword.ui.FullInvScreenHandler;
+import com.amotassic.dabaosword.ui.PlayerInvScreenHandler;
+import com.amotassic.dabaosword.ui.SimpleMenuHandler;
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.minecraft.component.ComponentType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -17,8 +28,10 @@ import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Rarity;
 import net.minecraft.util.dynamic.Codecs;
 
 import java.util.function.UnaryOperator;
@@ -87,20 +100,33 @@ public class ModItems {
     //铁锁连环
     public static final Item TIESUO = register("tiesuo",new TiesuoItem(new Item.Settings()));
     //万箭齐发
-    public static final Item ARROW_RAIN = register("arrow_rain", new ArrowRainItem(new Item.Settings().maxDamage(50)));
+    public static final Item ARROW_RAIN = register("arrow_rain", new ArrowRainItem(new Item.Settings().maxDamage(50).rarity(Rarity.UNCOMMON)));
     public static final Item WANJIAN = register("wanjian", new WanjianItem(new Item.Settings()));
     //无懈可击
     public static final Item WUXIE = register("wuxie", new CardItem(new Item.Settings()));
     //无中生有
     public static final Item WUZHONG = register("wuzhong", new GainCardItem(new Item.Settings()));
     //礼盒
-    public static final Item GIFTBOX = register("gift_box", new GiftBoxItem(new Item.Settings()));
+    public static final Item GIFTBOX = register("gift_box", new GiftBoxItem(new Item.Settings().rarity(Rarity.UNCOMMON)));
     //BB机
     public static final Item BBJI = register("bbji", new BBjiItem(new Item.Settings().maxDamage(250)));
+    //让我康康
+    public static final Item LET_ME_CC = register("let_me_cc", new LetMeCCItem(new Item.Settings().maxCount(1)));
 
     //注册部分
     public static void register() {
         Registry.register(Registries.ITEM_GROUP, Identifier.of("dabaosword", "item_group"), DABAOSWORD_GROUP);
+        AttackEntityCallback.EVENT.register(new AttackEntityHandler());
+        EntityHurtCallback.EVENT.register(new EntityHurtHandler());
+        PlayerConnectCallback.EVENT.register(new PlayerEvents());
+        PlayerDeathCallback.EVENT.register(new PlayerEvents());
+        PlayerRespawnCallback.EVENT.register(new PlayerEvents());
+        ActiveSkillCallback.EVENT.register(new ActiveSkillHandler());
+        CardUsePostCallback.EVENT.register(new CardEvents());
+        CardDiscardCallback.EVENT.register(new CardEvents());
+        CardMoveCallback.EVENT.register(new CardEvents());
+        EndEntityTick.LIVING_EVENT.register(new EntityTickEvents());
+        EndEntityTick.PLAYER_EVENT.register(new EntityTickEvents());
     }
 
     private static RegistryEntry<StatusEffect> register(String id, StatusEffect statusEffect) {
@@ -108,7 +134,7 @@ public class ModItems {
     }//状态效果注册
     //兵粮寸断效果
     public static final RegistryEntry<StatusEffect> BINGLIANG = register("bingliang",
-            new BingliangEffect(StatusEffectCategory.HARMFUL, 0x46F732).addAttributeModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE, Identifier.of("bingliang"),-4, EntityAttributeModifier.Operation.ADD_VALUE));
+            new CommonEffect(StatusEffectCategory.HARMFUL, 0x46F732).addAttributeModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE, Identifier.of("bingliang"),-4, EntityAttributeModifier.Operation.ADD_VALUE));
     //乐不思蜀效果
     public static final RegistryEntry<StatusEffect> TOO_HAPPY = register("too_happy",
             new TooHappyEffect(StatusEffectCategory.HARMFUL, 0xF73C0A).addAttributeModifier(EntityAttributes.GENERIC_MOVEMENT_SPEED, Identifier.of("too_happy"),-10, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
@@ -150,8 +176,6 @@ public class ModItems {
     private static <T> ComponentType<T> register(String id, UnaryOperator<ComponentType.Builder<T>> builderOperator) {
         return Registry.register(Registries.DATA_COMPONENT_TYPE, Identifier.of("dabaosword",id), (builderOperator.apply(ComponentType.builder())).build());
     }
-
-    public static void registerItems() {}
 
     //物品组添加
     public static final ItemGroup DABAOSWORD_GROUP = FabricItemGroup.builder()
@@ -202,6 +226,7 @@ public class ModItems {
                 entries.add(SkillCards.QICE);
                 entries.add(SkillCards.QUANJI);
                 entries.add(SkillCards.SHANZHUAN);
+                entries.add(SkillCards.SHENSU);
                 entries.add(SkillCards.YIJI);
                 //蜀
                 entries.add(SkillCards.BENXI);
@@ -217,10 +242,12 @@ public class ModItems {
                 entries.add(SkillCards.BUQU);
                 entries.add(SkillCards.GONGXIN);
                 entries.add(SkillCards.GUOSE);
+                entries.add(SkillCards.LIANYING);
                 entries.add(SkillCards.LIULI);
                 entries.add(SkillCards.KUROU);
                 entries.add(SkillCards.POJUN);
                 entries.add(SkillCards.QIXI);
+                entries.add(SkillCards.XIAOJI);
                 entries.add(SkillCards.ZHIHENG);
                 entries.add(SkillCards.ZHIJIAN);
                 //群
@@ -232,5 +259,12 @@ public class ModItems {
 
                 entries.add(GIFTBOX);
                 entries.add(BBJI);
+                entries.add(LET_ME_CC);
             }).build();
+
+    public static final ScreenHandlerType<SimpleMenuHandler> SIMPLE_MENU_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "simple_menu", new ExtendedScreenHandlerType<>((syncId, inv, data) -> new SimpleMenuHandler(syncId, new SimpleInventory(20), (PlayerEntity) inv.player.getWorld().getEntityById(data.id())), OpenInvPayload.OPENINV_CODEC));
+
+    public static final ScreenHandlerType<PlayerInvScreenHandler> PLAYER_INV_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "player_inv", new ExtendedScreenHandlerType<>((syncId, inv, data) -> new PlayerInvScreenHandler(syncId, new SimpleInventory(60), (PlayerEntity) inv.player.getWorld().getEntityById(data.id())), OpenInvPayload.OPENINV_CODEC));
+
+    public static final ScreenHandlerType<FullInvScreenHandler> FULL_INV_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "full_inv", new ExtendedScreenHandlerType<>((syncId, inv, data) -> new FullInvScreenHandler(syncId, inv, new SimpleInventory(64), (LivingEntity) inv.player.getWorld().getEntityById(data.id())), OpenInvPayload.OPENINV_CODEC));
 }

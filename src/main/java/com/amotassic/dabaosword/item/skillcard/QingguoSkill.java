@@ -6,9 +6,6 @@ import dev.emi.trinkets.api.SlotReference;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Hand;
-
-import java.util.Random;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
 
@@ -18,13 +15,13 @@ public class QingguoSkill extends SkillItem {
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
         if (!entity.getWorld().isClient && entity instanceof PlayerEntity player && noTieji(entity)) {
-            ItemStack stack1 = player.getStackInHand(Hand.OFF_HAND);
+            ItemStack stack1 = player.getOffHandStack();
             int cd = getCD(stack);
             if (cd == 0 && !stack1.isEmpty() && nonBasic(stack1)) {
                 setCD(stack, 5);
                 stack1.decrement(1);
                 give(player, ModItems.SHAN.getDefaultStack());
-                if (new Random().nextFloat() < 0.5) {voice(player, Sounds.QINGGUO1);} else {voice(player, Sounds.QINGGUO2);}
+                voice(player, Sounds.QINGGUO);
             }
         }
         super.tick(stack, slot, entity);

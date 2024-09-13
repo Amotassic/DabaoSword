@@ -1,6 +1,7 @@
 package com.amotassic.dabaosword.item.skillcard;
 
 import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.item.card.GiftBoxItem;
 import com.amotassic.dabaosword.util.*;
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketItem;
@@ -26,7 +27,6 @@ import net.minecraft.world.World;
 import java.util.List;
 import java.util.Objects;
 
-import static com.amotassic.dabaosword.item.card.GiftBoxItem.selectRandomEntry;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class SkillItem extends TrinketItem {
@@ -34,6 +34,19 @@ public class SkillItem extends TrinketItem {
 
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+
+        if (stack.getItem() == SkillCards.SHENSU) {
+            tooltip.add(Text.translatable("item.dabaosword.shensu.tooltip1").formatted(Formatting.BLUE));
+            tooltip.add(Text.translatable("item.dabaosword.shensu.tooltip2").formatted(Formatting.BLUE));
+        }
+
+        if (stack.getItem() == SkillCards.XIAOJI) {
+            tooltip.add(Text.translatable("item.dabaosword.xiaoji.tooltip").formatted(Formatting.GREEN));
+        }
+
+        if (stack.getItem() == SkillCards.LIANYING) {
+            tooltip.add(Text.translatable("item.dabaosword.lianying.tooltip").formatted(Formatting.GREEN));
+        }
 
         if (stack.getItem() == SkillCards.LONGDAN) {
             tooltip.add(Text.translatable("item.dabaosword.longdan.tooltip1").formatted(Formatting.RED));
@@ -237,7 +250,7 @@ public class SkillItem extends TrinketItem {
     public void onEquip(ItemStack stack, SlotReference slot, LivingEntity entity) {
         if (entity.getWorld() instanceof ServerWorld world && !equipped(stack)) {
             world.getPlayers().forEach(player -> player.sendMessage(
-                    Text.literal(entity.getNameForScoreboard()).append(Text.literal("装备了 ").append(stack.getName()))
+                    Text.literal(entity.getNameForScoreboard()).append(Text.literal("装备了 ").append(stack.toHoverableText()))
             ));
             setEquipped(stack, true);
         }
@@ -290,10 +303,18 @@ public class SkillItem extends TrinketItem {
 
     public static void changeSkill(PlayerEntity player) {
         List<LootEntry> lootEntries = LootTableParser.parseLootTable(Identifier.of("dabaosword", "loot_tables/change_skill.json"));
-        LootEntry selectedEntry = selectRandomEntry(lootEntries);
+        LootEntry selectedEntry = GiftBoxItem.selectRandomEntry(lootEntries);
 
         ItemStack stack = new ItemStack(Registries.ITEM.get(selectedEntry.item()));
         if (stack.getItem() != Items.AIR) voice(player, Sounds.GIFTBOX,3);
         give(player, stack);
+    }
+
+    public static class ActiveSkill extends SkillItem {
+        public ActiveSkill(Settings settings) {super(settings);}
+    }
+
+    public static class ActiveSkillWithTarget extends SkillItem {
+        public ActiveSkillWithTarget(Settings settings) {super(settings);}
     }
 }

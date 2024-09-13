@@ -49,7 +49,7 @@ public class AttackEntityHandler implements AttackEntityCallback {
                         if (!legs.isEmpty()) {target.dropStack(legs.copy());legs.setCount(0);}
                         if (!feet.isEmpty()) {target.dropStack(feet.copy());feet.setCount(0);}
                     }
-                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.POJUN1);} else {voice(player, Sounds.POJUN2);}
+                    voice(player, Sounds.POJUN);
                     int i = target instanceof PlayerEntity ? 200 : 40;
                     player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, i,0, false,false,true));
                 }
@@ -57,9 +57,11 @@ public class AttackEntityHandler implements AttackEntityCallback {
                 if (hasTrinket(ModItems.QINGGANG, player)) {//青釭剑额外伤害
                     float extraDamage = Math.min(20, 0.2f * target.getMaxHealth());
                     target.damage(player.getDamageSources().genericKill(), extraDamage); target.timeUntilRegen = 0;
+                    voice(player, Sounds.QINGGANG);
                 }
 
                 if (hasTrinket(ModItems.QINGLONG, player) && player.getAttackCooldownProgress(0) >= 0.9) {
+                    voice(player, Sounds.QINGLONG);
                     player.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE,10,0,false,false,false));
                     player.teleport(target.getX(), target.getY(), target.getZ(),false);
                     Vec3d momentum = player.getRotationVector().multiply(2);
@@ -72,21 +74,18 @@ public class AttackEntityHandler implements AttackEntityCallback {
                     int cd = getCD(stack);
                     if (cd == 0) {
                         setCD(stack, 20);
+                        voice(player, Sounds.FANGTIAN);
                         player.sendMessage(Text.translatable("dabaosword.fangtian").formatted(Formatting.RED), true);
                     }
                 }
 
                 if (hasTrinket(SkillCards.LIEGONG, player) && !player.hasStatusEffect(ModItems.COOLDOWN)) {
-                    //烈弓：命中后加伤害，至少为5，给目标一个短暂的冷却效果，防止其自动触发闪
+                    //烈弓：命中后给目标一个短暂的冷却效果，防止其自动触发闪
                     target.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2,2,0,false,false,false));
-                    float f = Math.max(13 - player.distanceTo(target), 5);
-                    player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, (int) (40 * f),0,false,false,true));
-                    target.damage(player.getDamageSources().playerAttack(player), f); target.timeUntilRegen = 0;
-                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.LIEGONG1);} else {voice(player, Sounds.LIEGONG2);}
                 }
 
                 if (hasTrinket(SkillCards.TIEJI, player) && getShaSlot(player) != -1) {
-                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.TIEJI1);} else {voice(player, Sounds.TIEJI2);}
+                    voice(player, Sounds.TIEJI);
                     target.addStatusEffect(new StatusEffectInstance(ModItems.TIEJI,200,0,false,true,true));
                     if (new Random().nextFloat() < 0.75) target.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2,2,0,false,false,false));
                 }

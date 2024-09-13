@@ -9,11 +9,23 @@
       "item": "dabaosword:feiying"
     },
     {
+      "weight": 2.0,
+      "item": "dabaosword:shensu"
+    },
+    {
+      "weight": 3.0,
+      "item": "dabaosword:xiaoji"
+    },
+    {
+      "weight": 1.0,
+      "item": "dabaosword:lianying"
+    },
+    {
       "weight": 3.0,
       "item": "dabaosword:longdan"
     },
     {
-      "weight": 3.0,
+      "weight": 2.0,
       "item": "dabaosword:shanzhuan"
     },
     {

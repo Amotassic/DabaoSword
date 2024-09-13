@@ -2,7 +2,6 @@ package com.amotassic.dabaosword.ui;
 
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
-import com.amotassic.dabaosword.network.ServerNetworking;
 import com.amotassic.dabaosword.util.Sounds;
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketComponent;
@@ -14,7 +13,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.util.Hand;
 import net.minecraft.util.Pair;
 
 import java.util.*;
@@ -27,7 +25,7 @@ public class SimpleMenuHandler extends ScreenHandler {
     private final PlayerEntity target;
 
     public SimpleMenuHandler(int syncId, Inventory inventory, PlayerEntity target) {
-        super(ServerNetworking.SIMPLE_MENU_HANDLER, syncId);
+        super(ModItems.SIMPLE_MENU_HANDLER, syncId);
         this.inventory = inventory;
         this.eventStack = inventory.getStack(18);
         this.target = target;
@@ -46,9 +44,9 @@ public class SimpleMenuHandler extends ScreenHandler {
 
             if (stack.getItem() == SkillCards.QICE) {
                 give(player, itemStack);
-                if (!player.isCreative()) player.getStackInHand(Hand.OFF_HAND).decrement(2);
+                if (!player.isCreative()) player.getOffHandStack().decrement(2);
                 setCD(stack, 20);
-                if (new Random().nextFloat() < 0.5) {voice(player, Sounds.QICE1);} else {voice(player, Sounds.QICE2);}
+                voice(player, Sounds.QICE);
                 closeGUI(player);
             }
 
@@ -58,7 +56,7 @@ public class SimpleMenuHandler extends ScreenHandler {
                     player.timeUntilRegen = 0;
                     player.damage(player.getDamageSources().genericKill(), 4.99f);
                 }
-                if (new Random().nextFloat() < 0.5) {voice(player, Sounds.TAOLUAN1);} else {voice(player, Sounds.TAOLUAN2);}
+                voice(player, Sounds.TAOLUAN);
                 closeGUI(player);
             }
         }

@@ -1,8 +1,10 @@
 package com.amotassic.dabaosword.ui;
 
+import com.amotassic.dabaosword.event.callback.CardDiscardCallback;
+import com.amotassic.dabaosword.event.callback.CardMoveCallback;
+import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
-import com.amotassic.dabaosword.network.ServerNetworking;
 import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
 import dev.emi.trinkets.api.SlotReference;
@@ -23,7 +25,6 @@ import net.minecraft.util.collection.DefaultedList;
 import java.util.*;
 import java.util.stream.IntStream;
 
-import static com.amotassic.dabaosword.item.card.GainCardItem.draw;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class PlayerInvScreenHandler extends ScreenHandler {
@@ -32,7 +33,7 @@ public class PlayerInvScreenHandler extends ScreenHandler {
     private final int cards;
 
     public PlayerInvScreenHandler(int syncId, Inventory inventory, PlayerEntity target) {
-        super(ServerNetworking.PLAYER_INV_SCREEN_HANDLER, syncId);
+        super(ModItems.PLAYER_INV_SCREEN_HANDLER, syncId);
         this.target = target;
         this.cards = inventory.getStack(54).getCount();
         this.eventStack = inventory.getStack(55);
@@ -52,11 +53,10 @@ public class PlayerInvScreenHandler extends ScreenHandler {
             if (selfStack != ItemStack.EMPTY) {
 
                 if (stack.getItem() == SkillCards.RENDE) {
-                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.RENDE1);} else {voice(player, Sounds.RENDE2);}
-                    give(target, selfStack.copyWithCount(1));
-                    target.sendMessage(Text.literal(player.getNameForScoreboard()).append(Text.translatable("give_card.tip", stack.getName(), target.getDisplayName())));
-                    player.sendMessage(Text.literal(player.getNameForScoreboard()).append(Text.translatable("give_card.tip", stack.getName(), target.getDisplayName())));
-                    selfStack.decrement(1);
+                    voice(player, Sounds.RENDE);
+                    target.sendMessage(Text.literal(player.getNameForScoreboard()).append(Text.translatable("give_card.tip", stack.toHoverableText(), target.getDisplayName())));
+                    player.sendMessage(Text.literal(player.getNameForScoreboard()).append(Text.translatable("give_card.tip", stack.toHoverableText(), target.getDisplayName())));
+                    CardMoveCallback.EVENT.invoker().cardMove(player, target, selfStack, 1, CardMoveCallback.Type.INV_TO_INV);
                     int cd = getCD(stack);
                     if (player.getHealth() < player.getMaxHealth() && cd == 0 && new Random().nextFloat() < 0.5) {
                         player.heal(5); voice(player, Sounds.RECOVER);
@@ -66,13 +66,10 @@ public class PlayerInvScreenHandler extends ScreenHandler {
                 }
 
                 if (stack.getItem() == SkillCards.YIJI) {
-                    /*int i = stack.get(DataComponentTypes.CUSTOM_DATA) == null ? 0 : Objects.requireNonNull(stack.get(DataComponentTypes.CUSTOM_DATA)).copyNbt().getInt("yiji");
-                    NbtCompound nbt = new NbtCompound(); nbt.putInt("yiji", i - 1); stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));*/
                     int i = getTag(stack);
-                    give(target, selfStack.copyWithCount(1));
-                    target.sendMessage(Text.literal(player.getNameForScoreboard()).append(Text.translatable("give_card.tip", stack.getName(), target.getDisplayName())));
-                    player.sendMessage(Text.literal(player.getNameForScoreboard()).append(Text.translatable("give_card.tip", stack.getName(), target.getDisplayName())));
-                    selfStack.decrement(1);
+                    target.sendMessage(Text.literal(player.getNameForScoreboard()).append(Text.translatable("give_card.tip", stack.toHoverableText(), target.getDisplayName())));
+                    player.sendMessage(Text.literal(player.getNameForScoreboard()).append(Text.translatable("give_card.tip", stack.toHoverableText(), target.getDisplayName())));
+                    CardMoveCallback.EVENT.invoker().cardMove(player, target, selfStack, 1, CardMoveCallback.Type.INV_TO_INV);
                     setTag(stack, i - 1);
                     if (i - 1 == 0) closeGUI(player);
                 }
@@ -81,47 +78,49 @@ public class PlayerInvScreenHandler extends ScreenHandler {
             if (targetStack != ItemStack.EMPTY) {
 
                 if (stack.getItem() == SkillCards.SHANZHUAN) {
-                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.SHANZHUAN1);} else {voice(player, Sounds.SHANZHUAN2);}
+                    voice(player, Sounds.SHANZHUAN);
                     if (targetStack.isIn(Tags.Items.BASIC_CARD)) target.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 5));
                     else target.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, StatusEffectInstance.INFINITE,1));
-                    targetStack.decrement(1);
-                    target.sendMessage(Text.literal(player.getNameForScoreboard()).append(Text.translatable("dabaosword.discard")).append(targetStack.getName()));
+                    target.sendMessage(Text.literal(player.getNameForScoreboard()).append(Text.translatable("dabaosword.discard")).append(targetStack.toHoverableText()));
+                    CardDiscardCallback.EVENT.invoker().cardDiscard(target, targetStack, 1, slotIndex < 4);
                     player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 8,0,false,false,true));
                     closeGUI(player);
                 }
 
                 if (stack.getItem() == SkillCards.GONGXIN) {
-                    targetStack.decrement(1);
+                    CardDiscardCallback.EVENT.invoker().cardDiscard(target, targetStack, 1, false);
                     closeGUI(player);
                 }
 
                 if (stack.getItem() == SkillCards.ZHIHENG) {
                     int z = getTag(stack);
-                    if (new Random().nextFloat() < 0.5) {voice(player, Sounds.ZHIHENG1);} else {voice(player, Sounds.ZHIHENG2);}
-                    targetStack.decrement(1);
+                    voice(player, Sounds.ZHIHENG);
+                    CardDiscardCallback.EVENT.invoker().cardDiscard(player, targetStack, 1, slotIndex < 4);
                     if (new Random().nextFloat() < 0.1) {
                         draw(player, 2);
                         player.sendMessage(Text.translatable("zhiheng.extra").formatted(Formatting.GREEN), true);
-                    } else draw(player, 1);
+                    } else draw(player);
                     setTag(stack, z - 1);
                     if (z - 1 == 0) closeGUI(player);
                 }
 
                 if (stack.getItem() == ModItems.STEAL) {
                     voice(player, Sounds.SHUNSHOU);
-                    if (!player.isCreative()) {stack.decrement(1);}
-                    jizhi(player); benxi(player);
-                    target.sendMessage(Text.literal(player.getNameForScoreboard()).append(Text.translatable("dabaosword.steal")).append(targetStack.getName()));
-                    give(player, targetStack.copyWithCount(1)); /*顺手：复制一个物品*/ targetStack.decrement(1);
+                    target.sendMessage(Text.literal(player.getNameForScoreboard()).append(Text.translatable("dabaosword.steal")).append(targetStack.toHoverableText()));
+                    CardMoveCallback.Type type = slotIndex < 4 ? CardMoveCallback.Type.EQUIP_TO_INV : CardMoveCallback.Type.INV_TO_INV;
+                    if (isCard(targetStack)) CardMoveCallback.EVENT.invoker().cardMove(target, player, targetStack, 1, type);
+                    //如果选择的物品是卡牌才触发事件
+                    else {give(player, targetStack.copyWithCount(1)); /*顺手：复制一个物品*/
+                        targetStack.decrement(1);}
+                    CardUsePostCallback.EVENT.invoker().cardUsePost(player, stack, target);
                     closeGUI(player);
                 }
 
                 if (stack.getItem() == ModItems.DISCARD) {
                     voice(player, Sounds.GUOHE);
-                    if (!player.isCreative()) {stack.decrement(1);}
-                    jizhi(player); benxi(player);
-                    target.sendMessage(Text.literal(player.getNameForScoreboard()).append(Text.translatable("dabaosword.discard")).append(targetStack.getName()));
-                    targetStack.decrement(1);
+                    target.sendMessage(Text.literal(player.getNameForScoreboard()).append(Text.translatable("dabaosword.discard")).append(targetStack.toHoverableText()));
+                    CardDiscardCallback.EVENT.invoker().cardDiscard(target, targetStack, 1, slotIndex < 4);
+                    CardUsePostCallback.EVENT.invoker().cardUsePost(player, stack, target);
                     closeGUI(player);
                 }
             }
@@ -153,18 +152,15 @@ public class PlayerInvScreenHandler extends ScreenHandler {
                 }
                 if (player.getOffHandStack().equals(itemStack)) return player.getOffHandStack();
             }
-        } else if (cards == 1) {
+        } else if (cards == 1 && slotIndex >= 8) {
             List<ItemStack> candidate = new ArrayList<>();
             DefaultedList<ItemStack> inventory = player.getInventory().main;
-            List<Integer> cardSlots = IntStream.range(0, inventory.size()).filter(
-                            i -> inventory.get(i).isIn(Tags.Items.CARD) || inventory.get(i).getItem() == ModItems.GAIN_CARD)
-                    .boxed().toList();
+            List<Integer> cardSlots = IntStream.range(0, inventory.size()).filter(i -> isCard(inventory.get(i))).boxed().toList();
             for (Integer slot : cardSlots) {candidate.add(inventory.get(slot));}
             ItemStack off = player.getOffHandStack();
-            if (off.isIn(Tags.Items.CARD) || off.getItem() == ModItems.GAIN_CARD) candidate.add(off);
+            if (isCard(off)) candidate.add(off);
             if(!candidate.isEmpty()) {
-                Random r = new Random();
-                int index = r.nextInt(candidate.size());
+                int index = new Random().nextInt(candidate.size());
                 return candidate.get(index);
             }
         }

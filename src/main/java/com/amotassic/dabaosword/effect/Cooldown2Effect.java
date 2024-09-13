@@ -12,7 +12,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 
 import java.util.Objects;
-import java.util.Random;
 
 import static com.amotassic.dabaosword.item.equipment.ArrowRainItem.arrowRain;
 import static com.amotassic.dabaosword.util.ModTools.hasTrinket;
@@ -26,19 +25,18 @@ public class Cooldown2Effect extends StatusEffect {
 
     @Override
     public boolean applyUpdateEffect(LivingEntity entity, int amplifier) {
-        if (entity instanceof PlayerEntity player && player.getWorld() instanceof ServerWorld world) {
+        if (entity.getWorld() instanceof ServerWorld world) {
             int restTime = Objects.requireNonNull(entity.getStatusEffect(ModItems.COOLDOWN2)).getDuration();
             //一级效果被用于万箭齐发
             if (amplifier == 1) {
-                arrowRain(player,3);
-                if (restTime <= 1) player.getCommandTags().remove("wanjian");
+                arrowRain(entity,3);
+                if (restTime <= 1) entity.getCommandTags().remove("wanjian");
             }
 
-            if (amplifier == 3 && hasTrinket(SkillCards.LEIJI, player) && restTime >= 15) {//雷击的效果
-                EntityType.LIGHTNING_BOLT.spawn(world, new BlockPos((int) player.getX(), (int) player.getY(), (int) player.getZ()),null);
+            if (amplifier == 3 && hasTrinket(SkillCards.LEIJI, entity) && restTime >= 15) {//雷击的效果
+                EntityType.LIGHTNING_BOLT.spawn(world, new BlockPos((int) entity.getX(), (int) entity.getY(), (int) entity.getZ()),null);
             }
         }
-        super.applyUpdateEffect(entity, amplifier);
         return true;
     }
 
@@ -46,7 +44,7 @@ public class Cooldown2Effect extends StatusEffect {
     public void onApplied(LivingEntity entity, int amplifier) {
         if (entity instanceof PlayerEntity player && !player.getWorld().isClient && hasTrinket(SkillCards.LEIJI, player) && amplifier == 3) {
             //雷击语音播放
-            if (new Random().nextFloat() < 0.5) {voice(player, Sounds.LEIJI1);} else {voice(player, Sounds.LEIJI2);}
+            voice(player, Sounds.LEIJI);
         }
         super.onApplied(entity, amplifier);
     }

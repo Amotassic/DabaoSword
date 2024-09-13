@@ -4,13 +4,14 @@ import net.minecraft.item.*;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Rarity;
 
 import java.util.List;
 
 public class GudingdaoItem extends SwordItem {
 
     public GudingdaoItem() {
-        super(ToolMaterials.NETHERITE, new Item.Settings().attributeModifiers(SwordItem.createAttributeModifiers(ToolMaterials.NETHERITE, 5, -2.4f)).maxDamage(999));
+        super(ToolMaterials.NETHERITE, new Item.Settings().attributeModifiers(SwordItem.createAttributeModifiers(ToolMaterials.NETHERITE, 5, -2.4f)).maxDamage(999).rarity(Rarity.EPIC));
     }
 
     @Override

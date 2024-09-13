@@ -9,8 +9,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 
-import java.util.Random;
-
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class LongdanSkill extends SkillItem {
@@ -26,7 +24,7 @@ public class LongdanSkill extends SkillItem {
                 if (stack1.getItem() == ModItems.SHAN) give(player, new ItemStack(ModItems.SHA));
                 if (stack1.getItem() == ModItems.PEACH) give(player, new ItemStack(ModItems.JIU));
                 if (stack1.getItem() == ModItems.JIU) give(player, new ItemStack(ModItems.PEACH));
-                if (new Random().nextFloat() < 0.5) {voice(player, Sounds.LONGDAN1);} else {voice(player, Sounds.LONGDAN2);}
+                voice(player, Sounds.LONGDAN);
             }
         }
         super.tick(stack, slot, entity);

@@ -14,7 +14,6 @@ import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 
 import java.util.List;
-import java.util.Random;
 
 import static com.amotassic.dabaosword.util.ModTools.voice;
 
@@ -34,13 +33,7 @@ public class BBjiItem extends Item {
                 nearbyEntity.timeUntilRegen = 0;
                 nearbyEntity.damage(user.getDamageSources().sonicBoom(user),2);
             }
-            float i = new Random().nextFloat();
-            if (i < (float) 1/6) {voice(user, Sounds.CHENGLVE1);
-            } else if (i < (float) 1/3) {voice(user, Sounds.CHENGLVE2);
-            } else if (i < 0.5) {voice(user, Sounds.CUNMU1);
-            } else if (i < (float) 2/3) {voice(user, Sounds.CUNMU2);
-            } else if (i < (float) 5/6) {voice(user, Sounds.SHICAI1);
-            } else {voice(user, Sounds.SHICAI2);}
+            voice(user, Sounds.BBJI);
             ItemStack stack = user.getStackInHand(hand);
             EquipmentSlot slot = hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND;
             stack.damage(1, user, slot);

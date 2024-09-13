@@ -7,6 +7,8 @@
     "FireballEntityMixin",
     "ItemEntityMixin",
     "LivingEntityMixin",
+    "MixinReachAttributes",
+    "MobEntityMixin",
     "PlayerEntityMixin",
     "PlayerManagerMixin",
     "ServerPlayerEntityMixin"

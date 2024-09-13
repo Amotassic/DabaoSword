@@ -1,7 +1,6 @@
 package com.amotassic.dabaosword.ui;
 
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.network.ServerNetworking;
 import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketInventory;
 import dev.emi.trinkets.api.TrinketsApi;
@@ -29,7 +28,7 @@ public class FullInvScreenHandler extends ScreenHandler {
     private final boolean editable;
 
     public FullInvScreenHandler(int syncId, PlayerInventory playerInv, Inventory inventory, LivingEntity target) {
-        super(ServerNetworking.FULL_INV_SCREEN_HANDLER, syncId);
+        super(ModItems.FULL_INV_SCREEN_HANDLER, syncId);
         this.inventory =inventory;
         this.target = target;
         this.editable = !inventory.getStack(61).isEmpty();
@@ -85,10 +84,8 @@ public class FullInvScreenHandler extends ScreenHandler {
         for (int i = 0; i < 61; i++) {
             ItemStack stack = from.getStack(i);
             if (i == 0 && !(to instanceof PlayerEntity || to instanceof VillagerEntity)) to.setStackInHand(Hand.MAIN_HAND, stack);
-            if (i < 36) {
-                if (to instanceof PlayerEntity player) player.getInventory().setStack(i, stack);
-                else if (to instanceof VillagerEntity villager) villager.getInventory().setStack(i, stack);
-            }
+            if (i < 8 && to instanceof VillagerEntity villager) villager.getInventory().setStack(i, stack);
+            if (i < 36 && to instanceof PlayerEntity player)  player.getInventory().setStack(i, stack);
             if (i == 36) to.equipStack(EquipmentSlot.HEAD, stack);
             if (i == 37) to.equipStack(EquipmentSlot.CHEST, stack);
             if (i == 38) to.equipStack(EquipmentSlot.LEGS, stack);

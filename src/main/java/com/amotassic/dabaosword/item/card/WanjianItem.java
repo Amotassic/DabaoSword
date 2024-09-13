@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.item.card;
 
+import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -20,9 +21,8 @@ public class WanjianItem extends CardItem {
         if (!world.isClient && hand == Hand.MAIN_HAND) {
             user.addCommandTag("wanjian");
             user.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 15,1,false,false,false));
+            CardUsePostCallback.EVENT.invoker().cardUsePost(user, user.getStackInHand(hand), null);
             voice(user, Sounds.WANJIAN);
-            jizhi(user); benxi(user);
-            if (!user.isCreative()) {user.getStackInHand(hand).decrement(1);}
         }
         return TypedActionResult.success(user.getStackInHand(hand));
     }
