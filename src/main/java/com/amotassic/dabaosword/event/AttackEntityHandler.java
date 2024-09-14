@@ -57,9 +57,11 @@ public class AttackEntityHandler implements AttackEntityCallback {
                 if (hasTrinket(ModItems.QINGGANG, player)) {//青釭剑额外伤害
                     float extraDamage = Math.min(20, 0.2f * target.getMaxHealth());
                     target.damage(player.getDamageSources().genericKill(), extraDamage); target.timeUntilRegen = 0;
+                    voice(player, Sounds.QINGGANG);
                 }
 
                 if (hasTrinket(ModItems.QINGLONG, player) && player.getAttackCooldownProgress(0) >= 0.9) {
+                    voice(player, Sounds.QINGLONG);
                     player.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE,10,0,false,false,false));
                     player.teleport(target.getX(), target.getY(), target.getZ());
                     Vec3d momentum = player.getRotationVector().multiply(2);
@@ -72,6 +74,7 @@ public class AttackEntityHandler implements AttackEntityCallback {
                     int cd = getCD(stack);
                     if (cd == 0) {
                         setCD(stack, 20);
+                        voice(player, Sounds.FANGTIAN);
                         player.sendMessage(Text.translatable("dabaosword.fangtian").formatted(Formatting.RED), true);
                     }
                 }

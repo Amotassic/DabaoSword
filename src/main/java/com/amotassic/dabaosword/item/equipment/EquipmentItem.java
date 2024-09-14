@@ -3,16 +3,11 @@ package com.amotassic.dabaosword.item.equipment;
 import com.amotassic.dabaosword.event.callback.CardDiscardCallback;
 import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.item.ModItems;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 import dev.emi.trinkets.TrinketSlot;
 import dev.emi.trinkets.api.*;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Equipment;
 import net.minecraft.item.ItemStack;
@@ -101,36 +96,10 @@ public class EquipmentItem extends TrinketItem {
     }
 
     @Override
-    public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-        if (!entity.getWorld().isClient) {
-            if (armorTrinket(stack)) gainArmor(entity,5);
-        }
-    }
-
-    @Override
     public boolean canUnequip(ItemStack stack, SlotReference slot, LivingEntity entity) {
         if (entity instanceof PlayerEntity player && player.isCreative()) return true;
         if (stack.getItem() != ModItems.CARD_PILE) return false;
         return super.canUnequip(stack, slot, entity);
-    }
-
-    @Override
-    public void onUnequip(ItemStack stack, SlotReference slot, LivingEntity entity) {
-        if (!entity.getWorld().isClient) {
-            if (armorTrinket(stack)) gainArmor(entity,0);
-        }
-    }
-
-    private boolean armorTrinket(ItemStack stack) {
-        return stack.getItem() == ModItems.BAIYIN || stack.getItem() == ModItems.RATTAN_ARMOR || stack.getItem() == ModItems.BAGUA;
-    }
-
-    private void gainArmor(LivingEntity entity, int amount) {
-        Multimap<EntityAttribute, EntityAttributeModifier> Armor = HashMultimap.create();
-        final UUID armor = UUID.fromString("78e52d57-ba65-99a6-a118-686462588db8");
-        Armor.put(EntityAttributes.GENERIC_ARMOR, new EntityAttributeModifier(
-                armor, "Extra Armor", amount, EntityAttributeModifier.Operation.ADDITION));
-        entity.getAttributes().addTemporaryModifiers(Armor);
     }
 
     @Override

@@ -4,7 +4,6 @@ import com.amotassic.dabaosword.util.Sounds;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import dev.emi.trinkets.api.SlotReference;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -24,23 +23,12 @@ public class LuoyiSkill extends SkillItem {
 
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-        if (!entity.getWorld().isClient && entity instanceof PlayerEntity player) {
-            ItemStack stack1 = player.getEquippedStack(EquipmentSlot.HEAD);
-            ItemStack stack2 = player.getEquippedStack(EquipmentSlot.CHEST);
-            ItemStack stack3 = player.getEquippedStack(EquipmentSlot.LEGS);
-            ItemStack stack4 = player.getEquippedStack(EquipmentSlot.FEET);
-            boolean noArmor = stack1.isEmpty() && stack2.isEmpty() && stack3.isEmpty() && stack4.isEmpty();
-            if (noArmor) gainStrength(player, 5);
-            else gainStrength(player, 0);
-        }
-        super.tick(stack, slot, entity);
+        if (!entity.getWorld().isClient) gainStrength(entity, getEmptyArmorSlot(entity) + 1);
     }
 
     @Override
     public void onUnequip(ItemStack stack, SlotReference slot, LivingEntity entity) {
-        if (!entity.getWorld().isClient){
-            gainStrength(entity,0);
-        }
+        if (!entity.getWorld().isClient) gainStrength(entity,0);
     }
 
     @Override
@@ -55,5 +43,11 @@ public class LuoyiSkill extends SkillItem {
         attack.put(EntityAttributes.GENERIC_ATTACK_DAMAGE, new EntityAttributeModifier(
                 A_UUID, "Attack Damage", value, EntityAttributeModifier.Operation.ADDITION));
         entity.getAttributes().addTemporaryModifiers(attack);
+    }
+
+    private int getEmptyArmorSlot(LivingEntity entity) {
+        int i = 0;
+        for (var slot : entity.getArmorItems()) {if (slot.isEmpty()) i++;}
+        return i;
     }
 }

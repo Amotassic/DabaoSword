@@ -1,6 +1,6 @@
 package com.amotassic.dabaosword.client;
 
-import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.network.ServerNetworking;
 import dev.emi.trinkets.api.TrinketComponent;
@@ -15,15 +15,17 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.Vec3d;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.Optional;
 
-public class SkillKeyBinds {
+import static com.amotassic.dabaosword.util.ModTools.hasTrinket;
+
+public class ClientTickEnd {
     private static final KeyBinding ACTIVE_SKILL = KeyBindingHelper
             .registerKeyBinding(new KeyBinding("key.dabaosword.active_skill", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_J, "category.dabaosword.keybindings"));
 
@@ -31,33 +33,33 @@ public class SkillKeyBinds {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             var user = MinecraftClient.getInstance().player;
             var result = MinecraftClient.getInstance().crosshairTarget;
-            if (ACTIVE_SKILL.wasPressed() && user != null) {
-                if (hasActiveSkillWithTarget(user)) {
-                    if (result != null && result.getType() == HitResult.Type.ENTITY) {
-                        var hitResult = (EntityHitResult) result; var entity = hitResult.getEntity();
-                        if (entity instanceof PlayerEntity player) {
+            if (user != null) {
+                if (result != null && result.getType() == HitResult.Type.ENTITY) {
+                    var hitResult = (EntityHitResult) result; var entity = hitResult.getEntity();
+                    if (entity instanceof PlayerEntity player) {
+                        if (ACTIVE_SKILL.wasPressed() && hasActiveSkillWithTarget(user)) {
                             PacketByteBuf buf = PacketByteBufs.create();
                             buf.writeUuid(player.getUuid());
                             ClientPlayNetworking.send(ServerNetworking.ACTIVE_SKILL, buf);
-                            return;
                         }
+                        return;
                     }
                 }
-                if (hasActiveSkill(user)) {
+                if (ACTIVE_SKILL.wasPressed() && hasActiveSkill(user)) {
                     PacketByteBuf buf = PacketByteBufs.create();
                     buf.writeUuid(user.getUuid());
                     ClientPlayNetworking.send(ServerNetworking.ACTIVE_SKILL, buf);
                 }
+                if (hasTrinket(SkillCards.SHENSU, user)) {
+                    Vec3d lastPos = new Vec3d(user.lastRenderX, user.lastRenderY, user.lastRenderZ);
+                    float speed = (float) (user.getPos().distanceTo(lastPos) * 20);
+                    if (speed > 0) {
+                        PacketByteBuf buf = PacketByteBufs.create();
+                        buf.writeFloat(speed);
+                        ClientPlayNetworking.send(ServerNetworking.SHENSU, buf);
+                    }
+                }
             }
-/*
-            if (user != null && user.getOffHandStack().getItem() == ModItems.SHA) {
-                double dx = user.getX() - user.lastRenderX;
-                double dy = user.getY() - user.lastRenderY;
-                double dz = user.getZ() - user.lastRenderZ;
-                double dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
-                user.sendMessage(Text.literal("Speed: " + dist * 20), true);
-            }*/
-
         });
     }
 

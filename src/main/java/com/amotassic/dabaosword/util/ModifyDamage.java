@@ -33,11 +33,17 @@ public class ModifyDamage {
         ItemStack feet = entity.getEquippedStack(EquipmentSlot.FEET);
         boolean noArmor = head.isEmpty() && chest.isEmpty() && legs.isEmpty() && feet.isEmpty();
 
-        if (source.getSource() instanceof LivingEntity attacker) {
+        float multiply = 0; //倍率增伤乘区
+        float add = 0; //固定数值加减伤害区
+
+        if (source.getSource() instanceof LivingEntity attacker && !attacker.getCommandTags().contains("sha")) {
             if (noArmor || hasTrinket(SkillCards.POJUN, attacker)) {
                 //古锭刀对没有装备的生物伤害增加 限定版翻倍 卡牌版加5
-                if (attacker.getMainHandStack().getItem() == ModItems.GUDINGDAO) value += value;
-                if (hasTrinket(ModItems.GUDING_WEAPON, attacker)) value += 5;
+                if (attacker.getMainHandStack().getItem() == ModItems.GUDINGDAO) multiply += 1;
+                if (hasTrinket(ModItems.GUDING_WEAPON, attacker)) {
+                    voice(entity, Sounds.GUDING);
+                    add += 5;
+                }
             }
 
             //排异技能：攻击伤害增加
@@ -48,7 +54,7 @@ public class ModifyDamage {
                     if (quan > 4 && entity instanceof PlayerEntity player) draw(player, 2);
                     setTag(stack, quan/2);
                     voice(attacker, Sounds.PAIYI);
-                    value += quan;
+                    add += quan;
                 }
             }
 
@@ -57,15 +63,36 @@ public class ModifyDamage {
                 float f = Math.max(13 - attacker.distanceTo(entity), 5);
                 attacker.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, (int) (40 * f),0,false,false,true));
                 voice(attacker, Sounds.LIEGONG);
-                value += f;
+                add += f;
+            }
+
+            if (hasTrinket(SkillCards.SHENSU, attacker) && !attacker.hasStatusEffect(ModItems.COOLDOWN)) {
+                float walkSpeed = 4.317f;
+                float speed = Objects.requireNonNull(Objects.requireNonNull(trinketItem(SkillCards.SHENSU, attacker)).getNbt()).getFloat("speed");
+                if (speed > walkSpeed) {
+                    float m = (speed - walkSpeed) / walkSpeed / 2;
+                    attacker.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, (int) (5 * 20 * m),0,false,false,true));
+                    if (attacker instanceof PlayerEntity player) player.sendMessage(Text.translatable("shensu.info", speed, m));
+                    voice(attacker, Sounds.SHENSU);
+                    multiply += m;
+                }
             }
         }
 
         //穿藤甲时，若承受火焰伤害，则 战火燃尽，嘤熊胆！（伤害大于5就只加5）
-        if (source.isIn(DamageTypeTags.IS_FIRE) && hasTrinket(ModItems.RATTAN_ARMOR, entity)) value += value > 5 ? 5 : value;
+        if (source.isIn(DamageTypeTags.IS_FIRE) && hasTrinket(ModItems.RATTAN_ARMOR, entity)) {
+            voice(entity, Sounds.TENGJIA2);
+            add += value > 5 ? 5 : value;
+        }
+
+        //增伤区伤害结算
+        value = value * (1 + multiply) + add;
 
         //白银狮子减伤
-        if (!source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY) && source.getAttacker() instanceof LivingEntity && hasTrinket(ModItems.BAIYIN, entity)) value *= 0.4f;
+        if (!source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY) && source.getAttacker() instanceof LivingEntity && hasTrinket(ModItems.BAIYIN, entity)) {
+            voice(entity, Sounds.BAIYIN);
+            value *= 0.4f;
+        }
 
         if (!source.isIn(DamageTypeTags.BYPASSES_ARMOR)) {
             entity.damageArmor(source, value);
@@ -80,6 +107,7 @@ public class ModifyDamage {
 
         //弹射物对藤甲无效
         if (source.isIn(DamageTypeTags.IS_PROJECTILE) && inrattan(entity)) {
+            voice(entity, Sounds.TENGJIA1);
             if (source.getSource() != null) source.getSource().discard();
             return true;
         }
@@ -91,7 +119,10 @@ public class ModifyDamage {
             }
 
             //若攻击者主手没有物品，则无法击穿藤甲
-            if (inrattan(entity) && sourceEntity.getMainHandStack().isEmpty()) return true;
+            if (inrattan(entity) && sourceEntity.getMainHandStack().isEmpty()) {
+                voice(entity, Sounds.TENGJIA1);
+                return true;
+            }
 
             //决斗等物品虽然手长，但过远时普通伤害无效
             if (!source.isIn(DamageTypeTags.BYPASSES_ARMOR) && entity.distanceTo(sourceEntity) > 5) {
@@ -119,9 +150,6 @@ public class ModifyDamage {
         }
 
         if (source.getAttacker() instanceof LivingEntity attacker) {
-
-            //翻面的生物（除了玩家）无法造成伤害
-            if (!(attacker instanceof PlayerEntity) && attacker.hasStatusEffect(ModItems.TURNOVER)) return true;
 
             if (source.isIn(DamageTypeTags.IS_PROJECTILE)) {
                 //被乐的生物的弹射物无法造成伤害
@@ -201,6 +229,7 @@ public class ModifyDamage {
         int cd = bl ? 60 : 40;
         entity.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 20,0,false,false,false));
         entity.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, cd,0,false,false,false));
+        if (bl) voice(entity, Sounds.BAGUA);
         voice(entity, Sounds.SHAN);
         if (entity instanceof PlayerEntity player) {
             CardUsePostCallback.EVENT.invoker().cardUsePost(player, stack, null);

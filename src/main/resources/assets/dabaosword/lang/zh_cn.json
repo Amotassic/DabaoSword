@@ -156,7 +156,7 @@
   "item.dabaosword.kurou.tooltip": "主动技，失去5点生命值，获得2张卡牌",
   "item.dabaosword.kurou.tip": "当前生命值低于5，无法发动苦肉",
   "item.dabaosword.luoyi": "裸衣",
-  "item.dabaosword.luoyi.tooltip": "锁定技，若你没有穿装备，你的攻击力+5",
+  "item.dabaosword.luoyi.tooltip": "锁定技，你的攻击力+X，X为你空的盔甲槽数量+1",
   "item.dabaosword.huoji": "火计",
   "item.dabaosword.huoji.tooltip": "将副手上的一张基本牌转化为火攻",
   "item.dabaosword.kanpo": "看破",
@@ -245,6 +245,10 @@
   "item.dabaosword.lianying.tooltip": "当你失去最后的一张手牌5秒后，你摸一张牌",
   "item.dabaosword.xiaoji": "枭姬",
   "item.dabaosword.xiaoji.tooltip": "当你失去已装备的装备牌后，你摸两张牌",
+  "item.dabaosword.shensu": "神速",
+  "item.dabaosword.shensu.tooltip1": "你的背包空余空间越多，移速越高（最高到1.5倍）",
+  "item.dabaosword.shensu.tooltip2": "若不处于CD中，你的攻击伤害随当前速度而增加",
+  "shensu.info": "神速：当前速度：%1$s 增伤倍率：%2$s",
 
   //"配音"
   "sounds.dabaosword.nahida": "纳西妲：所闻遍计",

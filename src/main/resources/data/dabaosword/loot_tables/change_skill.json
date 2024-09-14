@@ -9,6 +9,10 @@
       "item": "dabaosword:feiying"
     },
     {
+      "weight": 2.0,
+      "item": "dabaosword:shensu"
+    },
+    {
       "weight": 3.0,
       "item": "dabaosword:xiaoji"
     },
@@ -21,7 +25,7 @@
       "item": "dabaosword:longdan"
     },
     {
-      "weight": 3.0,
+      "weight": 2.0,
       "item": "dabaosword:shanzhuan"
     },
     {

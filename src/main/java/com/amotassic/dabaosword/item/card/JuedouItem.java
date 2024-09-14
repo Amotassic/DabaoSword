@@ -41,16 +41,19 @@ public class JuedouItem extends CardItem {
                     TagKey<Item> tag = Tags.Items.SHA;
                     int userSha = count(user, tag);
                     int targetSha = count(target, tag);
-                    if (userSha >= targetSha) { target.timeUntilRegen = 0;
+                    if (userSha >= targetSha) {
+                        target.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2,2,0,false,false,false));
+                        target.timeUntilRegen = 0;
                         target.damage(user.getDamageSources().sonicBoom(user),5f);
                         target.sendMessage(Text.literal(user.getEntityName()).append(Text.translatable("dabaosword.juedou2")));
                     } else { target.addCommandTag("juedou"); //防止决斗触发杀
+                        user.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2,2,0,false,false,false));
                         user.timeUntilRegen = 0;
                         user.damage(target.getDamageSources().sonicBoom(target),5f);
                         user.sendMessage(Text.translatable("dabaosword.juedou1"));
-                        if (targetSha != 0) {
+                        if (targetSha != 0) { //如果目标的杀比使用者的杀多，反击使用者，则目标减少一张杀
                             ItemStack sha = stackInTag(tag, target);
-                            sha.decrement(1);
+                            CardUsePostCallback.EVENT.invoker().cardUsePost(target, sha, user);
                         }
                     }
                 } else { entity.timeUntilRegen = 0;

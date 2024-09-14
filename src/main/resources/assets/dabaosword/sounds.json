@@ -302,6 +302,96 @@
   },
 
 
+  "bagua": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/bagua"
+      }
+    ]
+  },
+  "baiyin": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/baiyin"
+      }
+    ]
+  },
+  "fangtian": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/fangtian"
+      }
+    ]
+  },
+  "guding": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/guding"
+      }
+    ]
+  },
+  "hanbing": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/hanbing"
+      }
+    ]
+  },
+  "qilin": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/qilin"
+      }
+    ]
+  },
+  "qinggang": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/qinggang"
+      }
+    ]
+  },
+  "qinglong": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/qinglong"
+      }
+    ]
+  },
+  "renwang": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/renwang"
+      }
+    ]
+  },
+  "tengjia1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/tengjia1"
+      }
+    ]
+  },
+  "tengjia2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/tengjia2"
+      }
+    ]
+  },
+
+
   "bingliang": {
     "sounds": [
       {

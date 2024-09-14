@@ -18,7 +18,7 @@ public class DabaoSwordClient implements ClientModInitializer {
         HandledScreens.register(ModItems.SIMPLE_MENU_HANDLER, SimpleMenuScreen::new);
         HandledScreens.register(ModItems.PLAYER_INV_SCREEN_HANDLER, PlayerInvHandledScreen::new);
         HandledScreens.register(ModItems.FULL_INV_SCREEN_HANDLER, FullInvHandledScreen::new);
-        SkillKeyBinds.initialize();
+        ClientTickEnd.initialize();
 
         //自定义谓词，用于改变铁索连环的纹理
         ModelPredicateProviderRegistry.register(ModItems.TIESUO, new Identifier("nahida"), (itemStack, clientWorld, livingEntity, seed) -> {

@@ -67,7 +67,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
                         if (new Random().nextFloat() >= (float) c /13) {
                             player.sendMessage(Text.translatable("buqu.tip1").formatted(Formatting.GREEN).append(String.valueOf(c + 1)));
                             c++; setTag(stack, c);
-                            player.setHealth(5);
+                            player.setHealth(1);
                         } else {
                             player.sendMessage(Text.translatable("buqu.tip2").formatted(Formatting.RED));
                             save(player, amount);
@@ -144,6 +144,10 @@ public class EntityHurtHandler implements EntityHurtCallback {
 
             }
 
+            if (source.getAttacker() instanceof LivingEntity living) {
+                if (living.getCommandTags().contains("px")) entity.timeUntilRegen = 0;
+            }
+
             //监听事件：若玩家杀死敌对生物，有概率摸牌，若杀死玩家，摸两张牌
             if (source.getAttacker() instanceof PlayerEntity player && entity.getHealth() <= 0) {
                 if (entity instanceof HostileEntity) {
@@ -197,15 +201,15 @@ public class EntityHurtHandler implements EntityHurtCallback {
                         player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 5,0,false,false,true));
                     }
                 }
-
-                if (player.getCommandTags().contains("px")) {
-                    entity.timeUntilRegen = 0;
-                }
             }
 
             if (source.getSource() instanceof PlayerEntity player) {
                 //寒冰剑冻伤
-                if (hasTrinket(ModItems.HANBING, player)) {entity.timeUntilRegen = 0; entity.setFrozenTicks(500);}
+                if (hasTrinket(ModItems.HANBING, player)) {
+                    voice(player, Sounds.HANBING);
+                    entity.timeUntilRegen = 0;
+                    entity.setFrozenTicks(500);
+                }
 
                 //杀的相关结算
                 if (shouldSha(player)) {
@@ -215,7 +219,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
                         voice(player, Sounds.SHA);
                         if (!hasTrinket(ModItems.RATTAN_ARMOR, entity)) {
                             entity.timeUntilRegen = 0; entity.damage(source, 5);
-                        }
+                        } else voice(entity, Sounds.TENGJIA1);
                     }
                     if (stack.getItem() == ModItems.FIRE_SHA) {
                         voice(player, Sounds.SHA_FIRE);

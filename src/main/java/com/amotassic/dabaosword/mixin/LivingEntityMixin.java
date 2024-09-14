@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.mixin;
 
+import com.amotassic.dabaosword.event.callback.EndEntityTick;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.event.callback.EntityHurtCallback;
 import com.amotassic.dabaosword.util.ModifyDamage;
@@ -7,10 +8,7 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.DamageTypeTags;
@@ -29,15 +27,13 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import static com.amotassic.dabaosword.util.ModTools.*;
-
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
     public LivingEntityMixin(EntityType<?> type, World world) {super(type, world);}
 
     @Shadow public abstract double getAttributeValue(EntityAttribute attribute);
 
-    @Shadow public abstract boolean isDead();
+    @Shadow public abstract boolean hasStatusEffect(StatusEffect effect);
 
     @Unique LivingEntity living = (LivingEntity) (Object) this;
 
@@ -64,22 +60,9 @@ public abstract class LivingEntityMixin extends Entity {
         }
     }
 
-    @Inject(method = "tick", at = @At("HEAD"))
+    @Inject(method = "tick", at = @At("TAIL"))
     private void tick(CallbackInfo ci) {
-        //若方天画戟被触发了，只要左键就可以造成群伤
-        PlayerEntity closestPlayer = getEntityWorld().getClosestPlayer(this, 5);
-        if (closestPlayer != null && hasTrinket(ModItems.FANGTIAN, closestPlayer) && !getWorld().isClient && !isDead()) {
-            ItemStack stack = trinketItem(ModItems.FANGTIAN, closestPlayer);
-            int time = getCD(stack);
-            if (time > 15 && closestPlayer.handSwingTicks == 1) {
-                //给玩家本人一个极短的无敌效果，以防止被误伤
-                closestPlayer.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE,2,0,false,false,false));
-                float i = (float) closestPlayer.getAttributeValue(EntityAttributes.GENERIC_ATTACK_DAMAGE);
-                this.damage(getDamageSources().playerAttack(closestPlayer), i);
-            }
-        }
-
-        if (living instanceof MobEntity mob && mob.hasStatusEffect(ModItems.TURNOVER)) mob.setTarget(null);
+        EndEntityTick.LIVING_EVENT.invoker().endLivingTick((LivingEntity) (Object) this);
     }
 
     @Inject(method = "applyArmorToDamage", at = @At(value = "HEAD"), cancellable = true)
@@ -93,5 +76,11 @@ public abstract class LivingEntityMixin extends Entity {
         if (result == ActionResult.FAIL) {
             ci.cancel();
         }
+    }
+
+    //翻面的生物无法发起攻击
+    @Inject(method = "canTarget(Lnet/minecraft/entity/LivingEntity;)Z", at = @At(value = "HEAD"), cancellable = true)
+    public void canTarget(LivingEntity target, CallbackInfoReturnable<Boolean> cir) {
+        if (this.hasStatusEffect(ModItems.TURNOVER)) cir.setReturnValue(false);
     }
 }

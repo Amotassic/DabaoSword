@@ -19,6 +19,7 @@ public class SkillCards {
     public static final Item QICE = register("qice", new SkillItem.ActiveSkill(new Item.Settings().maxCount(1)));
     public static final Item QUANJI = register("quanji", new QuanjiSkill(new Item.Settings().maxCount(1)));
     public static final Item SHANZHUAN = register("shanzhuan", new SkillItem(new Item.Settings().maxCount(1)));
+    public static final Item SHENSU = register("shensu", new ShensuSkill(new Item.Settings().maxCount(1)));
     public static final Item YIJI = register("yiji",new SkillItem.ActiveSkillWithTarget(new Item.Settings().maxCount(1)));
     //蜀
     public static final Item BENXI = register("benxi", new BenxiSkill(new Item.Settings().maxCount(1)));

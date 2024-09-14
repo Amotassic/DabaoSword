@@ -31,6 +31,11 @@ public class SkillItem extends TrinketItem {
     @Override
     public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
 
+        if (stack.getItem() == SkillCards.SHENSU) {
+            tooltip.add(Text.translatable("item.dabaosword.shensu.tooltip1").formatted(Formatting.BLUE));
+            tooltip.add(Text.translatable("item.dabaosword.shensu.tooltip2").formatted(Formatting.BLUE));
+        }
+
         if (stack.getItem() == SkillCards.XIAOJI) {
             tooltip.add(Text.translatable("item.dabaosword.xiaoji.tooltip").formatted(Formatting.GREEN));
         }

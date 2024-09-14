@@ -97,7 +97,7 @@ public class ModItems {
     //无中生有
     public static final Item WUZHONG = register("wuzhong", new GainCardItem(new Item.Settings()));
     //礼盒
-    public static final Item GIFTBOX = register("gift_box", new GiftBoxItem(new Item.Settings()));
+    public static final Item GIFTBOX = register("gift_box", new GiftBoxItem(new Item.Settings().rarity(Rarity.UNCOMMON)));
     //BB机
     public static final Item BBJI = register("bbji", new BBjiItem(new Item.Settings().maxDamage(250)));
     //让我康康
@@ -115,6 +115,8 @@ public class ModItems {
         CardUsePostCallback.EVENT.register(new CardEvents());
         CardDiscardCallback.EVENT.register(new CardEvents());
         CardMoveCallback.EVENT.register(new CardEvents());
+        EndEntityTick.LIVING_EVENT.register(new EntityTickEvents());
+        EndEntityTick.PLAYER_EVENT.register(new EntityTickEvents());
     }
 
     private static StatusEffect register(String id, StatusEffect entry) {
@@ -204,6 +206,7 @@ public class ModItems {
                 entries.add(SkillCards.QICE);
                 entries.add(SkillCards.QUANJI);
                 entries.add(SkillCards.SHANZHUAN);
+                entries.add(SkillCards.SHENSU);
                 entries.add(SkillCards.YIJI);
                 //蜀
                 entries.add(SkillCards.BENXI);
