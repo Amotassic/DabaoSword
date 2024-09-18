@@ -13,7 +13,7 @@ import net.minecraft.item.ItemStack;
 
 import java.util.UUID;
 
-import static com.amotassic.dabaosword.util.ModTools.*;
+import static com.amotassic.dabaosword.util.ModTools.noTieji;
 
 public class LiegongSkill extends SkillItem {
     public LiegongSkill(Settings settings) {super(settings);}

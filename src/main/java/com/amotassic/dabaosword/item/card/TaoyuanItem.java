@@ -9,7 +9,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
-import static com.amotassic.dabaosword.util.ModTools.*;
+import static com.amotassic.dabaosword.util.ModTools.voice;
 
 public class TaoyuanItem extends CardItem {
     public TaoyuanItem(Settings settings) {super(settings);}

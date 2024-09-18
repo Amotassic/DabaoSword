@@ -15,7 +15,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 
-import static com.amotassic.dabaosword.util.ModTools.*;
+import static com.amotassic.dabaosword.util.ModTools.voice;
 
 public class TiesuoItem extends CardItem {
     public TiesuoItem(Settings settings) {super(settings);}

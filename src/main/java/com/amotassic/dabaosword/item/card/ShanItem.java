@@ -12,7 +12,8 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-import static com.amotassic.dabaosword.util.ModTools.*;
+import static com.amotassic.dabaosword.util.ModTools.hasTrinket;
+import static com.amotassic.dabaosword.util.ModTools.voice;
 
 public class ShanItem extends CardItem {
 

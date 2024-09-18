@@ -1,7 +1,10 @@
 package com.amotassic.dabaosword.item.skillcard;
 
 import com.amotassic.dabaosword.item.card.GiftBoxItem;
-import com.amotassic.dabaosword.util.*;
+import com.amotassic.dabaosword.util.LootEntry;
+import com.amotassic.dabaosword.util.LootTableParser;
+import com.amotassic.dabaosword.util.Sounds;
+import com.amotassic.dabaosword.util.Tags;
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketItem;
 import net.minecraft.client.gui.screen.Screen;

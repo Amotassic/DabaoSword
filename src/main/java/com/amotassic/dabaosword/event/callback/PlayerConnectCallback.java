@@ -1,10 +1,9 @@
 package com.amotassic.dabaosword.event.callback;
 
-import net.minecraft.network.ClientConnection;
-import net.minecraft.server.network.ServerPlayerEntity;
-
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
+import net.minecraft.network.ClientConnection;
+import net.minecraft.server.network.ServerPlayerEntity;
 
 public interface PlayerConnectCallback {
     Event<PlayerConnectCallback> EVENT = EventFactory.createArrayBacked(PlayerConnectCallback.class,

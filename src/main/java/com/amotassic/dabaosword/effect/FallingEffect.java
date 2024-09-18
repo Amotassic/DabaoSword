@@ -10,7 +10,7 @@ import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Box;
 
-import static com.amotassic.dabaosword.util.ModTools.*;
+import static com.amotassic.dabaosword.util.ModTools.voice;
 
 public class FallingEffect extends StatusEffect {
     public FallingEffect(StatusEffectCategory category, int color) {super(category, color);}

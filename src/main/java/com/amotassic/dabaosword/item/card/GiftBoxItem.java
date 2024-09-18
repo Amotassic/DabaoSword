@@ -21,7 +21,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 import java.util.Random;
 
-import static com.amotassic.dabaosword.util.ModTools.*;
+import static com.amotassic.dabaosword.util.ModTools.give;
+import static com.amotassic.dabaosword.util.ModTools.voice;
 
 public class GiftBoxItem extends Item {
     public GiftBoxItem(Settings settings) {super(settings);}

@@ -33,8 +33,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static net.minecraft.server.command.CommandManager.literal;
 import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.server.command.CommandManager.literal;
 
 public class InfoCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
