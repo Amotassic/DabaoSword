@@ -3,7 +3,7 @@ package com.amotassic.dabaosword.event;
 import com.amotassic.dabaosword.event.callback.ActiveSkillCallback;
 import com.amotassic.dabaosword.event.callback.CardMoveCallback;
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.item.equipment.EquipmentItem;
+import com.amotassic.dabaosword.item.equipment.Equipment;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.ui.PlayerInvScreenHandler;
 import com.amotassic.dabaosword.ui.SimpleMenuHandler;
@@ -105,12 +105,12 @@ public class ActiveSkillHandler implements ActiveSkillCallback {
 
             if (stack.getItem() == SkillCards.ZHIJIAN) {
                 ItemStack itemStack = user.getMainHandStack();
-                if (itemStack.getItem() instanceof EquipmentItem && itemStack.getItem() != ModItems.CARD_PILE) {
+                if (itemStack.getItem() instanceof Equipment && itemStack.getItem() != ModItems.CARD_PILE) {
                     CardMoveCallback.EVENT.invoker().cardMove(user, target, itemStack, itemStack.getCount(), CardMoveCallback.Type.INV_TO_EQUIP);
-                    if (EquipmentItem.useEquip(target, itemStack)) {
+                    if (Equipment.useEquip(target, itemStack)) {
                         voice(user, Sounds.ZHIJIAN);
                         draw(user);
-                    } else if (EquipmentItem.replaceEquip(target, itemStack)) {
+                    } else if (Equipment.replaceEquip(target, itemStack)) {
                         voice(user, Sounds.ZHIJIAN);
                         draw(user);
                     }

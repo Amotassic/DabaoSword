@@ -97,7 +97,7 @@ public class PlayerEvents implements PlayerConnectCallback, PlayerDeathCallback,
         if (player.getWorld() instanceof ServerWorld world) {
 
             boolean card = world.getGameRules().getBoolean(Gamerule.CLEAR_CARDS_AFTER_DEATH);
-            if (card) {
+            if (card && hasTrinket(ModItems.CARD_PILE, player)) {
                 give(player, new ItemStack(ModItems.SHA));
                 give(player, new ItemStack(ModItems.SHAN));
                 give(player, new ItemStack(ModItems.PEACH));

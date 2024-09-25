@@ -3,6 +3,7 @@ package com.amotassic.dabaosword.util;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.card.GiftBoxItem;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
+import com.google.common.base.Predicate;
 import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketsApi;
 import net.minecraft.entity.ItemEntity;
@@ -179,6 +180,20 @@ public class ModTools {
         NbtCompound nbt = stack.getOrCreateNbt();
         nbt.putInt("tags", value);
         stack.setNbt(nbt);
+    }
+
+    //转化卡牌技能通用方法
+    public static void viewAs(PlayerEntity player, ItemStack skill, int CD, Predicate<ItemStack> predicate, ItemStack result, SoundEvent sound) {viewAs(player, skill,CD, predicate, 1, result, sound);}
+    public static void viewAs(PlayerEntity player, ItemStack skill, int CD, Predicate<ItemStack> predicate, int count, ItemStack result, SoundEvent sound) {
+        if (!player.getWorld().isClient && noTieji(player) && getCD(skill) == 0) {
+            ItemStack stack = player.getOffHandStack();
+            if (predicate.test(stack)) {
+                setCD(skill, CD);
+                stack.decrement(count);
+                give(player, result);
+                voice(player, sound);
+            }
+        }
     }
 
 }

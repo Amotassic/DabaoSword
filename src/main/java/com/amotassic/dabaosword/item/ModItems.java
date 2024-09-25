@@ -4,7 +4,9 @@ import com.amotassic.dabaosword.effect.*;
 import com.amotassic.dabaosword.event.*;
 import com.amotassic.dabaosword.event.callback.*;
 import com.amotassic.dabaosword.item.card.*;
-import com.amotassic.dabaosword.item.equipment.*;
+import com.amotassic.dabaosword.item.equipment.ArrowRainItem;
+import com.amotassic.dabaosword.item.equipment.Equipment;
+import com.amotassic.dabaosword.item.equipment.GudingdaoItem;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.ui.FullInvScreenHandler;
 import com.amotassic.dabaosword.ui.PlayerInvScreenHandler;
@@ -31,33 +33,33 @@ public class ModItems {
     //摸牌
     public static final Item GAIN_CARD = register("gain_card",new GainCardItem(new Item.Settings()));
     //牌堆
-    public static final Item CARD_PILE = register("card_pile",new EquipmentItem(new Item.Settings().maxCount(1)));
+    public static final Item CARD_PILE = register("card_pile",new Equipment(new Item.Settings().maxCount(1)));
 
     // 古锭刀
     public static final Item GUDINGDAO = register("gudingdao", new GudingdaoItem(new Item.Settings()));
-    public static final Item GUDING_WEAPON = register("guding_dao", new EquipmentItem(new Item.Settings().maxCount(1)));
+    public static final Item GUDING_WEAPON = register("guding_dao", new Equipment(new Item.Settings().maxCount(1)));
     //未锻造的古锭刀
     public static final Item INCOMPLETE_GUDINGDAO = register("incomplete_gdd", new Item(new Item.Settings().maxCount(1)));
     //古锭
     public static final Item GUDING_ITEM = register("guding", new Item(new Item.Settings()));
     //方天画戟
-    public static final Item FANGTIAN = register("fangtian", new FangtianWeapon(new Item.Settings().maxCount(1)));
+    public static final Item FANGTIAN = register("fangtian", new Equipment.FangtianWeapon(new Item.Settings().maxCount(1)));
     //寒冰剑
-    public static final Item HANBING = register("hanbing", new EquipmentItem(new Item.Settings().maxCount(1)));
+    public static final Item HANBING = register("hanbing", new Equipment.HanbingWeapon(new Item.Settings().maxCount(1)));
     //青釭剑
-    public static final Item QINGGANG = register("qinggang", new EquipmentItem(new Item.Settings().maxCount(1)));
+    public static final Item QINGGANG = register("qinggang", new Equipment.QinggangWeapon(new Item.Settings().maxCount(1)));
     //青龙偃月刀
-    public static final Item QINGLONG = register("qinglong", new EquipmentItem(new Item.Settings().maxCount(1)));
+    public static final Item QINGLONG = register("qinglong", new Equipment.QinglongWeapon(new Item.Settings().maxCount(1)));
     //八卦阵
-    public static final Item BAGUA = register("bagua", new EquipmentItem(new Item.Settings().maxCount(1)));
+    public static final Item BAGUA = register("bagua", new Equipment(new Item.Settings().maxCount(1)));
     //白银狮子
-    public static final Item BAIYIN = register("baiyin", new EquipmentItem(new Item.Settings().maxCount(1)));
+    public static final Item BAIYIN = register("baiyin", new Equipment(new Item.Settings().maxCount(1)));
     //寿衣
-    public static final Item RATTAN_ARMOR = register("rattan_armor", new RattanArmor(new Item.Settings().maxCount(1)));
+    public static final Item RATTAN_ARMOR = register("rattan_armor", new Equipment.RattanArmor(new Item.Settings().maxCount(1)));
     //-1马
-    public static final Item CHITU = register("chitu", new EquipmentItem(new Item.Settings().maxCount(1)));
+    public static final Item CHITU = register("chitu", new Equipment(new Item.Settings().maxCount(1)));
     //+1马
-    public static final Item DILU = register("dilu", new EquipmentItem(new Item.Settings().maxCount(1)));
+    public static final Item DILU = register("dilu", new Equipment(new Item.Settings().maxCount(1)));
 
     //杀
     public static final Item SHA = register("sha", new CardItem(new Item.Settings()));

@@ -193,7 +193,7 @@ public class ModifyDamage {
             }
 
             if (hasTrinket(SkillCards.JUEQING, attacker)) { //绝情效果
-                entity.damage(entity.getDamageSources().genericKill(), Math.min(7, amount));
+                entity.damage(entity.getDamageSources().genericKill(), Math.min(Math.max(7, entity.getMaxHealth() / 3), amount));
                 voice(attacker, Sounds.JUEQING, 1);
                 return true;
             }
