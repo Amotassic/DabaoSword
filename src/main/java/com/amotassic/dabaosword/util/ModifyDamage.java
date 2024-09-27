@@ -3,7 +3,9 @@ package com.amotassic.dabaosword.util;
 import com.amotassic.dabaosword.event.callback.CardDiscardCallback;
 import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.item.equipment.Equipment;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
+import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import net.minecraft.entity.DamageUtil;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
@@ -35,6 +37,18 @@ public class ModifyDamage {
 
         float multiply = 0; //倍率增伤乘区
         float add = 0; //固定数值加减伤害区
+
+        /*for (var p : allTinkets(entity)) {
+            var stack = p.getRight();
+            if (stack.getItem() instanceof SkillItem skill) {
+                var pair = skill.modifyDamage(entity, source, value);
+                multiply += pair.getLeft(); add += pair.getRight();
+            }
+            if (stack.getItem() instanceof Equipment skill) {
+                var pair = skill.modifyDamage(entity, source, value);
+                multiply += pair.getLeft(); add += pair.getRight();
+            }
+        }*/
 
         if (source.getSource() instanceof LivingEntity attacker && !attacker.getCommandTags().contains("sha")) {
             if (noArmor || hasTrinket(SkillCards.POJUN, attacker)) {

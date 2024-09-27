@@ -51,7 +51,7 @@ public class Equipment extends TrinketItem implements Skill {
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
             if (entity.getWorld() instanceof ServerWorld world) {
                 int cd = getCD(stack);
-                if (cd > 0 && world.getTime() % 20 == 0) cd--; setCD(stack, cd);
+                if (cd > 0 && world.getTime() % 20 == 0) setCD(stack, cd - 1);
             }
         }
 

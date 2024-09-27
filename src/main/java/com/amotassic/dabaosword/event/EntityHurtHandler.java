@@ -8,8 +8,6 @@ import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
-import dev.emi.trinkets.api.TrinketComponent;
-import dev.emi.trinkets.api.TrinketsApi;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
@@ -24,7 +22,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Box;
 
-import java.util.Optional;
 import java.util.Random;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
@@ -140,36 +137,26 @@ public class EntityHurtHandler implements EntityHurtCallback {
                 }
             }
 
-            Optional<TrinketComponent> optionalComponent = TrinketsApi.getTrinketComponent(entity);
-            if(optionalComponent.isEmpty()) return ActionResult.PASS;
-
-            for (var pair : optionalComponent.get().getAllEquipped()) {
+            for (var pair : allTinkets(entity)) {
                 ItemStack stack = pair.getRight();
-                if (stack.getItem() instanceof SkillItem skill) skill.onHurt(stack, entity, source, amount);
+                if (stack.getItem() instanceof SkillItem skill && canTrigger(skill, entity)) skill.onHurt(stack, entity, source, amount);
                 if (stack.getItem() instanceof Equipment skill) skill.onHurt(stack, entity, source, amount);
             }
 
             if (source.getSource() instanceof LivingEntity living) { //在近战攻击造成伤害后触发
-                Optional<TrinketComponent> optional = TrinketsApi.getTrinketComponent(living);
-                if(optional.isEmpty()) return ActionResult.PASS;
-
-                for (var pair : optional.get().getAllEquipped()) {
+                for (var pair : allTinkets(living)) {
                     ItemStack stack = pair.getRight();
-                    if (stack.getItem() instanceof SkillItem skill) skill.postAttack(stack, entity, living, amount);
+                    if (stack.getItem() instanceof SkillItem skill && canTrigger(skill, living)) skill.postAttack(stack, entity, living, amount);
                     if (stack.getItem() instanceof Equipment skill) skill.postAttack(stack, entity, living, amount);
                 }
             }
 
             if (source.getAttacker() instanceof LivingEntity living) { //只要攻击造成伤害即可触发，包括远程
-                Optional<TrinketComponent> optional = TrinketsApi.getTrinketComponent(living);
-                if(optional.isEmpty()) return ActionResult.PASS;
-
-                for (var pair : optional.get().getAllEquipped()) {
+                for (var pair : allTinkets(living)) {
                     ItemStack stack = pair.getRight();
-                    if (stack.getItem() instanceof SkillItem skill) skill.postDamage(stack, entity, living, amount);
+                    if (stack.getItem() instanceof SkillItem skill && canTrigger(skill, living)) skill.postDamage(stack, entity, living, amount);
                     if (stack.getItem() instanceof Equipment skill) skill.postDamage(stack, entity, living, amount);
                 }
-
             }
 
         }

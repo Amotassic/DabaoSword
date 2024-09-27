@@ -1,10 +1,13 @@
 package com.amotassic.dabaosword.item.skillcard;
 
-import com.amotassic.dabaosword.event.ActiveSkillHandler;
 import com.amotassic.dabaosword.event.callback.CardDiscardCallback;
+import com.amotassic.dabaosword.event.callback.CardMoveCallback;
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.item.card.GiftBoxItem;
-import com.amotassic.dabaosword.util.*;
+import com.amotassic.dabaosword.item.equipment.Equipment;
+import com.amotassic.dabaosword.util.ModTools;
+import com.amotassic.dabaosword.util.Skill;
+import com.amotassic.dabaosword.util.Sounds;
+import com.amotassic.dabaosword.util.Tags;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.HashMultimap;
@@ -27,6 +30,8 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventory;
+import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -238,6 +243,28 @@ public class SkillItem extends TrinketItem implements Skill {
         }
     }
 
+    public static class Gongxin extends ActiveSkillWithTarget {
+        public Gongxin(Settings settings) {super(settings);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
+            int cd = getCD(stack);
+            tooltip.add(Text.literal(cd == 0 ? "CD: 30s" : "CD: 30s   left: "+ cd +"s"));
+            tooltip.add(Text.translatable("item.dabaosword.gongxin.tooltip").formatted(Formatting.GREEN));
+        }
+
+        @Override
+        public void activeSkill(PlayerEntity user, ItemStack stack, PlayerEntity target) {
+            int cd = getCD(stack);
+            if (cd > 0) user.sendMessage(Text.translatable("dabaosword.cooldown").formatted(Formatting.RED), true);
+            else {
+                voice(user, Sounds.GONGXIN);
+                openInv(user, target, Text.translatable("gongxin.title"), stack, targetInv(target, false, false, 2));
+                setCD(stack, 30);
+            }
+        }
+    }
+
     public static class Guose extends SkillItem {
         public Guose(Settings settings) {super(settings);}
 
@@ -306,6 +333,27 @@ public class SkillItem extends TrinketItem implements Skill {
                 voice(player, Sounds.KUANGGU);
                 player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 8,0,false,false,true));
             }
+        }
+    }
+
+    public static class Kurou extends ActiveSkill {
+        public Kurou(Settings settings) {super(settings);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
+            tooltip.add(Text.translatable("item.dabaosword.kurou.tooltip").formatted(Formatting.GREEN));
+        }
+
+        @Override
+        public void activeSkill(PlayerEntity user, ItemStack stack, PlayerEntity target) {
+            if (user.getHealth() + 5 * count(user, Tags.Items.RECOVER) > 4.99) {
+                draw(user, 2);
+                if (!user.isCreative()) {
+                    user.timeUntilRegen = 0;
+                    user.damage(user.getDamageSources().genericKill(), 4.99f);
+                }
+                voice(user, Sounds.KUROU);
+            } else {user.sendMessage(Text.translatable("item.dabaosword.kurou.tip").formatted(Formatting.RED), true);}
         }
     }
 
@@ -412,6 +460,33 @@ public class SkillItem extends TrinketItem implements Skill {
         }
     }
 
+    public static class Luoshen extends ActiveSkill {
+        public Luoshen(Settings settings) {super(settings);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
+            int cd = getCD(stack);
+            tooltip.add(Text.literal(cd == 0 ? "CD: 30s" : "CD: 30s   left: "+ cd +"s"));
+            tooltip.add(Text.translatable("item.dabaosword.luoshen.tooltip").formatted(Formatting.BLUE));
+        }
+
+        @Override
+        public void activeSkill(PlayerEntity user, ItemStack stack, PlayerEntity target) {
+            int cd = getCD(stack);
+            if (cd > 0) user.sendMessage(Text.translatable("dabaosword.cooldown").formatted(Formatting.RED), true);
+            else {
+                voice(user, Sounds.LUOSHEN);
+                if (new Random().nextFloat() < 0.5) {
+                    draw(user);
+                    user.sendMessage(Text.translatable("item.dabaosword.luoshen.win").formatted(Formatting.GREEN), true);
+                } else {
+                    setCD(stack, 30);
+                    user.sendMessage(Text.translatable("item.dabaosword.luoshen.lose").formatted(Formatting.RED), true);
+                }
+            }
+        }
+    }
+
     public static class Luoyi extends SkillItem {
         public Luoyi(Settings settings) {super(settings);}
 
@@ -486,6 +561,34 @@ public class SkillItem extends TrinketItem implements Skill {
         }
     }
 
+    public static class Qice extends ActiveSkill {
+        public Qice(Settings settings) {super(settings);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
+            int cd = getCD(stack);
+            tooltip.add(Text.literal(cd == 0 ? "CD: 20s" : "CD: 20s   left: "+ cd +"s"));
+            tooltip.add(Text.translatable("item.dabaosword.qice.tooltip").formatted(Formatting.BLUE));
+        }
+
+        @Override
+        public void activeSkill(PlayerEntity user, ItemStack stack, PlayerEntity target) {
+            ItemStack offStack = user.getOffHandStack();
+            int cd = getCD(stack);
+            if (!offStack.isEmpty() && offStack.isIn(Tags.Items.CARD) && offStack.getCount() > 1) {
+                if (cd == 0) {
+
+                    ItemStack[] stacks = {new ItemStack(ModItems.BINGLIANG_ITEM), new ItemStack(ModItems.TOO_HAPPY_ITEM), new ItemStack(ModItems.DISCARD), new ItemStack(ModItems.FIRE_ATTACK), new ItemStack(ModItems.JIEDAO), new ItemStack(ModItems.JUEDOU), new ItemStack(ModItems.NANMAN), new ItemStack(ModItems.STEAL), new ItemStack(ModItems.TAOYUAN), new ItemStack(ModItems.TIESUO), new ItemStack(ModItems.WANJIAN), new ItemStack(ModItems.WUXIE), new ItemStack(ModItems.WUZHONG)};
+                    Inventory inventory = new SimpleInventory(20);
+                    for (var stack1 : stacks) inventory.setStack(Arrays.stream(stacks).toList().indexOf(stack1), stack1);
+
+                    openSimpleMenu(user, stack, inventory, Text.translatable("item.dabaosword.qice.screen"));
+                }
+                else {user.sendMessage(Text.translatable("dabaosword.cooldown").formatted(Formatting.RED), true);}
+            } else {user.sendMessage(Text.translatable("item.dabaosword.qice.tip").formatted(Formatting.RED), true);}
+        }
+    }
+
     public static class Qingguo extends SkillItem {
         public Qingguo(Settings settings) {super(settings);}
 
@@ -545,6 +648,23 @@ public class SkillItem extends TrinketItem implements Skill {
         }
     }
 
+    public static class Rende extends ActiveSkillWithTarget {
+        public Rende(Settings settings) {super(settings);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
+            int cd = getCD(stack);
+            tooltip.add(Text.literal(cd == 0 ? "CD: 30s" : "CD: 30s   left: "+ cd +"s"));
+            tooltip.add(Text.translatable("item.dabaosword.rende.tooltip1").formatted(Formatting.RED));
+            tooltip.add(Text.translatable("item.dabaosword.rende.tooltip2").formatted(Formatting.RED));
+        }
+
+        @Override
+        public void activeSkill(PlayerEntity user, ItemStack stack, PlayerEntity target) {
+            openInv(user, target, Text.translatable("give_card.title", stack.getName()), stack, targetInv(user, false, false, 2));
+        }
+    }
+
     public static class Shanzhuan extends SkillItem {
         public Shanzhuan(Settings settings) {super(settings);}
 
@@ -559,7 +679,7 @@ public class SkillItem extends TrinketItem implements Skill {
         @Override
         public void postDamage(ItemStack stack, LivingEntity entity, LivingEntity attacker, float amount) {
             if (attacker instanceof PlayerEntity player && !player.hasStatusEffect(ModItems.COOLDOWN)) {
-                if (entity instanceof PlayerEntity target) ActiveSkillHandler.openInv(player, target, Text.translatable("dabaosword.discard.title", stack.getName()), stack, ActiveSkillHandler.targetInv(target, true, false, 1));
+                if (entity instanceof PlayerEntity target) openInv(player, target, Text.translatable("dabaosword.discard.title", stack.getName()), stack, targetInv(target, true, false, 1));
                 else {
                     voice(player, Sounds.SHANZHUAN);
                     if (new Random().nextFloat() < 0.5) {
@@ -610,6 +730,28 @@ public class SkillItem extends TrinketItem implements Skill {
         }
     }
 
+    public static class Taoluan extends ActiveSkill {
+        public Taoluan(Settings settings) {super(settings);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
+            tooltip.add(Text.translatable("item.dabaosword.taoluan.tooltip"));
+        }
+
+        @Override
+        public void activeSkill(PlayerEntity user, ItemStack stack, PlayerEntity target) {
+            if (user.getHealth() + 5 * count(user, Tags.Items.RECOVER) > 4.99) {
+
+                ItemStack[] stacks = {new ItemStack(ModItems.THUNDER_SHA), new ItemStack(ModItems.FIRE_SHA), new ItemStack(ModItems.SHAN), new ItemStack(ModItems.PEACH), new ItemStack(ModItems.JIU), new ItemStack(ModItems.BINGLIANG_ITEM), new ItemStack(ModItems.TOO_HAPPY_ITEM), new ItemStack(ModItems.DISCARD), new ItemStack(ModItems.FIRE_ATTACK), new ItemStack(ModItems.JIEDAO), new ItemStack(ModItems.JUEDOU), new ItemStack(ModItems.NANMAN), new ItemStack(ModItems.STEAL), new ItemStack(ModItems.TAOYUAN), new ItemStack(ModItems.TIESUO), new ItemStack(ModItems.WANJIAN), new ItemStack(ModItems.WUXIE), new ItemStack(ModItems.WUZHONG)};
+                Inventory inventory = new SimpleInventory(20);
+                for (var stack1 : stacks) inventory.setStack(Arrays.stream(stacks).toList().indexOf(stack1), stack1);
+
+                openSimpleMenu(user, stack, inventory, Text.translatable("item.dabaosword.taoluan.screen"));
+            }
+            else {user.sendMessage(Text.translatable("item.dabaosword.taoluan.tip").formatted(Formatting.RED), true);}
+        }
+    }
+
     public static class Tieji extends SkillItem {
         public Tieji(Settings settings) {super(settings);}
 
@@ -648,9 +790,15 @@ public class SkillItem extends TrinketItem implements Skill {
                 voice(player, Sounds.YIJI);
             }
         }
+
+        @Override
+        public void activeSkill(PlayerEntity user, ItemStack stack, PlayerEntity target) {
+            int i = getTag(stack);
+            if (i > 0 ) openInv(user, target, Text.translatable("give_card.title", stack.getName()), stack, targetInv(user, false, false, 2));
+        }
     }
 
-    public static class Zhiheng extends SkillItem {
+    public static class Zhiheng extends ActiveSkill {
         public Zhiheng(Settings settings) {super(settings);}
 
         @Override
@@ -671,6 +819,38 @@ public class SkillItem extends TrinketItem implements Skill {
             }
             super.tick(stack, slot, entity);
         }
+
+        @Override
+        public void activeSkill(PlayerEntity user, ItemStack stack, PlayerEntity target) {
+            int z = getTag(stack);
+            if (z > 0) openInv(user, user, Text.translatable("zhiheng.title"), stack, targetInv(user, true, false, 2));
+            else user.sendMessage(Text.translatable("zhiheng.fail").formatted(Formatting.RED), true);
+        }
+    }
+
+    public static class Zhijian extends ActiveSkillWithTarget {
+        public Zhijian(Settings settings) {super(settings);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
+            tooltip.add(Text.translatable("item.dabaosword.zhijian.tooltip1").formatted(Formatting.GREEN));
+            tooltip.add(Text.translatable("item.dabaosword.zhijian.tooltip2").formatted(Formatting.GREEN));
+        }
+
+        @Override
+        public void activeSkill(PlayerEntity user, ItemStack stack, PlayerEntity target) {
+            ItemStack itemStack = user.getMainHandStack();
+            if (itemStack.getItem() instanceof Equipment && itemStack.getItem() != ModItems.CARD_PILE) {
+                CardMoveCallback.EVENT.invoker().cardMove(user, target, itemStack, itemStack.getCount(), CardMoveCallback.Type.INV_TO_EQUIP);
+                if (Equipment.useEquip(target, itemStack)) {
+                    voice(user, Sounds.ZHIJIAN);
+                    draw(user);
+                } else if (Equipment.replaceEquip(target, itemStack)) {
+                    voice(user, Sounds.ZHIJIAN);
+                    draw(user);
+                }
+            } else user.sendMessage(Text.translatable("zhijian.fail").formatted(Formatting.RED), true);
+        }
     }
 
     @Override
@@ -678,24 +858,6 @@ public class SkillItem extends TrinketItem implements Skill {
 
         if (stack.getItem() == SkillCards.XIAOJI) {
             tooltip.add(Text.translatable("item.dabaosword.xiaoji.tooltip").formatted(Formatting.GREEN));
-        }
-
-        if (stack.getItem() == SkillCards.ZHIJIAN) {
-            tooltip.add(Text.translatable("item.dabaosword.zhijian.tooltip1").formatted(Formatting.GREEN));
-            tooltip.add(Text.translatable("item.dabaosword.zhijian.tooltip2").formatted(Formatting.GREEN));
-        }
-
-        if (stack.getItem() == SkillCards.GONGXIN) {
-            int cd = getCD(stack);
-            tooltip.add(Text.literal(cd == 0 ? "CD: 30s" : "CD: 30s   left: "+ cd +"s"));
-            tooltip.add(Text.translatable("item.dabaosword.gongxin.tooltip").formatted(Formatting.GREEN));
-        }
-
-        if (stack.getItem() == SkillCards.RENDE) {
-            int cd = getCD(stack);
-            tooltip.add(Text.literal(cd == 0 ? "CD: 30s" : "CD: 30s   left: "+ cd +"s"));
-            tooltip.add(Text.translatable("item.dabaosword.rende.tooltip1").formatted(Formatting.RED));
-            tooltip.add(Text.translatable("item.dabaosword.rende.tooltip2").formatted(Formatting.RED));
         }
 
         if (stack.getItem() == SkillCards.BUQU) {
@@ -717,32 +879,12 @@ public class SkillItem extends TrinketItem implements Skill {
             tooltip.add(Text.translatable("item.dabaosword.xingshang.tooltip").formatted(Formatting.BLUE));
         }
 
-        if (stack.getItem() == SkillCards.LUOSHEN) {
-            int cd = getCD(stack);
-            tooltip.add(Text.literal(cd == 0 ? "CD: 30s" : "CD: 30s   left: "+ cd +"s"));
-            tooltip.add(Text.translatable("item.dabaosword.luoshen.tooltip").formatted(Formatting.BLUE));
-        }
-
-        if (stack.getItem() == SkillCards.QICE) {
-            int cd = getCD(stack);
-            tooltip.add(Text.literal(cd == 0 ? "CD: 20s" : "CD: 20s   left: "+ cd +"s"));
-            tooltip.add(Text.translatable("item.dabaosword.qice.tooltip").formatted(Formatting.BLUE));
-        }
-
         if (stack.getItem() == SkillCards.LEIJI) {
             tooltip.add(Text.translatable("item.dabaosword.leiji.tooltip"));
         }
 
         if (stack.getItem() == SkillCards.JIZHI) {
             tooltip.add(Text.translatable("item.dabaosword.jizhi.tooltip").formatted(Formatting.RED));
-        }
-
-        if (stack.getItem() == SkillCards.KUROU) {
-            tooltip.add(Text.translatable("item.dabaosword.kurou.tooltip").formatted(Formatting.GREEN));
-        }
-
-        if (stack.getItem() == SkillCards.TAOLUAN) {
-            tooltip.add(Text.translatable("item.dabaosword.taoluan.tooltip"));
         }
 
         if (stack.getItem() == SkillCards.JUEQING) {
@@ -779,9 +921,7 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     private boolean equipped(ItemStack stack) {
-        if (stack.getNbt() != null) {
-            return stack.getNbt().contains("equipped");
-        }
+        if (stack.getNbt() != null) return stack.getNbt().contains("equipped");
         return false;
     }
 
@@ -812,7 +952,7 @@ public class SkillItem extends TrinketItem implements Skill {
                 if (stack.getNbt().contains("cooldown")) {
                     int cd = stack.getNbt().getInt("cooldown");
                     if (world.getTime() % 20 == 0) { //世界时间除以20取余为0时，技能内置CD减一秒
-                        if (cd > 0) cd--; setCD(stack, cd);
+                        if (cd > 0) setCD(stack, cd - 1);
                     }
                 }
             }
@@ -821,10 +961,8 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static void changeSkill(PlayerEntity player) {
-        List<LootEntry> lootEntries = LootTableParser.parseLootTable(new Identifier("dabaosword", "loot_tables/change_skill.json"));
-        LootEntry selectedEntry = GiftBoxItem.selectRandomEntry(lootEntries);
-
-        ItemStack stack = new ItemStack(Registries.ITEM.get(selectedEntry.item()));
+        var selectedId = parseLootTable(new Identifier("dabaosword", "loot_tables/change_skill.json"));
+        ItemStack stack = new ItemStack(Registries.ITEM.get(selectedId));
         if (stack.getItem() != Items.AIR) voice(player, Sounds.GIFTBOX,3);
         give(player, stack);
     }

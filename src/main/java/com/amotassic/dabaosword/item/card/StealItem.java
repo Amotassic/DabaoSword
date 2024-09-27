@@ -1,6 +1,5 @@
 package com.amotassic.dabaosword.item.card;
 
-import com.amotassic.dabaosword.event.ActiveSkillHandler;
 import com.amotassic.dabaosword.event.callback.CardMoveCallback;
 import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.item.ModItems;
@@ -31,7 +30,7 @@ public class StealItem extends CardItem {
                     voice(user, Sounds.SHUNSHOU);
                     CardUsePostCallback.EVENT.invoker().cardUsePost(user, stack, entity);
                 } else {
-                    ActiveSkillHandler.openInv(user, target, Text.translatable("dabaosword.steal.title"), stack, ActiveSkillHandler.targetInv(target, true, true, 1));
+                    openInv(user, target, Text.translatable("dabaosword.steal.title"), stack, targetInv(target, true, true, 1));
                 }
             } else {
                 List<ItemStack> stacks = new ArrayList<>();

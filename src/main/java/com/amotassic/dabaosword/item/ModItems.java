@@ -114,7 +114,6 @@ public class ModItems {
         PlayerConnectCallback.EVENT.register(new PlayerEvents());
         PlayerDeathCallback.EVENT.register(new PlayerEvents());
         PlayerRespawnCallback.EVENT.register(new PlayerEvents());
-        ActiveSkillCallback.EVENT.register(new ActiveSkillHandler());
         CardUsePostCallback.EVENT.register(new CardEvents());
         CardDiscardCallback.EVENT.register(new CardEvents());
         CardMoveCallback.EVENT.register(new CardEvents());

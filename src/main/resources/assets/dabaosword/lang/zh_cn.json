@@ -128,6 +128,7 @@
   "sounds.dabaosword.falling_attack2": "着地",
   "effect.dabaosword.turn_over": "翻面",
   "effect.dabaosword.tieji": "非锁定技失效",
+  "effect.tieji.tip": "你现在有铁骑效果，无法使用主动技！",
   "equipment.tip1": "装备后不可以直接脱下",
   "equipment.tip2": "手持新的装备牌右键使用，可替换掉旧的装备",
   "info.fail": "请选择一个生物实体！",

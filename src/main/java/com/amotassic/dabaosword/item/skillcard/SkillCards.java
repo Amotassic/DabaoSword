@@ -13,10 +13,10 @@ public class SkillCards {
     public static final Item GANGLIE = register("ganglie", new SkillItem.Ganglie(new Item.Settings().maxCount(1)));
     public static final Item GONGAO = register("gongao", new SkillItem.Gongao(new Item.Settings().maxCount(1)));
     public static final Item JUEQING = register("jueqing", new SkillItem(new Item.Settings().maxCount(1)));
-    public static final Item LUOSHEN = register("luoshen", new SkillItem.ActiveSkill(new Item.Settings().maxCount(1)));
+    public static final Item LUOSHEN = register("luoshen", new SkillItem.Luoshen(new Item.Settings().maxCount(1)));
     public static final Item QINGGUO = register("qingguo", new SkillItem.Qingguo(new Item.Settings().maxCount(1)));
     public static final Item LUOYI = register("luoyi", new SkillItem.Luoyi(new Item.Settings().maxCount(1)));
-    public static final Item QICE = register("qice", new SkillItem.ActiveSkill(new Item.Settings().maxCount(1)));
+    public static final Item QICE = register("qice", new SkillItem.Qice(new Item.Settings().maxCount(1)));
     public static final Item QUANJI = register("quanji", new SkillItem.Quanji(new Item.Settings().maxCount(1)));
     public static final Item SHANZHUAN = register("shanzhuan", new SkillItem.Shanzhuan(new Item.Settings().maxCount(1)));
     public static final Item SHENSU = register("shensu", new SkillItem.Shensu(new Item.Settings().maxCount(1)));
@@ -29,24 +29,24 @@ public class SkillCards {
     public static final Item KUANGGU = register("kuanggu", new SkillItem.Kuanggu(new Item.Settings().maxCount(1)));
     public static final Item LIEGONG = register("liegong", new SkillItem.Liegong(new Item.Settings().maxCount(1)));
     public static final Item LONGDAN = register("longdan", new SkillItem.Longdan(new Item.Settings().maxCount(1)));
-    public static final Item RENDE = register("rende", new SkillItem.ActiveSkillWithTarget(new Item.Settings().maxCount(1)));
+    public static final Item RENDE = register("rende", new SkillItem.Rende(new Item.Settings().maxCount(1)));
     public static final Item TIEJI = register("tieji", new SkillItem.Tieji(new Item.Settings().maxCount(1)));
     //吴
     public static final Item BUQU = register("buqu", new SkillItem(new Item.Settings().maxCount(1)));
-    public static final Item GONGXIN = register("gongxin", new SkillItem.ActiveSkillWithTarget(new Item.Settings().maxCount(1)));
+    public static final Item GONGXIN = register("gongxin", new SkillItem.Gongxin(new Item.Settings().maxCount(1)));
     public static final Item GUOSE = register("guose", new SkillItem.Guose(new Item.Settings().maxCount(1)));
     public static final Item LIANYING = register("lianying", new SkillItem.Lianying(new Item.Settings().maxCount(1)));
     public static final Item LIULI = register("liuli", new SkillItem(new Item.Settings().maxCount(1)));
-    public static final Item KUROU = register("kurou", new SkillItem.ActiveSkill(new Item.Settings().maxCount(1)));
+    public static final Item KUROU = register("kurou", new SkillItem.Kurou(new Item.Settings().maxCount(1)));
     public static final Item POJUN = register("pojun", new SkillItem.Pojun(new Item.Settings().maxCount(1)));
     public static final Item QIXI = register("qixi", new SkillItem.Qixi(new Item.Settings().maxCount(1)));
     public static final Item XIAOJI = register("xiaoji", new SkillItem(new Item.Settings().maxCount(1)));
     public static final Item ZHIHENG = register("zhiheng", new SkillItem.Zhiheng(new Item.Settings().maxCount(1)));
-    public static final Item ZHIJIAN = register("zhijian", new SkillItem.ActiveSkillWithTarget(new Item.Settings().maxCount(1)));
+    public static final Item ZHIJIAN = register("zhijian", new SkillItem.Zhijian(new Item.Settings().maxCount(1)));
     //群
     public static final Item LEIJI = register("leiji", new SkillItem(new Item.Settings().maxCount(1)));
     public static final Item LUANJI = register("luanji", new SkillItem.Luanji(new Item.Settings().maxCount(1)));
-    public static final Item TAOLUAN = register("taoluan", new SkillItem.ActiveSkill(new Item.Settings().maxCount(1)));
+    public static final Item TAOLUAN = register("taoluan", new SkillItem.Taoluan(new Item.Settings().maxCount(1)));
     public static final Item MASHU = register("mashu", new SkillItem(new Item.Settings().maxCount(1)));
 
     public static final Item FEIYING = register("feiying", new SkillItem(new Item.Settings().maxCount(1)));

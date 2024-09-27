@@ -22,6 +22,7 @@ import net.minecraft.util.math.Vec3d;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import static com.amotassic.dabaosword.util.ModTools.hasTrinket;
 
@@ -37,7 +38,7 @@ public class ClientTickEnd {
                 if (result != null && result.getType() == HitResult.Type.ENTITY) {
                     var hitResult = (EntityHitResult) result; var entity = hitResult.getEntity();
                     if (entity instanceof PlayerEntity player) {
-                        if (ACTIVE_SKILL.wasPressed() && hasActiveSkillWithTarget(user)) {
+                        if (ACTIVE_SKILL.wasPressed() && haveSkill(user, stack -> stack.getItem() instanceof SkillItem.ActiveSkillWithTarget)) {
                             PacketByteBuf buf = PacketByteBufs.create();
                             buf.writeUuid(player.getUuid());
                             ClientPlayNetworking.send(ServerNetworking.ACTIVE_SKILL, buf);
@@ -45,7 +46,7 @@ public class ClientTickEnd {
                         return;
                     }
                 }
-                if (ACTIVE_SKILL.wasPressed() && hasActiveSkill(user)) {
+                if (ACTIVE_SKILL.wasPressed() && haveSkill(user, stack -> stack.getItem() instanceof SkillItem.ActiveSkill)) {
                     PacketByteBuf buf = PacketByteBufs.create();
                     buf.writeUuid(user.getUuid());
                     ClientPlayNetworking.send(ServerNetworking.ACTIVE_SKILL, buf);
@@ -63,19 +64,11 @@ public class ClientTickEnd {
         });
     }
 
-    public static boolean hasActiveSkill(PlayerEntity player) {
+    public static boolean haveSkill(PlayerEntity player, Predicate<ItemStack> predicate) {
         Optional<TrinketComponent> optionalComponent = TrinketsApi.getTrinketComponent(player);
         if(optionalComponent.isEmpty()) return false;
         TrinketComponent component = optionalComponent.get();
-        ItemStack itemStack = component.getEquipped(stack -> stack.getItem() instanceof SkillItem.ActiveSkill).stream().map(Pair::getRight).findFirst().orElse(null);
-        return itemStack != null;
-    }
-
-    public static boolean hasActiveSkillWithTarget(PlayerEntity player) {
-        Optional<TrinketComponent> optionalComponent = TrinketsApi.getTrinketComponent(player);
-        if(optionalComponent.isEmpty()) return false;
-        TrinketComponent component = optionalComponent.get();
-        ItemStack itemStack = component.getEquipped(stack -> stack.getItem() instanceof SkillItem.ActiveSkillWithTarget).stream().map(Pair::getRight).findFirst().orElse(null);
+        ItemStack itemStack = component.getEquipped(predicate).stream().map(Pair::getRight).findFirst().orElse(null);
         return itemStack != null;
     }
 }

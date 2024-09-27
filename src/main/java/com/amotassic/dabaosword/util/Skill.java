@@ -4,6 +4,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Pair;
 
 public interface Skill {
 
@@ -18,4 +19,13 @@ public interface Skill {
 
     //受到伤害后触发
     default void onHurt(ItemStack stack, LivingEntity entity, DamageSource source, float amount) {}
+
+    /**
+    *当发动技能键按下后，若玩家没有铁骑效果即可触发，需要继承{@link com.amotassic.dabaosword.item.skillcard.SkillItem.ActiveSkill}或者{@link com.amotassic.dabaosword.item.skillcard.SkillItem.ActiveSkillWithTarget}才会生效
+     */
+    default void activeSkill(PlayerEntity user, ItemStack stack, PlayerEntity target) {}
+
+    default Pair<Float, Float> modifyDamage(LivingEntity target, DamageSource source, float amount) {
+        return new Pair<>(0f, 0f);
+    }
 }

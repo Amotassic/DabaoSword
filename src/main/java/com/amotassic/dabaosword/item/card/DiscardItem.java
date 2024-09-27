@@ -1,6 +1,5 @@
 package com.amotassic.dabaosword.item.card;
 
-import com.amotassic.dabaosword.event.ActiveSkillHandler;
 import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.Sounds;
@@ -41,7 +40,7 @@ public class DiscardItem extends CardItem {
                     voice(user, Sounds.GUOHE);
                     CardUsePostCallback.EVENT.invoker().cardUsePost(user, stack, entity);
                 } else {
-                    ActiveSkillHandler.openInv(user, target, Text.translatable("dabaosword.discard.title", stack.getName()), stack, ActiveSkillHandler.targetInv(target, true, false, 1));
+                    openInv(user, target, Text.translatable("dabaosword.discard.title", stack.getName()), stack, targetInv(target, true, false, 1));
                 }
             } else {
                 List<ItemStack> stacks = new ArrayList<>();

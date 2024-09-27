@@ -2,12 +2,10 @@ package com.amotassic.dabaosword.command;
 
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.ui.FullInvScreenHandler;
+import com.amotassic.dabaosword.util.ModTools;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import dev.emi.trinkets.api.SlotReference;
-import dev.emi.trinkets.api.TrinketComponent;
-import dev.emi.trinkets.api.TrinketsApi;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.entity.Entity;
@@ -25,13 +23,11 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Pair;
 import net.minecraft.util.collection.DefaultedList;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
@@ -78,9 +74,9 @@ public class InfoCommand {
         }
     }
 
-    public static Inventory fullInv(LivingEntity target, boolean ebitable) {
+    public static Inventory fullInv(LivingEntity target, boolean editable) {
         Inventory inv = new SimpleInventory(64);
-        return updateInv(inv, target, ebitable);
+        return updateInv(inv, target, editable);
     }
 
     public static Inventory updateInv(Inventory inventory, LivingEntity target, boolean editable) {
@@ -107,16 +103,12 @@ public class InfoCommand {
 
         inventory.setStack(40, target.getOffHandStack()); //副手
 
-        Optional<TrinketComponent> component = TrinketsApi.getTrinketComponent(target);
-        if (component.isPresent()) {//饰品栏
-            List<Pair<SlotReference, ItemStack>> trinkets = component.get().getEquipped(stack -> true);
-            List<ItemStack> stacks = new ArrayList<>();
-            for (var trinket : trinkets) {
-                stacks.add(trinket.getRight());
-            }
-            for (var stack : stacks) {
-                inventory.setStack(stacks.indexOf(stack) + 41, stack);
-            }
+        List<ItemStack> stacks = new ArrayList<>();
+        for (var trinket : ModTools.allTinkets(target)) { //饰品栏
+            stacks.add(trinket.getRight());
+        }
+        for (var stack : stacks) {
+            inventory.setStack(stacks.indexOf(stack) + 41, stack);
         }
         return inventory;
     }
