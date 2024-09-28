@@ -1,14 +1,11 @@
 package com.amotassic.dabaosword.util;
 
-import com.amotassic.dabaosword.event.callback.CardDiscardCallback;
-import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.equipment.Equipment;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import net.minecraft.entity.DamageUtil;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -19,6 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.Box;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,90 +27,57 @@ import static com.amotassic.dabaosword.util.ModTools.*;
 public class ModifyDamage {
     //由于fabric没有提供修改伤害的方法，因此我自己注入"applyArmorToDamage"以修改生物受到的伤害值
     public static float modify(LivingEntity entity, DamageSource source, float value) {
-        ItemStack head = entity.getEquippedStack(EquipmentSlot.HEAD);
-        ItemStack chest = entity.getEquippedStack(EquipmentSlot.CHEST);
-        ItemStack legs = entity.getEquippedStack(EquipmentSlot.LEGS);
-        ItemStack feet = entity.getEquippedStack(EquipmentSlot.FEET);
-        boolean noArmor = head.isEmpty() && chest.isEmpty() && legs.isEmpty() && feet.isEmpty();
-
         float multiply = 0; //倍率增伤乘区
         float add = 0; //固定数值加减伤害区
+        List<Float> reducing = new ArrayList<>(); //最终减伤乘区，存储负值，每个值使最终伤害为原来的（1+x）倍
 
-        /*for (var p : allTinkets(entity)) {
-            var stack = p.getRight();
-            if (stack.getItem() instanceof SkillItem skill) {
-                var pair = skill.modifyDamage(entity, source, value);
-                multiply += pair.getLeft(); add += pair.getRight();
-            }
-            if (stack.getItem() instanceof Equipment skill) {
-                var pair = skill.modifyDamage(entity, source, value);
-                multiply += pair.getLeft(); add += pair.getRight();
-            }
-        }*/
+        //处理所有饰品带来的增/减伤结算
+        List<Pair<Pair<Float, Float>, List<Float>>> pairList = new ArrayList<>();
+        pairList.add(calculateDMG(entity, source, value, entity));
+        if (source.getSource() instanceof LivingEntity SE) {
+            if (!SE.getCommandTags().contains("sha")) { //防止杀的效果再次触发近战加伤
+                pairList.add(calculateDMG(entity, source, value, SE));
 
-        if (source.getSource() instanceof LivingEntity attacker && !attacker.getCommandTags().contains("sha")) {
-            if (noArmor || hasTrinket(SkillCards.POJUN, attacker)) {
-                //古锭刀对没有装备的生物伤害增加 限定版翻倍 卡牌版加5
-                if (attacker.getMainHandStack().getItem() == ModItems.GUDINGDAO) multiply += 1;
-                if (hasTrinket(ModItems.GUDING_WEAPON, attacker)) {
-                    voice(entity, Sounds.GUDING);
-                    add += 5;
-                }
+                //插入一个武器版古锭刀的结算
+                int i = 0; //i == 4则说明受击者的盔甲栏没有任何物品
+                for (var s : entity.getArmorItems()) {if (s.isEmpty()) i++;}
+                if (i == 4 && SE.getMainHandStack().isOf(ModItems.GUDINGDAO)) multiply += 1;
             }
-
-            //排异技能：攻击伤害增加
-            if (hasTrinket(SkillCards.QUANJI, attacker)) {
-                ItemStack stack = trinketItem(SkillCards.QUANJI, attacker);
-                int quan = getTag(stack);
-                if (quan > 0) {
-                    if (quan > 4 && entity instanceof PlayerEntity player) draw(player, 2);
-                    setTag(stack, quan/2);
-                    voice(attacker, Sounds.PAIYI);
-                    add += quan;
-                }
-            }
-
-            //烈弓：命中后加伤害，至少为5
-            if (hasTrinket(SkillCards.LIEGONG, attacker) && !attacker.hasStatusEffect(ModItems.COOLDOWN)) {
-                float f = Math.max(13 - attacker.distanceTo(entity), 5);
-                attacker.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, (int) (40 * f),0,false,false,true));
-                voice(attacker, Sounds.LIEGONG);
-                add += f;
-            }
-
-            if (hasTrinket(SkillCards.SHENSU, attacker) && !attacker.hasStatusEffect(ModItems.COOLDOWN)) {
-                float walkSpeed = 4.317f;
-                float speed = Objects.requireNonNull(Objects.requireNonNull(trinketItem(SkillCards.SHENSU, attacker)).getNbt()).getFloat("speed");
-                if (speed > walkSpeed) {
-                    float m = (speed - walkSpeed) / walkSpeed / 2;
-                    attacker.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, (int) (5 * 20 * m),0,false,false,true));
-                    if (attacker instanceof PlayerEntity player) player.sendMessage(Text.translatable("shensu.info", speed, m));
-                    voice(attacker, Sounds.SHENSU);
-                    multiply += m;
-                }
-            }
+        } else if (source.getAttacker() instanceof LivingEntity AT) pairList.add(calculateDMG(entity, source, value, AT));
+        for (var p : pairList) {
+            multiply += p.getLeft().getLeft();
+            add += p.getLeft().getRight();
+            reducing.addAll(p.getRight());
         }
 
-        //穿藤甲时，若承受火焰伤害，则 战火燃尽，嘤熊胆！（伤害大于5就只加5）
-        if (source.isIn(DamageTypeTags.IS_FIRE) && hasTrinket(ModItems.RATTAN_ARMOR, entity)) {
-            voice(entity, Sounds.TENGJIA2);
-            add += value > 5 ? 5 : value;
-        }
-
-        //增伤区伤害结算
+        //伤害结算
         value = value * (1 + multiply) + add;
-
-        //白银狮子减伤
-        if (!source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY) && source.getAttacker() instanceof LivingEntity && hasTrinket(ModItems.BAIYIN, entity)) {
-            voice(entity, Sounds.BAIYIN);
-            value *= 0.4f;
-        }
+        for (var f : reducing) {value *= (1 + f);}
 
         if (!source.isIn(DamageTypeTags.BYPASSES_ARMOR)) {
             entity.damageArmor(source, value);
             value = DamageUtil.getDamageLeft(value, entity.getArmor(), (float)entity.getAttributeValue(EntityAttributes.GENERIC_ARMOR_TOUGHNESS));
         }
         return value;
+    }
+
+    private static Pair<Pair<Float, Float>, List<Float>> calculateDMG(LivingEntity entity, DamageSource source, float value, LivingEntity trinketOwner) {
+        float m = 0; float a = 0;
+        List<Float> r = new ArrayList<>();
+        for (var p : allTinkets(trinketOwner)) {
+            var stack = p.getRight();
+            if (stack.getItem() instanceof SkillItem skill) {
+                var pair = skill.modifyDamage(entity, source, value);
+                if (pair.getLeft() < 0) r.add(pair.getLeft()); else m += pair.getLeft();
+                a += pair.getRight();
+            }
+            if (stack.getItem() instanceof Equipment skill) {
+                var pair = skill.modifyDamage(entity, source, value);
+                if (pair.getLeft() < 0) r.add(pair.getLeft()); else m += pair.getLeft();
+                a += pair.getRight();
+            }
+        }
+        return new Pair<>(new Pair<>(m, a), r);
     }
 
     public static boolean shouldCancel(LivingEntity entity, DamageSource source, float amount) {
@@ -125,6 +90,15 @@ public class ModifyDamage {
             if (source.getSource() != null) source.getSource().discard();
             return true;
         }
+
+        /*List<List<ItemStack>> list = new ArrayList<>();
+        for (var l : list) {
+            for (var s : l) {
+                if (s.getItem() instanceof SkillItem) {
+
+                }
+            }
+        }*/
 
         if (source.getSource() instanceof LivingEntity sourceEntity) {
             //沈佳宜防御效果
@@ -155,7 +129,7 @@ public class ModifyDamage {
                     if (stack.getItem() == ModItems.SHA) voice(player, Sounds.SHA);
                     if (stack.getItem() == ModItems.FIRE_SHA) voice(player, Sounds.SHA_FIRE);
                     if (stack.getItem() == ModItems.THUNDER_SHA) voice(player, Sounds.SHA_THUNDER);
-                    CardUsePostCallback.EVENT.invoker().cardUsePost(player, stack, null);
+                    cardUsePost(player, stack, null);
                     dog.setHealth(0);
                     return true;
                 }
@@ -179,7 +153,7 @@ public class ModifyDamage {
                         player.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 10,0,false,false,false));
                         player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 10,0,false,false,false));
                         voice(player, Sounds.LIULI);
-                        CardDiscardCallback.EVENT.invoker().cardDiscard(player, stack, 1, false);
+                        cardDiscard(player, stack, 1, false);
                         nearEntity.timeUntilRegen = 0; nearEntity.damage(source, amount);
                         return true;
                     }
@@ -201,7 +175,7 @@ public class ModifyDamage {
                     if (stack.getItem() == ModItems.SHA) voice(player, Sounds.SHA);
                     if (stack.getItem() == ModItems.FIRE_SHA) voice(player, Sounds.SHA_FIRE);
                     if (stack.getItem() == ModItems.THUNDER_SHA) voice(player, Sounds.SHA_THUNDER);
-                    CardUsePostCallback.EVENT.invoker().cardUsePost(player, stack, entity);
+                    cardUsePost(player, stack, entity);
                 }
                 return true;
             }
@@ -246,7 +220,7 @@ public class ModifyDamage {
         if (bl) voice(entity, Sounds.BAGUA);
         voice(entity, Sounds.SHAN);
         if (entity instanceof PlayerEntity player) {
-            CardUsePostCallback.EVENT.invoker().cardUsePost(player, stack, null);
+            cardUsePost(player, stack, null);
             if (bl) player.sendMessage(Text.translatable("dabaosword.bagua"),true);
         } else stack.decrement(1);
     }

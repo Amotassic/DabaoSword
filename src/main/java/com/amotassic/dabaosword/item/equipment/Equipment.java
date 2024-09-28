@@ -1,7 +1,5 @@
 package com.amotassic.dabaosword.item.equipment;
 
-import com.amotassic.dabaosword.event.callback.CardDiscardCallback;
-import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.Skill;
 import com.amotassic.dabaosword.util.Sounds;
@@ -10,15 +8,18 @@ import dev.emi.trinkets.api.*;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Pair;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -36,6 +37,25 @@ import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class Equipment extends TrinketItem implements Skill {
     public Equipment(Settings settings) {super(settings);}
+
+    public static class BaiyinArmor extends Equipment {
+        public BaiyinArmor(Settings settings) {super(settings);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+            tooltip.add(Text.translatable("item.dabaosword.baiyin.tooltip"));
+            super.appendTooltip(stack, world, tooltip, context);
+        }
+
+        @Override
+        public Pair<Float, Float> modifyDamage(LivingEntity target, DamageSource source, float amount) {
+            if (!source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY) && source.getAttacker() instanceof LivingEntity && hasTrinket(ModItems.BAIYIN, target)) {
+                voice(target, Sounds.BAIYIN);
+                return new Pair<>(-0.4f, 0f);
+            }
+            return super.modifyDamage(target, source, amount);
+        }
+    }
 
     public static class FangtianWeapon extends Equipment {
         public FangtianWeapon(Settings settings) {super(settings);}
@@ -64,6 +84,30 @@ public class Equipment extends TrinketItem implements Skill {
                 voice(player, Sounds.FANGTIAN);
                 player.sendMessage(Text.translatable("dabaosword.fangtian").formatted(Formatting.RED), true);
             }
+        }
+    }
+
+    public static class GudingWeapon extends Equipment {
+        public GudingWeapon(Settings settings) {super(settings);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+            tooltip.add(Text.translatable("item.dabaosword.gudingdao.tooltip").formatted(Formatting.GREEN));
+            tooltip.add(Text.translatable("item.dabaosword.gudingdao.tooltip2").formatted(Formatting.AQUA));
+            super.appendTooltip(stack, world, tooltip, context);
+        }
+
+        @Override
+        public Pair<Float, Float> modifyDamage(LivingEntity target, DamageSource source, float amount) {
+            if (source.getSource() instanceof LivingEntity attacker && hasTrinket(ModItems.GUDING_WEAPON, attacker)) {
+                int i = 0;
+                for (var s : target.getArmorItems()) {if (s.isEmpty()) i++;}
+                if (i == 4) {
+                    voice(attacker, Sounds.GUDING);
+                    return new Pair<>(0f, 5f);
+                }
+            }
+            return super.modifyDamage(target, source, amount);
         }
     }
 
@@ -150,22 +194,23 @@ public class Equipment extends TrinketItem implements Skill {
                 entity.setOnGround(true);
             }
         }
+
+        @Override
+        public Pair<Float, Float> modifyDamage(LivingEntity target, DamageSource source, float amount) {
+            //穿藤甲时，若承受火焰伤害，则 战火燃尽，嘤熊胆！（伤害大于5就只加5）
+            if (source.isIn(DamageTypeTags.IS_FIRE) && hasTrinket(ModItems.RATTAN_ARMOR, target)) {
+                voice(target, Sounds.TENGJIA2);
+                return new Pair<>(0f, Math.min(amount, 5f));
+            }
+            return super.modifyDamage(target, source, amount);
+        }
     }
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
 
-        if (stack.getItem() == ModItems.GUDING_WEAPON) {
-            tooltip.add(Text.translatable("item.dabaosword.gudingdao.tooltip").formatted(Formatting.GREEN));
-            tooltip.add(Text.translatable("item.dabaosword.gudingdao.tooltip2").formatted(Formatting.AQUA));
-        }
-
         if (stack.getItem() == ModItems.BAGUA) {
             tooltip.add(Text.translatable("item.dabaosword.bagua.tooltip"));
-        }
-
-        if (stack.getItem() == ModItems.BAIYIN) {
-            tooltip.add(Text.translatable("item.dabaosword.baiyin.tooltip"));
         }
 
         if (stack.getItem() == ModItems.CHITU) {
@@ -230,7 +275,7 @@ public class Equipment extends TrinketItem implements Skill {
                                     user.emitGameEvent(GameEvent.EQUIP);
                                     user.playSound(soundEvent, 1.0F, 1.0F);
                                 }
-                                CardUsePostCallback.EVENT.invoker().cardUsePost(user, stack, user);
+                                cardUsePost(user, stack, user);
                                 return true;
                             }
                         }
@@ -247,10 +292,10 @@ public class Equipment extends TrinketItem implements Skill {
             List<Integer> slots = map.keySet().stream().toList();
             int index = new Random().nextInt(slots.size()); int i = slots.get(index);
             ItemStack preStack = map.values().stream().toList().get(index).getStack(i);
-            CardDiscardCallback.EVENT.invoker().cardDiscard(player, preStack, preStack.getCount(), true);
+            cardDiscard(player, preStack, preStack.getCount(), true);
             ItemStack newStack = stack.copy();
             map.values().stream().toList().get(index).setStack(i, newStack);
-            CardUsePostCallback.EVENT.invoker().cardUsePost(player, stack, player);
+            cardUsePost(player, stack, player);
             return true;
         }
         return false;

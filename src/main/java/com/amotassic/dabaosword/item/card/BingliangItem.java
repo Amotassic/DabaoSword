@@ -1,6 +1,5 @@
 package com.amotassic.dabaosword.item.card;
 
-import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.LivingEntity;
@@ -20,10 +19,10 @@ public class BingliangItem extends CardItem {
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         if (!user.getWorld().isClient) {
             if (entity instanceof PlayerEntity player && hasItem(player, ModItems.WUXIE)) {
-                CardUsePostCallback.EVENT.invoker().cardUsePost(player, getItem(player, ModItems.WUXIE), null);
+                cardUsePost(player, getItem(player, ModItems.WUXIE), null);
                 voice(player, Sounds.WUXIE);
             } else entity.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, StatusEffectInstance.INFINITE,1));
-            CardUsePostCallback.EVENT.invoker().cardUsePost(user, stack, entity);
+            cardUsePost(user, stack, entity);
             voice(user, Sounds.BINGLIANG);
             return ActionResult.SUCCESS;
         }

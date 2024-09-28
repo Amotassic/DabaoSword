@@ -1,6 +1,5 @@
 package com.amotassic.dabaosword.item.card;
 
-import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.Sounds;
@@ -12,8 +11,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-import static com.amotassic.dabaosword.util.ModTools.hasTrinket;
-import static com.amotassic.dabaosword.util.ModTools.voice;
+import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class ShanItem extends CardItem {
 
@@ -28,7 +26,7 @@ public class ShanItem extends CardItem {
             int i = hasTrinket(SkillCards.LEIJI, user) ? 3 : 0;
             user.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 20,0,false,false,false));
             user.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 20,i,false,false,false));
-            CardUsePostCallback.EVENT.invoker().cardUsePost(user, user.getStackInHand(hand), null);
+            cardUsePost(user, user.getStackInHand(hand), null);
             voice(user, Sounds.SHAN);
         }
         return TypedActionResult.success(user.getStackInHand(hand));

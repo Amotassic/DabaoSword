@@ -1,8 +1,6 @@
 package com.amotassic.dabaosword.ui;
 
-import com.amotassic.dabaosword.event.callback.CardDiscardCallback;
-import com.amotassic.dabaosword.event.callback.CardMoveCallback;
-import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
+import com.amotassic.dabaosword.event.callback.CardCBs;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.Sounds;
@@ -62,7 +60,7 @@ public class PlayerInvScreenHandler extends ScreenHandler {
                     voice(player, Sounds.RENDE);
                     target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.toHoverableText(), target.getDisplayName())));
                     player.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.toHoverableText(), target.getDisplayName())));
-                    CardMoveCallback.EVENT.invoker().cardMove(player, target, selfStack, 1, CardMoveCallback.Type.INV_TO_INV);
+                    cardMove(player, target, selfStack, 1, CardCBs.T.INV_TO_INV);
                     int cd = getCD(stack);
                     if (player.getHealth() < player.getMaxHealth() && cd == 0 && new Random().nextFloat() < 0.5) {
                         player.heal(5); voice(player, Sounds.RECOVER);
@@ -75,7 +73,7 @@ public class PlayerInvScreenHandler extends ScreenHandler {
                     int i = getTag(stack);
                     target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.toHoverableText(), target.getDisplayName())));
                     player.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.toHoverableText(), target.getDisplayName())));
-                    CardMoveCallback.EVENT.invoker().cardMove(player, target, selfStack, 1, CardMoveCallback.Type.INV_TO_INV);
+                    cardMove(player, target, selfStack, 1, CardCBs.T.INV_TO_INV);
                     setTag(stack, i - 1);
                     if (i - 1 == 0) closeGUI(player);
                 }
@@ -88,20 +86,20 @@ public class PlayerInvScreenHandler extends ScreenHandler {
                     if (targetStack.isIn(Tags.Items.BASIC_CARD)) target.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 5));
                     else target.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, StatusEffectInstance.INFINITE,1));
                     target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("dabaosword.discard")).append(targetStack.toHoverableText()));
-                    CardDiscardCallback.EVENT.invoker().cardDiscard(target, targetStack, 1, slotIndex < 4);
+                    cardDiscard(target, targetStack, 1, slotIndex < 4);
                     player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 8,0,false,false,true));
                     closeGUI(player);
                 }
 
                 if (stack.getItem() == SkillCards.GONGXIN) {
-                    CardDiscardCallback.EVENT.invoker().cardDiscard(target, targetStack, 1, false);
+                    cardDiscard(target, targetStack, 1, false);
                     closeGUI(player);
                 }
 
                 if (stack.getItem() == SkillCards.ZHIHENG) {
                     int z = getTag(stack);
                     voice(player, Sounds.ZHIHENG);
-                    CardDiscardCallback.EVENT.invoker().cardDiscard(player, targetStack, 1, slotIndex < 4);
+                    cardDiscard(player, targetStack, 1, slotIndex < 4);
                     if (new Random().nextFloat() < 0.1) {
                         draw(player, 2);
                         player.sendMessage(Text.translatable("zhiheng.extra").formatted(Formatting.GREEN), true);
@@ -113,20 +111,20 @@ public class PlayerInvScreenHandler extends ScreenHandler {
                 if (stack.getItem() == ModItems.STEAL) {
                     voice(player, Sounds.SHUNSHOU);
                     target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("dabaosword.steal")).append(targetStack.toHoverableText()));
-                    CardMoveCallback.Type type = slotIndex < 4 ? CardMoveCallback.Type.EQUIP_TO_INV : CardMoveCallback.Type.INV_TO_INV;
-                    if (isCard(targetStack)) CardMoveCallback.EVENT.invoker().cardMove(target, player, targetStack, 1, type);
+                    CardCBs.T type = slotIndex < 4 ? CardCBs.T.EQUIP_TO_INV : CardCBs.T.INV_TO_INV;
+                    if (isCard(targetStack)) cardMove(target, player, targetStack, 1, type);
                     //如果选择的物品是卡牌才触发事件
                     else {give(player, targetStack.copyWithCount(1)); /*顺手：复制一个物品*/
                         targetStack.decrement(1);}
-                    CardUsePostCallback.EVENT.invoker().cardUsePost(player, stack, target);
+                    cardUsePost(player, stack, target);
                     closeGUI(player);
                 }
 
                 if (stack.getItem() == ModItems.DISCARD) {
                     voice(player, Sounds.GUOHE);
                     target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("dabaosword.discard")).append(targetStack.toHoverableText()));
-                    CardDiscardCallback.EVENT.invoker().cardDiscard(target, targetStack, 1, slotIndex < 4);
-                    CardUsePostCallback.EVENT.invoker().cardUsePost(player, stack, target);
+                    cardDiscard(target, targetStack, 1, slotIndex < 4);
+                    cardUsePost(player, stack, target);
                     closeGUI(player);
                 }
             }

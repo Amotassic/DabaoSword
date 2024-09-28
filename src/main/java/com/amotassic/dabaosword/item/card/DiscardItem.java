@@ -1,6 +1,5 @@
 package com.amotassic.dabaosword.item.card;
 
-import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.Entity;
@@ -36,9 +35,9 @@ public class DiscardItem extends CardItem {
             if (entity instanceof PlayerEntity target) {
                 if (hasItem(target, ModItems.WUXIE)) {
                     voice(target, Sounds.WUXIE);
-                    CardUsePostCallback.EVENT.invoker().cardUsePost(target, getItem(target, ModItems.WUXIE), null);
+                    cardUsePost(target, getItem(target, ModItems.WUXIE), null);
                     voice(user, Sounds.GUOHE);
-                    CardUsePostCallback.EVENT.invoker().cardUsePost(user, stack, entity);
+                    cardUsePost(user, stack, entity);
                 } else {
                     openInv(user, target, Text.translatable("dabaosword.discard.title", stack.getName()), stack, targetInv(target, true, false, 1));
                 }
@@ -50,7 +49,7 @@ public class DiscardItem extends CardItem {
                     ItemStack chosen = stacks.get(new Random().nextInt(stacks.size()));
                     voice(user, Sounds.GUOHE);
                     chosen.decrement(1);
-                    CardUsePostCallback.EVENT.invoker().cardUsePost(user, stack, entity);
+                    cardUsePost(user, stack, entity);
                 }
             }
             return ActionResult.SUCCESS;

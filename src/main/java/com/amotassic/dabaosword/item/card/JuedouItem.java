@@ -1,6 +1,5 @@
 package com.amotassic.dabaosword.item.card;
 
-import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
@@ -34,7 +33,7 @@ public class JuedouItem extends CardItem {
         if (!user.getWorld().isClient && hand == Hand.MAIN_HAND && entity.isAlive()) {
             user.addCommandTag("juedou");
             if (entity instanceof PlayerEntity player && hasItem(player, ModItems.WUXIE)) {
-                CardUsePostCallback.EVENT.invoker().cardUsePost(player, getItem(player, ModItems.WUXIE), null);
+                cardUsePost(player, getItem(player, ModItems.WUXIE), null);
                 voice(player, Sounds.WUXIE);
             } else {
                 if (entity instanceof PlayerEntity target) {
@@ -53,13 +52,13 @@ public class JuedouItem extends CardItem {
                         user.sendMessage(Text.translatable("dabaosword.juedou1"));
                         if (targetSha != 0) { //如果目标的杀比使用者的杀多，反击使用者，则目标减少一张杀
                             ItemStack sha = stackInTag(tag, target);
-                            CardUsePostCallback.EVENT.invoker().cardUsePost(target, sha, user);
+                            cardUsePost(target, sha, user);
                         }
                     }
                 } else { entity.timeUntilRegen = 0;
                     entity.damage(user.getDamageSources().sonicBoom(user),5f);}
             }
-            CardUsePostCallback.EVENT.invoker().cardUsePost(user, stack, entity);
+            cardUsePost(user, stack, entity);
             voice(user, Sounds.JUEDOU);
             return ActionResult.SUCCESS;
         }

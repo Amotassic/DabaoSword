@@ -1,6 +1,5 @@
 package com.amotassic.dabaosword.event;
 
-import com.amotassic.dabaosword.event.callback.CardDiscardCallback;
 import com.amotassic.dabaosword.event.callback.PlayerConnectCallback;
 import com.amotassic.dabaosword.event.callback.PlayerDeathCallback;
 import com.amotassic.dabaosword.event.callback.PlayerRespawnCallback;
@@ -48,7 +47,7 @@ public class PlayerEvents implements PlayerConnectCallback, PlayerDeathCallback,
                     ItemStack stack = inv.getStack(i);
                     if (isCard(stack)) {
                         //如果没有触发行殇，才触发事件（即在玩家死亡弃牌事件中，行殇有最高触发优先级）
-                        if (XingshangTrigger(player, stack)) CardDiscardCallback.EVENT.invoker().cardDiscard(player, stack, stack.getCount(), false);
+                        if (XingshangTrigger(player, stack)) cardDiscard(player, stack, stack.getCount(), false);
                     }
                 }
 
@@ -58,7 +57,7 @@ public class PlayerEvents implements PlayerConnectCallback, PlayerDeathCallback,
                     for(Pair<SlotReference, ItemStack> entry : allEquipped) {
                         ItemStack stack = entry.getRight();
                         if(stack.isIn(Tags.Items.CARD)) {
-                            if (XingshangTrigger(player, stack)) CardDiscardCallback.EVENT.invoker().cardDiscard(player, stack, stack.getCount(), true);
+                            if (XingshangTrigger(player, stack)) cardDiscard(player, stack, stack.getCount(), true);
                         }
                     }
                 }

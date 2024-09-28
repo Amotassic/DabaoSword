@@ -1,6 +1,5 @@
 package com.amotassic.dabaosword.item.card;
 
-import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.LivingEntity;
@@ -21,11 +20,11 @@ public class TooHappyItem extends CardItem {
         if (!user.getWorld().isClient) {
             if (entity instanceof PlayerEntity player) {
                 if (hasItem(player, ModItems.WUXIE)) {
-                    CardUsePostCallback.EVENT.invoker().cardUsePost(player, getItem(player, ModItems.WUXIE), null);
+                    cardUsePost(player, getItem(player, ModItems.WUXIE), null);
                     voice(player, Sounds.WUXIE);
                 } else player.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 5));
             } else entity.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 15));
-            CardUsePostCallback.EVENT.invoker().cardUsePost(user, stack, entity);
+            cardUsePost(user, stack, entity);
             voice(user, Sounds.LEBU);
             return ActionResult.SUCCESS;
         }

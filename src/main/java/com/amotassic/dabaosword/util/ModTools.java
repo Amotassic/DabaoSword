@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.util;
 
+import com.amotassic.dabaosword.event.callback.CardCBs;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.ui.PlayerInvScreenHandler;
@@ -37,6 +38,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.collection.DefaultedList;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStreamReader;
 import java.util.*;
@@ -318,6 +320,18 @@ public class ModTools {
                 }
             });
         }
+    }
+
+    public static void cardUsePost(PlayerEntity user, ItemStack stack, @Nullable LivingEntity target) {
+        CardCBs.USE_POST.invoker().cardUsePost(user, stack, target);
+    }
+
+    public static void cardDiscard(PlayerEntity player, ItemStack stack, int count, boolean fromEquip) {
+        CardCBs.DISCARD.invoker().cardDiscard(player, stack, count, fromEquip);
+    }
+
+    public static void cardMove(LivingEntity from, PlayerEntity to, ItemStack stack, int count, CardCBs.T type) {
+        CardCBs.MOVE.invoker().cardMove(from, to, stack, count, type);
     }
 
 }

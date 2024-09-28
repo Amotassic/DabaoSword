@@ -1,6 +1,5 @@
 package com.amotassic.dabaosword.item.card;
 
-import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -10,6 +9,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
+import static com.amotassic.dabaosword.util.ModTools.cardUsePost;
 import static com.amotassic.dabaosword.util.ModTools.voice;
 
 public class PeachItem extends CardItem {
@@ -21,7 +21,7 @@ public class PeachItem extends CardItem {
         ItemStack stack = player.getStackInHand(hand);
         if (!world.isClient && player.getHealth() < player.getMaxHealth() && !player.isSneaking() && hand == Hand.MAIN_HAND) {
             player.heal(5);
-            CardUsePostCallback.EVENT.invoker().cardUsePost(player, stack, player);
+            cardUsePost(player, stack, player);
             voice(player, Sounds.RECOVER);
             return TypedActionResult.success(stack);
         }
@@ -33,7 +33,7 @@ public class PeachItem extends CardItem {
             if (entity.getHealth() < entity.getMaxHealth()) {
                 entity.heal(5);
                 entity.playSound(Sounds.RECOVER,1.0F,1.0F);
-                CardUsePostCallback.EVENT.invoker().cardUsePost(user, stack, entity);
+                cardUsePost(user, stack, entity);
                 return ActionResult.success(!user.getWorld().isClient);
             }
         }

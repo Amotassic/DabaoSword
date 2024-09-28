@@ -37,7 +37,7 @@ public class ModItems {
 
     // 古锭刀
     public static final Item GUDINGDAO = register("gudingdao", new GudingdaoItem(new Item.Settings()));
-    public static final Item GUDING_WEAPON = register("guding_dao", new Equipment(new Item.Settings().maxCount(1)));
+    public static final Item GUDING_WEAPON = register("guding_dao", new Equipment.GudingWeapon(new Item.Settings().maxCount(1)));
     //未锻造的古锭刀
     public static final Item INCOMPLETE_GUDINGDAO = register("incomplete_gdd", new Item(new Item.Settings().maxCount(1)));
     //古锭
@@ -53,7 +53,7 @@ public class ModItems {
     //八卦阵
     public static final Item BAGUA = register("bagua", new Equipment(new Item.Settings().maxCount(1)));
     //白银狮子
-    public static final Item BAIYIN = register("baiyin", new Equipment(new Item.Settings().maxCount(1)));
+    public static final Item BAIYIN = register("baiyin", new Equipment.BaiyinArmor(new Item.Settings().maxCount(1)));
     //寿衣
     public static final Item RATTAN_ARMOR = register("rattan_armor", new Equipment.RattanArmor(new Item.Settings().maxCount(1)));
     //-1马
@@ -114,9 +114,9 @@ public class ModItems {
         PlayerConnectCallback.EVENT.register(new PlayerEvents());
         PlayerDeathCallback.EVENT.register(new PlayerEvents());
         PlayerRespawnCallback.EVENT.register(new PlayerEvents());
-        CardUsePostCallback.EVENT.register(new CardEvents());
-        CardDiscardCallback.EVENT.register(new CardEvents());
-        CardMoveCallback.EVENT.register(new CardEvents());
+        CardCBs.USE_POST.register(new CardEvents());
+        CardCBs.DISCARD.register(new CardEvents());
+        CardCBs.MOVE.register(new CardEvents());
         EndEntityTick.LIVING_EVENT.register(new EntityTickEvents());
         EndEntityTick.PLAYER_EVENT.register(new EntityTickEvents());
     }

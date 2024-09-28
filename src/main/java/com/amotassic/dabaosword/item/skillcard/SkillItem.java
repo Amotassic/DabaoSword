@@ -1,7 +1,6 @@
 package com.amotassic.dabaosword.item.skillcard;
 
-import com.amotassic.dabaosword.event.callback.CardDiscardCallback;
-import com.amotassic.dabaosword.event.callback.CardMoveCallback;
+import com.amotassic.dabaosword.event.callback.CardCBs;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.equipment.Equipment;
 import com.amotassic.dabaosword.util.ModTools;
@@ -165,7 +164,7 @@ public class SkillItem extends TrinketItem implements Skill {
                             if(!candidate.isEmpty()) {
                                 int index = new Random().nextInt(candidate.size()); ItemStack chosen = candidate.get(index);
                                 target.sendMessage(Text.literal(entity.getEntityName()).append(Text.translatable("dabaosword.discard")).append(chosen.toHoverableText()));
-                                CardDiscardCallback.EVENT.invoker().cardDiscard(target, chosen, 1, index > candidate.size() - equip);
+                                cardDiscard(target, chosen, 1, index > candidate.size() - equip);
                             }
                         } else {//如果来源不是玩家则随机弃置它的主副手物品和装备
                             List<ItemStack> candidate = new ArrayList<>();
@@ -393,6 +392,20 @@ public class SkillItem extends TrinketItem implements Skill {
                 //烈弓：命中后给目标一个短暂的冷却效果，防止其自动触发闪
                 target.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2,2,0,false,false,false));
             }
+        }
+
+        @Override
+        public Pair<Float, Float> modifyDamage(LivingEntity target, DamageSource source, float amount) {
+            if (source.getAttacker() instanceof LivingEntity attacker) { //命中后加伤害，至少为5
+                if (hasTrinket(SkillCards.LIEGONG, attacker) && !attacker.hasStatusEffect(ModItems.COOLDOWN)) {
+                    float f = Math.max(13 - attacker.distanceTo(target), 5);
+                    attacker.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, (int) (40 * f),0,false,false,true));
+                    voice(attacker, Sounds.LIEGONG);
+                    System.out.println(f);
+                    return new Pair<>(0f, f);
+                }
+            }
+            return super.modifyDamage(target, source, amount);
         }
 
         @Override
@@ -646,6 +659,21 @@ public class SkillItem extends TrinketItem implements Skill {
                 voice(entity, Sounds.QUANJI);
             }
         }
+
+        @Override
+        public Pair<Float, Float> modifyDamage(LivingEntity entity, DamageSource source, float amount) {
+            if (source.getSource() instanceof LivingEntity s && hasTrinket(SkillCards.QUANJI, s)) {
+                ItemStack stack = trinketItem(SkillCards.QUANJI, s);
+                int quan = getTag(stack);
+                if (quan > 0) {
+                    if (quan > 4 && entity instanceof PlayerEntity player) draw(player, 2);
+                    setTag(stack, quan/2);
+                    voice(s, Sounds.PAIYI);
+                    return new Pair<>(0f, (float) quan);
+                }
+            }
+            return super.modifyDamage(entity, source, amount);
+        }
     }
 
     public static class Rende extends ActiveSkillWithTarget {
@@ -700,6 +728,24 @@ public class SkillItem extends TrinketItem implements Skill {
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             tooltip.add(Text.translatable("item.dabaosword.shensu.tooltip1").formatted(Formatting.BLUE));
             tooltip.add(Text.translatable("item.dabaosword.shensu.tooltip2").formatted(Formatting.BLUE));
+        }
+
+        @Override
+        public Pair<Float, Float> modifyDamage(LivingEntity target, DamageSource source, float amount) {
+            if (source.getSource() instanceof LivingEntity attacker) {
+                if (hasTrinket(SkillCards.SHENSU, attacker) && !attacker.hasStatusEffect(ModItems.COOLDOWN)) {
+                    float walkSpeed = 4.317f;
+                    float speed = Objects.requireNonNull(trinketItem(SkillCards.SHENSU, attacker).getNbt()).getFloat("speed");
+                    if (speed > walkSpeed) {
+                        float m = (speed - walkSpeed) / walkSpeed / 2;
+                        attacker.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, (int) (5 * 20 * m),0,false,false,true));
+                        if (attacker instanceof PlayerEntity player) player.sendMessage(Text.translatable("shensu.info", speed, m));
+                        voice(attacker, Sounds.SHENSU);
+                        return new Pair<>(m, 0f);
+                    }
+                }
+            }
+            return super.modifyDamage(target, source, amount);
         }
 
         @Override
@@ -841,7 +887,7 @@ public class SkillItem extends TrinketItem implements Skill {
         public void activeSkill(PlayerEntity user, ItemStack stack, PlayerEntity target) {
             ItemStack itemStack = user.getMainHandStack();
             if (itemStack.getItem() instanceof Equipment && itemStack.getItem() != ModItems.CARD_PILE) {
-                CardMoveCallback.EVENT.invoker().cardMove(user, target, itemStack, itemStack.getCount(), CardMoveCallback.Type.INV_TO_EQUIP);
+                cardMove(user, target, itemStack, itemStack.getCount(), CardCBs.T.INV_TO_EQUIP);
                 if (Equipment.useEquip(target, itemStack)) {
                     voice(user, Sounds.ZHIJIAN);
                     draw(user);

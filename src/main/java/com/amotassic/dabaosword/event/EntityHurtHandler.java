@@ -1,6 +1,5 @@
 package com.amotassic.dabaosword.event;
 
-import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.event.callback.EntityHurtCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.equipment.Equipment;
@@ -39,7 +38,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
                         ItemStack stack = stackInTag(Tags.Items.RECOVER, player);
                         if (stack.getItem() == ModItems.PEACH) voice(player, Sounds.RECOVER);
                         if (stack.getItem() == ModItems.JIU) voice(player, Sounds.JIU);
-                        CardUsePostCallback.EVENT.invoker().cardUsePost(player, stack, player);
+                        cardUsePost(player, stack, player);
                     }
                 }
                 //最后将玩家的体力设置为 受伤前生命值 - 伤害值 + 回复量
@@ -105,7 +104,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
                     }
                     if (stack.getItem() == ModItems.THUNDER_SHA) {
                         voice(player, Sounds.SHA_THUNDER);
-                        entity.timeUntilRegen = 0; entity.damage(player.getDamageSources().magic(),5);
+                        entity.timeUntilRegen = 0; entity.damage(player.getDamageSources().indirectMagic(player, player),5);
                         LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(world);
                         if (lightningEntity != null) {
                             lightningEntity.refreshPositionAfterTeleport(entity.getX(), entity.getY(), entity.getZ());
@@ -133,7 +132,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
                             }
                         }
                     }
-                    CardUsePostCallback.EVENT.invoker().cardUsePost(player, stack, entity);
+                    cardUsePost(player, stack, entity);
                 }
             }
 
