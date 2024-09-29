@@ -51,7 +51,7 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
             boolean limit = world.getGameRules().getBoolean(Gamerule.ENABLE_CARDS_LIMIT);
 
             if (time % giveCard == 0) { // 每分钟摸两张牌
-                if (hasTrinket(ModItems.CARD_PILE, player) && !player.isCreative() && !player.isSpectator()) {
+                if (hasTrinket(ModItems.CARD_PILE, player) && !player.isCreative() && !player.isSpectator() && player.isAlive()) {
                     if (countCards(player) > player.getMaxHealth() && limit) return;
                     else { //如果不限制摸牌就继续发牌
                         draw(player, 2);

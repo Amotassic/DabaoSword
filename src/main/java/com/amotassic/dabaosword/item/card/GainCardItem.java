@@ -1,6 +1,5 @@
 package com.amotassic.dabaosword.item.card;
 
-import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.Entity;
@@ -38,7 +37,7 @@ public class GainCardItem extends CardItem {
             //无中生有
             if (user.getStackInHand(hand).getItem() == ModItems.WUZHONG) {
                 draw(user,2);
-                CardUsePostCallback.EVENT.invoker().cardUsePost(user, user.getStackInHand(hand), null);
+                cardUsePost(user, user.getStackInHand(hand), null);
                 voice(user, Sounds.WUZHONG);
             }
         }

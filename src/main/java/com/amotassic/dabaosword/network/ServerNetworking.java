@@ -1,11 +1,8 @@
 package com.amotassic.dabaosword.network;
 
-import com.amotassic.dabaosword.event.callback.ActiveSkillCallback;
+import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
-import dev.emi.trinkets.api.SlotReference;
-import dev.emi.trinkets.api.TrinketComponent;
-import dev.emi.trinkets.api.TrinketsApi;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.component.DataComponentTypes;
@@ -13,11 +10,12 @@ import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.Pair;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 
-import java.util.*;
+import java.util.UUID;
 
-import static com.amotassic.dabaosword.util.ModTools.trinketItem;
+import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class ServerNetworking {
 
@@ -27,21 +25,20 @@ public class ServerNetworking {
 
         ServerPlayNetworking.registerGlobalReceiver(ActiveSkillPayload.ID, (payload, context) -> {
             PlayerEntity player = context.player();
+            if (player.hasStatusEffect(ModItems.TIEJI)) {
+                player.sendMessage(Text.translatable("effect.tieji.tip").formatted(Formatting.RED), true);
+                return;
+            }
             UUID uuid = payload.uuid(); PlayerEntity target = context.player().server.getPlayerManager().getPlayer(uuid);
-            Optional<TrinketComponent> component = TrinketsApi.getTrinketComponent(context.player());
-
-            if(component.isPresent()) {
-                List<Pair<SlotReference, ItemStack>> allEquipped = component.get().getAllEquipped();
-                for(Pair<SlotReference, ItemStack> entry : allEquipped) {
-                    ItemStack stack = entry.getRight();
-                    if(stack.getItem() instanceof SkillItem.ActiveSkillWithTarget && target != player) {
-                        ActiveSkillCallback.EVENT.invoker().activeSkill(player, stack, target);
-                        return;
-                    }
-                    if(stack.getItem() instanceof SkillItem.ActiveSkill && target == player) {
-                        ActiveSkillCallback.EVENT.invoker().activeSkill(player, stack, player);
-                        return;
-                    }
+            for(var entry : allTrinkets(player)) {
+                ItemStack stack = entry.getRight();
+                if(stack.getItem() instanceof SkillItem.ActiveSkillWithTarget skill && target != player) {
+                    skill.activeSkill(player, stack, target);
+                    return;
+                }
+                if(stack.getItem() instanceof SkillItem.ActiveSkill skill && target == player) {
+                    skill.activeSkill(player, stack, player);
+                    return;
                 }
             }
         });

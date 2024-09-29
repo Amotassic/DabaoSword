@@ -1,6 +1,5 @@
 package com.amotassic.dabaosword.item.card;
 
-import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireballEntity;
@@ -10,7 +9,8 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-import static com.amotassic.dabaosword.util.ModTools.*;
+import static com.amotassic.dabaosword.util.ModTools.cardUsePost;
+import static com.amotassic.dabaosword.util.ModTools.voice;
 
 public class FireAttackItem extends CardItem {
     public FireAttackItem(Settings settings) {super(settings);}
@@ -22,7 +22,7 @@ public class FireAttackItem extends CardItem {
             FireballEntity fireballEntity = new FireballEntity(world, user, momentum,3);
             fireballEntity.setPosition(user.getX(), user.getBodyY(0.5) + 0.5, user.getZ());
             world.spawnEntity(fireballEntity);
-            CardUsePostCallback.EVENT.invoker().cardUsePost(user, user.getStackInHand(hand), null);
+            cardUsePost(user, user.getStackInHand(hand), null);
             voice(user, Sounds.HUOGONG);
         }
         return TypedActionResult.success(user.getStackInHand(hand));

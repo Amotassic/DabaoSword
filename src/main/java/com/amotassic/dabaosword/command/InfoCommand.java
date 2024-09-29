@@ -78,9 +78,9 @@ public class InfoCommand {
         }
     }
 
-    public static Inventory fullInv(LivingEntity target, boolean ebitable) {
+    public static Inventory fullInv(LivingEntity target, boolean editable) {
         Inventory inv = new SimpleInventory(64);
-        return updateInv(inv, target, ebitable);
+        return updateInv(inv, target, editable);
     }
 
     public static Inventory updateInv(Inventory inventory, LivingEntity target, boolean editable) {
@@ -108,7 +108,7 @@ public class InfoCommand {
         inventory.setStack(40, target.getOffHandStack()); //副手
 
         Optional<TrinketComponent> component = TrinketsApi.getTrinketComponent(target);
-        if (component.isPresent()) {//饰品栏
+        if (component.isPresent()) { //饰品栏
             List<Pair<SlotReference, ItemStack>> trinkets = component.get().getEquipped(stack -> true);
             List<ItemStack> stacks = new ArrayList<>();
             for (var trinket : trinkets) {

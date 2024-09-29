@@ -1,8 +1,6 @@
 package com.amotassic.dabaosword.event;
 
-import com.amotassic.dabaosword.event.callback.CardDiscardCallback;
-import com.amotassic.dabaosword.event.callback.CardMoveCallback;
-import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
+import com.amotassic.dabaosword.event.callback.CardCBs;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.Sounds;
@@ -14,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
 
-public class CardEvents implements CardUsePostCallback, CardDiscardCallback, CardMoveCallback {
+public class CardEvents implements CardCBs.PostUse, CardCBs.Discard, CardCBs.Move {
     @Override
     public void cardUsePost(PlayerEntity user, ItemStack stack, @Nullable LivingEntity target) {
         ItemStack copy = stack.copy();
@@ -55,20 +53,20 @@ public class CardEvents implements CardUsePostCallback, CardDiscardCallback, Car
     }
 
     @Override
-    public void cardMove(LivingEntity from, PlayerEntity to, ItemStack stack, int count, Type type) {
+    public void cardMove(LivingEntity from, PlayerEntity to, ItemStack stack, int count, CardCBs.T type) {
         ItemStack copy = stack.copyWithCount(count);
 
         //如果是移动到物品栏的类型，则减少from的物品，给to等量的物品（移动到装备区有专门的方法）
-        if (type == Type.INV_TO_INV || type == Type.EQUIP_TO_INV) {
+        if (type == CardCBs.T.INV_TO_INV || type == CardCBs.T.EQUIP_TO_INV) {
             give(to, copy);
             stack.decrement(count);
         }
 
-        if (type == Type.INV_TO_EQUIP || type == Type.INV_TO_INV) {
+        if (type == CardCBs.T.INV_TO_EQUIP || type == CardCBs.T.INV_TO_INV) {
             if (from instanceof PlayerEntity player && hasTrinket(SkillCards.LIANYING, player) && countCards(player) == 0) lianyingTrigger(player);
         }
 
-        if (type == Type.EQUIP_TO_INV || type == Type.EQUIP_TO_EQUIP) {
+        if (type == CardCBs.T.EQUIP_TO_INV || type == CardCBs.T.EQUIP_TO_EQUIP) {
             if (from instanceof PlayerEntity player && hasTrinket(SkillCards.XIAOJI, player)) xiaojiTrigger(player);
         }
     }
@@ -79,7 +77,7 @@ public class CardEvents implements CardUsePostCallback, CardDiscardCallback, Car
     }
 
     private void xiaojiTrigger(PlayerEntity player) {
-        give(player, new ItemStack(ModItems.GAIN_CARD, 2));
+        draw(player, 2);
         voice(player, Sounds.XIAOJI);
     }
 }

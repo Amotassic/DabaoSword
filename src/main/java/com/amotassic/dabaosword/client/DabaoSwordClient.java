@@ -1,7 +1,9 @@
 package com.amotassic.dabaosword.client;
 
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.ui.*;
+import com.amotassic.dabaosword.ui.FullInvHandledScreen;
+import com.amotassic.dabaosword.ui.PlayerInvHandledScreen;
+import com.amotassic.dabaosword.ui.SimpleMenuScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;

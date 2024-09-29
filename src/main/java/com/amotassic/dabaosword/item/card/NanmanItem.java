@@ -1,6 +1,5 @@
 package com.amotassic.dabaosword.item.card;
 
-import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.EntityType;
@@ -17,7 +16,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
-import static com.amotassic.dabaosword.util.ModTools.*;
+import static com.amotassic.dabaosword.util.ModTools.cardUsePost;
+import static com.amotassic.dabaosword.util.ModTools.voice;
 
 public class NanmanItem extends CardItem {
     public NanmanItem(Settings settings) {super(settings);}
@@ -32,7 +32,7 @@ public class NanmanItem extends CardItem {
             };
             for (Text name : names) {summonDog(world, user, name);}
 
-            CardUsePostCallback.EVENT.invoker().cardUsePost(user, user.getStackInHand(hand), null);
+            cardUsePost(user, user.getStackInHand(hand), null);
             voice(user, Sounds.NANMAN);
         }
         return TypedActionResult.success(user.getStackInHand(hand));

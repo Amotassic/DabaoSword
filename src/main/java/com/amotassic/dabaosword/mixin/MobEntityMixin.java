@@ -1,7 +1,5 @@
 package com.amotassic.dabaosword.mixin;
 
-import com.amotassic.dabaosword.event.callback.CardDiscardCallback;
-import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
@@ -27,9 +25,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -80,7 +76,7 @@ public abstract class MobEntityMixin extends LivingEntity {
 
         if (stack.getItem() == ModItems.BINGLIANG_ITEM) {
             if (target instanceof PlayerEntity player && hasItem(player, ModItems.WUXIE)) {
-                CardUsePostCallback.EVENT.invoker().cardUsePost(player, getItem(player, ModItems.WUXIE), null);
+                cardUsePost(player, getItem(player, ModItems.WUXIE), null);
                 voice(player, Sounds.WUXIE);
             } else target.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, StatusEffectInstance.INFINITE,1));
             voice(mob, Sounds.BINGLIANG); stack.decrement(1);
@@ -89,7 +85,7 @@ public abstract class MobEntityMixin extends LivingEntity {
         if (stack.getItem() == ModItems.TOO_HAPPY_ITEM) {
             if (target instanceof PlayerEntity player) {
                 if (hasItem(player, ModItems.WUXIE)) {
-                    CardUsePostCallback.EVENT.invoker().cardUsePost(player, getItem(player, ModItems.WUXIE), null);
+                    cardUsePost(player, getItem(player, ModItems.WUXIE), null);
                     voice(player, Sounds.WUXIE);
                 } else player.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 5));
             } else target.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 15));
@@ -99,7 +95,7 @@ public abstract class MobEntityMixin extends LivingEntity {
         if (stack.getItem() == ModItems.DISCARD) {
             if (target instanceof PlayerEntity player) {//如果是玩家则弃牌
                 if (hasItem(player, ModItems.WUXIE)) {
-                    CardUsePostCallback.EVENT.invoker().cardUsePost(player, getItem(player, ModItems.WUXIE), null);
+                    cardUsePost(player, getItem(player, ModItems.WUXIE), null);
                     voice(player, Sounds.WUXIE);
                     voice(mob, Sounds.GUOHE); stack.decrement(1);
                 } else {
@@ -121,7 +117,7 @@ public abstract class MobEntityMixin extends LivingEntity {
                     if(!candidate.isEmpty()) {
                         int index = new java.util.Random().nextInt(candidate.size()); ItemStack chosen = candidate.get(index);
                         player.sendMessage(Text.literal(mob.getNameForScoreboard()).append(Text.translatable("dabaosword.discard")).append(chosen.toHoverableText()));
-                        CardDiscardCallback.EVENT.invoker().cardDiscard(player, chosen, 1, index > candidate.size() - equip);
+                        cardDiscard(player, chosen, 1, index > candidate.size() - equip);
                         voice(mob, Sounds.GUOHE); stack.decrement(1);
                     }
                 }
@@ -151,7 +147,7 @@ public abstract class MobEntityMixin extends LivingEntity {
             ItemStack stack1 = target.getMainHandStack();
             if (!stack1.isEmpty()) {
                 if (target instanceof PlayerEntity player && hasItem(player, ModItems.WUXIE)) {
-                    CardUsePostCallback.EVENT.invoker().cardUsePost(player, getItem(player, ModItems.WUXIE), null);
+                    cardUsePost(player, getItem(player, ModItems.WUXIE), null);
                     voice(player, Sounds.WUXIE);
                 } else {
                     mob.setStackInHand(Hand.MAIN_HAND, stack1.copy());

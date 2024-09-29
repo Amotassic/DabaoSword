@@ -1,8 +1,6 @@
 package com.amotassic.dabaosword.item.card;
 
-import com.amotassic.dabaosword.event.ActiveSkillHandler;
-import com.amotassic.dabaosword.event.callback.CardMoveCallback;
-import com.amotassic.dabaosword.event.callback.CardUsePostCallback;
+import com.amotassic.dabaosword.event.callback.CardCBs;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.LivingEntity;
@@ -27,11 +25,11 @@ public class StealItem extends CardItem {
             if (entity instanceof PlayerEntity target) {
                 if (hasItem(target, ModItems.WUXIE)) {
                     voice(target, Sounds.WUXIE);
-                    CardUsePostCallback.EVENT.invoker().cardUsePost(target, getItem(target, ModItems.WUXIE), null);
+                    cardUsePost(target, getItem(target, ModItems.WUXIE), null);
                     voice(user, Sounds.SHUNSHOU);
-                    CardUsePostCallback.EVENT.invoker().cardUsePost(user, stack, entity);
+                    cardUsePost(user, stack, entity);
                 } else {
-                    ActiveSkillHandler.openInv(user, target, Text.translatable("dabaosword.steal.title"), ActiveSkillHandler.targetInv(target, true, true, 1, user.getMainHandStack()));
+                    openInv(user, target, Text.translatable("dabaosword.steal.title"), targetInv(target, true, true, 1, user.getMainHandStack()));
                 }
             } else {
                 List<ItemStack> stacks = new ArrayList<>();
@@ -40,8 +38,8 @@ public class StealItem extends CardItem {
                 if (!stacks.isEmpty()) {
                     ItemStack chosen = stacks.get(new Random().nextInt(stacks.size()));
                     voice(user, Sounds.SHUNSHOU);
-                    CardMoveCallback.EVENT.invoker().cardMove(entity, user, chosen, 1, CardMoveCallback.Type.INV_TO_INV);
-                    CardUsePostCallback.EVENT.invoker().cardUsePost(user, stack, entity);
+                    cardMove(entity, user, chosen, 1, CardCBs.T.INV_TO_INV);
+                    cardUsePost(user, stack, entity);
                 }
             }
             return ActionResult.SUCCESS;
