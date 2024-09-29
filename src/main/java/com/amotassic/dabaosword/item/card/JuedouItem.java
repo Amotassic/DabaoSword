@@ -45,7 +45,7 @@ public class JuedouItem extends CardItem {
                         target.timeUntilRegen = 0;
                         target.damage(user.getDamageSources().sonicBoom(user),5f);
                         target.sendMessage(Text.literal(user.getEntityName()).append(Text.translatable("dabaosword.juedou2")));
-                    } else { target.addCommandTag("juedou"); //防止决斗触发杀
+                    } else { target.addCommandTag("juedou"); //防止决斗触发杀、闪
                         user.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2,2,0,false,false,false));
                         user.timeUntilRegen = 0;
                         user.damage(target.getDamageSources().sonicBoom(target),5f);
@@ -55,7 +55,8 @@ public class JuedouItem extends CardItem {
                             cardUsePost(target, sha, user);
                         }
                     }
-                } else { entity.timeUntilRegen = 0;
+                } else { entity.addCommandTag("juedou");
+                    entity.timeUntilRegen = 0;
                     entity.damage(user.getDamageSources().sonicBoom(user),5f);}
             }
             cardUsePost(user, stack, entity);

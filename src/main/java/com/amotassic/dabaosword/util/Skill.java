@@ -38,4 +38,18 @@ public interface Skill {
     default Pair<Float, Float> modifyDamage(LivingEntity target, DamageSource source, float amount) {
         return new Pair<>(0f, 0f);
     }
+    //========================================分割线========================================//
+    //仅关系到cancelDamage方法的触发，与以上方法没有联系。如果不重写这个方法输出优先级，则cancelDamage方法无效！
+    default Priority getPriority(LivingEntity target, DamageSource source, float amount) {return null;}
+
+    //取消伤害，在伤害结算之前触发，输出true之后，则伤害无效
+    default boolean cancelDamage(LivingEntity target, DamageSource source, float amount) {return false;}
+
+    enum Priority {
+        HIGHEST,    //最高优先级，高于buff但低于原版的伤害免疫检查。但真的会用到吗？
+        HIGH,       //高优先级，一般用于不产生消耗的装备，如藤甲、八卦阵
+        NORMAL,     //一般用于技能，如流离
+        LOW,        //一般用于卡牌，会产生消耗，如闪
+        LOWEST      //最低优先级，用于确认已经绕过其余所有免伤造成伤害后，最后取消伤害，如绝情：造成伤害后触发
+    }
 }

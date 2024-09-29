@@ -115,7 +115,7 @@
   "item.dabaosword.bagua.tooltip": "50% chance to dodge before damaged, 3-second cooldown",
   "dabaosword.bagua": "You successfully activated Eight Trigrams Formation and used a Dash",
   "item.dabaosword.baiyin": "Silver Lion",
-  "item.dabaosword.baiyin.tooltip": "Reduces damage from entities by 60%",
+  "item.dabaosword.baiyin.tooltip": "Reduces damage from entities by 40%",
   "item.dabaosword.qinglong": "Green Dragon Crescent Blade",
   "item.dabaosword.qinglong.tooltip1": "“刀势即大，其三十六刀法，兵仗遇之，无不屈者，刀类中以此为第一” ——《三才图会·器用》",
   "item.dabaosword.qinglong.tooltip2": "Teleport to the target, knock them back, and gain temporary invincibility",

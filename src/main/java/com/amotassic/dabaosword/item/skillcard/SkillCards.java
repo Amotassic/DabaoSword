@@ -12,7 +12,7 @@ public class SkillCards {
     public static final Item XINGSHANG = register("xingshang", new SkillItem(new Item.Settings().maxCount(1)));
     public static final Item GANGLIE = register("ganglie", new SkillItem.Ganglie(new Item.Settings().maxCount(1)));
     public static final Item GONGAO = register("gongao", new SkillItem.Gongao(new Item.Settings().maxCount(1)));
-    public static final Item JUEQING = register("jueqing", new SkillItem(new Item.Settings().maxCount(1)));
+    public static final Item JUEQING = register("jueqing", new SkillItem.Jueqing(new Item.Settings().maxCount(1)));
     public static final Item LUOSHEN = register("luoshen", new SkillItem.Luoshen(new Item.Settings().maxCount(1)));
     public static final Item QINGGUO = register("qingguo", new SkillItem.Qingguo(new Item.Settings().maxCount(1)));
     public static final Item LUOYI = register("luoyi", new SkillItem.Luoyi(new Item.Settings().maxCount(1)));
@@ -36,7 +36,7 @@ public class SkillCards {
     public static final Item GONGXIN = register("gongxin", new SkillItem.Gongxin(new Item.Settings().maxCount(1)));
     public static final Item GUOSE = register("guose", new SkillItem.Guose(new Item.Settings().maxCount(1)));
     public static final Item LIANYING = register("lianying", new SkillItem.Lianying(new Item.Settings().maxCount(1)));
-    public static final Item LIULI = register("liuli", new SkillItem(new Item.Settings().maxCount(1)));
+    public static final Item LIULI = register("liuli", new SkillItem.Liuli(new Item.Settings().maxCount(1)));
     public static final Item KUROU = register("kurou", new SkillItem.Kurou(new Item.Settings().maxCount(1)));
     public static final Item POJUN = register("pojun", new SkillItem.Pojun(new Item.Settings().maxCount(1)));
     public static final Item QIXI = register("qixi", new SkillItem.Qixi(new Item.Settings().maxCount(1)));

@@ -51,7 +51,7 @@ public class ModItems {
     //青龙偃月刀
     public static final Item QINGLONG = register("qinglong", new Equipment.QinglongWeapon(new Item.Settings().maxCount(1)));
     //八卦阵
-    public static final Item BAGUA = register("bagua", new Equipment(new Item.Settings().maxCount(1)));
+    public static final Item BAGUA = register("bagua", new Equipment.BaguaArmor(new Item.Settings().maxCount(1)));
     //白银狮子
     public static final Item BAIYIN = register("baiyin", new Equipment.BaiyinArmor(new Item.Settings().maxCount(1)));
     //寿衣

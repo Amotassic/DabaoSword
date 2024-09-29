@@ -136,14 +136,14 @@ public class EntityHurtHandler implements EntityHurtCallback {
                 }
             }
 
-            for (var pair : allTinkets(entity)) {
+            for (var pair : allTrinkets(entity)) {
                 ItemStack stack = pair.getRight();
                 if (stack.getItem() instanceof SkillItem skill && canTrigger(skill, entity)) skill.onHurt(stack, entity, source, amount);
                 if (stack.getItem() instanceof Equipment skill) skill.onHurt(stack, entity, source, amount);
             }
 
             if (source.getSource() instanceof LivingEntity living) { //在近战攻击造成伤害后触发
-                for (var pair : allTinkets(living)) {
+                for (var pair : allTrinkets(living)) {
                     ItemStack stack = pair.getRight();
                     if (stack.getItem() instanceof SkillItem skill && canTrigger(skill, living)) skill.postAttack(stack, entity, living, amount);
                     if (stack.getItem() instanceof Equipment skill) skill.postAttack(stack, entity, living, amount);
@@ -151,7 +151,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
             }
 
             if (source.getAttacker() instanceof LivingEntity living) { //只要攻击造成伤害即可触发，包括远程
-                for (var pair : allTinkets(living)) {
+                for (var pair : allTrinkets(living)) {
                     ItemStack stack = pair.getRight();
                     if (stack.getItem() instanceof SkillItem skill && canTrigger(skill, living)) skill.postDamage(stack, entity, living, amount);
                     if (stack.getItem() instanceof Equipment skill) skill.postDamage(stack, entity, living, amount);

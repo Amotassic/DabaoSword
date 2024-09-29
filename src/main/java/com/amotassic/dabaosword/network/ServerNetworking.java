@@ -18,8 +18,7 @@ import net.minecraft.util.Identifier;
 
 import java.util.UUID;
 
-import static com.amotassic.dabaosword.util.ModTools.allTinkets;
-import static com.amotassic.dabaosword.util.ModTools.trinketItem;
+import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class ServerNetworking {
     public static Identifier ACTIVE_SKILL = new Identifier("dabaosword:active_skill");
@@ -37,7 +36,7 @@ public class ServerNetworking {
                 player.sendMessage(Text.translatable("effect.tieji.tip").formatted(Formatting.RED), true);
                 return;
             }
-            for(var entry : allTinkets(player)) {
+            for(var entry : allTrinkets(player)) {
                 ItemStack stack = entry.getRight();
                 if(stack.getItem() instanceof SkillItem.ActiveSkillWithTarget skill && target != player) {
                     skill.activeSkill(player, stack, target);

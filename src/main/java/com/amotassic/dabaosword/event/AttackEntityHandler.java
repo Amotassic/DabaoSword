@@ -15,8 +15,7 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import static com.amotassic.dabaosword.util.ModTools.allTinkets;
-import static com.amotassic.dabaosword.util.ModTools.canTrigger;
+import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class AttackEntityHandler implements AttackEntityCallback {
 
@@ -24,7 +23,7 @@ public class AttackEntityHandler implements AttackEntityCallback {
     public ActionResult interact(PlayerEntity player, World world, Hand hand, Entity entity, @Nullable EntityHitResult hitResult) {
         if (world instanceof ServerWorld && !player.isSpectator() && entity instanceof LivingEntity target) {
             if (!(player.getMainHandStack().isOf(ModItems.JUEDOU) || player.getMainHandStack().isOf(ModItems.DISCARD))) {
-                for (var pair : allTinkets(player)) {
+                for (var pair : allTrinkets(player)) {
                     ItemStack stack = pair.getRight();
                     if (stack.getItem() instanceof SkillItem skill && canTrigger(skill, player)) skill.preAttack(stack, target, player);
                     if (stack.getItem() instanceof Equipment skill) skill.preAttack(stack, target, player);

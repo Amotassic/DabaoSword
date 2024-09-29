@@ -63,7 +63,7 @@ public class ModTools {
         return component.getEquipped(item).stream().map(Pair::getRight).findFirst().orElse(ItemStack.EMPTY);
     }
 
-    public static List<Pair<SlotReference, ItemStack>> allTinkets(LivingEntity entity) {
+    public static List<Pair<SlotReference, ItemStack>> allTrinkets(LivingEntity entity) {
         Optional<TrinketComponent> optional = TrinketsApi.getTrinketComponent(entity);
         return optional.map(TrinketComponent::getAllEquipped).orElse(Collections.emptyList());
     }
@@ -270,7 +270,7 @@ public class ModTools {
         */
         Inventory targetInv = new SimpleInventory(60);
         if(equip) {
-            for(var entry : allTinkets(target)) {
+            for(var entry : allTrinkets(target)) {
                 ItemStack stack = entry.getRight();
                 if (stack.streamTags().toList().equals(ModItems.GUDING_WEAPON.getDefaultStack().streamTags().toList())) targetInv.setStack(0, stack);
                 if (stack.streamTags().toList().equals(ModItems.BAGUA.getDefaultStack().streamTags().toList())) targetInv.setStack(1, stack);

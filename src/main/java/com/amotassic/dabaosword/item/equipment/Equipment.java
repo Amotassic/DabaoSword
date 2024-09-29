@@ -34,9 +34,36 @@ import java.util.Map;
 import java.util.Random;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
+import static com.amotassic.dabaosword.util.ModifyDamage.shan;
 
 public class Equipment extends TrinketItem implements Skill {
     public Equipment(Settings settings) {super(settings);}
+
+    public static class BaguaArmor extends Equipment {
+        public BaguaArmor(Settings settings) {super(settings);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+            tooltip.add(Text.translatable("item.dabaosword.bagua.tooltip"));
+            super.appendTooltip(stack, world, tooltip, context);
+        }
+
+        @Override
+        public Priority getPriority(LivingEntity target, DamageSource source, float amount) {return Priority.HIGH;}
+
+        @Override
+        public boolean cancelDamage(LivingEntity target, DamageSource source, float amount) {
+            if (source.getAttacker() instanceof LivingEntity) {
+                if (!target.hasStatusEffect(ModItems.COOLDOWN2) && !target.getCommandTags().contains("juedou")) {
+                    if (hasTrinket(ModItems.BAGUA, target) && new Random().nextFloat() < 0.5 && !source.isIn(DamageTypeTags.BYPASSES_ARMOR)) {
+                        shan(target, true, source);
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+    }
 
     public static class BaiyinArmor extends Equipment {
         public BaiyinArmor(Settings settings) {super(settings);}
@@ -65,14 +92,6 @@ public class Equipment extends TrinketItem implements Skill {
             tooltip.add(Text.translatable("item.dabaosword.fangtian.tooltip1"));
             tooltip.add(Text.translatable("item.dabaosword.fangtian.tooltip2").formatted(Formatting.AQUA));
             super.appendTooltip(stack, world, tooltip, context);
-        }
-
-        @Override
-        public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (entity.getWorld() instanceof ServerWorld world) {
-                int cd = getCD(stack);
-                if (cd > 0 && world.getTime() % 20 == 0) setCD(stack, cd - 1);
-            }
         }
 
         @Override
@@ -179,14 +198,11 @@ public class Equipment extends TrinketItem implements Skill {
         //实现渡江不沉的效果，代码来自https://github.com/focamacho/RingsOfAscension/中的水上行走戒指
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
+            super.tick(stack, slot, entity);
             if(entity.isSneaking()) return;
-
-            BlockPos entityPos = entity.getBlockPos();
-
-            boolean water = entity.getWorld().getFluidState(new BlockPos(entityPos.getX(),
-                            (int) (entity.getBoundingBox().getMin(Direction.Axis.Y)), entityPos.getZ()))
-                    .isOf(Fluids.WATER);
-
+            BlockPos pos = entity.getBlockPos();
+            boolean water = entity.getWorld().getFluidState(new BlockPos(pos.getX(),
+                    (int) (entity.getBoundingBox().getMin(Direction.Axis.Y)), pos.getZ())).isOf(Fluids.WATER);
             if(water) {
                 Vec3d motion = entity.getVelocity();
                 entity.setVelocity(motion.x, 0.0D, motion.z);
@@ -204,14 +220,35 @@ public class Equipment extends TrinketItem implements Skill {
             }
             return super.modifyDamage(target, source, amount);
         }
+
+        @Override
+        public Priority getPriority(LivingEntity target, DamageSource source, float amount) {return Priority.HIGH;}
+
+        @Override
+        public boolean cancelDamage(LivingEntity target, DamageSource source, float amount) {
+            //弹射物对藤甲无效
+            if (source.isIn(DamageTypeTags.IS_PROJECTILE) && inrattan(target)) {
+                voice(target, Sounds.TENGJIA1);
+                if (source.getSource() != null) source.getSource().discard();
+                return true;
+            }
+            //若攻击者主手没有物品，则无法击穿藤甲
+            if (source.getSource() instanceof LivingEntity s && inrattan(target) && s.getMainHandStack().isEmpty()) {
+                ItemStack stack = trinketItem(ModItems.RATTAN_ARMOR, target);
+                if (getCD(stack) == 0) {
+                    setCD(stack, 3);
+                    voice(target, Sounds.TENGJIA1);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static boolean inrattan(LivingEntity entity) {return hasTrinket(ModItems.RATTAN_ARMOR, entity);}
     }
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-
-        if (stack.getItem() == ModItems.BAGUA) {
-            tooltip.add(Text.translatable("item.dabaosword.bagua.tooltip"));
-        }
 
         if (stack.getItem() == ModItems.CHITU) {
             tooltip.add(Text.translatable("item.dabaosword.chitu.tooltip"));
@@ -230,6 +267,14 @@ public class Equipment extends TrinketItem implements Skill {
                 tooltip.add(Text.translatable("equipment.tip1").formatted(Formatting.BOLD));
                 tooltip.add(Text.translatable("equipment.tip2").formatted(Formatting.BOLD));
             } else tooltip.add(Text.translatable("dabaosword.shifttooltip"));
+        }
+    }
+
+    @Override
+    public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
+        if (entity.getWorld() instanceof ServerWorld world) {
+            int cd = getCD(stack); //世界时间除以20取余为0时，技能内置CD减一秒
+            if (cd > 0 && world.getTime() % 20 == 0) setCD(stack, cd - 1);
         }
     }
 

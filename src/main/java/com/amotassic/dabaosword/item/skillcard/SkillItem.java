@@ -39,7 +39,9 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.*;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.stream.IntStream;
@@ -298,6 +300,29 @@ public class SkillItem extends TrinketItem implements Skill {
         }
     }
 
+    public static class Jueqing extends SkillItem {
+        public Jueqing(Settings settings) {super(settings);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
+            tooltip.add(Text.translatable("item.dabaosword.jueqing.tooltip1").formatted(Formatting.BLUE));
+            tooltip.add(Text.translatable("item.dabaosword.jueqing.tooltip2").formatted(Formatting.BLUE));
+        }
+
+        @Override
+        public Priority getPriority(LivingEntity target, DamageSource source, float amount) {return Priority.LOWEST;}
+
+        @Override
+        public boolean cancelDamage(LivingEntity target, DamageSource source, float amount) {
+            if (source.getAttacker() instanceof LivingEntity attacker && hasTrinket(SkillCards.JUEQING, attacker)) {
+                target.damage(target.getDamageSources().genericKill(), Math.min(Math.max(7, target.getMaxHealth() / 3), amount));
+                voice(attacker, Sounds.JUEQING, 1);
+                return true;
+            }
+            return false;
+        }
+    }
+
     public static class Kanpo extends SkillItem {
         public Kanpo(Settings settings) {super(settings);}
 
@@ -430,6 +455,52 @@ public class SkillItem extends TrinketItem implements Skill {
         }
     }
 
+    public static class Liuli extends SkillItem {
+        public Liuli(Settings settings) {super(settings);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
+            tooltip.add(Text.translatable("item.dabaosword.liuli.tooltip").formatted(Formatting.GREEN));
+        }
+
+        @Override
+        public Priority getPriority(LivingEntity target, DamageSource source, float amount) {return Priority.NORMAL;}
+
+        @Override
+        public boolean cancelDamage(LivingEntity target, DamageSource source, float amount) {
+            if (source.getAttacker() instanceof LivingEntity attacker && target instanceof PlayerEntity player) {
+                if (hasTrinket(SkillCards.LIULI, player) && hasItemInTag(Tags.Items.CARD, player) && !player.hasStatusEffect(ModItems.INVULNERABLE)) {
+                    ItemStack stack = stackInTag(Tags.Items.CARD, player);
+                    LivingEntity nearEntity = getLiuliEntity(player, attacker);
+                    if (nearEntity != null) {
+                        player.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 15,0,false,false,false));
+                        voice(player, Sounds.LIULI);
+                        cardDiscard(player, stack, 1, false);
+                        nearEntity.timeUntilRegen = 0; nearEntity.damage(source, amount);
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        private static @Nullable LivingEntity getLiuliEntity(Entity entity, LivingEntity attacker) {
+            if (entity.getWorld() instanceof ServerWorld world) {
+                Box box = new Box(entity.getBlockPos()).expand(10);
+                List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, box, entity1 -> entity1 != entity && entity1 != attacker);
+                if (!entities.isEmpty()) {
+                    Map<Float, LivingEntity> map = new HashMap<>();
+                    for (var e : entities) {
+                        map.put(e.distanceTo(entity), e);
+                    }
+                    float min = Collections.min(map.keySet());
+                    return map.values().stream().toList().get(map.keySet().stream().toList().indexOf(min));
+                }
+            }
+            return null;
+        }
+    }
+
     public static class Longdan extends SkillItem {
         public Longdan(Settings settings) {super(settings);}
 
@@ -446,9 +517,9 @@ public class SkillItem extends TrinketItem implements Skill {
                 if (world.getTime() % 20 == 0 && stack1.isIn(Tags.Items.BASIC_CARD)) {
                     stack1.decrement(1);
                     if (stack1.isIn(Tags.Items.SHA)) give(player, new ItemStack(ModItems.SHAN));
-                    if (stack1.getItem() == ModItems.SHAN) give(player, new ItemStack(ModItems.SHA));
-                    if (stack1.getItem() == ModItems.PEACH) give(player, new ItemStack(ModItems.JIU));
-                    if (stack1.getItem() == ModItems.JIU) give(player, new ItemStack(ModItems.PEACH));
+                    if (stack1.isOf(ModItems.SHAN)) give(player, new ItemStack(ModItems.SHA));
+                    if (stack1.isOf(ModItems.PEACH)) give(player, new ItemStack(ModItems.JIU));
+                    if (stack1.isOf(ModItems.JIU)) give(player, new ItemStack(ModItems.PEACH));
                     voice(player, Sounds.LONGDAN);
                 }
             }
@@ -859,9 +930,7 @@ public class SkillItem extends TrinketItem implements Skill {
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
             if (entity.getWorld() instanceof ServerWorld world) {
                 int z = getTag(stack);
-                if (z < 10) {
-                    if (world.getTime() % 100 == 0) z++; setTag(stack, z);
-                }
+                if (z < 10 && world.getTime() % 100 == 0) setTag(stack, z + 1);
             }
             super.tick(stack, slot, entity);
         }
@@ -933,15 +1002,6 @@ public class SkillItem extends TrinketItem implements Skill {
             tooltip.add(Text.translatable("item.dabaosword.jizhi.tooltip").formatted(Formatting.RED));
         }
 
-        if (stack.getItem() == SkillCards.JUEQING) {
-            tooltip.add(Text.translatable("item.dabaosword.jueqing.tooltip1").formatted(Formatting.BLUE));
-            tooltip.add(Text.translatable("item.dabaosword.jueqing.tooltip2").formatted(Formatting.BLUE));
-        }
-
-        if (stack.getItem() == SkillCards.LIULI) {
-            tooltip.add(Text.translatable("item.dabaosword.liuli.tooltip").formatted(Formatting.GREEN));
-        }
-
         if (stack.getItem() == SkillCards.MASHU) {
             tooltip.add(Text.translatable("item.dabaosword.chitu.tooltip"));
         }
@@ -994,16 +1054,9 @@ public class SkillItem extends TrinketItem implements Skill {
     @Override
     public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
         if (entity.getWorld() instanceof ServerWorld world) {
-            if (stack.getNbt() != null) {
-                if (stack.getNbt().contains("cooldown")) {
-                    int cd = stack.getNbt().getInt("cooldown");
-                    if (world.getTime() % 20 == 0) { //世界时间除以20取余为0时，技能内置CD减一秒
-                        if (cd > 0) setCD(stack, cd - 1);
-                    }
-                }
-            }
+            int cd = getCD(stack); //世界时间除以20取余为0时，技能内置CD减一秒
+            if (cd > 0 && world.getTime() % 20 == 0) setCD(stack, cd - 1);
         }
-        super.tick(stack, slot, entity);
     }
 
     public static void changeSkill(PlayerEntity player) {

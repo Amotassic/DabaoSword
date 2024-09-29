@@ -39,7 +39,7 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Unique LivingEntity living = (LivingEntity) (Object) this;
 
-    @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "damage", at = @At("HEAD"))
     private void damageMixin(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         if (this.getWorld() instanceof ServerWorld world) {
             //恭喜你发现了彩蛋！副手拿着幽匿催发体，然后尽情享受弹射物带来的快乐吧！
@@ -57,9 +57,12 @@ public abstract class LivingEntityMixin extends Entity {
                 double e = 2.5 * (1.0 - this.getAttributeValue(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE));
                 this.addVelocity(vec3d3.getX() * e, vec3d3.getY() * d, vec3d3.getZ() * e);
             }
-
-            if (ModifyDamage.shouldCancel(living, source, amount)) cir.setReturnValue(false);
         }
+    }
+
+    @Inject(method = "damage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isSleeping()Z"), cancellable = true)
+    private void cancelDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        if (ModifyDamage.shouldCancel(living, source, amount)) cir.setReturnValue(false);
     }
 
     @Inject(method = "tick", at = @At("TAIL"))
