@@ -1,0 +1,38 @@
+{
+  "parent": "dabaosword:root",
+  "criteria": {
+    "gift_box": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "dabaosword:gift_box"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancement.dabaosword.gift_box.tip"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "dabaosword:gift_box"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancement.dabaosword.gift_box.title"
+    }
+  },
+  "requirements": [
+    [
+      "gift_box"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

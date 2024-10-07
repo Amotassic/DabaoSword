@@ -1,0 +1,31 @@
+{
+  "criteria": {
+    "root": {
+      "conditions": {},
+      "trigger": "minecraft:tick"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "background": "minecraft:textures/gui/advancements/backgrounds/adventure.png",
+    "description": {
+      "translate": "advancement.dabaosword.root.tip"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "dabaosword:bbji",
+      "nbt": "{Damage:0}"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancement.dabaosword.root.title"
+    }
+  },
+  "requirements": [
+    [
+      "root"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

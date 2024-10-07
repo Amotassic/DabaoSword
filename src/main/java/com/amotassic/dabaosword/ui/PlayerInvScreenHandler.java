@@ -20,6 +20,7 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Pair;
 import net.minecraft.util.collection.DefaultedList;
 
@@ -51,9 +52,32 @@ public class PlayerInvScreenHandler extends ScreenHandler {
 
     @Override
     public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
-        if (slotIndex >= 0 && slotIndex < 54) {
+        if (slotIndex >= 0 && slotIndex < 54 && !player.getWorld().isClient) {
             var targetStack = selected(target, slotIndex); //根据情况来判断需要选择自己的stack还是目标的stack
             var selfStack = selected(player, slotIndex);
+
+            if (stack.isOf(ModItems.SUNSHINE_SMILE)) {
+                ItemStack mainHand = player.getMainHandStack();
+                if (selfStack.isEmpty()) { //如果玩家点了一个空的格子————
+                    int emptySlot = player.getInventory().getEmptySlot();
+                    if (emptySlot != -1) { //如果主手不为空，就把主手的物品移动到其他空格子，主手设为空
+                        player.getInventory().setStack(emptySlot, mainHand.copy());
+                        mainHand.setCount(0);
+                    }
+                } else { //如果玩家选了一个非空的格子，就交换主手和该格子的物品
+                    ItemStack mainCopy = mainHand.copy(); ItemStack swapCopy = selfStack.copy();
+                    if (player.getOffHandStack().equals(selfStack)) {
+                        player.setStackInHand(Hand.MAIN_HAND, swapCopy);
+                        player.setStackInHand(Hand.OFF_HAND, mainCopy);
+                    } else {
+                        int swapSlot = player.getInventory().getSlotWithStack(selfStack);
+                        player.setStackInHand(Hand.MAIN_HAND, swapCopy);
+                        player.getInventory().setStack(swapSlot, mainCopy);
+                    }
+                }
+                closeGUI(player);
+            }
+
             if (selfStack != ItemStack.EMPTY) {
 
                 if (stack.getItem() == SkillCards.RENDE) {

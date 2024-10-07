@@ -3,7 +3,6 @@ package com.amotassic.dabaosword.event;
 import com.amotassic.dabaosword.event.callback.EntityHurtCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.equipment.Equipment;
-import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
@@ -18,7 +17,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Box;
 
 import java.util.Random;
@@ -51,23 +49,13 @@ public class EntityHurtHandler implements EntityHurtCallback {
     public ActionResult hurtEntity(LivingEntity entity, DamageSource source, float amount) {
         if (entity.getWorld() instanceof ServerWorld world) {
 
-            if (entity instanceof PlayerEntity player) {
-                if (player.isDead()) {
-                    if (hasTrinket(SkillCards.BUQU, player)) {
-                        ItemStack stack = trinketItem(SkillCards.BUQU, player);
-                        int c = getTag(stack);
-                        voice(player, Sounds.BUQU);
-                        if (new Random().nextFloat() >= (float) c /13) {
-                            player.sendMessage(Text.translatable("buqu.tip1").formatted(Formatting.GREEN).append(String.valueOf(c + 1)));
-                            c++; setTag(stack, c);
-                            player.setHealth(1);
-                        } else {
-                            player.sendMessage(Text.translatable("buqu.tip2").formatted(Formatting.RED));
-                            save(player, amount);
-                        }
-                    } else save(player, amount);
-                }
+            for (var pair : allTrinkets(entity)) { //受伤害后触发，优先级高
+                ItemStack stack = pair.getRight();
+                if (stack.getItem() instanceof SkillItem skill && canTrigger(skill, entity)) skill.onHurt(stack, entity, source, amount);
+                if (stack.getItem() instanceof Equipment skill) skill.onHurt(stack, entity, source, amount);
             }
+
+            if (entity instanceof PlayerEntity player && player.isDead()) save(player, amount);
 
             if (source.getAttacker() instanceof LivingEntity living) {
                 if (living.getCommandTags().contains("px")) entity.timeUntilRegen = 0;
@@ -134,12 +122,6 @@ public class EntityHurtHandler implements EntityHurtCallback {
                     }
                     cardUsePost(player, stack, entity);
                 }
-            }
-
-            for (var pair : allTrinkets(entity)) {
-                ItemStack stack = pair.getRight();
-                if (stack.getItem() instanceof SkillItem skill && canTrigger(skill, entity)) skill.onHurt(stack, entity, source, amount);
-                if (stack.getItem() instanceof Equipment skill) skill.onHurt(stack, entity, source, amount);
             }
 
             if (source.getSource() instanceof LivingEntity living) { //在近战攻击造成伤害后触发

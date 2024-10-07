@@ -23,10 +23,12 @@ import static com.amotassic.dabaosword.util.ModTools.*;
 public class ServerNetworking {
     public static Identifier ACTIVE_SKILL = new Identifier("dabaosword:active_skill");
     public static Identifier SHENSU = new Identifier("dabaosword:shensu_speed");
+    public static Identifier SELECT_CARD = new Identifier("dabaosword:select_card");
 
     public static void registerActiveSkillPacketHandler() {
         ServerPlayNetworking.registerGlobalReceiver(ACTIVE_SKILL, ServerNetworking::receiveActiveSkillPacket);
         ServerPlayNetworking.registerGlobalReceiver(SHENSU, ServerNetworking::receiveShensuPacket);
+        ServerPlayNetworking.registerGlobalReceiver(SELECT_CARD, ServerNetworking::selectCardPacket);
     }
 
     private static void receiveActiveSkillPacket(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
@@ -57,5 +59,9 @@ public class ServerNetworking {
             NbtCompound nbt = stack.getOrCreateNbt(); nbt.putFloat("speed", speed); stack.setNbt(nbt);
             //if (stack.getNbt() != null && stack.getNbt().getFloat("speed") > 0) player.sendMessage(Text.literal("Speed: " + speed), true);
         }
+    }
+
+    private static void selectCardPacket(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
+        openInv(player, player, Text.translatable("key.dabaosword.select_card"), new ItemStack(ModItems.SUNSHINE_SMILE), targetInv(player, false, false, 3));
     }
 }

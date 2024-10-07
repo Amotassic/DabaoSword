@@ -32,7 +32,7 @@ public class SkillCards {
     public static final Item RENDE = register("rende", new SkillItem.Rende(new Item.Settings().maxCount(1)));
     public static final Item TIEJI = register("tieji", new SkillItem.Tieji(new Item.Settings().maxCount(1)));
     //吴
-    public static final Item BUQU = register("buqu", new SkillItem(new Item.Settings().maxCount(1)));
+    public static final Item BUQU = register("buqu", new SkillItem.Buqu(new Item.Settings().maxCount(1)));
     public static final Item GONGXIN = register("gongxin", new SkillItem.Gongxin(new Item.Settings().maxCount(1)));
     public static final Item GUOSE = register("guose", new SkillItem.Guose(new Item.Settings().maxCount(1)));
     public static final Item LIANYING = register("lianying", new SkillItem.Lianying(new Item.Settings().maxCount(1)));

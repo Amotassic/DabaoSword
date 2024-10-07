@@ -133,6 +133,8 @@
   "equipment.tip2": "手持新的装备牌右键使用，可替换掉旧的装备",
   "info.fail": "请选择一个生物实体！",
   "trinkets": "饰品栏",
+  "item.dabaosword.sunshine_smile": "阳光开朗的笑容",
+  "item.dabaosword.sunshine_smile.tooltip": "暂时没有实际作用",
 
   //"技能"
   "item.dabaosword.guose": "国色",
@@ -314,6 +316,13 @@
   "sounds.dabaosword.sha_fire": "火杀：使用",
   "sounds.dabaosword.sha_thunder": "雷杀：使用",
 
+  "advancement.dabaosword.root.title": "蒸蒸日上！",
+  "advancement.dabaosword.root.tip": "在MC里玩三国杀？",
+  "advancement.dabaosword.card_pile.title": "牌不是万能的，但是没牌是万万不能的",
+  "advancement.dabaosword.card_pile.tip": "用8张纸和黑色染料制作牌堆",
+  "advancement.dabaosword.gift_box.title": "全力氪金，言贵者，斩！",
+  "advancement.dabaosword.gift_box.tip": "把一组绿宝石扔给傻子村民",
+
   "gamerule.fire_attack_breaks_block": "火攻破坏方块",
   "gamerule.card_pile_hungerless": "牌堆恢复饱食度",
   "gamerule.clear_cards_after_death": "死亡后清除所有卡牌",
@@ -329,5 +338,6 @@
   "trinkets.slot.offhand.card_pile": "牌堆",
 
   "category.dabaosword.keybindings": "大宝刀",
-  "key.dabaosword.active_skill": "发动技能"
+  "key.dabaosword.active_skill": "发动技能",
+  "key.dabaosword.select_card": "快速切换物品"
 }

@@ -94,6 +94,39 @@ public class SkillItem extends TrinketItem implements Skill {
         }
     }
 
+    public static class Buqu extends SkillItem {
+        public Buqu(Settings settings) {super(settings);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
+            int c = getTag(stack);
+            if(Screen.hasShiftDown()) {
+                tooltip.add(Text.translatable("item.dabaosword.buqu.tooltip1").formatted(Formatting.GREEN));
+                tooltip.add(Text.translatable("item.dabaosword.buqu.tooltip2").formatted(Formatting.GREEN));
+                tooltip.add(Text.translatable("item.dabaosword.buqu.tooltip3").formatted(Formatting.GREEN));
+                tooltip.add(Text.translatable("item.dabaosword.buqu.tooltip4").formatted(Formatting.GREEN));
+                tooltip.add(Text.translatable("item.dabaosword.buqu.tooltip5").formatted(Formatting.GREEN));
+            } else {
+                tooltip.add(Text.literal("创：" + c));
+                tooltip.add(Text.translatable("item.dabaosword.buqu.tooltip").formatted(Formatting.GREEN));
+                tooltip.add(Text.translatable("dabaosword.shifttooltip"));
+            }
+        }
+
+        @Override
+        public void onHurt(ItemStack stack, LivingEntity entity, DamageSource source, float amount) {
+            if (entity instanceof PlayerEntity player && player.isDead()) {
+                int c = getTag(stack);
+                voice(player, Sounds.BUQU);
+                if (new Random().nextFloat() >= (float) c /13) {
+                    player.sendMessage(Text.translatable("buqu.tip1").formatted(Formatting.GREEN).append(String.valueOf(c + 1)));
+                    setTag(stack, c + 1);
+                    player.setHealth(1);
+                } else player.sendMessage(Text.translatable("buqu.tip2").formatted(Formatting.RED));
+            }
+        }
+    }
+
     public static class Duanliang extends SkillItem {
         public Duanliang(Settings settings) {super(settings);}
 
@@ -973,21 +1006,6 @@ public class SkillItem extends TrinketItem implements Skill {
 
         if (stack.getItem() == SkillCards.XIAOJI) {
             tooltip.add(Text.translatable("item.dabaosword.xiaoji.tooltip").formatted(Formatting.GREEN));
-        }
-
-        if (stack.getItem() == SkillCards.BUQU) {
-            int c = getTag(stack);
-            if(Screen.hasShiftDown()) {
-                tooltip.add(Text.translatable("item.dabaosword.buqu.tooltip1").formatted(Formatting.GREEN));
-                tooltip.add(Text.translatable("item.dabaosword.buqu.tooltip2").formatted(Formatting.GREEN));
-                tooltip.add(Text.translatable("item.dabaosword.buqu.tooltip3").formatted(Formatting.GREEN));
-                tooltip.add(Text.translatable("item.dabaosword.buqu.tooltip4").formatted(Formatting.GREEN));
-                tooltip.add(Text.translatable("item.dabaosword.buqu.tooltip5").formatted(Formatting.GREEN));
-            } else {
-                tooltip.add(Text.literal("创：" + c));
-                tooltip.add(Text.translatable("item.dabaosword.buqu.tooltip").formatted(Formatting.GREEN));
-                tooltip.add(Text.translatable("dabaosword.shifttooltip"));
-            }
         }
 
         if (stack.getItem() == SkillCards.XINGSHANG) {

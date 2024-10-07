@@ -128,11 +128,13 @@
   "sounds.dabaosword.falling_attack2": "Landing",
   "effect.dabaosword.turn_over": "Turn Over",
   "effect.dabaosword.tieji": "Non-lock-on skills disabled",
-  "effect.tieji.tip": "你现在有铁骑效果，无法使用主动技！",
+  "effect.tieji.tip": "You can't active skill now!",
   "equipment.tip1": "Cannot be unequipped directly once equipped",
   "equipment.tip2": "Hold a new equipment card and right-click to replace the existing equipment",
   "info.fail": "Please select a living entity!",
   "trinkets": "Trinket Slot",
+  "item.dabaosword.sunshine_smile": "阳光开朗的笑容",
+  "item.dabaosword.sunshine_smile.tooltip": "暂时没有实际作用",
 
   //"Skills"
   "item.dabaosword.guose": "Alluring Beauty",
@@ -314,6 +316,13 @@
   "sounds.dabaosword.sha_fire": "Fire Slash: Use",
   "sounds.dabaosword.sha_thunder": "Thunder Slash: Use",
 
+  "advancement.dabaosword.root.title": "蒸蒸日上！",
+  "advancement.dabaosword.root.tip": "在MC里玩三国杀？",
+  "advancement.dabaosword.card_pile.title": "牌不是万能的，但是没牌是万万不能的",
+  "advancement.dabaosword.card_pile.tip": "用8张纸和黑色染料制作牌堆",
+  "advancement.dabaosword.gift_box.title": "全力氪金，言贵者，斩！",
+  "advancement.dabaosword.gift_box.tip": "把一组绿宝石扔给傻子村民",
+
   "gamerule.fire_attack_breaks_block": "Fire Attack Breaks Block",
   "gamerule.card_pile_hungerless": "Card Pile Hungerless",
   "gamerule.clear_cards_after_death": "Clear Cards After Death",
@@ -329,5 +338,6 @@
   "trinkets.slot.offhand.card_pile": "card pile",
 
   "category.dabaosword.keybindings": "DabaoSword",
-  "key.dabaosword.active_skill": "Active skill"
+  "key.dabaosword.active_skill": "Active skill",
+  "key.dabaosword.select_card": "快速切换物品"
 }

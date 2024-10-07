@@ -7,6 +7,7 @@ import com.amotassic.dabaosword.item.card.*;
 import com.amotassic.dabaosword.item.equipment.ArrowRainItem;
 import com.amotassic.dabaosword.item.equipment.Equipment;
 import com.amotassic.dabaosword.item.equipment.GudingdaoItem;
+import com.amotassic.dabaosword.item.equipment.SunshineSmile;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.ui.FullInvScreenHandler;
 import com.amotassic.dabaosword.ui.PlayerInvScreenHandler;
@@ -19,9 +20,7 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
+import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.screen.ScreenHandlerType;
@@ -105,6 +104,8 @@ public class ModItems {
     public static final Item BBJI = register("bbji", new BBjiItem(new Item.Settings().maxDamage(250)));
     //让我康康
     public static final Item LET_ME_CC = register("let_me_cc", new LetMeCCItem(new Item.Settings().maxCount(1)));
+
+    public static final Item SUNSHINE_SMILE = register("sunshine_smile", new SunshineSmile(new Item.Settings().maxDamage(999).rarity(Rarity.UNCOMMON)));
 
     //注册部分
     public static void register() {
@@ -242,6 +243,7 @@ public class ModItems {
                 entries.add(GIFTBOX);
                 entries.add(BBJI);
                 entries.add(LET_ME_CC);
+                entries.add(SUNSHINE_SMILE);
             }).build();
 
     public static final ScreenHandlerType<SimpleMenuHandler> SIMPLE_MENU_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "simple_menu", new ExtendedScreenHandlerType<>((syncId, inv, buf) -> new SimpleMenuHandler(syncId, buf)));

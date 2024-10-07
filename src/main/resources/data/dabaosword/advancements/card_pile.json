@@ -1,0 +1,38 @@
+{
+  "parent": "dabaosword:root",
+  "criteria": {
+    "card_pile": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "dabaosword:card_pile"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancement.dabaosword.card_pile.tip"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "dabaosword:card_pile"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancement.dabaosword.card_pile.title"
+    }
+  },
+  "requirements": [
+    [
+      "card_pile"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

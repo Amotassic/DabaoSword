@@ -19,6 +19,9 @@
     ],
     "client": [
       "com.amotassic.dabaosword.client.DabaoSwordClient"
+    ],
+    "fabric-datagen": [
+      "com.amotassic.dabaosword.datagen.DataGeneration"
     ]
   },
   "mixins": [
