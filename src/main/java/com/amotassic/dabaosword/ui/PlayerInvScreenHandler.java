@@ -1,6 +1,7 @@
 package com.amotassic.dabaosword.ui;
 
-import com.amotassic.dabaosword.event.callback.CardCBs;
+import com.amotassic.dabaosword.api.CardPileInventory;
+import com.amotassic.dabaosword.api.event.CardCBs;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.Sounds;
@@ -56,6 +57,41 @@ public class PlayerInvScreenHandler extends ScreenHandler {
             var targetStack = selected(target, slotIndex); //根据情况来判断需要选择自己的stack还是目标的stack
             var selfStack = selected(player, slotIndex);
 
+            if (stack.isOf(ModItems.WANJIAN)) {
+                ItemStack mainHand = player.getMainHandStack(); var mainCopy = mainHand.copy();
+                CardPileInventory cards = new CardPileInventory(player);
+                ItemStack selected = ItemStack.EMPTY; //对选择的卡牌进行赋值
+                if (slotIndex == 8) selected = player.getOffHandStack();
+                if (8 < slotIndex && slotIndex < 45) selected = cards.getStack(slotIndex - 9);
+                if (slotIndex >= 45) selected = selfStack;
+                var copy = selected.copy(); //复制一份已选物品方便代码操作
+
+                if (!selected.isEmpty()) {
+                    if (isCard(mainHand)) { //如果主手物品是卡牌，就把主手物品设置为选择的牌，然后主手物品进入牌堆背包
+                        player.setStackInHand(Hand.MAIN_HAND, copy);
+                        selected.setCount(0);
+                        cards.insertStack(mainCopy);
+                    } else {
+                        if (slotIndex == 8 || slotIndex >= 45) { //如果选的不是牌堆中的牌，交换两者位置
+                            player.setStackInHand(Hand.MAIN_HAND, copy);
+                            selected.setCount(0);
+                            if (slotIndex == 8) player.setStackInHand(Hand.OFF_HAND, mainCopy); //处理副手
+                            if (slotIndex >= 45) player.getInventory().setStack(slotIndex - 45, mainCopy);
+                        } else {
+                            int emptySlot = player.getInventory().getEmptySlot();
+                            if (emptySlot == -1) player.sendMessage(Text.translatable("card_pile.player_inv.full").formatted(Formatting.RED), true);
+                            else { //如果选择牌堆中的牌且背包未满，则将主手物品设为选择的牌，主手物品移动到其它空槽位（显然不包括副手）
+                                player.setStackInHand(Hand.MAIN_HAND, copy);
+                                cards.removeStack(slotIndex - 9);
+                                //如果主手原本是空的，就不需要交换这一步，这点很重要
+                                if (!mainCopy.isEmpty()) player.getInventory().setStack(emptySlot, mainCopy);
+                            }
+                        }
+                    }
+                }
+                closeGUI(player);
+            }
+
             if (stack.isOf(ModItems.SUNSHINE_SMILE)) {
                 ItemStack mainHand = player.getMainHandStack();
                 if (selfStack.isEmpty()) { //如果玩家点了一个空的格子————
@@ -79,7 +115,7 @@ public class PlayerInvScreenHandler extends ScreenHandler {
             }
 
             if (selfStack != ItemStack.EMPTY) {
-
+//todo 暂时性的更改
                 if (stack.getItem() == SkillCards.RENDE) {
                     voice(player, Sounds.RENDE);
                     target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.toHoverableText(), target.getDisplayName())));

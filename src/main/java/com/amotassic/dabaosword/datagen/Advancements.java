@@ -3,7 +3,6 @@ package com.amotassic.dabaosword.datagen;
 import com.amotassic.dabaosword.item.ModItems;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementFrame;
-import net.minecraft.advancement.criterion.ImpossibleCriterion;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
 import net.minecraft.advancement.criterion.TickCriterion;
 import net.minecraft.text.Text;

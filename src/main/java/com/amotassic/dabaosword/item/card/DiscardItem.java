@@ -33,9 +33,9 @@ public class DiscardItem extends CardItem {
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         if (!user.getWorld().isClient && hand == Hand.MAIN_HAND) {
             if (entity instanceof PlayerEntity target) {
-                if (hasItem(target, ModItems.WUXIE)) {
+                if (hasWuxie(target)) {
                     voice(target, Sounds.WUXIE);
-                    cardUsePost(target, getItem(target, ModItems.WUXIE), null);
+                    cardUsePost(target, getWuxie(target), null);
                     voice(user, Sounds.GUOHE);
                     cardUsePost(user, stack, entity);
                 } else {

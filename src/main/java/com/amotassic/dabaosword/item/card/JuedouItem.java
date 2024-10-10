@@ -2,14 +2,11 @@ package com.amotassic.dabaosword.item.card;
 
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.Sounds;
-import com.amotassic.dabaosword.util.Tags;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -32,14 +29,13 @@ public class JuedouItem extends CardItem {
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         if (!user.getWorld().isClient && hand == Hand.MAIN_HAND && entity.isAlive()) {
             user.addCommandTag("juedou");
-            if (entity instanceof PlayerEntity player && hasItem(player, ModItems.WUXIE)) {
-                cardUsePost(player, getItem(player, ModItems.WUXIE), null);
+            if (entity instanceof PlayerEntity player && hasWuxie(player)) {
+                cardUsePost(player, getWuxie(player), null);
                 voice(player, Sounds.WUXIE);
             } else {
                 if (entity instanceof PlayerEntity target) {
-                    TagKey<Item> tag = Tags.Items.SHA;
-                    int userSha = count(user, tag);
-                    int targetSha = count(target, tag);
+                    int userSha = countCard(user, isSha);
+                    int targetSha = countCard(target, isSha);
                     if (userSha >= targetSha) {
                         target.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2,2,0,false,false,false));
                         target.timeUntilRegen = 0;
@@ -51,8 +47,7 @@ public class JuedouItem extends CardItem {
                         user.damage(target.getDamageSources().sonicBoom(target),5f);
                         user.sendMessage(Text.translatable("dabaosword.juedou1"));
                         if (targetSha != 0) { //如果目标的杀比使用者的杀多，反击使用者，则目标减少一张杀
-                            ItemStack sha = stackInTag(tag, target);
-                            cardUsePost(target, sha, user);
+                            cardUsePost(target, getCard(target, isSha), user);
                         }
                     }
                 } else { entity.addCommandTag("juedou");

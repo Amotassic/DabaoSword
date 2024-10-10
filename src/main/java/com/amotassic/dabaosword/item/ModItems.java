@@ -1,13 +1,10 @@
 package com.amotassic.dabaosword.item;
 
+import com.amotassic.dabaosword.api.event.*;
 import com.amotassic.dabaosword.effect.*;
 import com.amotassic.dabaosword.event.*;
-import com.amotassic.dabaosword.event.callback.*;
 import com.amotassic.dabaosword.item.card.*;
-import com.amotassic.dabaosword.item.equipment.ArrowRainItem;
-import com.amotassic.dabaosword.item.equipment.Equipment;
-import com.amotassic.dabaosword.item.equipment.GudingdaoItem;
-import com.amotassic.dabaosword.item.equipment.SunshineSmile;
+import com.amotassic.dabaosword.item.equipment.*;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.ui.FullInvScreenHandler;
 import com.amotassic.dabaosword.ui.PlayerInvScreenHandler;
@@ -20,7 +17,9 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
-import net.minecraft.item.*;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.screen.ScreenHandlerType;
@@ -32,7 +31,7 @@ public class ModItems {
     //摸牌
     public static final Item GAIN_CARD = register("gain_card",new GainCardItem(new Item.Settings()));
     //牌堆
-    public static final Item CARD_PILE = register("card_pile",new Equipment(new Item.Settings().maxCount(1)));
+    public static final Item CARD_PILE = register("card_pile",new CardPile(new Item.Settings().maxCount(1)));
 
     // 古锭刀
     public static final Item GUDINGDAO = register("gudingdao", new GudingdaoItem(new Item.Settings()));

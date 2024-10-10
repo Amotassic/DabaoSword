@@ -1,7 +1,7 @@
 {
   "nahida": {
     "sounds": [
-      "dabaosword:card/nahida1","dabaosword:card/nahida2","sounds.dabaosword.nahida3"
+      "dabaosword:card/nahida1","dabaosword:card/nahida2","dabaosword:card/nahida3"
     ],
     "subtitle": "sounds.dabaosword.nahida"
   },

@@ -1,4 +1,4 @@
-package com.amotassic.dabaosword.event.callback;
+package com.amotassic.dabaosword.api.event;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;

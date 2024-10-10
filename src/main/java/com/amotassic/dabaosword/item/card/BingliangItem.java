@@ -18,8 +18,8 @@ public class BingliangItem extends CardItem {
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         if (!user.getWorld().isClient) {
-            if (entity instanceof PlayerEntity player && hasItem(player, ModItems.WUXIE)) {
-                cardUsePost(player, getItem(player, ModItems.WUXIE), null);
+            if (entity instanceof PlayerEntity player && hasWuxie(player)) {
+                cardUsePost(player, getWuxie(player), null);
                 voice(player, Sounds.WUXIE);
             } else entity.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, StatusEffectInstance.INFINITE,1));
             cardUsePost(user, stack, entity);

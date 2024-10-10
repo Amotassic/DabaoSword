@@ -1,6 +1,7 @@
 package com.amotassic.dabaosword.event;
 
-import com.amotassic.dabaosword.event.callback.CardCBs;
+import com.amotassic.dabaosword.api.CardPileInventory;
+import com.amotassic.dabaosword.api.event.CardCBs;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.Sounds;
@@ -8,17 +9,35 @@ import com.amotassic.dabaosword.util.Tags;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Hand;
+import net.minecraft.util.Pair;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Predicate;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class CardEvents implements CardCBs.PostUse, CardCBs.Discard, CardCBs.Move {
     @Override
-    public void cardUsePost(PlayerEntity user, ItemStack stack, @Nullable LivingEntity target) {
-        ItemStack copy = stack.copy();
+    public void cardUsePost(PlayerEntity user, Pair<CardPileInventory, ItemStack> stack, @Nullable LivingEntity target) {
+        ItemStack copy = stack.getRight().copy();
 
-        if (stack.getItem() == ModItems.WUXIE) stack.decrement(1); //即使创造模式，无懈可击也会消耗，为什么呢？我也不知道
-        else if (!user.isCreative()) stack.decrement(1);
+        if (stack.getRight().isOf(ModItems.WUXIE)) cardDecrement(stack, 1); //即使创造模式，无懈可击也会消耗，为什么呢？我也不知道
+        else if (!user.isCreative()) cardDecrement(stack, 1);
+
+        if (user.getMainHandStack().isEmpty() && stack.getRight().isEmpty() && stack.getLeft() == null) { //使用主手上的牌之后自动补牌
+            Pair<CardPileInventory, ItemStack> next;
+            Predicate<ItemStack> sameItem = s -> s.getItem() == copy.getItem();
+            Predicate<ItemStack> nonEquip = s -> s.isIn(Tags.Items.BASIC_CARD) && s.isIn(Tags.Items.ARMOURY_CARD);
+            if (hasCard(user, sameItem)) next = getCard(user, sameItem);        //先检索同名非装备牌
+            else if (hasCard(user, nonEquip)) next = getCard(user, nonEquip);   //再检索非装备牌
+            else next = getCard(user, isCard);                                  //最后随便选一张牌
+
+            if (!next.getRight().isEmpty()) {
+                user.setStackInHand(Hand.MAIN_HAND, next.getRight().copy());
+                cardDecrement(next, next.getRight().getCount());
+            }
+        } //todo 有bug的代码，暂时不知道原因
 
         //集智技能触发
         if (hasTrinket(SkillCards.JIZHI, user) && copy.isIn(Tags.Items.ARMOURY_CARD)) {
@@ -40,9 +59,9 @@ public class CardEvents implements CardCBs.PostUse, CardCBs.Discard, CardCBs.Mov
     }
 
     @Override
-    public void cardDiscard(PlayerEntity player, ItemStack stack, int count, boolean fromEquip) {
+    public void cardDiscard(PlayerEntity player, Pair<CardPileInventory, ItemStack> stack, int count, boolean fromEquip) {
         //移除被弃置的牌
-        stack.decrement(count);
+        cardDecrement(stack, count);
 
         //弃置牌后，玩家的死亡判断是有必要的
         if (player.isAlive()) {
@@ -53,13 +72,13 @@ public class CardEvents implements CardCBs.PostUse, CardCBs.Discard, CardCBs.Mov
     }
 
     @Override
-    public void cardMove(LivingEntity from, PlayerEntity to, ItemStack stack, int count, CardCBs.T type) {
-        ItemStack copy = stack.copyWithCount(count);
+    public void cardMove(LivingEntity from, PlayerEntity to, Pair<CardPileInventory, ItemStack> stack, int count, CardCBs.T type) {
+        ItemStack copy = stack.getRight().copyWithCount(count);
 
         //如果是移动到物品栏的类型，则减少from的物品，给to等量的物品（移动到装备区有专门的方法）
         if (type == CardCBs.T.INV_TO_INV || type == CardCBs.T.EQUIP_TO_INV) {
             give(to, copy);
-            stack.decrement(count);
+            cardDecrement(stack, count);
         }
 
         if (type == CardCBs.T.INV_TO_EQUIP || type == CardCBs.T.INV_TO_INV) {

@@ -1,6 +1,8 @@
 package com.amotassic.dabaosword.item.card;
 
+import com.amotassic.dabaosword.api.Card;
 import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.util.ModTools;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.Item;
@@ -11,11 +13,20 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-public class CardItem extends Item {
+public class CardItem extends Item implements Card {
     public CardItem(Settings settings) {super(settings);}
     //这个类用于判断物品是否是卡牌，以及添加物品提示
+
     @Override
-    public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext){
+    public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
+        var sr = ModTools.getSuitAndRank(stack);
+        if (sr != null) {
+            Suits suit = sr.getLeft();
+            Ranks rank = sr.getRight();
+            if (suit == Suits.Hearts || suit == Suits.Diamonds) tooltip.add(Text.translatable("card.suit_and_rank", suit.suit, rank.rank).formatted(Formatting.RED));
+            else tooltip.add(Text.translatable("card.suit_and_rank", suit.suit, rank.rank));
+        }
+
         if (stack.getItem() == ModItems.WUXIE) {
             tooltip.add(Text.translatable("item.dabaosword.wuxie.tooltip1"));
             tooltip.add(Text.translatable("item.dabaosword.wuxie.tooltip2"));

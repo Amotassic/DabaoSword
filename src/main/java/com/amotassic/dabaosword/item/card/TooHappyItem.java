@@ -19,8 +19,8 @@ public class TooHappyItem extends CardItem {
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         if (!user.getWorld().isClient) {
             if (entity instanceof PlayerEntity player) {
-                if (hasItem(player, ModItems.WUXIE)) {
-                    cardUsePost(player, getItem(player, ModItems.WUXIE), null);
+                if (hasWuxie(player)) {
+                    cardUsePost(player, getWuxie(player), null);
                     voice(player, Sounds.WUXIE);
                 } else player.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 5));
             } else entity.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 15));

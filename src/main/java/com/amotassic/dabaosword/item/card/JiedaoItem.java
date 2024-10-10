@@ -1,7 +1,6 @@
 package com.amotassic.dabaosword.item.card;
 
-import com.amotassic.dabaosword.event.callback.CardCBs;
-import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.api.event.CardCBs;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,8 +17,8 @@ public class JiedaoItem extends CardItem {
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         ItemStack stack1 = entity.getMainHandStack();
         if (!user.getWorld().isClient && hand == Hand.MAIN_HAND && !stack1.isEmpty()) {
-            if (entity instanceof PlayerEntity player && hasItem(player, ModItems.WUXIE)) {
-                cardUsePost(player, getItem(player, ModItems.WUXIE), null);
+            if (entity instanceof PlayerEntity player && hasWuxie(player)) {
+                cardUsePost(player, getWuxie(player), null);
                 voice(player, Sounds.WUXIE);
             } else {
                 if (isCard(stack1)) cardMove(entity, user, stack1, stack1.getCount(), CardCBs.T.INV_TO_INV);

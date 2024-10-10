@@ -135,6 +135,8 @@
   "trinkets": "Trinket Slot",
   "item.dabaosword.sunshine_smile": "阳光开朗的笑容",
   "item.dabaosword.sunshine_smile.tooltip": "暂时没有实际作用",
+  "card_pile.player_inv.full": "你的背包已满，无法取出卡牌！",
+  "card.suit_and_rank": "%1$s %2$s",
 
   //"Skills"
   "item.dabaosword.guose": "Alluring Beauty",

@@ -1,6 +1,6 @@
 package com.amotassic.dabaosword.event;
 
-import com.amotassic.dabaosword.event.callback.EndEntityTick;
+import com.amotassic.dabaosword.api.event.EndEntityTick;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.Gamerule;
@@ -53,8 +53,7 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
 
             if (time % giveCard == 0) { // 每分钟摸两张牌
                 if (hasTrinket(ModItems.CARD_PILE, player) && !player.isCreative() && !player.isSpectator() && player.isAlive()) {
-                    if (countCards(player) > player.getMaxHealth() && limit) return;
-                    else { //如果不限制摸牌就继续发牌
+                    if (countCards(player) < player.getMaxHealth() || !limit) {
                         draw(player, 2);
                         player.sendMessage(Text.translatable("dabaosword.draw"),true);
                     }

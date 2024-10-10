@@ -51,15 +51,6 @@ public abstract class MobEntityMixin extends LivingEntity {
         if (!getWorld().isClient && new java.util.Random().nextFloat() < getChance()) initCards();
     }
 
-    @Inject(method = "tick", at = @At(value = "TAIL"))
-    public void tick(CallbackInfo ci) {
-        if (getOffHandStack().getItem() == ModItems.PEACH && getHealth() <= getMaxHealth() - 5) {
-            heal(5);
-            voice(mob, Sounds.RECOVER);
-            getOffHandStack().decrement(1);
-        }
-    }
-
     @Inject(method = "tryAttack", at = @At(value = "HEAD"))
     public void tryAttack(Entity target, CallbackInfoReturnable<Boolean> cir) {
         if (getMainHandStack().isIn(Tags.Items.CARD) && target instanceof LivingEntity) tryUseCard(getMainHandStack(), (LivingEntity) target);
@@ -75,8 +66,8 @@ public abstract class MobEntityMixin extends LivingEntity {
         }
 
         if (stack.getItem() == ModItems.BINGLIANG_ITEM) {
-            if (target instanceof PlayerEntity player && hasItem(player, ModItems.WUXIE)) {
-                cardUsePost(player, getItem(player, ModItems.WUXIE), null);
+            if (target instanceof PlayerEntity player && hasWuxie(player)) {
+                cardUsePost(player, getWuxie(player), null);
                 voice(player, Sounds.WUXIE);
             } else target.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, StatusEffectInstance.INFINITE,1));
             voice(mob, Sounds.BINGLIANG); stack.decrement(1);
@@ -84,8 +75,8 @@ public abstract class MobEntityMixin extends LivingEntity {
 
         if (stack.getItem() == ModItems.TOO_HAPPY_ITEM) {
             if (target instanceof PlayerEntity player) {
-                if (hasItem(player, ModItems.WUXIE)) {
-                    cardUsePost(player, getItem(player, ModItems.WUXIE), null);
+                if (hasWuxie(player)) {
+                    cardUsePost(player, getWuxie(player), null);
                     voice(player, Sounds.WUXIE);
                 } else player.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 5));
             } else target.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 15));
@@ -94,8 +85,8 @@ public abstract class MobEntityMixin extends LivingEntity {
 
         if (stack.getItem() == ModItems.DISCARD) {
             if (target instanceof PlayerEntity player) {//如果是玩家则弃牌
-                if (hasItem(player, ModItems.WUXIE)) {
-                    cardUsePost(player, getItem(player, ModItems.WUXIE), null);
+                if (hasWuxie(player)) {
+                    cardUsePost(player, getWuxie(player), null);
                     voice(player, Sounds.WUXIE);
                     voice(mob, Sounds.GUOHE); stack.decrement(1);
                 } else {
@@ -146,8 +137,8 @@ public abstract class MobEntityMixin extends LivingEntity {
         if (stack.getItem() == ModItems.JIEDAO) {
             ItemStack stack1 = target.getMainHandStack();
             if (!stack1.isEmpty()) {
-                if (target instanceof PlayerEntity player && hasItem(player, ModItems.WUXIE)) {
-                    cardUsePost(player, getItem(player, ModItems.WUXIE), null);
+                if (target instanceof PlayerEntity player && hasWuxie(player)) {
+                    cardUsePost(player, getWuxie(player), null);
                     voice(player, Sounds.WUXIE);
                 } else {
                     mob.setStackInHand(Hand.MAIN_HAND, stack1.copy());

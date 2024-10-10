@@ -1,10 +1,9 @@
 package com.amotassic.dabaosword.item.skillcard;
 
-import com.amotassic.dabaosword.event.callback.CardCBs;
+import com.amotassic.dabaosword.api.Skill;
+import com.amotassic.dabaosword.api.event.CardCBs;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.equipment.Equipment;
-import com.amotassic.dabaosword.util.ModTools;
-import com.amotassic.dabaosword.util.Skill;
 import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
 import com.google.common.base.Supplier;
@@ -138,7 +137,7 @@ public class SkillItem extends TrinketItem implements Skill {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (entity instanceof PlayerEntity player) viewAs(player, stack, 5, ModTools::nonBasic, new ItemStack(ModItems.BINGLIANG_ITEM), Sounds.DUANLIANG);
+            if (entity instanceof PlayerEntity player) viewAs(player, stack, 5, nonBasic, new ItemStack(ModItems.BINGLIANG_ITEM), Sounds.DUANLIANG);
             super.tick(stack, slot, entity);
         }
     }
@@ -403,7 +402,7 @@ public class SkillItem extends TrinketItem implements Skill {
 
         @Override
         public void activeSkill(PlayerEntity user, ItemStack stack, PlayerEntity target) {
-            if (user.getHealth() + 5 * count(user, Tags.Items.RECOVER) > 4.99) {
+            if (user.getHealth() + 5 * countCard(user, canSaveDying) > 4.99) {
                 draw(user, 2);
                 if (!user.isCreative()) {
                     user.timeUntilRegen = 0;
@@ -502,8 +501,8 @@ public class SkillItem extends TrinketItem implements Skill {
         @Override
         public boolean cancelDamage(LivingEntity target, DamageSource source, float amount) {
             if (source.getAttacker() instanceof LivingEntity attacker && target instanceof PlayerEntity player) {
-                if (hasTrinket(SkillCards.LIULI, player) && hasItemInTag(Tags.Items.CARD, player) && !player.hasStatusEffect(ModItems.INVULNERABLE)) {
-                    ItemStack stack = stackInTag(Tags.Items.CARD, player);
+                if (hasTrinket(SkillCards.LIULI, player) && hasCard(player, isCard) && !player.hasStatusEffect(ModItems.INVULNERABLE)) {
+                    var stack = getCard(player, isCard);
                     LivingEntity nearEntity = getLiuliEntity(player, attacker);
                     if (nearEntity != null) {
                         player.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 15,0,false,false,false));
@@ -549,7 +548,7 @@ public class SkillItem extends TrinketItem implements Skill {
                 ItemStack stack1 = player.getOffHandStack();
                 if (world.getTime() % 20 == 0 && stack1.isIn(Tags.Items.BASIC_CARD)) {
                     stack1.decrement(1);
-                    if (stack1.isIn(Tags.Items.SHA)) give(player, new ItemStack(ModItems.SHAN));
+                    if (isSha.test(stack1)) give(player, new ItemStack(ModItems.SHAN));
                     if (stack1.isOf(ModItems.SHAN)) give(player, new ItemStack(ModItems.SHA));
                     if (stack1.isOf(ModItems.PEACH)) give(player, new ItemStack(ModItems.JIU));
                     if (stack1.isOf(ModItems.JIU)) give(player, new ItemStack(ModItems.PEACH));
@@ -717,7 +716,7 @@ public class SkillItem extends TrinketItem implements Skill {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (entity instanceof PlayerEntity player) viewAs(player, stack, 5, ModTools::nonBasic, new ItemStack(ModItems.SHAN), Sounds.QINGGUO);
+            if (entity instanceof PlayerEntity player) viewAs(player, stack, 5, nonBasic, new ItemStack(ModItems.SHAN), Sounds.QINGGUO);
             super.tick(stack, slot, entity);
         }
     }
@@ -733,7 +732,7 @@ public class SkillItem extends TrinketItem implements Skill {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (entity instanceof PlayerEntity player) viewAs(player, stack, 5, ModTools::nonBasic, new ItemStack(ModItems.DISCARD), Sounds.QIXI);
+            if (entity instanceof PlayerEntity player) viewAs(player, stack, 5, nonBasic, new ItemStack(ModItems.DISCARD), Sounds.QIXI);
             super.tick(stack, slot, entity);
         }
     }
@@ -890,7 +889,7 @@ public class SkillItem extends TrinketItem implements Skill {
 
         @Override
         public void activeSkill(PlayerEntity user, ItemStack stack, PlayerEntity target) {
-            if (user.getHealth() + 5 * count(user, Tags.Items.RECOVER) > 4.99) {
+            if (user.getHealth() + 5 * countCard(user, canSaveDying) > 4.99) {
 
                 ItemStack[] stacks = {new ItemStack(ModItems.THUNDER_SHA), new ItemStack(ModItems.FIRE_SHA), new ItemStack(ModItems.SHAN), new ItemStack(ModItems.PEACH), new ItemStack(ModItems.JIU), new ItemStack(ModItems.BINGLIANG_ITEM), new ItemStack(ModItems.TOO_HAPPY_ITEM), new ItemStack(ModItems.DISCARD), new ItemStack(ModItems.FIRE_ATTACK), new ItemStack(ModItems.JIEDAO), new ItemStack(ModItems.JUEDOU), new ItemStack(ModItems.NANMAN), new ItemStack(ModItems.STEAL), new ItemStack(ModItems.TAOYUAN), new ItemStack(ModItems.TIESUO), new ItemStack(ModItems.WANJIAN), new ItemStack(ModItems.WUXIE), new ItemStack(ModItems.WUZHONG)};
                 Inventory inventory = new SimpleInventory(20);
@@ -1050,10 +1049,10 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     private void setEquipped(ItemStack stack, boolean equipped) {
-        if (equipped) {
-            NbtCompound nbt = stack.getOrCreateNbt(); nbt.putBoolean("equipped", true);
-            stack.setNbt(nbt);
-        } else if (stack.getNbt() != null) stack.getNbt().remove("equipped");
+        NbtCompound nbt = stack.getOrCreateNbt();
+        if (equipped) nbt.putBoolean("equipped", true);
+        else nbt.remove("equipped");
+        stack.setNbt(nbt);
     }
 
     @Override

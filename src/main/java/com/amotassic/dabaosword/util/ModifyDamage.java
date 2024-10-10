@@ -1,5 +1,7 @@
 package com.amotassic.dabaosword.util;
 
+import com.amotassic.dabaosword.api.CardPileInventory;
+import com.amotassic.dabaosword.api.Skill;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.equipment.Equipment;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
@@ -15,7 +17,10 @@ import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
 
@@ -138,11 +143,11 @@ public class ModifyDamage {
             //被南蛮入侵的狗打中可以消耗杀以免疫伤害
             if (entity instanceof PlayerEntity player) {
                 dog.setHealth(0);
-                if (getShaSlot(player) != -1) {
-                    ItemStack stack = player.getMainHandStack().isIn(Tags.Items.SHA) ? player.getMainHandStack() : shaStack(player);
-                    if (stack.isOf(ModItems.SHA)) voice(player, Sounds.SHA);
-                    if (stack.isOf(ModItems.FIRE_SHA)) voice(player, Sounds.SHA_FIRE);
-                    if (stack.isOf(ModItems.THUNDER_SHA)) voice(player, Sounds.SHA_THUNDER);
+                if (hasCard(player, isSha)) {
+                    var stack = getCard(player, isSha);
+                    if (stack.getRight().isOf(ModItems.SHA)) voice(player, Sounds.SHA);
+                    if (stack.getRight().isOf(ModItems.FIRE_SHA)) voice(player, Sounds.SHA_FIRE);
+                    if (stack.getRight().isOf(ModItems.THUNDER_SHA)) voice(player, Sounds.SHA_THUNDER);
                     cardUsePost(player, stack, null);
                     return true;
                 }
@@ -150,9 +155,9 @@ public class ModifyDamage {
         }
         if (source.getAttacker() instanceof LivingEntity) {
             if (!entity.hasStatusEffect(ModItems.COOLDOWN2) && !entity.getCommandTags().contains("juedou")) {
-                boolean hasShan = entity instanceof PlayerEntity player ? getShanSlot(player) != -1 : entity.getOffHandStack().isOf(ModItems.SHAN);
+                boolean hasShan = entity instanceof PlayerEntity player ? hasCard(player, s -> s.isOf(ModItems.SHAN)) : entity.getOffHandStack().isOf(ModItems.SHAN);
                 if (hasShan && !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) { //此处条件是故意设置得与八卦阵条件不一样的，虽然感觉没啥用
-                    shan(entity, false, source);
+                    shan(entity, false, source, amount);
                     return true;
                 }
             }
@@ -162,20 +167,21 @@ public class ModifyDamage {
         //吐槽：别看这里写了那么多，一旦有一个return true，就没事了
     }
 
-    public static void shan(LivingEntity entity, boolean bl, DamageSource source) {
-        ItemStack stack = bl ? new ItemStack(ModItems.SHAN) : shanStack(entity);
+    public static void shan(LivingEntity entity, boolean bl, DamageSource source, float amount) {
+        Pair<CardPileInventory, ItemStack> stack = bl ? new Pair<>(null, new ItemStack(ModItems.SHAN)) : shanStack(entity);
         int cd = bl ? 60 : 40;
         entity.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 20,0,false,false,false));
         entity.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, cd,0,false,false,false));
         if (bl) voice(entity, Sounds.BAGUA);
         voice(entity, Sounds.SHAN);
         if (entity instanceof PlayerEntity player) {
+            writeDamage(source, amount, !bl, trinketItem(ModItems.CARD_PILE, player));
             cardUsePost(player, stack, null);
             if (bl) player.sendMessage(Text.translatable("dabaosword.bagua"),true);
-        } else stack.decrement(1);
+        } else stack.getRight().decrement(1);
         //虽然没有因为杀而触发闪，但如果攻击者的杀处于自动触发状态，则仍会消耗
         if (source.getSource() instanceof PlayerEntity player && getShaSlot(player) != -1) {
-            ItemStack sha = player.getMainHandStack().isIn(Tags.Items.SHA) ? player.getMainHandStack() : shaStack(player);
+            ItemStack sha = isSha.test(player.getMainHandStack()) ? player.getMainHandStack() : shaStack(player);
             if (sha.isOf(ModItems.SHA)) voice(player, Sounds.SHA);
             if (sha.isOf(ModItems.FIRE_SHA)) voice(player, Sounds.SHA_FIRE);
             if (sha.isOf(ModItems.THUNDER_SHA)) voice(player, Sounds.SHA_THUNDER);
@@ -183,17 +189,8 @@ public class ModifyDamage {
         }
     }
 
-    private static int getShanSlot(PlayerEntity player) {
-        for (int i = 0; i < 18; ++i) {
-            ItemStack stack = player.getInventory().getStack(i);
-            if (stack.isEmpty() || stack.getItem() != ModItems.SHAN) continue;
-            return i;
-        }
-        return -1;
-    }
-
-    private static ItemStack shanStack(LivingEntity entity) {
-        if (entity instanceof PlayerEntity player) return player.getInventory().getStack(getShanSlot(player));
-        return entity.getOffHandStack();
+    private static Pair<CardPileInventory, ItemStack> shanStack(LivingEntity entity) {
+        if (entity instanceof PlayerEntity player) return getCard(player, s -> s.isOf(ModItems.SHAN));
+        return new Pair<>(null, entity.getOffHandStack());
     }
 }

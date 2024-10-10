@@ -1,11 +1,11 @@
 package com.amotassic.dabaosword.event;
 
-import com.amotassic.dabaosword.event.callback.EntityHurtCallback;
+import com.amotassic.dabaosword.api.CardPileInventory;
+import com.amotassic.dabaosword.api.event.EntityHurtCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.equipment.Equipment;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.util.Sounds;
-import com.amotassic.dabaosword.util.Tags;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
@@ -17,6 +17,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.Box;
 
 import java.util.Random;
@@ -25,22 +26,19 @@ import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class EntityHurtHandler implements EntityHurtCallback {
 
-    private static void save(PlayerEntity player, float amount) {
-        if (hasItemInTag(Tags.Items.RECOVER, player)) {
-            //濒死自动使用酒、桃结算：首先计算需要回复的体力为(受到的伤害amount - 玩家当前生命值）
-            float recover = amount - player.getHealth(); int need = (int) (recover/5) + 1;
-            int tao = count(player, Tags.Items.RECOVER);//数玩家背包中回血卡牌的数量（只包含酒、桃）
-            if (tao >= need) {//如果剩余回血牌大于需要的桃的数量，则进行下一步，否则直接趋势
-                for (int i = 0; i < need; i++) {//循环移除背包中的酒、桃
-                    if (player.timeUntilRegen > 9) {
-                        ItemStack stack = stackInTag(Tags.Items.RECOVER, player);
-                        if (stack.getItem() == ModItems.PEACH) voice(player, Sounds.RECOVER);
-                        if (stack.getItem() == ModItems.JIU) voice(player, Sounds.JIU);
-                        cardUsePost(player, stack, player);
-                    }
+    private static void trySave(LivingEntity entity, float amount) {
+        for (int i = 0; i < 1145; i++) {
+            if (entity.isAlive()) return;
+            boolean canSave = entity instanceof PlayerEntity player ? hasCard(player, canSaveDying) : canSaveDying.test(entity.getOffHandStack());
+            if (canSave) {
+                Pair<CardPileInventory, ItemStack> stack = entity instanceof PlayerEntity player ? getCard(player, canSaveDying) : new Pair<>(null, entity.getOffHandStack());
+                if (stack.getRight().isOf(ModItems.PEACH))  voice(entity, Sounds.RECOVER);
+                if (stack.getRight().isOf(ModItems.JIU))    voice(entity, Sounds.JIU);
+                if (entity.timeUntilRegen > 9) {
+                    if (entity instanceof PlayerEntity player) cardUsePost(player, stack, player);
+                    else stack.getRight().decrement(1);
                 }
-                //最后将玩家的体力设置为 受伤前生命值 - 伤害值 + 回复量
-                player.setHealth(player.getHealth() - amount + 5 * need);
+                entity.setHealth(entity.getHealth() - amount + 5); amount -= 5;
             }
         }
     }
@@ -55,7 +53,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
                 if (stack.getItem() instanceof Equipment skill) skill.onHurt(stack, entity, source, amount);
             }
 
-            if (entity instanceof PlayerEntity player && player.isDead()) save(player, amount);
+            trySave(entity, amount);
 
             if (source.getAttacker() instanceof LivingEntity living) {
                 if (living.getCommandTags().contains("px")) entity.timeUntilRegen = 0;
@@ -78,7 +76,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
             if (source.getSource() instanceof PlayerEntity player) {
                 //杀的相关结算
                 if (shouldSha(player)) {
-                    ItemStack stack = player.getMainHandStack().isIn(Tags.Items.SHA) ? player.getMainHandStack() : shaStack(player);
+                    ItemStack stack = isSha.test(player.getMainHandStack()) ? player.getMainHandStack() : shaStack(player);
                     player.addCommandTag("sha");
                     if (stack.getItem() == ModItems.SHA) {
                         voice(player, Sounds.SHA);
@@ -120,7 +118,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
                             }
                         }
                     }
-                    cardUsePost(player, stack, entity);
+                    cardUsePost(player, new Pair<>(null, stack), entity);
                 }
             }
 

@@ -1,4 +1,4 @@
-package com.amotassic.dabaosword.util;
+package com.amotassic.dabaosword.api;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;

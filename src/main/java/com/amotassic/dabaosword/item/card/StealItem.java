@@ -1,7 +1,6 @@
 package com.amotassic.dabaosword.item.card;
 
-import com.amotassic.dabaosword.event.callback.CardCBs;
-import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.api.event.CardCBs;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -23,9 +22,9 @@ public class StealItem extends CardItem {
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         if (!user.getWorld().isClient && hand == Hand.MAIN_HAND) {
             if (entity instanceof PlayerEntity target) {
-                if (hasItem(target, ModItems.WUXIE)) {
+                if (hasWuxie(target)) {
                     voice(target, Sounds.WUXIE);
-                    cardUsePost(target, getItem(target, ModItems.WUXIE), null);
+                    cardUsePost(target, getWuxie(target), null);
                     voice(user, Sounds.SHUNSHOU);
                     cardUsePost(user, stack, entity);
                 } else {

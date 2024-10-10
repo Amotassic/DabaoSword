@@ -1,7 +1,7 @@
 package com.amotassic.dabaosword.mixin;
 
-import com.amotassic.dabaosword.event.callback.EndEntityTick;
-import com.amotassic.dabaosword.event.callback.EntityHurtCallback;
+import com.amotassic.dabaosword.api.event.EndEntityTick;
+import com.amotassic.dabaosword.api.event.EntityHurtCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.ModifyDamage;
 import net.minecraft.entity.Entity;

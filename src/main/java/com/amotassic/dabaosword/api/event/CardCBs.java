@@ -1,10 +1,12 @@
-package com.amotassic.dabaosword.event.callback;
+package com.amotassic.dabaosword.api.event;
 
+import com.amotassic.dabaosword.api.CardPileInventory;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Pair;
 import org.jetbrains.annotations.Nullable;
 
 public class CardCBs {
@@ -35,10 +37,10 @@ public class CardCBs {
          * Called after a player used a card to the target
          *
          * @param user The player who used the card
-         * @param stack The used card stack
+         * @param stack The used card stack 如果该卡牌不来自卡牌背包中，则{@link CardPileInventory}为null
          * @param target The target entity
          */
-        void cardUsePost(PlayerEntity user, ItemStack stack, @Nullable LivingEntity target);
+        void cardUsePost(PlayerEntity user, Pair<CardPileInventory, ItemStack> stack, @Nullable LivingEntity target);
     }
 
     public interface Discard {
@@ -48,7 +50,7 @@ public class CardCBs {
          * @param player The player who discards the card
          * @param stack The discarded stack
          */
-        void cardDiscard(PlayerEntity player, ItemStack stack, int count, boolean fromEquip);
+        void cardDiscard(PlayerEntity player, Pair<CardPileInventory, ItemStack> stack, int count, boolean fromEquip);
     }
 
     public interface Move {
@@ -59,7 +61,7 @@ public class CardCBs {
          * @param to The player who get the card
          * @param stack The moved stack with count (the next param)
          */
-        void cardMove(LivingEntity from, PlayerEntity to, ItemStack stack, int count, T type);
+        void cardMove(LivingEntity from, PlayerEntity to, Pair<CardPileInventory, ItemStack> stack, int count, T type);
     }
 
     public enum T {

@@ -1,7 +1,8 @@
 package com.amotassic.dabaosword.item.equipment;
 
+import com.amotassic.dabaosword.api.Card;
+import com.amotassic.dabaosword.api.Skill;
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.util.Skill;
 import com.amotassic.dabaosword.util.Sounds;
 import dev.emi.trinkets.TrinketSlot;
 import dev.emi.trinkets.api.*;
@@ -36,7 +37,7 @@ import java.util.Random;
 import static com.amotassic.dabaosword.util.ModTools.*;
 import static com.amotassic.dabaosword.util.ModifyDamage.shan;
 
-public class Equipment extends TrinketItem implements Skill {
+public class Equipment extends TrinketItem implements Card, Skill {
     public Equipment(Settings settings) {super(settings);}
 
     public static class BaguaArmor extends Equipment {
@@ -56,7 +57,7 @@ public class Equipment extends TrinketItem implements Skill {
             if (source.getAttacker() instanceof LivingEntity) {
                 if (!target.hasStatusEffect(ModItems.COOLDOWN2) && !target.getCommandTags().contains("juedou")) {
                     if (hasTrinket(ModItems.BAGUA, target) && new Random().nextFloat() < 0.5 && !source.isIn(DamageTypeTags.BYPASSES_ARMOR)) {
-                        shan(target, true, source);
+                        shan(target, true, source, amount);
                         return true;
                     }
                 }
@@ -190,6 +191,14 @@ public class Equipment extends TrinketItem implements Skill {
         public RattanArmor(Settings settings) {super(settings);}
 
         @Override
+        public List<Pair<Suits, Ranks>> getSuitsAndRanks() {
+            var list = super.getSuitsAndRanks();
+            list.add(new Pair<>(Suits.Spades, Ranks.Two));
+            list.add(new Pair<>(Suits.Clubs, Ranks.Two));
+            return list;
+        }
+
+        @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
             tooltip.add(Text.translatable("item.dabaosword.rattanarmor.tooltip"));
             super.appendTooltip(stack, world, tooltip, context);
@@ -249,6 +258,12 @@ public class Equipment extends TrinketItem implements Skill {
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+        var sr = getSuitAndRank(stack);
+        if (sr != null) {
+            Suits suit = sr.getLeft(); Ranks rank = sr.getRight();
+            if (isRedCard.test(stack)) tooltip.add(Text.translatable("card.suit_and_rank", suit.suit, rank.rank).formatted(Formatting.RED));
+            else tooltip.add(Text.translatable("card.suit_and_rank", suit.suit, rank.rank));
+        }
 
         if (stack.getItem() == ModItems.CHITU) {
             tooltip.add(Text.translatable("item.dabaosword.chitu.tooltip"));
@@ -258,16 +273,10 @@ public class Equipment extends TrinketItem implements Skill {
             tooltip.add(Text.translatable("item.dabaosword.dilu.tooltip"));
         }
 
-        if (stack.getItem() == ModItems.CARD_PILE) {
-            tooltip.add(Text.translatable("item.dabaosword.card_pile.tooltip"));
-        }
-
-        if (stack.getItem() != ModItems.CARD_PILE) {
-            if(Screen.hasShiftDown()) {
-                tooltip.add(Text.translatable("equipment.tip1").formatted(Formatting.BOLD));
-                tooltip.add(Text.translatable("equipment.tip2").formatted(Formatting.BOLD));
-            } else tooltip.add(Text.translatable("dabaosword.shifttooltip"));
-        }
+        if(Screen.hasShiftDown()) {
+            tooltip.add(Text.translatable("equipment.tip1").formatted(Formatting.BOLD));
+            tooltip.add(Text.translatable("equipment.tip2").formatted(Formatting.BOLD));
+        } else tooltip.add(Text.translatable("dabaosword.shifttooltip"));
     }
 
     @Override
@@ -290,8 +299,7 @@ public class Equipment extends TrinketItem implements Skill {
 
     @Override
     public boolean canUnequip(ItemStack stack, SlotReference slot, LivingEntity entity) {
-        if (entity instanceof PlayerEntity player && player.isCreative()) return true;
-        if (stack.getItem() != ModItems.CARD_PILE) return false;
+        if (entity instanceof PlayerEntity player && !player.isCreative()) return false;
         return super.canUnequip(stack, slot, entity);
     }
 

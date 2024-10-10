@@ -1,7 +1,7 @@
 package com.amotassic.dabaosword.mixin;
 
-import com.amotassic.dabaosword.event.callback.PlayerConnectCallback;
-import com.amotassic.dabaosword.event.callback.PlayerRespawnCallback;
+import com.amotassic.dabaosword.api.event.PlayerConnectCallback;
+import com.amotassic.dabaosword.api.event.PlayerRespawnCallback;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.PlayerManager;

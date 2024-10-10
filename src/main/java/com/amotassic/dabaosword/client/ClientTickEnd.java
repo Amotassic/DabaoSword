@@ -36,7 +36,10 @@ public class ClientTickEnd {
             PacketByteBuf buf = PacketByteBufs.create();
             if (user != null) {
                 if (SELECT_CARD.wasPressed()) {
-                    buf.writeInt(user.getId());
+                    if (user.isSneaking() && client.options.sprintKey.wasPressed()) buf.writeInt(3);
+                    else if (user.isSneaking()) buf.writeInt(1);
+                    else if (client.options.sprintKey.wasPressed()) buf.writeInt(2);
+                    else buf.writeInt(0);
                     ClientPlayNetworking.send(ServerNetworking.SELECT_CARD, buf);
                     return;
                 }
