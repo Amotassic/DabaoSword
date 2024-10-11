@@ -176,7 +176,7 @@ public class PlayerInvScreenHandler extends ScreenHandler {
                     //如果选择的物品是卡牌才触发事件
                     else {give(player, targetStack.copyWithCount(1)); /*顺手：复制一个物品*/
                         targetStack.decrement(1);}
-                    cardUsePost(player, stack, target);
+                    nonPreUseCardDecrement(player, stack, target);
                     closeGUI(player);
                 }
 
@@ -184,7 +184,7 @@ public class PlayerInvScreenHandler extends ScreenHandler {
                     voice(player, Sounds.GUOHE);
                     target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("dabaosword.discard")).append(targetStack.toHoverableText()));
                     cardDiscard(target, targetStack, 1, slotIndex < 4);
-                    cardUsePost(player, stack, target);
+                    nonPreUseCardDecrement(player, stack, target);
                     closeGUI(player);
                 }
             }

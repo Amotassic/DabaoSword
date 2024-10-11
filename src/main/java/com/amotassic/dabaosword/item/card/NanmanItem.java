@@ -3,6 +3,7 @@ package com.amotassic.dabaosword.item.card;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -16,7 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
-import static com.amotassic.dabaosword.util.ModTools.cardUsePost;
+import static com.amotassic.dabaosword.util.ModTools.cardUsePre;
 import static com.amotassic.dabaosword.util.ModTools.voice;
 
 public class NanmanItem extends CardItem {
@@ -25,17 +26,22 @@ public class NanmanItem extends CardItem {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         if (!world.isClient && hand == Hand.MAIN_HAND) {
-            Text[] names = {
-                    Text.translatable("nanman.dog1"),
-                    Text.translatable("nanman.dog2"),
-                    Text.translatable("nanman.dog3")
-            };
-            for (Text name : names) {summonDog(world, user, name);}
-
-            cardUsePost(user, user.getStackInHand(hand), null);
-            voice(user, Sounds.NANMAN);
+            if (cardUsePre(user, user.getMainHandStack(), null)) return TypedActionResult.success(user.getMainHandStack());
         }
-        return TypedActionResult.success(user.getStackInHand(hand));
+        return super.use(world, user, hand);
+    }
+
+    @Override
+    public void cardUse(LivingEntity user, ItemStack stack, LivingEntity target) {
+        Text[] names = {
+                Text.translatable("nanman.dog1"),
+                Text.translatable("nanman.dog2"),
+                Text.translatable("nanman.dog3")
+        };
+        if (user instanceof PlayerEntity player) for (Text name : names) {summonDog(user.getWorld(), player, name);}
+
+        voice(user, Sounds.NANMAN);
+        super.cardUse(user, stack, target);
     }
 
     private void summonDog(World world, PlayerEntity player, Text name) {

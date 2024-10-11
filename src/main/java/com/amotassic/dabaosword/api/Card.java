@@ -1,10 +1,17 @@
 package com.amotassic.dabaosword.api;
 
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Pair;
 
 import java.util.*;
 
+import static com.amotassic.dabaosword.util.ModTools.cardUsePost;
+
 public interface Card {
+    default void cardUse(LivingEntity user, ItemStack stack, LivingEntity target) {
+        cardUsePost(user, stack, target);
+    }
 
     default List<Pair<Suits, Ranks>> getSuitsAndRanks() {return new ArrayList<>();}
 

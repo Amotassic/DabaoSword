@@ -3,6 +3,7 @@ package com.amotassic.dabaosword.item.card;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
@@ -26,21 +27,27 @@ public class GainCardItem extends CardItem {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        if (!world.isClient) {
+        if (!world.isClient && hand == Hand.MAIN_HAND) {
             int m;
             //摸牌
-            if (user.getStackInHand(hand).getItem() == ModItems.GAIN_CARD) {
-                if (user.isSneaking()) {m=user.getStackInHand(hand).getCount();} else {m=1;}
+            if (user.getMainHandStack().isOf(ModItems.GAIN_CARD)) {
+                if (user.isSneaking()) {m=user.getMainHandStack().getCount();} else {m=1;}
                 draw(user,m);
-                if (!user.isCreative()) {user.getStackInHand(hand).decrement(m);}
+                if (!user.isCreative()) {user.getMainHandStack().decrement(m);}
+                return TypedActionResult.success(user.getMainHandStack());
             }
             //无中生有
-            if (user.getStackInHand(hand).getItem() == ModItems.WUZHONG) {
-                draw(user,2);
-                cardUsePost(user, user.getStackInHand(hand), null);
-                voice(user, Sounds.WUZHONG);
+            if (user.getMainHandStack().isOf(ModItems.WUZHONG)) {
+                if (cardUsePre(user, user.getMainHandStack(), null)) return TypedActionResult.success(user.getMainHandStack());
             }
         }
-        return TypedActionResult.success(user.getStackInHand(hand));
+        return super.use(world, user, hand);
+    }
+
+    @Override
+    public void cardUse(LivingEntity user, ItemStack stack, LivingEntity target) {
+        if (user instanceof PlayerEntity player) draw(player,2);
+        voice(user, Sounds.WUZHONG);
+        super.cardUse(user, stack, target);
     }
 }

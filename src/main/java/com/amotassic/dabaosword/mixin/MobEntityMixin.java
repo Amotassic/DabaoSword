@@ -1,26 +1,14 @@
 package com.amotassic.dabaosword.mixin;
 
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
-import dev.emi.trinkets.api.SlotReference;
-import dev.emi.trinkets.api.TrinketComponent;
-import dev.emi.trinkets.api.TrinketsApi;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Pair;
-import net.minecraft.util.collection.DefaultedList;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
@@ -32,11 +20,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.IntStream;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
 
@@ -53,115 +37,12 @@ public abstract class MobEntityMixin extends LivingEntity {
 
     @Inject(method = "tryAttack", at = @At(value = "HEAD"))
     public void tryAttack(Entity target, CallbackInfoReturnable<Boolean> cir) {
-        if (getMainHandStack().isIn(Tags.Items.CARD) && target instanceof LivingEntity) tryUseCard(getMainHandStack(), (LivingEntity) target);
+        if (isCard(getMainHandStack()) && target instanceof LivingEntity entity) tryUseCard(getMainHandStack(), entity);
     }
 
     @Unique
     private void tryUseCard(ItemStack stack, LivingEntity target) {
-        if (stack.getItem() == ModItems.SHA) {
-            if (!hasTrinket(ModItems.RATTAN_ARMOR, target)) {
-                target.timeUntilRegen = 0; target.damage(mob.getDamageSources().mobAttack(mob), 5);
-            }
-            voice(mob, Sounds.SHA); stack.decrement(1);
-        }
-
-        if (stack.getItem() == ModItems.BINGLIANG_ITEM) {
-            if (target instanceof PlayerEntity player && hasWuxie(player)) {
-                cardUsePost(player, getWuxie(player), null);
-                voice(player, Sounds.WUXIE);
-            } else target.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, StatusEffectInstance.INFINITE,1));
-            voice(mob, Sounds.BINGLIANG); stack.decrement(1);
-        }
-
-        if (stack.getItem() == ModItems.TOO_HAPPY_ITEM) {
-            if (target instanceof PlayerEntity player) {
-                if (hasWuxie(player)) {
-                    cardUsePost(player, getWuxie(player), null);
-                    voice(player, Sounds.WUXIE);
-                } else player.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 5));
-            } else target.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 15));
-            voice(mob, Sounds.LEBU); stack.decrement(1);
-        }
-
-        if (stack.getItem() == ModItems.DISCARD) {
-            if (target instanceof PlayerEntity player) {//如果是玩家则弃牌
-                if (hasWuxie(player)) {
-                    cardUsePost(player, getWuxie(player), null);
-                    voice(player, Sounds.WUXIE);
-                    voice(mob, Sounds.GUOHE); stack.decrement(1);
-                } else {
-                    List<ItemStack> candidate = new ArrayList<>();
-                    //把背包中的卡牌添加到待选物品中
-                    DefaultedList<ItemStack> inventory = player.getInventory().main;
-                    List<Integer> cardSlots = IntStream.range(0, inventory.size()).filter(j -> isCard(inventory.get(j))).boxed().toList();
-                    for (Integer slot : cardSlots) {candidate.add(inventory.get(slot));}
-                    //把饰品栏的卡牌添加到待选物品中
-                    int equip = 0; //用于标记装备区牌的数量
-                    Optional<TrinketComponent> component = TrinketsApi.getTrinketComponent(player);
-                    if(component.isPresent()) {
-                        List<Pair<SlotReference, ItemStack>> allEquipped = component.get().getAllEquipped();
-                        for(Pair<SlotReference, ItemStack> entry : allEquipped) {
-                            ItemStack stack1 = entry.getRight();
-                            if(stack1.isIn(Tags.Items.CARD)) candidate.add(stack1); equip++;
-                        }
-                    }
-                    if(!candidate.isEmpty()) {
-                        int index = new java.util.Random().nextInt(candidate.size()); ItemStack chosen = candidate.get(index);
-                        player.sendMessage(Text.literal(mob.getEntityName()).append(Text.translatable("dabaosword.discard")).append(chosen.toHoverableText()));
-                        cardDiscard(player, chosen, 1, index > candidate.size() - equip);
-                        voice(mob, Sounds.GUOHE); stack.decrement(1);
-                    }
-                }
-            } else {//如果不是玩家则随机弃置它的主副手物品和装备
-                List<ItemStack> candidate = new ArrayList<>();
-                if (!target.getMainHandStack().isEmpty()) candidate.add(target.getMainHandStack());
-                if (!target.getOffHandStack().isEmpty()) candidate.add(target.getOffHandStack());
-                for (ItemStack armor : target.getArmorItems()) {if (!armor.isEmpty()) candidate.add(armor);}
-                if(!candidate.isEmpty()) {
-                    int index = new java.util.Random().nextInt(candidate.size()); ItemStack chosen = candidate.get(index);
-                    chosen.decrement(1);
-                    voice(mob, Sounds.GUOHE); stack.decrement(1);
-                }
-            }
-        }
-
-        if (stack.getItem() == ModItems.FIRE_ATTACK) {
-            World world = getWorld();
-            Vec3d momentum = mob.getRotationVector().multiply(3);
-            FireballEntity fireballEntity = new FireballEntity(world, mob, momentum.getX(), momentum.getY() ,momentum.getZ(), 3);
-            fireballEntity.setPosition(mob.getX(), mob.getBodyY(0.5) + 0.5, mob.getZ());
-            world.spawnEntity(fireballEntity);
-            voice(mob, Sounds.HUOGONG); stack.decrement(1);
-        }
-
-        if (stack.getItem() == ModItems.JIEDAO) {
-            ItemStack stack1 = target.getMainHandStack();
-            if (!stack1.isEmpty()) {
-                if (target instanceof PlayerEntity player && hasWuxie(player)) {
-                    cardUsePost(player, getWuxie(player), null);
-                    voice(player, Sounds.WUXIE);
-                } else {
-                    mob.setStackInHand(Hand.MAIN_HAND, stack1.copy());
-                    stack1.setCount(0);
-                }
-                voice(mob, Sounds.JIEDAO);
-            }
-        }
-
-        if (stack.getItem() == ModItems.NANMAN) {//暂时不想做，摆————
-
-        }
-
-        if (stack.getItem() == ModItems.WANJIAN) {
-            mob.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 15,1,false,false,false));
-            voice(mob, Sounds.WANJIAN); stack.decrement(1);
-        }
-
-        if (stack.getItem() == ModItems.TIESUO) {
-            mob.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, StatusEffectInstance.INFINITE, 0, false, true,false));
-            target.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, StatusEffectInstance.INFINITE, 0, false, true,false));
-            voice(mob, Sounds.TIESUO); stack.decrement(1);
-        }
+        if (!stack.isIn(Tags.Items.BASIC_CARD) && !stack.isOf(ModItems.WUXIE)) cardUsePre(mob, stack, target);
     }
 
     @Unique private float getChance() {

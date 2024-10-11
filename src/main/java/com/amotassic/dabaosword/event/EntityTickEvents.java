@@ -26,8 +26,13 @@ import static com.amotassic.dabaosword.util.ModTools.*;
 public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityTick.EndPlayerTick {
     @Override
     public void endLivingTick(LivingEntity entity) {
-        //若方天画戟被触发了，只要左键就可以造成群伤
-        if (entity.getEntityWorld() instanceof ServerWorld world) {
+        if (entity.getWorld() instanceof ServerWorld world) {
+            if (world.getTime() % 2 == 0) {
+                entity.getCommandTags().remove("sha");
+                entity.getCommandTags().remove("juedou");
+            }
+
+            //若方天画戟被触发了，只要左键就可以造成群伤
             PlayerEntity closestPlayer = world.getClosestPlayer(entity, 5);
             if (closestPlayer != null && hasTrinket(ModItems.FANGTIAN, closestPlayer) && entity.isAlive()) {
                 ItemStack stack = trinketItem(ModItems.FANGTIAN, closestPlayer);
@@ -72,9 +77,7 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
             }
 
             if (time % 2 == 0) {
-                player.getCommandTags().remove("sha");
                 player.getCommandTags().remove("benxi");
-                player.getCommandTags().remove("juedou");
                 player.getCommandTags().remove("xingshang");
 
                 //牌堆恢复饱食度

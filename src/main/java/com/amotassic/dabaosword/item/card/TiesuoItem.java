@@ -14,7 +14,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 
-import static com.amotassic.dabaosword.util.ModTools.cardUsePost;
+import static com.amotassic.dabaosword.util.ModTools.cardUsePre;
 import static com.amotassic.dabaosword.util.ModTools.voice;
 
 public class TiesuoItem extends CardItem {
@@ -22,17 +22,23 @@ public class TiesuoItem extends CardItem {
     //原始的铁索连环
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (!user.getWorld().isClient && !entity.isGlowing() && !(user.getOffHandStack().getItem() == Items.KNOWLEDGE_BOOK) && hand == Hand.MAIN_HAND) {
-            Box box = user.getBoundingBox().stretch(user.getRotationVec(1.0F).multiply(10));
-            for (LivingEntity nearbyEntity : user.getWorld().getEntitiesByClass(LivingEntity.class, box, nearbyEntity -> !nearbyEntity.isGlowing())) {
-                nearbyEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, StatusEffectInstance.INFINITE, 0, false, true,false));
-            }
-            cardUsePost(user, stack, entity);
-            voice(user, Sounds.TIESUO);
-            user.removeStatusEffect(StatusEffects.GLOWING);
+        if (!user.getWorld().isClient && !entity.isGlowing() && !user.getOffHandStack().isOf(Items.KNOWLEDGE_BOOK) && hand == Hand.MAIN_HAND) {
+            if (cardUsePre(user, user.getMainHandStack(), entity)) return ActionResult.SUCCESS;
         }
-        return super.useOnEntity(stack, user, entity, hand);
+        return ActionResult.PASS;
     }
+
+    @Override
+    public void cardUse(LivingEntity user, ItemStack stack, LivingEntity target) {
+        Box box = user.getBoundingBox().stretch(user.getRotationVec(1.0F).multiply(10));
+        for (LivingEntity near : user.getWorld().getEntitiesByClass(LivingEntity.class, box, entity -> !entity.isGlowing())) {
+            near.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, -1, 0, false, true,false));
+        }
+        user.removeStatusEffect(StatusEffects.GLOWING);
+        voice(user, Sounds.TIESUO);
+        super.cardUse(user, stack, target);
+    }
+
     //使用战技时播放纳西妲的语音
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {

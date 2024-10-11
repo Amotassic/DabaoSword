@@ -15,19 +15,26 @@ public class JiedaoItem extends CardItem {
 
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        ItemStack stack1 = entity.getMainHandStack();
-        if (!user.getWorld().isClient && hand == Hand.MAIN_HAND && !stack1.isEmpty()) {
-            if (entity instanceof PlayerEntity player && hasWuxie(player)) {
-                cardUsePost(player, getWuxie(player), null);
-                voice(player, Sounds.WUXIE);
-            } else {
-                if (isCard(stack1)) cardMove(entity, user, stack1, stack1.getCount(), CardCBs.T.INV_TO_INV);
-                else give(user, stack1.copy()); stack1.setCount(0);
-            }
-            voice(user, Sounds.JIEDAO);
-            cardUsePost(user, stack, entity);
-            return ActionResult.SUCCESS;
+        if (!user.getWorld().isClient && hand == Hand.MAIN_HAND && !entity.getMainHandStack().isEmpty()) {
+            if (cardUsePre(user, user.getMainHandStack(), entity)) return ActionResult.SUCCESS;
         }
         return ActionResult.PASS;
+    }
+
+    @Override
+    public void cardUse(LivingEntity user, ItemStack stack, LivingEntity entity) {
+        ItemStack stack1 = entity.getMainHandStack();
+        if (user instanceof PlayerEntity player) {
+            if (isCard(stack1)) cardMove(entity, player, stack1, stack1.getCount(), CardCBs.T.INV_TO_INV);
+            else {
+                give(player, stack1.copy());
+                stack1.setCount(0);
+            }
+        } else {
+            user.setStackInHand(Hand.MAIN_HAND, stack1.copy());
+            stack1.setCount(0);
+        }
+        voice(user, Sounds.JIEDAO);
+        super.cardUse(user, stack, entity);
     }
 }

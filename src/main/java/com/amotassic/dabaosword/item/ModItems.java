@@ -60,9 +60,9 @@ public class ModItems {
     public static final Item DILU = register("dilu", new Equipment(new Item.Settings().maxCount(1)));
 
     //杀
-    public static final Item SHA = register("sha", new CardItem(new Item.Settings()));
-    public static final Item FIRE_SHA = register("fire_sha", new CardItem(new Item.Settings()));
-    public static final Item THUNDER_SHA = register("thunder_sha", new CardItem(new Item.Settings()));
+    public static final Item SHA = register("sha", new CardItem.Sha(new Item.Settings()));
+    public static final Item FIRE_SHA = register("fire_sha", new CardItem.Sha(new Item.Settings()));
+    public static final Item THUNDER_SHA = register("thunder_sha", new CardItem.Sha(new Item.Settings()));
     //闪
     public static final Item SHAN = register("shan", new ShanItem(new Item.Settings()));
     //桃
@@ -94,7 +94,7 @@ public class ModItems {
     public static final Item ARROW_RAIN = register("arrow_rain", new ArrowRainItem(new Item.Settings().maxDamage(50).rarity(Rarity.UNCOMMON)));
     public static final Item WANJIAN = register("wanjian", new WanjianItem(new Item.Settings()));
     //无懈可击
-    public static final Item WUXIE = register("wuxie", new CardItem(new Item.Settings()));
+    public static final Item WUXIE = register("wuxie", new CardItem.Wuxie(new Item.Settings()));
     //无中生有
     public static final Item WUZHONG = register("wuzhong", new GainCardItem(new Item.Settings()));
     //礼盒
@@ -114,6 +114,7 @@ public class ModItems {
         PlayerConnectCallback.EVENT.register(new PlayerEvents());
         PlayerDeathCallback.EVENT.register(new PlayerEvents());
         PlayerRespawnCallback.EVENT.register(new PlayerEvents());
+        CardCBs.USE_PRE.register(new CardEvents());
         CardCBs.USE_POST.register(new CardEvents());
         CardCBs.DISCARD.register(new CardEvents());
         CardCBs.MOVE.register(new CardEvents());

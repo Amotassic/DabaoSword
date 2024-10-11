@@ -51,7 +51,7 @@
   "dabaosword.cooldown_end": "Cooldown time has ended",
   "item.dabaosword.shan": "Dash",
   "item.dabaosword.shan.tooltip": "Upon use, dash forward and be invulnerable for 1 second",
-  "item.dabaosword.sha&shan.tooltip": "Automatically triggered when placed in the first 18 slots of your inventory",
+  "item.dabaosword.sha&shan.tooltip": "Automatically triggered when placed in hot bar",
   "item.dabaosword.jiu": "Wine",
   "item.dabaosword.jiu.tooltip": "grants Strength for 10 seconds upon use",
   "item.dabaosword.recover.tip": "Automatically triggers healing effect when close to death",

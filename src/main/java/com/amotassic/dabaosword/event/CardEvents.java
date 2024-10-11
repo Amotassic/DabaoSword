@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.event;
 
+import com.amotassic.dabaosword.api.Card;
 import com.amotassic.dabaosword.api.CardPileInventory;
 import com.amotassic.dabaosword.api.event.CardCBs;
 import com.amotassic.dabaosword.item.ModItems;
@@ -8,54 +9,60 @@ import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Hand;
 import net.minecraft.util.Pair;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Predicate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
 
-public class CardEvents implements CardCBs.PostUse, CardCBs.Discard, CardCBs.Move {
+public class CardEvents implements CardCBs.PostUse, CardCBs.Discard, CardCBs.Move, CardCBs.PreUse {
+    final List<Item> triggerWuxie = new ArrayList<>(Arrays.asList(ModItems.BINGLIANG_ITEM, ModItems.DISCARD, ModItems.JIEDAO, ModItems.JUEDOU, ModItems.STEAL, ModItems.TIESUO, ModItems.TOO_HAPPY_ITEM));
+    boolean canTrigger(ItemStack stack) {
+        for (var i : triggerWuxie) {if (stack.isOf(i)) return true;}
+        return false;
+    }
+
     @Override
-    public void cardUsePost(PlayerEntity user, Pair<CardPileInventory, ItemStack> stack, @Nullable LivingEntity target) {
-        ItemStack copy = stack.getRight().copy();
+    public boolean cardUsePre(LivingEntity user, ItemStack stack, @Nullable LivingEntity target) {
+        ItemStack card = stack.copy();
+        //不论如何先消耗一张卡牌再说，除了拆顺
+        if (!card.isOf(ModItems.STEAL) && !card.isOf(ModItems.DISCARD)) cardUseAndDecrement(user, stack);
 
-        if (stack.getRight().isOf(ModItems.WUXIE)) cardDecrement(stack, 1); //即使创造模式，无懈可击也会消耗，为什么呢？我也不知道
-        else if (!user.isCreative()) cardDecrement(stack, 1);
-
-        if (user.getMainHandStack().isEmpty() && stack.getRight().isEmpty() && stack.getLeft() == null) { //使用主手上的牌之后自动补牌
-            Pair<CardPileInventory, ItemStack> next;
-            Predicate<ItemStack> sameItem = s -> s.getItem() == copy.getItem();
-            Predicate<ItemStack> nonEquip = s -> s.isIn(Tags.Items.BASIC_CARD) && s.isIn(Tags.Items.ARMOURY_CARD);
-            if (hasCard(user, sameItem)) next = getCard(user, sameItem);        //先检索同名非装备牌
-            else if (hasCard(user, nonEquip)) next = getCard(user, nonEquip);   //再检索非装备牌
-            else next = getCard(user, isCard);                                  //最后随便选一张牌
-
-            if (!next.getRight().isEmpty()) {
-                user.setStackInHand(Hand.MAIN_HAND, next.getRight().copy());
-                cardDecrement(next, next.getRight().getCount());
-            }
-        } //todo 有bug的代码，暂时不知道原因
-
-        //集智技能触发
-        if (hasTrinket(SkillCards.JIZHI, user) && copy.isIn(Tags.Items.ARMOURY_CARD)) {
-            draw(user);
-            voice(user, Sounds.JIZHI);
+        if (canTrigger(card) && hasCard(target, s -> s.isOf(ModItems.WUXIE))) {
+            cardUsePre(target, new ItemStack(ModItems.WUXIE), null); //递归触发无懈，因此不用再写消耗和执行效果
+            if (card.isOf(ModItems.STEAL) || card.isOf(ModItems.DISCARD)) cardUseAndDecrement(user, stack); //补充一个拆顺的消耗，别出bug了
+            return false;
         }
+        if (isCard(card)) ((Card) card.getItem()).cardUse(user, card, target); //如果卡牌没有被抵消就执行效果
+        return true;
+    }
 
-        //奔袭技能触发
-        if (hasTrinket(SkillCards.BENXI, user)) {
-            ItemStack trinketItem = trinketItem(SkillCards.BENXI, user);
-            int benxi = getTag(trinketItem);
-            if (benxi < 5) {
-                setTag(trinketItem, benxi + 1);
-                voice(user, Sounds.BENXI);
+    @Override
+    public void cardUsePost(LivingEntity user, ItemStack stack, @Nullable LivingEntity target) {
+        if (user instanceof PlayerEntity player) {
+            //集智技能触发
+            if (hasTrinket(SkillCards.JIZHI, player) && stack.isIn(Tags.Items.ARMOURY_CARD)) {
+                draw(player);
+                voice(player, Sounds.JIZHI);
             }
-        }
 
-        if (hasTrinket(SkillCards.LIANYING, user) && countCards(user) == 0) lianyingTrigger(user);
+            //奔袭技能触发
+            if (hasTrinket(SkillCards.BENXI, player)) {
+                ItemStack trinketItem = trinketItem(SkillCards.BENXI, player);
+                int benxi = getTag(trinketItem);
+                if (benxi < 5) {
+                    setTag(trinketItem, benxi + 1);
+                    voice(player, Sounds.BENXI);
+                }
+            }
+
+            if (hasTrinket(SkillCards.LIANYING, player) && countCards(player) == 0) lianyingTrigger(player);
+        }
     }
 
     @Override

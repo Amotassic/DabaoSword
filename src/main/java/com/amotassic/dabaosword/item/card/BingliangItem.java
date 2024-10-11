@@ -9,23 +9,25 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 
-import static com.amotassic.dabaosword.util.ModTools.*;
+import static com.amotassic.dabaosword.util.ModTools.cardUsePre;
+import static com.amotassic.dabaosword.util.ModTools.voice;
 
 public class BingliangItem extends CardItem {
     public BingliangItem(Settings settings) {super(settings);}
 
-    //对生物使用后给予其兵粮寸断效果
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (!user.getWorld().isClient) {
-            if (entity instanceof PlayerEntity player && hasWuxie(player)) {
-                cardUsePost(player, getWuxie(player), null);
-                voice(player, Sounds.WUXIE);
-            } else entity.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, StatusEffectInstance.INFINITE,1));
-            cardUsePost(user, stack, entity);
-            voice(user, Sounds.BINGLIANG);
-            return ActionResult.SUCCESS;
+        if (!user.getWorld().isClient && hand == Hand.MAIN_HAND) {
+            if (cardUsePre(user, user.getMainHandStack(), entity)) return ActionResult.SUCCESS;
         }
         return ActionResult.PASS;
+    }
+
+    //对生物使用后给予其兵粮寸断效果
+    @Override
+    public void cardUse(LivingEntity user, ItemStack stack, LivingEntity target) {
+        target.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, StatusEffectInstance.INFINITE,1));
+        voice(user, Sounds.BINGLIANG);
+        super.cardUse(user, stack, target);
     }
 }

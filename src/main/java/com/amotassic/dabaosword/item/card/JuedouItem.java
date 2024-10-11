@@ -22,42 +22,43 @@ public class JuedouItem extends CardItem {
         if (!world.isClient && selected && entity instanceof PlayerEntity player) {
             player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,114,false,false,false));
         }
-        super.inventoryTick(stack, world, entity, slot, selected);
     }
 
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         if (!user.getWorld().isClient && hand == Hand.MAIN_HAND && entity.isAlive()) {
-            user.addCommandTag("juedou");
-            if (entity instanceof PlayerEntity player && hasWuxie(player)) {
-                cardUsePost(player, getWuxie(player), null);
-                voice(player, Sounds.WUXIE);
-            } else {
-                if (entity instanceof PlayerEntity target) {
-                    int userSha = countCard(user, isSha);
-                    int targetSha = countCard(target, isSha);
-                    if (userSha >= targetSha) {
-                        target.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2,2,0,false,false,false));
-                        target.timeUntilRegen = 0;
-                        target.damage(user.getDamageSources().sonicBoom(user),5f);
-                        target.sendMessage(Text.literal(user.getEntityName()).append(Text.translatable("dabaosword.juedou2")));
-                    } else { target.addCommandTag("juedou"); //防止决斗触发杀、闪
-                        user.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2,2,0,false,false,false));
-                        user.timeUntilRegen = 0;
-                        user.damage(target.getDamageSources().sonicBoom(target),5f);
-                        user.sendMessage(Text.translatable("dabaosword.juedou1"));
-                        if (targetSha != 0) { //如果目标的杀比使用者的杀多，反击使用者，则目标减少一张杀
-                            cardUsePost(target, getCard(target, isSha), user);
-                        }
-                    }
-                } else { entity.addCommandTag("juedou");
-                    entity.timeUntilRegen = 0;
-                    entity.damage(user.getDamageSources().sonicBoom(user),5f);}
-            }
-            cardUsePost(user, stack, entity);
-            voice(user, Sounds.JUEDOU);
-            return ActionResult.SUCCESS;
+            if (cardUsePre(user, user.getMainHandStack(), entity)) return ActionResult.SUCCESS;
         }
         return ActionResult.PASS;
+    }
+
+    @Override
+    public void cardUse(LivingEntity user, ItemStack stack, LivingEntity entity) {
+        user.addCommandTag("juedou");
+        if (user instanceof PlayerEntity player && entity instanceof PlayerEntity target) {
+            int playerSha = countCard(player, isSha);
+            int targetSha = countCard(target, isSha);
+            if (playerSha >= targetSha) {
+                target.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2,2,0,false,false,false));
+                target.timeUntilRegen = 0;
+                target.damage(player.getDamageSources().sonicBoom(player),5f);
+                target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("dabaosword.juedou2")));
+            } else {
+                target.addCommandTag("juedou"); //防止决斗触发杀、闪
+                player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2,2,0,false,false,false));
+                player.timeUntilRegen = 0;
+                player.damage(player.getDamageSources().sonicBoom(target),5f);
+                player.sendMessage(Text.translatable("dabaosword.juedou1"));
+                if (targetSha != 0) { //如果目标的杀比使用者的杀多，反击使用者，则目标减少一张杀
+                    cardUsePost(target, getCard(target, isSha).getRight(), player);
+                }
+            }
+        } else {
+            entity.addCommandTag("juedou");
+            entity.timeUntilRegen = 0;
+            entity.damage(user.getDamageSources().sonicBoom(user),5f);
+        }
+        voice(user, Sounds.JUEDOU);
+        super.cardUse(user, stack, entity);
     }
 }

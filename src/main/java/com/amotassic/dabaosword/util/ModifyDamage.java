@@ -1,6 +1,5 @@
 package com.amotassic.dabaosword.util;
 
-import com.amotassic.dabaosword.api.CardPileInventory;
 import com.amotassic.dabaosword.api.Skill;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.equipment.Equipment;
@@ -144,19 +143,19 @@ public class ModifyDamage {
             if (entity instanceof PlayerEntity player) {
                 dog.setHealth(0);
                 if (hasCard(player, isSha)) {
-                    var stack = getCard(player, isSha);
-                    if (stack.getRight().isOf(ModItems.SHA)) voice(player, Sounds.SHA);
-                    if (stack.getRight().isOf(ModItems.FIRE_SHA)) voice(player, Sounds.SHA_FIRE);
-                    if (stack.getRight().isOf(ModItems.THUNDER_SHA)) voice(player, Sounds.SHA_THUNDER);
-                    cardUsePost(player, stack, null);
+                    var stack = getCard(player, isSha).getRight();
+                    if (stack.isOf(ModItems.SHA)) voice(player, Sounds.SHA);
+                    if (stack.isOf(ModItems.FIRE_SHA)) voice(player, Sounds.SHA_FIRE);
+                    if (stack.isOf(ModItems.THUNDER_SHA)) voice(player, Sounds.SHA_THUNDER);
+                    nonPreUseCardDecrement(player, stack, null);
                     return true;
                 }
             }
         }
         if (source.getAttacker() instanceof LivingEntity) {
             if (!entity.hasStatusEffect(ModItems.COOLDOWN2) && !entity.getCommandTags().contains("juedou")) {
-                boolean hasShan = entity instanceof PlayerEntity player ? hasCard(player, s -> s.isOf(ModItems.SHAN)) : entity.getOffHandStack().isOf(ModItems.SHAN);
-                if (hasShan && !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) { //此处条件是故意设置得与八卦阵条件不一样的，虽然感觉没啥用
+                //此处条件是故意设置得与八卦阵条件不一样的，虽然感觉没啥用
+                if (hasCard(entity, s -> s.isOf(ModItems.SHAN)) && !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
                     shan(entity, false, source, amount);
                     return true;
                 }
@@ -168,29 +167,24 @@ public class ModifyDamage {
     }
 
     public static void shan(LivingEntity entity, boolean bl, DamageSource source, float amount) {
-        Pair<CardPileInventory, ItemStack> stack = bl ? new Pair<>(null, new ItemStack(ModItems.SHAN)) : shanStack(entity);
+        ItemStack stack = bl ? ItemStack.EMPTY : getCard(entity, s -> s.isOf(ModItems.SHAN)).getRight();
         int cd = bl ? 60 : 40;
         entity.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 20,0,false,false,false));
         entity.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, cd,0,false,false,false));
         if (bl) voice(entity, Sounds.BAGUA);
         voice(entity, Sounds.SHAN);
+        nonPreUseCardDecrement(entity, stack, null);
         if (entity instanceof PlayerEntity player) {
             writeDamage(source, amount, !bl, trinketItem(ModItems.CARD_PILE, player));
-            cardUsePost(player, stack, null);
             if (bl) player.sendMessage(Text.translatable("dabaosword.bagua"),true);
-        } else stack.getRight().decrement(1);
-        //虽然没有因为杀而触发闪，但如果攻击者的杀处于自动触发状态，则仍会消耗
-        if (source.getSource() instanceof PlayerEntity player && getShaSlot(player) != -1) {
-            ItemStack sha = isSha.test(player.getMainHandStack()) ? player.getMainHandStack() : shaStack(player);
-            if (sha.isOf(ModItems.SHA)) voice(player, Sounds.SHA);
-            if (sha.isOf(ModItems.FIRE_SHA)) voice(player, Sounds.SHA_FIRE);
-            if (sha.isOf(ModItems.THUNDER_SHA)) voice(player, Sounds.SHA_THUNDER);
-            cardUsePost(player, sha, entity);
         }
-    }
-
-    private static Pair<CardPileInventory, ItemStack> shanStack(LivingEntity entity) {
-        if (entity instanceof PlayerEntity player) return getCard(player, s -> s.isOf(ModItems.SHAN));
-        return new Pair<>(null, entity.getOffHandStack());
+        //虽然没有因为杀而触发闪，但如果攻击者的杀处于自动触发状态，则仍会消耗
+        if (source.getSource() instanceof LivingEntity SE && hasItem(SE, isSha)) {
+            ItemStack sha = isSha.test(SE.getMainHandStack()) ? SE.getMainHandStack() : getItem(SE, isSha);
+            if (sha.isOf(ModItems.SHA)) voice(SE, Sounds.SHA);
+            if (sha.isOf(ModItems.FIRE_SHA)) voice(SE, Sounds.SHA_FIRE);
+            if (sha.isOf(ModItems.THUNDER_SHA)) voice(SE, Sounds.SHA_THUNDER);
+            nonPreUseCardDecrement(SE, sha, entity);
+        }
     }
 }

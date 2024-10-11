@@ -13,9 +13,7 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
 import dev.emi.trinkets.api.SlotReference;
-import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketItem;
-import dev.emi.trinkets.api.TrinketsApi;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Entity;
@@ -187,13 +185,9 @@ public class SkillItem extends TrinketItem implements Skill {
                             for (Integer slot : cardSlots) {candidate.add(inventory.get(slot));}
                             //把饰品栏的卡牌添加到待选物品中
                             int equip = 0; //用于标记装备区牌的数量
-                            Optional<TrinketComponent> component = TrinketsApi.getTrinketComponent(target);
-                            if(component.isPresent()) {
-                                List<Pair<SlotReference, ItemStack>> allEquipped = component.get().getAllEquipped();
-                                for(Pair<SlotReference, ItemStack> entry : allEquipped) {
-                                    ItemStack stack1 = entry.getRight();
-                                    if(stack1.isIn(Tags.Items.CARD)) candidate.add(stack1); equip++;
-                                }
+                            for(var entry : allTrinkets(target)) {
+                                ItemStack stack1 = entry.getRight();
+                                if(isCard(stack1)) candidate.add(stack1); equip++;
                             }
                             if(!candidate.isEmpty()) {
                                 int index = new Random().nextInt(candidate.size()); ItemStack chosen = candidate.get(index);
@@ -571,7 +565,7 @@ public class SkillItem extends TrinketItem implements Skill {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (entity instanceof PlayerEntity player) viewAs(player, stack, 15, s -> s.isIn(Tags.Items.CARD) && s.getCount() > 1, 2, new ItemStack(ModItems.WANJIAN), Sounds.LUANJI);
+            if (entity instanceof PlayerEntity player) viewAs(player, stack, 15, s -> isCard(s) && s.getCount() > 1, 2, new ItemStack(ModItems.WANJIAN), Sounds.LUANJI);
             super.tick(stack, slot, entity);
         }
     }
@@ -691,7 +685,7 @@ public class SkillItem extends TrinketItem implements Skill {
         public void activeSkill(PlayerEntity user, ItemStack stack, PlayerEntity target) {
             ItemStack offStack = user.getOffHandStack();
             int cd = getCD(stack);
-            if (!offStack.isEmpty() && offStack.isIn(Tags.Items.CARD) && offStack.getCount() > 1) {
+            if (!offStack.isEmpty() && isCard(offStack) && offStack.getCount() > 1) {
                 if (cd == 0) {
 
                     ItemStack[] stacks = {new ItemStack(ModItems.BINGLIANG_ITEM), new ItemStack(ModItems.TOO_HAPPY_ITEM), new ItemStack(ModItems.DISCARD), new ItemStack(ModItems.FIRE_ATTACK), new ItemStack(ModItems.JIEDAO), new ItemStack(ModItems.JUEDOU), new ItemStack(ModItems.NANMAN), new ItemStack(ModItems.STEAL), new ItemStack(ModItems.TAOYUAN), new ItemStack(ModItems.TIESUO), new ItemStack(ModItems.WANJIAN), new ItemStack(ModItems.WUXIE), new ItemStack(ModItems.WUZHONG)};
@@ -912,7 +906,7 @@ public class SkillItem extends TrinketItem implements Skill {
 
         @Override
         public void preAttack(ItemStack stack, LivingEntity target, PlayerEntity player) {
-            if (getShaSlot(player) != -1) {
+            if (hasItem(player, isSha)) {
                 voice(player, Sounds.TIEJI);
                 target.addStatusEffect(new StatusEffectInstance(ModItems.TIEJI,200,0,false,true,true));
                 if (new Random().nextFloat() < 0.75) target.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2,2,0,false,false,false));

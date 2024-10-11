@@ -32,15 +32,30 @@ public class CardCBs {
                 }
             });
 
+    public static Event<PreUse> USE_PRE = EventFactory.createArrayBacked(PreUse.class,
+            listeners -> (user, stack, target) -> {
+                for (PreUse listener: listeners){
+                    return listener.cardUsePre(user, stack, target);
+                }
+                return false;
+            });
+
+    public interface PreUse {
+        /**
+         * 当卡牌使用时触发，用于判断是否能执行卡牌的效果，以及移除卡牌。自动触发的卡牌不会触发该事件，因此还需要手动移除卡牌
+         * @param stack 必须传入原始的stack
+         */
+        boolean cardUsePre(LivingEntity user, ItemStack stack, @Nullable LivingEntity target);
+    }
+
     public interface PostUse {
         /**
-         * Called after a player used a card to the target
-         *
-         * @param user The player who used the card
-         * @param stack The used card stack 如果该卡牌不来自卡牌背包中，则{@link CardPileInventory}为null
+         * 当卡牌结算完成后触发
+         * @param user The entity who used the card
+         * @param stack 必须传入被使用的牌.copy()
          * @param target The target entity
          */
-        void cardUsePost(PlayerEntity user, Pair<CardPileInventory, ItemStack> stack, @Nullable LivingEntity target);
+        void cardUsePost(LivingEntity user, ItemStack stack, @Nullable LivingEntity target);
     }
 
     public interface Discard {

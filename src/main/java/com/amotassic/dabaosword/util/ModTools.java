@@ -95,21 +95,20 @@ public class ModTools {
         return noTieji(entity);
     }
 
-    //专门为了无懈可击写的两个附加方法，因为就它用到的多
-    public static boolean hasWuxie(PlayerEntity player) {return !getWuxie(player).getRight().isEmpty();}
-    public static Pair<CardPileInventory, ItemStack> getWuxie(PlayerEntity player) {return getCard(player, s -> s.isOf(ModItems.WUXIE));}
     //判断牌堆和背包中是否有符合条件的卡牌
-    public static boolean hasCard(PlayerEntity player, Predicate<ItemStack> predicate) {
-        return !getCard(player, predicate).getRight().isEmpty();
+    public static boolean hasCard(LivingEntity entity, Predicate<ItemStack> predicate) {
+        return !getCard(entity, predicate).getRight().isEmpty();
     }
     //获取牌堆或背包中的一张符合条件的卡牌
-    public static Pair<CardPileInventory, ItemStack> getCard(PlayerEntity player, Predicate<ItemStack> predicate) {
-        CardPileInventory inventory = new CardPileInventory(player);
-        for (int i = inventory.cards.size() - 1; i >= 0; i--) { //倒序检索
-            var card = inventory.getStack(i);
-            if (predicate.test(card)) return new Pair<>(inventory, card);
+    public static Pair<CardPileInventory, ItemStack> getCard(LivingEntity entity, Predicate<ItemStack> predicate) {
+        if (entity instanceof PlayerEntity player) {
+            CardPileInventory inventory = new CardPileInventory(player);
+            for (int i = inventory.cards.size() - 1; i >= 0; i--) { //倒序检索
+                var card = inventory.getStack(i);
+                if (predicate.test(card)) return new Pair<>(inventory, card);
+            }
         }
-        return new Pair<>(null, getItem(player, predicate));
+        return new Pair<>(null, getItem(entity, predicate));
     }
 
     //专为处理卡牌减少而写的方法，牌堆中的卡牌减少，需要保存nbt
@@ -117,31 +116,38 @@ public class ModTools {
         if (stack.getLeft() == null) stack.getRight().decrement(count);
         else stack.getLeft().removeStack(stack.getRight(), count);
     }
-
-    //判断玩家是否有某个物品
-    public static boolean hasItem(@NotNull PlayerEntity player, Predicate<ItemStack> predicate) {
-        return !getItem(player, predicate).isEmpty();
+    //卡牌使用后减少，不需要传入原始的itemStack
+    public static void cardUseAndDecrement(LivingEntity user, ItemStack card) {
+        //即使创造模式，无懈可击也会消耗，为什么呢？我也不知道
+        if (card.isOf(ModItems.WUXIE)) cardDecrement(getCard(user, s -> s.isOf(ModItems.WUXIE)), 1);
+        else {
+            if (user instanceof PlayerEntity player && player.getAbilities().creativeMode) return;
+            cardDecrement(getCard(user, s -> s.isOf(card.getItem())), 1);
+        }
     }
-    //获取背包中第一个符合条件的物品
-    public static ItemStack getItem(@NotNull PlayerEntity player, Predicate<ItemStack> predicate) {
-        for (int i = 0; i < player.getInventory().size(); ++i) {
-            ItemStack stack = player.getInventory().getStack(i);
-            if (predicate.test(stack)) return stack;
+    //顾名思义，就是没有触发UsePre事件，因此需要这个方法来扣除卡牌
+    public static void nonPreUseCardDecrement(LivingEntity user, ItemStack stack, LivingEntity target) {
+        var card = stack.copy();
+        cardUseAndDecrement(user, stack);
+        cardUsePost(user, card, target);
+    }
+
+    //判断生物是否有某个物品
+    public static boolean hasItem(@NotNull LivingEntity entity, Predicate<ItemStack> predicate) {
+        return !getItem(entity, predicate).isEmpty();
+    }
+    //获取玩家背包中第一个符合条件的物品，或者生物的符合条件的主副手物品
+    public static ItemStack getItem(@NotNull LivingEntity entity, Predicate<ItemStack> predicate) {
+        if (entity instanceof PlayerEntity player) {
+            for (int i = 0; i < player.getInventory().size(); ++i) {
+                ItemStack stack = player.getInventory().getStack(i);
+                if (predicate.test(stack)) return stack;
+            }
+        } else {
+            if (predicate.test(entity.getMainHandStack())) return entity.getMainHandStack();
+            if (predicate.test(entity.getOffHandStack())) return entity.getOffHandStack();
         }
         return ItemStack.EMPTY;
-    }
-
-    public static int getShaSlot(@NotNull PlayerEntity player) {
-        for (int i = 0; i < 18; ++i) {
-            ItemStack stack = player.getInventory().getStack(i);
-            if (stack.isEmpty() || !isSha.test(stack)) continue;
-            return i;
-        }
-        return -1;
-    } //todo 是否修改与杀相关的结算
-    //只检测玩家物品栏前18格是否有杀
-    public static ItemStack shaStack(@NotNull PlayerEntity player) {
-        return player.getInventory().getStack(getShaSlot(player));
     }
 
     //播放语音
@@ -153,7 +159,7 @@ public class ModTools {
     }
 
     //数玩家所有牌的数量
-    public static int countCards(PlayerEntity player) {return countCard(player, s -> s.isIn(Tags.Items.CARD));}
+    public static int countCards(PlayerEntity player) {return countCard(player, isCard);}
     //数玩家牌堆背包和物品栏的卡牌
     public static int countCard(PlayerEntity player, Predicate<ItemStack> predicate) {
         int n = 0;
@@ -384,9 +390,11 @@ public class ModTools {
         }
     }
 
-    public static void cardUsePost(PlayerEntity user, ItemStack stack, @Nullable LivingEntity target) {
-        cardUsePost(user, new Pair<>(null, stack), target);}
-    public static void cardUsePost(PlayerEntity user, Pair<CardPileInventory, ItemStack> stack, @Nullable LivingEntity target) {
+    public static boolean cardUsePre(LivingEntity user, ItemStack stack, @Nullable LivingEntity target) {
+        return CardCBs.USE_PRE.invoker().cardUsePre(user, stack, target);
+    }
+
+    public static void cardUsePost(LivingEntity user, ItemStack stack, @Nullable LivingEntity target) {
         CardCBs.USE_POST.invoker().cardUsePost(user, stack, target);
     }
 

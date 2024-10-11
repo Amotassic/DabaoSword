@@ -21,15 +21,16 @@ public class StealItem extends CardItem {
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         if (!user.getWorld().isClient && hand == Hand.MAIN_HAND) {
+            if (cardUsePre(user, user.getMainHandStack(), entity)) return ActionResult.SUCCESS;
+        }
+        return ActionResult.PASS;
+    }
+
+    @Override
+    public void cardUse(LivingEntity user, ItemStack stack, LivingEntity entity) {
+        if (user instanceof PlayerEntity player) {
             if (entity instanceof PlayerEntity target) {
-                if (hasWuxie(target)) {
-                    voice(target, Sounds.WUXIE);
-                    cardUsePost(target, getWuxie(target), null);
-                    voice(user, Sounds.SHUNSHOU);
-                    cardUsePost(user, stack, entity);
-                } else {
-                    openInv(user, target, Text.translatable("dabaosword.steal.title"), stack, targetInv(target, true, true, 1));
-                }
+                openInv(player, target, Text.translatable("dabaosword.steal.title"), stack, targetInv(target, true, true, 1));
             } else {
                 List<ItemStack> stacks = new ArrayList<>();
                 if (isCard(entity.getMainHandStack())) stacks.add(entity.getMainHandStack());
@@ -37,12 +38,10 @@ public class StealItem extends CardItem {
                 if (!stacks.isEmpty()) {
                     ItemStack chosen = stacks.get(new Random().nextInt(stacks.size()));
                     voice(user, Sounds.SHUNSHOU);
-                    cardMove(entity, user, chosen, 1, CardCBs.T.INV_TO_INV);
-                    cardUsePost(user, stack, entity);
+                    cardMove(entity, player, chosen, 1, CardCBs.T.INV_TO_INV);
+                    nonPreUseCardDecrement(player, stack, entity);
                 }
             }
-            return ActionResult.SUCCESS;
-        }
-        return ActionResult.PASS;
+        } else nonPreUseCardDecrement(user, stack, entity);
     }
 }

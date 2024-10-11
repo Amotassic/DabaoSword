@@ -51,7 +51,7 @@
   "dabaosword.cooldown_end": "技能冷却时间已结束",
   "item.dabaosword.shan": "闪",
   "item.dabaosword.shan.tooltip": "主动使用后，向前冲刺一段距离，1秒内无敌",
-  "item.dabaosword.sha&shan.tooltip": "位于物品栏前18格才可自动触发",
+  "item.dabaosword.sha&shan.tooltip": "位于快捷栏可自动触发",
   "item.dabaosword.jiu": "酒",
   "item.dabaosword.jiu.tooltip": "使用后获得10秒力量效果",
   "item.dabaosword.recover.tip": "濒死时自动触发回血效果",
@@ -135,6 +135,8 @@
   "trinkets": "饰品栏",
   "item.dabaosword.sunshine_smile": "阳光开朗的笑容",
   "item.dabaosword.sunshine_smile.tooltip": "暂时没有实际作用",
+  "card_pile.player_inv.full": "你的背包已满，无法取出卡牌！",
+  "card.suit_and_rank": "%1$s %2$s",
 
   //"技能"
   "item.dabaosword.guose": "国色",

@@ -28,10 +28,7 @@ public class Cooldown2Effect extends StatusEffect {
         if (entity.getWorld() instanceof ServerWorld world) {
             int restTime = Objects.requireNonNull(entity.getStatusEffect(ModItems.COOLDOWN2)).getDuration();
             //一级效果被用于万箭齐发
-            if (amplifier == 1) {
-                arrowRain(entity, 3);
-                if (restTime <= 1) entity.getCommandTags().remove("wanjian");
-            }
+            if (amplifier == 1) arrowRain(entity, 3);
 
             if (amplifier == 3 && entity instanceof PlayerEntity player && hasTrinket(SkillCards.LEIJI, player) && restTime >= 15) {//雷击的效果
                 EntityType.LIGHTNING_BOLT.spawn(world, new BlockPos((int) player.getX(), (int) player.getY(), (int) player.getZ()),null);
