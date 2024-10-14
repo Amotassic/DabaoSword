@@ -82,8 +82,7 @@ public class CardItem extends Item implements Card {
     public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
         var sr = getSuitAndRank(stack);
         if (sr != null) {
-            Suits suit = sr.getLeft();
-            Ranks rank = sr.getRight();
+            Suits suit = sr.getLeft(); Ranks rank = sr.getRight();
             if (isRedCard.test(stack)) tooltip.add(Text.translatable("card.suit_and_rank", suit.suit, rank.rank).formatted(Formatting.RED));
             else tooltip.add(Text.translatable("card.suit_and_rank", suit.suit, rank.rank));
         }

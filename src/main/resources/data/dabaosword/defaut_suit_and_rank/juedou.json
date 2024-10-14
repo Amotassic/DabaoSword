@@ -1,0 +1,16 @@
+{
+  "suits_and_ranks": [
+    {
+      "suit": "Diamond",
+      "rank": "A"
+    },
+    {
+      "suit": "Club",
+      "rank": "A"
+    },
+    {
+      "suit": "Spade",
+      "rank": "A"
+    }
+  ]
+}

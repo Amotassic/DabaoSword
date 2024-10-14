@@ -44,14 +44,6 @@ public class Equipment extends TrinketItem implements Card, Skill {
         public BaguaArmor(Settings settings) {super(settings);}
 
         @Override
-        public List<Pair<Suits, Ranks>> getSuitsAndRanks() {
-            var list = super.getSuitsAndRanks();
-            list.add(new Pair<>(Suits.Spades, Ranks.Two));
-            list.add(new Pair<>(Suits.Clubs, Ranks.Two));
-            return list;
-        }
-
-        @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
             tooltip.add(Text.translatable("item.dabaosword.bagua.tooltip"));
             super.appendTooltip(stack, world, tooltip, context);
@@ -78,13 +70,6 @@ public class Equipment extends TrinketItem implements Card, Skill {
         public BaiyinArmor(Settings settings) {super(settings);}
 
         @Override
-        public List<Pair<Suits, Ranks>> getSuitsAndRanks() {
-            var list = super.getSuitsAndRanks();
-            list.add(new Pair<>(Suits.Clubs, Ranks.Ace));
-            return list;
-        }
-
-        @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
             tooltip.add(Text.translatable("item.dabaosword.baiyin.tooltip"));
             super.appendTooltip(stack, world, tooltip, context);
@@ -102,13 +87,6 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
     public static class FangtianWeapon extends Equipment {
         public FangtianWeapon(Settings settings) {super(settings);}
-
-        @Override
-        public List<Pair<Suits, Ranks>> getSuitsAndRanks() {
-            var list = super.getSuitsAndRanks();
-            list.add(new Pair<>(Suits.Diamonds, Ranks.Queen));
-            return list;
-        }
 
         @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
@@ -131,13 +109,6 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
     public static class GudingWeapon extends Equipment {
         public GudingWeapon(Settings settings) {super(settings);}
-
-        @Override
-        public List<Pair<Suits, Ranks>> getSuitsAndRanks() {
-            var list = super.getSuitsAndRanks();
-            list.add(new Pair<>(Suits.Spades, Ranks.Ace));
-            return list;
-        }
 
         @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
@@ -164,13 +135,6 @@ public class Equipment extends TrinketItem implements Card, Skill {
         public HanbingWeapon(Settings settings) {super(settings);}
 
         @Override
-        public List<Pair<Suits, Ranks>> getSuitsAndRanks() {
-            var list = super.getSuitsAndRanks();
-            list.add(new Pair<>(Suits.Spades, Ranks.Two));
-            return list;
-        }
-
-        @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
             tooltip.add(Text.translatable("item.dabaosword.hanbing.tooltip").formatted(Formatting.AQUA));
             super.appendTooltip(stack, world, tooltip, context);
@@ -186,13 +150,6 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
     public static class QinggangWeapon extends Equipment {
         public QinggangWeapon(Settings settings) {super(settings);}
-
-        @Override
-        public List<Pair<Suits, Ranks>> getSuitsAndRanks() {
-            var list = super.getSuitsAndRanks();
-            list.add(new Pair<>(Suits.Spades, Ranks.Six));
-            return list;
-        }
 
         @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
@@ -214,13 +171,6 @@ public class Equipment extends TrinketItem implements Card, Skill {
         public QinglongWeapon(Settings settings) {super(settings);}
 
         @Override
-        public List<Pair<Suits, Ranks>> getSuitsAndRanks() {
-            var list = super.getSuitsAndRanks();
-            list.add(new Pair<>(Suits.Spades, Ranks.Five));
-            return list;
-        }
-
-        @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
             tooltip.add(Text.translatable("item.dabaosword.qinglong.tooltip1"));
             tooltip.add(Text.translatable("item.dabaosword.qinglong.tooltip2").formatted(Formatting.AQUA));
@@ -239,14 +189,6 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
     public static class RattanArmor extends Equipment {
         public RattanArmor(Settings settings) {super(settings);}
-
-        @Override
-        public List<Pair<Suits, Ranks>> getSuitsAndRanks() {
-            var list = super.getSuitsAndRanks();
-            list.add(new Pair<>(Suits.Spades, Ranks.Two));
-            list.add(new Pair<>(Suits.Clubs, Ranks.Two));
-            return list;
-        }
 
         @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {

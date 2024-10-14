@@ -2,7 +2,6 @@ package com.amotassic.dabaosword.api;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Pair;
 
 import java.util.*;
 
@@ -13,13 +12,11 @@ public interface Card {
         cardUsePost(user, stack, target);
     }
 
-    default List<Pair<Suits, Ranks>> getSuitsAndRanks() {return new ArrayList<>();}
-
     enum Suits {
-        Hearts ("♥"),
-        Diamonds ("♦"),
-        Spades ("♠"),
-        Clubs ("♣");
+        Heart ("♥"),
+        Diamond ("♦"),
+        Spade ("♠"),
+        Club ("♣");
 
         public final String suit;
 

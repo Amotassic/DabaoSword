@@ -4,6 +4,7 @@ import com.amotassic.dabaosword.api.Card;
 import com.amotassic.dabaosword.api.CardPileInventory;
 import com.amotassic.dabaosword.api.event.CardCBs;
 import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.item.card.CardItem;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.ui.PlayerInvScreenHandler;
 import com.amotassic.dabaosword.ui.SimpleMenuHandler;
@@ -47,6 +48,7 @@ import net.minecraft.util.collection.DefaultedList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
 import java.util.function.Predicate;
@@ -55,14 +57,14 @@ import java.util.stream.IntStream;
 public class ModTools {
     //通过predicate寻找对应物品，免得添加标签
     public static final Predicate<ItemStack> canSaveDying = s -> s.isOf(ModItems.JIU) || s.isOf(ModItems.PEACH);
-    public static final Predicate<ItemStack> isSha = s -> s.isOf(ModItems.SHA) || s.isOf(ModItems.FIRE_SHA) || s.isOf(ModItems.THUNDER_SHA);
+    public static final Predicate<ItemStack> isSha = s -> s.getItem() instanceof CardItem.Sha;
     public static final Predicate<ItemStack> nonBasic = s -> s.isIn(Tags.Items.CARD) && !s.isIn(Tags.Items.BASIC_CARD);
     //判断是否是卡牌
     public static final Predicate<ItemStack> isCard = s -> s.isIn(Tags.Items.CARD);
     public static boolean isCard(ItemStack stack) {return stack.isIn(Tags.Items.CARD);}
     public static final Predicate<ItemStack> isRedCard = s -> {
         var sr = getSuitAndRank(s);
-        if (sr != null) return sr.getLeft() == Card.Suits.Hearts || sr.getLeft() == Card.Suits.Diamonds;
+        if (sr != null) return sr.getLeft() == Card.Suits.Heart || sr.getLeft() == Card.Suits.Diamond;
         return false;
     };
 
@@ -233,21 +235,33 @@ public class ModTools {
         item.setOwner(player.getUuid());
     }
 
+    public static Pair<String, String> getDefaultOrRandomSuitAndRank(ItemStack stack) {
+        //在json文件中为了方便读写，花色用了Suits.name()，点数用了Ranks.rank
+        Pair<String, String> random = new Pair<>(Card.Suits.get("0").name(), Card.Ranks.get("0").rank);
+        String srPath = stack.getItem().toString() + ".json";
+        Gson gson = new Gson();
+        InputStream stream = ModTools.class.getResourceAsStream("/data/dabaosword/defaut_suit_and_rank/" + srPath);
+        if (stream == null) return random;
+
+        InputStreamReader reader = new InputStreamReader(stream);
+        JsonObject json = gson.fromJson(reader, JsonObject.class);
+        int size = json.getAsJsonArray("suits_and_ranks").size();
+        //随机获取一组花色和点数
+        JsonObject obj = json.getAsJsonArray("suits_and_ranks").get(new Random().nextInt(size)).getAsJsonObject();
+        if (obj.has("suit") && obj.has("rank")) {
+            return new Pair<>(obj.get("suit").getAsString(), obj.get("rank").getAsString());
+        } else return random;
+    }
+
     public static void initSuitsAndRanks(ItemStack stack) {
         if (isCard(stack)) {
-            var card = (Card) stack.getItem();
             NbtCompound nbt = stack.getOrCreateNbt();
             if (nbt.contains("Card")) return;
             NbtList list = new NbtList();
             NbtCompound compound = new NbtCompound();
-            if (card.getSuitsAndRanks().isEmpty()) { //如果没有预设的花色和点数，就随机生成
-                compound.putString("Suit", Card.Suits.get("0").suit);
-                compound.putString("Rank", Card.Ranks.get("0").rank);
-            } else { //从所有预设中随机选取一组
-                var suitAndRank = card.getSuitsAndRanks().get(new Random().nextInt(card.getSuitsAndRanks().size()));
-                compound.putString("Suit", suitAndRank.getLeft().suit);
-                compound.putString("Rank", suitAndRank.getRight().rank);
-            }
+            var suitAndRank = getDefaultOrRandomSuitAndRank(stack);
+            compound.putString("Suit", Card.Suits.valueOf(suitAndRank.getLeft()).suit);
+            compound.putString("Rank", suitAndRank.getRight());
             list.add(compound);
             nbt.put("Card", list);
             stack.setNbt(nbt);

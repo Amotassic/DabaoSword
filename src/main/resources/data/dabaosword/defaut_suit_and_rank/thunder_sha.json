@@ -1,0 +1,40 @@
+{
+  "suits_and_ranks": [
+    {
+      "suit": "Club",
+      "rank": "5"
+    },
+    {
+      "suit": "Club",
+      "rank": "6"
+    },
+    {
+      "suit": "Club",
+      "rank": "7"
+    },
+    {
+      "suit": "Club",
+      "rank": "8"
+    },
+    {
+      "suit": "Spade",
+      "rank": "4"
+    },
+    {
+      "suit": "Spade",
+      "rank": "5"
+    },
+    {
+      "suit": "Spade",
+      "rank": "6"
+    },
+    {
+      "suit": "Spade",
+      "rank": "7"
+    },
+    {
+      "suit": "Spade",
+      "rank": "8"
+    }
+  ]
+}

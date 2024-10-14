@@ -1,0 +1,100 @@
+{
+  "suits_and_ranks": [
+    {
+      "suit": "Heart",
+      "rank": "2"
+    },
+    {
+      "suit": "Heart",
+      "rank": "2"
+    },
+    {
+      "suit": "Heart",
+      "rank": "8"
+    },
+    {
+      "suit": "Heart",
+      "rank": "9"
+    },
+    {
+      "suit": "Heart",
+      "rank": "J"
+    },
+    {
+      "suit": "Heart",
+      "rank": "Q"
+    },
+    {
+      "suit": "Heart",
+      "rank": "K"
+    },
+    {
+      "suit": "Diamond",
+      "rank": "2"
+    },
+    {
+      "suit": "Diamond",
+      "rank": "2"
+    },
+    {
+      "suit": "Diamond",
+      "rank": "3"
+    },
+    {
+      "suit": "Diamond",
+      "rank": "4"
+    },
+    {
+      "suit": "Diamond",
+      "rank": "5"
+    },
+    {
+      "suit": "Diamond",
+      "rank": "6"
+    },
+    {
+      "suit": "Diamond",
+      "rank": "6"
+    },
+    {
+      "suit": "Diamond",
+      "rank": "7"
+    },
+    {
+      "suit": "Diamond",
+      "rank": "7"
+    },
+    {
+      "suit": "Diamond",
+      "rank": "8"
+    },
+    {
+      "suit": "Diamond",
+      "rank": "8"
+    },
+    {
+      "suit": "Diamond",
+      "rank": "9"
+    },
+    {
+      "suit": "Diamond",
+      "rank": "10"
+    },
+    {
+      "suit": "Diamond",
+      "rank": "10"
+    },
+    {
+      "suit": "Diamond",
+      "rank": "J"
+    },
+    {
+      "suit": "Diamond",
+      "rank": "J"
+    },
+    {
+      "suit": "Diamond",
+      "rank": "J"
+    }
+  ]
+}
