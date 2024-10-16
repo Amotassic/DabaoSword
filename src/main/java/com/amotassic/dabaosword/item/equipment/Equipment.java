@@ -16,7 +16,6 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
@@ -26,12 +25,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
@@ -305,72 +303,39 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
     @Override
     public void cardUse(LivingEntity user, ItemStack stack, LivingEntity target) {
-        if (user instanceof PlayerEntity player) {
-            if (useEquip(player, stack)) System.out.println("使用了装备");
-            else replaceEquip(player, stack);
-        }
+        useOrReplaceEquip(user, stack);
         Card.super.cardUse(user, stack, target);
     }
 
-    public static boolean useEquip(PlayerEntity user, ItemStack stack) {
-        var optional = TrinketsApi.getTrinketComponent(user);
+    public static void useOrReplaceEquip(LivingEntity user, ItemStack stack) {
+        Optional<TrinketComponent> optional = TrinketsApi.getTrinketComponent(user);
         if (optional.isPresent()) {
             TrinketComponent comp = optional.get();
-            for (var group : comp.getInventory().values()) {
+            SlotReference firstSlot = null;
+
+            for (Map<String, TrinketInventory> group : comp.getInventory().values()) {
                 for (TrinketInventory inv : group.values()) {
                     for (int i = 0; i < inv.size(); i++) {
-                        if (inv.getStack(i).isEmpty()) {
-                            SlotReference ref = new SlotReference(inv, i);
-                            if (TrinketSlot.canInsert(stack, ref, user)) {
-                                ItemStack newStack = stack.copy();
-                                inv.setStack(i, newStack);
-                                SoundEvent soundEvent = stack.getItem() instanceof net.minecraft.item.Equipment eq ? eq.getEquipSound() : null;
-                                if (!stack.isEmpty() && soundEvent != null) {
-                                    user.emitGameEvent(GameEvent.EQUIP);
-                                    user.playSound(soundEvent, 1.0F, 1.0F);
-                                }
+                        ItemStack s = inv.getStack(i);
+                        SlotReference ref = new SlotReference(inv, i);
+                        if (TrinketSlot.canInsert(stack, ref, user)) {
+                            if (s.isEmpty()) { //如果这个槽位没有物品，则直接放入
+                                inv.setStack(i, stack.copy());
                                 cardUsePost(user, stack, user);
-                                return true;
-                            }
+                                return;
+                            } else if (firstSlot == null) firstSlot = ref;
+                            //记录第一个有物品的槽位（也就是说，只能替换同类槽位的第一个物品）
                         }
                     }
                 }
             }
-        }
-        return false;
-    }
 
-    public static boolean replaceEquip(PlayerEntity player, ItemStack stack) {
-        Map<Integer, TrinketInventory> map = replaceSlot(player, stack);
-        if (!map.isEmpty() && stack.getItem() != ModItems.CARD_PILE) {
-            List<Integer> slots = map.keySet().stream().toList();
-            int index = new Random().nextInt(slots.size()); int i = slots.get(index);
-            ItemStack preStack = map.values().stream().toList().get(index).getStack(i);
-            cardDiscard(player, preStack, preStack.getCount(), true);
-            ItemStack newStack = stack.copy();
-            map.values().stream().toList().get(index).setStack(i, newStack);
-            cardUsePost(player, stack, player);
-            return true;
-        }
-        return false;
-    }
-
-    private static Map<Integer, TrinketInventory> replaceSlot(PlayerEntity player, ItemStack stack) {
-        Map<Integer, TrinketInventory> m = new HashMap<>();
-        var optional = TrinketsApi.getTrinketComponent(player);
-        if (optional.isPresent()) {
-            TrinketComponent comp = optional.get();
-            for (var group : comp.getInventory().values()) {
-                for (TrinketInventory inv : group.values()) {
-                    for (int i = 0; i < inv.size(); i++) {
-                        //如果对应装备栏的物品与待装备的物品有完全相同的标签，则将该饰品栏添加到map中
-                        if (!inv.getStack(i).isEmpty() && inv.getStack(i).streamTags().toList().equals(stack.streamTags().toList())) {
-                            m.put(i, inv);
-                        }
-                    }
-                }
+            if (firstSlot != null) { //替换原有装备
+                ItemStack preStack = firstSlot.inventory().getStack(firstSlot.index());
+                cardDiscard(user, preStack, preStack.getCount(), true);
+                firstSlot.inventory().setStack(firstSlot.index(), stack.copy());
+                cardUsePost(user, stack, user);
             }
         }
-        return m;
     }
 }

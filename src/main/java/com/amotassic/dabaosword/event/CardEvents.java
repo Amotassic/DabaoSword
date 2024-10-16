@@ -1,7 +1,6 @@
 package com.amotassic.dabaosword.event;
 
 import com.amotassic.dabaosword.api.Card;
-import com.amotassic.dabaosword.api.CardPileInventory;
 import com.amotassic.dabaosword.api.event.CardCBs;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
@@ -11,7 +10,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -31,11 +29,11 @@ public class CardEvents implements CardCBs.PostUse, CardCBs.Discard, CardCBs.Mov
     public boolean cardUsePre(LivingEntity user, ItemStack stack, @Nullable LivingEntity target) {
         ItemStack card = stack.copy();
         //不论如何先消耗一张卡牌再说，除了拆顺
-        if (!card.isOf(ModItems.STEAL) && !card.isOf(ModItems.DISCARD)) cardUseAndDecrement(user, stack);
+        if (!notImmediatelyEffect.test(card)) cardUseAndDecrement(user, stack);
 
         if (canTrigger(card) && hasCard(target, s -> s.isOf(ModItems.WUXIE))) {
             cardUsePre(target, new ItemStack(ModItems.WUXIE), null); //递归触发无懈，因此不用再写消耗和执行效果
-            if (card.isOf(ModItems.STEAL) || card.isOf(ModItems.DISCARD)) cardUseAndDecrement(user, stack); //补充一个拆顺的消耗，别出bug了
+            if (notImmediatelyEffect.test(card)) cardUseAndDecrement(user, stack); //补充一个拆顺的消耗，别出bug了
             return false;
         }
         if (isCard(card)) ((Card) card.getItem()).cardUse(user, card, target); //如果卡牌没有被抵消就执行效果
@@ -66,12 +64,11 @@ public class CardEvents implements CardCBs.PostUse, CardCBs.Discard, CardCBs.Mov
     }
 
     @Override
-    public void cardDiscard(PlayerEntity player, Pair<CardPileInventory, ItemStack> stack, int count, boolean fromEquip) {
-        //移除被弃置的牌
-        cardDecrement(stack, count);
+    public void cardDiscard(LivingEntity entity, ItemStack stack, int count, boolean fromEquip) {
+        if (XingshangTrigger(entity, stack)) return;
 
         //弃置牌后，玩家的死亡判断是有必要的
-        if (player.isAlive()) {
+        if (entity instanceof PlayerEntity player && player.isAlive()) {
             if (hasTrinket(SkillCards.LIANYING, player) && !fromEquip && countCards(player) == 0) lianyingTrigger(player);
 
             if (hasTrinket(SkillCards.XIAOJI, player) && fromEquip) xiaojiTrigger(player);
@@ -79,15 +76,7 @@ public class CardEvents implements CardCBs.PostUse, CardCBs.Discard, CardCBs.Mov
     }
 
     @Override
-    public void cardMove(LivingEntity from, PlayerEntity to, Pair<CardPileInventory, ItemStack> stack, int count, CardCBs.T type) {
-        ItemStack copy = stack.getRight().copyWithCount(count);
-
-        //如果是移动到物品栏的类型，则减少from的物品，给to等量的物品（移动到装备区有专门的方法）
-        if (type == CardCBs.T.INV_TO_INV || type == CardCBs.T.EQUIP_TO_INV) {
-            give(to, copy);
-            cardDecrement(stack, count);
-        }
-
+    public void cardMove(LivingEntity from, PlayerEntity to, ItemStack stack, int count, CardCBs.T type) {
         if (type == CardCBs.T.INV_TO_EQUIP || type == CardCBs.T.INV_TO_INV) {
             if (from instanceof PlayerEntity player && hasTrinket(SkillCards.LIANYING, player) && countCards(player) == 0) lianyingTrigger(player);
         }
@@ -95,6 +84,19 @@ public class CardEvents implements CardCBs.PostUse, CardCBs.Discard, CardCBs.Mov
         if (type == CardCBs.T.EQUIP_TO_INV || type == CardCBs.T.EQUIP_TO_EQUIP) {
             if (from instanceof PlayerEntity player && hasTrinket(SkillCards.XIAOJI, player)) xiaojiTrigger(player);
         }
+    }
+
+    private static boolean XingshangTrigger(LivingEntity entity, ItemStack stack) {
+        if (entity.isAlive()) return false;
+        for (PlayerEntity player : entity.getWorld().getPlayers()) {
+            if (hasTrinket(SkillCards.XINGSHANG, player) && player.distanceTo(entity) <= 25 && player != entity) {
+                if (!player.getCommandTags().contains("xingshang")) voice(player, Sounds.XINGSHANG);
+                player.addCommandTag("xingshang"); //防止同时触发大量语音播放
+                give(player, stack.copy());
+                return true;
+            }
+        }
+        return false;
     }
 
     private void lianyingTrigger(PlayerEntity player) {

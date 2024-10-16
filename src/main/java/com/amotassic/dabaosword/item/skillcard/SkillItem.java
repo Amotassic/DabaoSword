@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.item.skillcard;
 
+import com.amotassic.dabaosword.api.CardPileInventory;
 import com.amotassic.dabaosword.api.Skill;
 import com.amotassic.dabaosword.api.event.CardCBs;
 import com.amotassic.dabaosword.item.ModItems;
@@ -178,7 +179,7 @@ public class SkillItem extends TrinketItem implements Skill {
                         attacker.timeUntilRegen = 0; attacker.damage(entity.getDamageSources().mobAttack(entity), f);
                     } else {//弃牌
                         if (attacker instanceof PlayerEntity target) {//如果来源是玩家则弃牌
-                            List<ItemStack> candidate = new ArrayList<>();
+                            List<ItemStack> candidate = new ArrayList<>(new CardPileInventory(target).nonEmpty);
                             //把背包中的卡牌添加到待选物品中
                             DefaultedList<ItemStack> inventory = target.getInventory().main;
                             List<Integer> cardSlots = IntStream.range(0, inventory.size()).filter(j -> isCard(inventory.get(j))).boxed().toList();
@@ -496,12 +497,11 @@ public class SkillItem extends TrinketItem implements Skill {
         public boolean cancelDamage(LivingEntity target, DamageSource source, float amount) {
             if (source.getAttacker() instanceof LivingEntity attacker && target instanceof PlayerEntity player) {
                 if (hasTrinket(SkillCards.LIULI, player) && hasCard(player, isCard) && !player.hasStatusEffect(ModItems.INVULNERABLE)) {
-                    var stack = getCard(player, isCard);
                     LivingEntity nearEntity = getLiuliEntity(player, attacker);
                     if (nearEntity != null) {
                         player.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 15,0,false,false,false));
                         voice(player, Sounds.LIULI);
-                        cardDiscard(player, stack, 1, false);
+                        cardDiscard(player, getCard(player, isCard).getRight(), 1, false);
                         nearEntity.timeUntilRegen = 0; nearEntity.damage(source, amount);
                         return true;
                     }
@@ -983,13 +983,8 @@ public class SkillItem extends TrinketItem implements Skill {
             ItemStack itemStack = user.getMainHandStack();
             if (itemStack.getItem() instanceof Equipment && itemStack.getItem() != ModItems.CARD_PILE) {
                 cardMove(user, target, itemStack, itemStack.getCount(), CardCBs.T.INV_TO_EQUIP);
-                if (Equipment.useEquip(target, itemStack)) {
-                    voice(user, Sounds.ZHIJIAN);
-                    draw(user);
-                } else if (Equipment.replaceEquip(target, itemStack)) {
-                    voice(user, Sounds.ZHIJIAN);
-                    draw(user);
-                }
+                voice(user, Sounds.ZHIJIAN);
+                draw(user);
             } else user.sendMessage(Text.translatable("zhijian.fail").formatted(Formatting.RED), true);
         }
     }

@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.item.card;
 
+import com.amotassic.dabaosword.api.CardPileInventory;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.Entity;
@@ -50,13 +51,13 @@ public class DiscardItem extends CardItem {
                 if (!stacks.isEmpty()) {
                     ItemStack chosen = stacks.get(new Random().nextInt(stacks.size()));
                     voice(player, Sounds.GUOHE);
-                    chosen.decrement(1);
+                    cardDiscard(entity, chosen, 1, false);
                     nonPreUseCardDecrement(player, stack, entity);
                 }
             }
         } else {
             if (entity instanceof PlayerEntity player) { //如果是玩家则弃牌
-                List<ItemStack> candidate = new ArrayList<>();
+                List<ItemStack> candidate = new ArrayList<>(new CardPileInventory(player).nonEmpty);
                 //把背包中的卡牌添加到待选物品中
                 DefaultedList<ItemStack> inventory = player.getInventory().main;
                 List<Integer> cardSlots = IntStream.range(0, inventory.size()).filter(j -> isCard(inventory.get(j))).boxed().toList();
@@ -88,7 +89,7 @@ public class DiscardItem extends CardItem {
                 if (!candidate.isEmpty()) {
                     int index = new Random().nextInt(candidate.size());
                     ItemStack chosen = candidate.get(index);
-                    chosen.decrement(1);
+                    if (isCard(chosen)) cardDiscard(entity, chosen, 1, false);
                     voice(user, Sounds.GUOHE);
                     nonPreUseCardDecrement(user, stack, entity);
                 }

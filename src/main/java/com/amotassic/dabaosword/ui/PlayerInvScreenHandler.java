@@ -6,9 +6,6 @@ import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
-import dev.emi.trinkets.api.SlotReference;
-import dev.emi.trinkets.api.TrinketComponent;
-import dev.emi.trinkets.api.TrinketsApi;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -22,10 +19,12 @@ import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Pair;
 import net.minecraft.util.collection.DefaultedList;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 import java.util.stream.IntStream;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
@@ -114,8 +113,8 @@ public class PlayerInvScreenHandler extends ScreenHandler {
                 closeGUI(player);
             }
 
-            if (selfStack != ItemStack.EMPTY) {
-//todo 暂时性的更改
+            if (!selfStack.isEmpty()) {
+
                 if (stack.getItem() == SkillCards.RENDE) {
                     voice(player, Sounds.RENDE);
                     target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.toHoverableText(), target.getDisplayName())));
@@ -139,7 +138,7 @@ public class PlayerInvScreenHandler extends ScreenHandler {
                 }
             }
 
-            if (targetStack != ItemStack.EMPTY) {
+            if (!targetStack.isEmpty()) {
 
                 if (stack.getItem() == SkillCards.SHANZHUAN) {
                     voice(player, Sounds.SHANZHUAN);
@@ -193,31 +192,8 @@ public class PlayerInvScreenHandler extends ScreenHandler {
 
     private ItemStack selected(PlayerEntity player, int slotIndex) {
         var itemStack = getSlot(slotIndex).getStack();
-        if (!itemStack.isEmpty()) {
-            if (slotIndex < 4) {
-                Optional<TrinketComponent> component = TrinketsApi.getTrinketComponent(player);
-                if(component.isPresent()) {
-                    List<Pair<SlotReference, ItemStack>> allEquipped = component.get().getAllEquipped();
-                    for(Pair<SlotReference, ItemStack> entry : allEquipped) {
-                        ItemStack stack = entry.getRight();
-                        if (itemStack.equals(stack)) return stack;
-                    }
-                }
-            }
-            if (slotIndex > 3 && slotIndex < 8) {
-                for (ItemStack stack : player.getArmorItems()) {
-                    if (itemStack.equals(stack)) return stack;
-                }
-            }
-            if (slotIndex >= 8) {
-                DefaultedList<ItemStack> inventory = player.getInventory().main;
-                for (ItemStack stack : inventory) {
-                    if (itemStack.equals(stack)) return stack;
-                }
-                if (player.getOffHandStack().equals(itemStack)) return player.getOffHandStack();
-            }
-        } else if (cards == 1 && slotIndex >= 8) {
-            List<ItemStack> candidate = new ArrayList<>();
+        if (itemStack.isEmpty() && cards == 1 && slotIndex >= 8) {
+            List<ItemStack> candidate = new ArrayList<>(new CardPileInventory(player).nonEmpty);
             DefaultedList<ItemStack> inventory = player.getInventory().main;
             List<Integer> cardSlots = IntStream.range(0, inventory.size()).filter(i -> isCard(inventory.get(i))).boxed().toList();
             for (Integer slot : cardSlots) {candidate.add(inventory.get(slot));}
@@ -228,7 +204,7 @@ public class PlayerInvScreenHandler extends ScreenHandler {
                 return candidate.get(index);
             }
         }
-        return ItemStack.EMPTY;
+        return itemStack;
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.amotassic.dabaosword.api.CardPileInventory;
 import com.amotassic.dabaosword.api.event.CardCBs;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.card.CardItem;
+import com.amotassic.dabaosword.item.equipment.Equipment;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.ui.PlayerInvScreenHandler;
 import com.amotassic.dabaosword.ui.SimpleMenuHandler;
@@ -59,6 +60,8 @@ public class ModTools {
     public static final Predicate<ItemStack> canSaveDying = s -> s.isOf(ModItems.JIU) || s.isOf(ModItems.PEACH);
     public static final Predicate<ItemStack> isSha = s -> s.getItem() instanceof CardItem.Sha;
     public static final Predicate<ItemStack> nonBasic = s -> s.isIn(Tags.Items.CARD) && !s.isIn(Tags.Items.BASIC_CARD);
+    //不立即生效而产生消耗的卡牌，也就是说需要写额外的消耗逻辑来处理
+    public static final Predicate<ItemStack> notImmediatelyEffect =  s -> s.isOf(ModItems.DISCARD) || s.isOf(ModItems.STEAL);
     //判断是否是卡牌
     public static final Predicate<ItemStack> isCard = s -> s.isIn(Tags.Items.CARD);
     public static boolean isCard(ItemStack stack) {return stack.isIn(Tags.Items.CARD);}
@@ -117,6 +120,14 @@ public class ModTools {
     public static void cardDecrement(Pair<CardPileInventory, ItemStack> stack, int count) {
         if (stack.getLeft() == null) stack.getRight().decrement(count);
         else stack.getLeft().removeStack(stack.getRight(), count);
+    }
+    //另一个用于处理卡牌减少的方法
+    public static void cardDecrement(LivingEntity entity, ItemStack stack, int count) {
+        var pair = getCard(entity, s -> ItemStack.areEqual(s, stack));
+        //如果是牌堆中的卡牌，需要调用牌堆的方法来减少，以保存nbt
+        if (pair.getLeft() != null) pair.getLeft().removeStack(pair.getRight(), count);
+        //那么为什么这里没有else呢？因为此stack非彼pair.getRight()，如果不减少会出bug
+        stack.decrement(count);
     }
     //卡牌使用后减少，不需要传入原始的itemStack
     public static void cardUseAndDecrement(LivingEntity user, ItemStack card) {
@@ -221,14 +232,6 @@ public class ModTools {
 
     public static void give(PlayerEntity player, ItemStack stack) {
         initSuitsAndRanks(stack); //仅有通过这个方法获得的牌才会有花色和点数
-        /*if (isCard(stack)) {
-            ItemStack pile = trinketItem(ModItems.CARD_PILE, player);
-            CardPileInventory inventory = new CardPileInventory(pile);
-            if (!pile.isEmpty() && inventory.isNotFull()) {
-                inventory.insertStack(stack);
-                return;
-            } todo 在考虑要不要让牌直接进牌堆
-        }*/
         ItemEntity item = player.dropItem(stack, false);
         if (item == null) return;
         item.resetPickupDelay();
@@ -238,9 +241,11 @@ public class ModTools {
     public static Pair<String, String> getDefaultOrRandomSuitAndRank(ItemStack stack) {
         //在json文件中为了方便读写，花色用了Suits.name()，点数用了Ranks.rank
         Pair<String, String> random = new Pair<>(Card.Suits.get("0").name(), Card.Ranks.get("0").rank);
+        //在1.21之前的版本中，物品的toString()方法返回的是物品的path
+        //在1.21版本中，物品的toString()方法返回的是物品的namespace:path
         String srPath = stack.getItem().toString() + ".json";
         Gson gson = new Gson();
-        InputStream stream = ModTools.class.getResourceAsStream("/data/dabaosword/defaut_suit_and_rank/" + srPath);
+        InputStream stream = ModTools.class.getResourceAsStream("/data/dabaosword/default_suit_and_rank/" + srPath);
         if (stream == null) return random;
 
         InputStreamReader reader = new InputStreamReader(stream);
@@ -347,8 +352,8 @@ public class ModTools {
                 ItemStack stack = entry.getRight();
                 if (stack.streamTags().toList().equals(ModItems.GUDING_WEAPON.getDefaultStack().streamTags().toList())) targetInv.setStack(0, stack);
                 if (stack.streamTags().toList().equals(ModItems.BAGUA.getDefaultStack().streamTags().toList())) targetInv.setStack(1, stack);
-                if (stack.getItem() == ModItems.DILU) targetInv.setStack(2, stack);
-                if (stack.getItem() == ModItems.CHITU) targetInv.setStack(3, stack);
+                if (stack.isOf(ModItems.DILU)) targetInv.setStack(2, stack);
+                if (stack.isOf(ModItems.CHITU)) targetInv.setStack(3, stack);
             }//四件装备占1~4格
         }
 
@@ -357,29 +362,25 @@ public class ModTools {
             if (armor && !stack.isEmpty()) targetInv.setStack(armors.indexOf(stack) + 4, stack);
         }//4件盔甲占5~8格
 
+        ItemStack off = target.getOffHandStack();
         DefaultedList<ItemStack> targetInventory = target.getInventory().main;
         List<Integer> cardSlots = IntStream.range(0, targetInventory.size()).filter(i -> isCard(targetInventory.get(i))).boxed().toList();
-        if (cards == 2 && !cardSlots.isEmpty()) {
-            for(Integer i : cardSlots) {
-                targetInv.setStack(i + 9, targetInventory.get(i));
+        if (cards == 2) {
+            var inventory = new CardPileInventory(target).cards;
+            for (var stack : inventory) {targetInv.setStack(inventory.indexOf(stack) + 9, stack);}
+            if (!cardSlots.isEmpty()) { //卡牌背包中的牌显示在中间36格
+                for(Integer i : cardSlots) {
+                    if (i > 8) break; //快捷栏的牌显示在最底层9格
+                    targetInv.setStack(i + 45, targetInventory.get(i));
+                }
             }
-        }//副手物品在第9格，其他背包中的物品依次排列
-        ItemStack off = target.getOffHandStack();
-        if (cards == 2 && isCard(off)) targetInv.setStack(8, off);
+            if (isCard(off)) targetInv.setStack(8, off);
+        }
         if (cards == 3) {
             for (ItemStack stack : targetInventory) {
                 if (!stack.isEmpty()) targetInv.setStack(targetInventory.indexOf(stack) + 9, stack);
             }
             targetInv.setStack(8, off);
-        }
-        if (cards == 4) {
-            var inventory = new CardPileInventory(target).cards;
-            for (var stack : inventory) {targetInv.setStack(inventory.indexOf(stack) + 9, stack);}
-            for(Integer i : cardSlots) {
-                if (i > 8) break;
-                targetInv.setStack(i + 45, targetInventory.get(i));
-            }
-            if (isCard(off)) targetInv.setStack(8, off);
         }
         targetInv.setStack(54, new ItemStack(ModItems.GAIN_CARD, cards));
         return targetInv;
@@ -412,16 +413,27 @@ public class ModTools {
         CardCBs.USE_POST.invoker().cardUsePost(user, stack, target);
     }
 
-    public static void cardDiscard(PlayerEntity player, ItemStack stack, int count, boolean fromEquip) {
-        cardDiscard(player, new Pair<>(null, stack), count, fromEquip);}
-    public static void cardDiscard(PlayerEntity player, Pair<CardPileInventory, ItemStack> stack, int count, boolean fromEquip) {
-        CardCBs.DISCARD.invoker().cardDiscard(player, stack, count, fromEquip);
+    /**
+     * 以下两个调用事件监听器的方法，除非stack来自牌堆背包，否则一定要传入原始的stack！
+     * 因为还没有真正到事件触发时就已经移除了卡牌，所以事件中使用的stack是复制的！
+     * */
+
+    public static void cardDiscard(LivingEntity entity, ItemStack stack, int count, boolean fromEquip) {
+        ItemStack copy = stack.copyWithCount(count);
+        //移除被弃置的牌
+        cardDecrement(entity, stack, count);
+        CardCBs.DISCARD.invoker().cardDiscard(entity, copy, count, fromEquip);
     }
 
     public static void cardMove(LivingEntity from, PlayerEntity to, ItemStack stack, int count, CardCBs.T type) {
-        cardMove(from, to, new Pair<>(null, stack), count, type);}
-    public static void cardMove(LivingEntity from, PlayerEntity to, Pair<CardPileInventory, ItemStack> stack, int count, CardCBs.T type) {
-        CardCBs.MOVE.invoker().cardMove(from, to, stack, count, type);
+        ItemStack copy = stack.copyWithCount(count);
+        //移除来源的牌
+        cardDecrement(from, stack, count);
+        //如果是移动到物品栏的类型，则给to等量的物品
+        if (type == CardCBs.T.INV_TO_INV || type == CardCBs.T.EQUIP_TO_INV) give(to, copy);
+        //如果是移动到装备栏的类型，则目标使用或替换该装备
+        if (type == CardCBs.T.INV_TO_EQUIP || type == CardCBs.T.EQUIP_TO_EQUIP) Equipment.useOrReplaceEquip(to, copy);
+        CardCBs.MOVE.invoker().cardMove(from, to, copy, count, type);
     }
 
     public static void writeDamage(DamageSource source, float amount, boolean returnShan, ItemStack stack) {

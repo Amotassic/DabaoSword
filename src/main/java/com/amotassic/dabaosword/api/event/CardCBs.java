@@ -1,15 +1,18 @@
 package com.amotassic.dabaosword.api.event;
 
-import com.amotassic.dabaosword.api.CardPileInventory;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Pair;
 import org.jetbrains.annotations.Nullable;
 
 public class CardCBs {
+
+    /**
+     * 卡牌事件，用于监听卡牌的移动、丢弃、使用等事件
+     * 不要直接调用这个类里面的方法，而是通过使用{@link com.amotassic.dabaosword.util.ModTools}中已有的静态方法来调用监听器
+     */
 
     public static Event<Move> MOVE = EventFactory.createArrayBacked(Move.class,
             listeners -> (from, to, stack, count, type) -> {
@@ -62,10 +65,10 @@ public class CardCBs {
         /**
          * Called after a player's card(s) was discarded
          *
-         * @param player The player who discards the card
+         * @param entity The entity who discards the card
          * @param stack The discarded stack
          */
-        void cardDiscard(PlayerEntity player, Pair<CardPileInventory, ItemStack> stack, int count, boolean fromEquip);
+        void cardDiscard(LivingEntity entity, ItemStack stack, int count, boolean fromEquip);
     }
 
     public interface Move {
@@ -76,7 +79,7 @@ public class CardCBs {
          * @param to The player who get the card
          * @param stack The moved stack with count (the next param)
          */
-        void cardMove(LivingEntity from, PlayerEntity to, Pair<CardPileInventory, ItemStack> stack, int count, T type);
+        void cardMove(LivingEntity from, PlayerEntity to, ItemStack stack, int count, T type);
     }
 
     public enum T {

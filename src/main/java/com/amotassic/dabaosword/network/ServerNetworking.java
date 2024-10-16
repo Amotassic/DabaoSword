@@ -65,7 +65,7 @@ public class ServerNetworking {
 
     private static void selectCardPacket(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
         int i = buf.readInt();
-        if (i == 0) openInv(player, player, Text.translatable("key.dabaosword.select_card"), new ItemStack(ModItems.WANJIAN), targetInv(player, false, false, 4));
+        if (i == 0) openInv(player, player, Text.translatable("key.dabaosword.select_card"), new ItemStack(ModItems.WANJIAN), targetInv(player, false, false, 2));
         if (i == 1) openInv(player, player, Text.translatable("key.dabaosword.select_card"), new ItemStack(ModItems.SUNSHINE_SMILE), targetInv(player, false, false, 3));
         if (i == 3) {
             var pair = getDamage(player);

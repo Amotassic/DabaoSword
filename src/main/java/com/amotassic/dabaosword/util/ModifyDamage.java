@@ -167,13 +167,14 @@ public class ModifyDamage {
     }
 
     public static void shan(LivingEntity entity, boolean bl, DamageSource source, float amount) {
-        ItemStack stack = bl ? ItemStack.EMPTY : getCard(entity, s -> s.isOf(ModItems.SHAN)).getRight();
+        ItemStack stack = new ItemStack(ModItems.SHAN);
         int cd = bl ? 60 : 40;
         entity.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 20,0,false,false,false));
         entity.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, cd,0,false,false,false));
         if (bl) voice(entity, Sounds.BAGUA);
         voice(entity, Sounds.SHAN);
-        nonPreUseCardDecrement(entity, stack, null);
+        //如果触发八卦阵，就不用移除闪了
+        if (bl) cardUsePost(entity, stack, null); else nonPreUseCardDecrement(entity, stack, null);
         if (entity instanceof PlayerEntity player) {
             writeDamage(source, amount, !bl, trinketItem(ModItems.CARD_PILE, player));
             if (bl) player.sendMessage(Text.translatable("dabaosword.bagua"),true);

@@ -15,12 +15,17 @@ public class CardPileInventory implements Inventory {
     public DefaultedList<ItemStack> cards;
     public PlayerEntity player;
     public ItemStack pile;
+    public DefaultedList<ItemStack> nonEmpty = DefaultedList.of();
 
     public CardPileInventory(PlayerEntity player) {
         this.player = player;
         this.pile = ModTools.trinketItem(ModItems.CARD_PILE, player);
         this.cards = DefaultedList.ofSize(36, ItemStack.EMPTY);
         readNbt();
+        for (var stack : cards) { //生成非空的卡牌列表
+            if (stack.isEmpty()) continue;
+            nonEmpty.add(stack);
+        }
     }
 
     public int getEmptySlot() {
@@ -90,7 +95,7 @@ public class CardPileInventory implements Inventory {
         for (int i = size() - 1; i >= 0; i--) {
             ItemStack itemStack = getStack(i);
             if (itemStack.isEmpty()) continue;
-            if (itemStack.equals(stack)) return i;
+            if (ItemStack.areEqual(itemStack, stack)) return i;
         }
         return -1;
     }

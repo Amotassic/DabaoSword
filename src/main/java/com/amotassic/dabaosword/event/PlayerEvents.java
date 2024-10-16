@@ -10,13 +10,11 @@ import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.util.Gamerule;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Pair;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
 
@@ -36,25 +34,18 @@ public class PlayerEvents implements PlayerConnectCallback, PlayerDeathCallback,
         if (player.getWorld() instanceof ServerWorld world) {
             boolean card = world.getGameRules().getBoolean(Gamerule.CLEAR_CARDS_AFTER_DEATH);
             if (card) {
-                CardPileInventory cards = new CardPileInventory(player);
-                for (var stack : cards.cards) {
-                    if (XingshangTrigger(player, stack)) cardDiscard(player, new Pair<>(cards, stack), stack.getCount(), false);
-                }
+                CardPileInventory inventory = new CardPileInventory(player); //移除牌堆背包的牌
+                for (var stack : inventory.cards) {cardDiscard(player, stack, stack.getCount(), false);}
 
                 PlayerInventory inv = player.getInventory();
-                for (int i = 0; i < inv.size(); ++i) {
+                for (int i = 0; i < inv.size(); ++i) { //移除玩家物品栏的牌
                     ItemStack stack = inv.getStack(i);
-                    if (isCard(stack)) {
-                        //如果没有触发行殇，才触发事件（即在玩家死亡弃牌事件中，行殇有最高触发优先级）
-                        if (XingshangTrigger(player, stack)) cardDiscard(player, stack, stack.getCount(), false);
-                    }
+                    if (isCard(stack)) cardDiscard(player, stack, stack.getCount(), false);
                 }
 
-                for(var pair : allTrinkets(player)) {
+                for(var pair : allTrinkets(player)) { //移除玩家装备区的牌
                     ItemStack stack = pair.getRight();
-                    if(isCard(stack)) {
-                        if (XingshangTrigger(player, stack)) cardDiscard(player, stack, stack.getCount(), true);
-                    }
+                    if(isCard(stack)) cardDiscard(player, stack, stack.getCount(), true);
                 }
             }
 
@@ -71,19 +62,6 @@ public class PlayerEvents implements PlayerConnectCallback, PlayerDeathCallback,
                 if (stack != null) setCD(stack, 0);
             }
         }
-    }
-
-    private static boolean XingshangTrigger(PlayerEntity player, ItemStack stack) {
-        for (PlayerEntity player1 : player.getWorld().getPlayers()) {//行殇技能触发
-            if (hasTrinket(SkillCards.XINGSHANG, player1) && player1.distanceTo(player) <= 25 && player1 != player) {
-                if (!player1.getCommandTags().contains("xingshang")) voice(player1, Sounds.XINGSHANG);
-                player1.addCommandTag("xingshang");
-                give(player1, stack.copy());
-                stack.setCount(0);
-                return false;
-            }
-        }//为了简便，触发行殇后返回false
-        return true;
     }
 
     @Override
