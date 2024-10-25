@@ -42,9 +42,11 @@ public class SimpleMenuHandler extends ScreenHandler {
         if (!itemStack.isEmpty()) {
 
             if (stack.getItem() == SkillCards.QICE) {
+                if (!player.isCreative()) {
+                    while (countCards(player) > 0) {cardDecrement(getCard(player, isCard), 64);}
+                    setCD(stack, 20);
+                }
                 give(player, itemStack);
-                if (!player.isCreative()) player.getOffHandStack().decrement(2);
-                setCD(stack, 20);
                 voice(player, Sounds.QICE);
                 closeGUI(player);
             }

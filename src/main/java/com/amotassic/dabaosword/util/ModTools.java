@@ -59,17 +59,18 @@ public class ModTools {
     //通过predicate寻找对应物品，免得添加标签
     public static final Predicate<ItemStack> canSaveDying = s -> s.isOf(ModItems.JIU) || s.isOf(ModItems.PEACH);
     public static final Predicate<ItemStack> isSha = s -> s.getItem() instanceof CardItem.Sha;
-    public static final Predicate<ItemStack> nonBasic = s -> s.isIn(Tags.Items.CARD) && !s.isIn(Tags.Items.BASIC_CARD);
+    //public static final Predicate<ItemStack> nonBasic = s -> s.isIn(Tags.Items.CARD) && !s.isIn(Tags.Items.BASIC_CARD);
     //不立即生效而产生消耗的卡牌，也就是说需要写额外的消耗逻辑来处理
     public static final Predicate<ItemStack> notImmediatelyEffect =  s -> s.isOf(ModItems.DISCARD) || s.isOf(ModItems.STEAL);
     //判断是否是卡牌
     public static final Predicate<ItemStack> isCard = s -> s.isIn(Tags.Items.CARD);
     public static boolean isCard(ItemStack stack) {return stack.isIn(Tags.Items.CARD);}
-    public static final Predicate<ItemStack> isRedCard = s -> {
-        var sr = getSuitAndRank(s);
-        if (sr != null) return sr.getLeft() == Card.Suits.Heart || sr.getLeft() == Card.Suits.Diamond;
-        return false;
-    };
+    public static final Predicate<ItemStack> isDiamondCard = s -> getSuit(s) == Card.Suits.Diamond;
+    public static final Predicate<ItemStack> isHeartCard = s -> getSuit(s) == Card.Suits.Heart;
+    public static final Predicate<ItemStack> isClubCard = s -> getSuit(s) == Card.Suits.Club;
+    public static final Predicate<ItemStack> isSpadeCard = s -> getSuit(s) == Card.Suits.Spade;
+    public static final Predicate<ItemStack> isRedCard = s -> isDiamondCard.test(s) || isHeartCard.test(s);
+    public static final Predicate<ItemStack> isBlackCard = s -> isClubCard.test(s) || isSpadeCard.test(s);
 
     public static boolean noTieji(LivingEntity entity) {return !entity.hasStatusEffect(ModItems.TIEJI);}
 
@@ -285,6 +286,10 @@ public class ModTools {
         }
         return null;
     }
+    public static Card.Suits getSuit(ItemStack stack) {
+        var sr = getSuitAndRank(stack);
+        if (sr == null) return null; return sr.getLeft();
+    }
 
     public static int getCD(ItemStack stack) { //获取物品的内置冷却时间
         return stack.getNbt() == null ? 0 : stack.getNbt().getInt("cooldown");
@@ -307,13 +312,12 @@ public class ModTools {
     }
 
     //转化卡牌技能通用方法
-    public static void viewAs(PlayerEntity player, ItemStack skill, int CD, Predicate<ItemStack> predicate, ItemStack result, SoundEvent sound) {viewAs(player, skill,CD, predicate, 1, result, sound);}
-    public static void viewAs(PlayerEntity player, ItemStack skill, int CD, Predicate<ItemStack> predicate, int count, ItemStack result, SoundEvent sound) {
+    public static void viewAs(PlayerEntity player, ItemStack skill, int CD, Predicate<ItemStack> predicate, ItemStack result, SoundEvent sound) {
         if (!player.getWorld().isClient && noTieji(player) && getCD(skill) == 0) {
             ItemStack stack = player.getOffHandStack();
             if (predicate.test(stack)) {
                 setCD(skill, CD);
-                stack.decrement(count);
+                stack.decrement(1);
                 give(player, result);
                 voice(player, sound);
             }

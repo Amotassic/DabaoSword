@@ -1,6 +1,7 @@
 package com.amotassic.dabaosword.item.equipment;
 
 import com.amotassic.dabaosword.api.CardPileInventory;
+import com.amotassic.dabaosword.ui.PileScreenHandler;
 import com.amotassic.dabaosword.util.ModTools;
 import dev.emi.trinkets.api.SlotReference;
 import net.minecraft.client.item.TooltipContext;
@@ -37,7 +38,7 @@ public class CardPile extends Equipment {
     @Override
     public void tick(ItemStack pile, SlotReference slot, LivingEntity entity) {
         if (entity.getWorld() instanceof ServerWorld world && entity instanceof PlayerEntity player) {
-            if (world.getTime() % 20 == 0) {
+            if (player.currentScreenHandler.getClass() != PileScreenHandler.class && world.getTime() % 20 == 0) {
                 CardPileInventory cards = new CardPileInventory(player);
                 for (int i = 9; i < 36; i++) {
                     ItemStack item = player.getInventory().main.get(i);

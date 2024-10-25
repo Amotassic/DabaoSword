@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.item.skillcard;
 
+import com.amotassic.dabaosword.api.Card;
 import com.amotassic.dabaosword.api.CardPileInventory;
 import com.amotassic.dabaosword.api.Skill;
 import com.amotassic.dabaosword.api.event.CardCBs;
@@ -42,6 +43,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
@@ -136,7 +138,8 @@ public class SkillItem extends TrinketItem implements Skill {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (entity instanceof PlayerEntity player) viewAs(player, stack, 5, nonBasic, new ItemStack(ModItems.BINGLIANG_ITEM), Sounds.DUANLIANG);
+            Predicate<ItemStack> dl = s -> isBlackCard.test(s) && !s.isIn(Tags.Items.ARMOURY_CARD);
+            if (entity instanceof PlayerEntity player) viewAs(player, stack, 5, dl, new ItemStack(ModItems.BINGLIANG_ITEM), Sounds.DUANLIANG);
             super.tick(stack, slot, entity);
         }
     }
@@ -305,7 +308,7 @@ public class SkillItem extends TrinketItem implements Skill {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (entity instanceof PlayerEntity player) viewAs(player, stack, 15, s -> s.isOf(ModItems.SHAN), new ItemStack(ModItems.TOO_HAPPY_ITEM), Sounds.GUOSE);
+            if (entity instanceof PlayerEntity player) viewAs(player, stack, 15, isDiamondCard, new ItemStack(ModItems.TOO_HAPPY_ITEM), Sounds.GUOSE);
             super.tick(stack, slot, entity);
         }
     }
@@ -322,7 +325,7 @@ public class SkillItem extends TrinketItem implements Skill {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (entity instanceof PlayerEntity player) viewAs(player, stack, 15, s -> s.isIn(Tags.Items.BASIC_CARD), new ItemStack(ModItems.FIRE_ATTACK), Sounds.HUOJI);
+            if (entity instanceof PlayerEntity player) viewAs(player, stack, 15, isRedCard, new ItemStack(ModItems.FIRE_ATTACK), Sounds.HUOJI);
             super.tick(stack, slot, entity);
         }
     }
@@ -362,7 +365,7 @@ public class SkillItem extends TrinketItem implements Skill {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (entity instanceof PlayerEntity player) viewAs(player, stack, 10, s -> s.isIn(Tags.Items.ARMOURY_CARD), new ItemStack(ModItems.WUXIE), Sounds.KANPO);
+            if (entity instanceof PlayerEntity player) viewAs(player, stack, 10, isBlackCard, new ItemStack(ModItems.WUXIE), Sounds.KANPO);
             super.tick(stack, slot, entity);
         }
     }
@@ -565,8 +568,33 @@ public class SkillItem extends TrinketItem implements Skill {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (entity instanceof PlayerEntity player) viewAs(player, stack, 15, s -> isCard(s) && s.getCount() > 1, 2, new ItemStack(ModItems.WANJIAN), Sounds.LUANJI);
             super.tick(stack, slot, entity);
+            if (!entity.getWorld().isClient && entity instanceof PlayerEntity player && noTieji(player) && getCD(stack) == 0) {
+                ItemStack off = player.getOffHandStack();
+                NbtCompound nbt = stack.getOrCreateNbt();
+                Card.Suits firstSuit = null;
+                if (nbt.contains("suit")) firstSuit = Card.Suits.get(nbt.getString("suit"));
+                if (entity.getWorld().getTime() % 100 == 0 && firstSuit != null) {
+                    player.sendMessage(Text.translatable("item.dabaosword.luanji.suit", stack.getName(), firstSuit.suit), true);
+                }
+                Card.Suits suit = getSuit(off);
+                if (isCard(off) && suit != null) {
+                    if (firstSuit == suit) { //如果记录花色和当前牌花色相同，就移除一张牌，获得万箭齐发，技能进入CD
+                        nbt.remove("suit");
+                        stack.setNbt(nbt);
+                        setCD(stack, 15);
+                        off.decrement(1);
+                        give(player, new ItemStack(ModItems.WANJIAN));
+                        voice(player, Sounds.LUANJI);
+                        return;
+                    }
+                    if (firstSuit == null) { //如果没有记录花色，就移除一张牌，记录该花色
+                        nbt.putString("suit", suit.suit);
+                        stack.setNbt(nbt);
+                        off.decrement(1);
+                    }
+                }
+            }
         }
     }
 
@@ -683,9 +711,8 @@ public class SkillItem extends TrinketItem implements Skill {
 
         @Override
         public void activeSkill(PlayerEntity user, ItemStack stack, PlayerEntity target) {
-            ItemStack offStack = user.getOffHandStack();
             int cd = getCD(stack);
-            if (!offStack.isEmpty() && isCard(offStack) && offStack.getCount() > 1) {
+            if (countCards(user) > 0) {
                 if (cd == 0) {
 
                     ItemStack[] stacks = {new ItemStack(ModItems.BINGLIANG_ITEM), new ItemStack(ModItems.TOO_HAPPY_ITEM), new ItemStack(ModItems.DISCARD), new ItemStack(ModItems.FIRE_ATTACK), new ItemStack(ModItems.JIEDAO), new ItemStack(ModItems.JUEDOU), new ItemStack(ModItems.NANMAN), new ItemStack(ModItems.STEAL), new ItemStack(ModItems.TAOYUAN), new ItemStack(ModItems.TIESUO), new ItemStack(ModItems.WANJIAN), new ItemStack(ModItems.WUXIE), new ItemStack(ModItems.WUZHONG)};
@@ -710,7 +737,7 @@ public class SkillItem extends TrinketItem implements Skill {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (entity instanceof PlayerEntity player) viewAs(player, stack, 5, nonBasic, new ItemStack(ModItems.SHAN), Sounds.QINGGUO);
+            if (entity instanceof PlayerEntity player) viewAs(player, stack, 5, isBlackCard, new ItemStack(ModItems.SHAN), Sounds.QINGGUO);
             super.tick(stack, slot, entity);
         }
     }
@@ -726,7 +753,7 @@ public class SkillItem extends TrinketItem implements Skill {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (entity instanceof PlayerEntity player) viewAs(player, stack, 5, nonBasic, new ItemStack(ModItems.DISCARD), Sounds.QIXI);
+            if (entity instanceof PlayerEntity player) viewAs(player, stack, 5, isBlackCard, new ItemStack(ModItems.DISCARD), Sounds.QIXI);
             super.tick(stack, slot, entity);
         }
     }

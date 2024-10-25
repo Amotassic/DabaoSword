@@ -28,6 +28,9 @@ public class CardPileInventory implements Inventory {
         }
     }
 
+    @Override
+    public void onClose(PlayerEntity player) {writeNbtToStack();}
+
     public int getEmptySlot() {
         for (int i = 0; i < size(); ++i) {
             if (!cards.get(i).isEmpty()) continue;
