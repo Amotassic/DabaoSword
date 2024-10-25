@@ -290,9 +290,15 @@ public class SkillItem extends TrinketItem implements Skill {
             if (cd > 0) user.sendMessage(Text.translatable("dabaosword.cooldown").formatted(Formatting.RED), true);
             else {
                 voice(user, Sounds.GONGXIN);
-                openInv(user, target, Text.translatable("gongxin.title"), stack, targetInv(target, false, false, 2));
+                openInv(user, target, Text.translatable("gongxin.title"), stack, false, false, false, 2);
                 setCD(stack, 30);
             }
+        }
+
+        @Override
+        public void onClickGUISlot(PlayerEntity player, ItemStack stack, PlayerEntity target, ItemStack selected, int slot) {
+            cardDiscard(target, selected, 1, false);
+            closeGUI(player);
         }
     }
 
@@ -718,11 +724,23 @@ public class SkillItem extends TrinketItem implements Skill {
                     ItemStack[] stacks = {new ItemStack(ModItems.BINGLIANG_ITEM), new ItemStack(ModItems.TOO_HAPPY_ITEM), new ItemStack(ModItems.DISCARD), new ItemStack(ModItems.FIRE_ATTACK), new ItemStack(ModItems.JIEDAO), new ItemStack(ModItems.JUEDOU), new ItemStack(ModItems.NANMAN), new ItemStack(ModItems.STEAL), new ItemStack(ModItems.TAOYUAN), new ItemStack(ModItems.TIESUO), new ItemStack(ModItems.WANJIAN), new ItemStack(ModItems.WUXIE), new ItemStack(ModItems.WUZHONG)};
                     Inventory inventory = new SimpleInventory(20);
                     for (var stack1 : stacks) inventory.setStack(Arrays.stream(stacks).toList().indexOf(stack1), stack1);
+                    inventory.setStack(18, stack);
 
-                    openSimpleMenu(user, stack, inventory, Text.translatable("item.dabaosword.qice.screen"));
+                    openSimpleMenu(user, user, inventory, Text.translatable("item.dabaosword.qice.screen"));
                 }
                 else {user.sendMessage(Text.translatable("dabaosword.cooldown").formatted(Formatting.RED), true);}
             } else {user.sendMessage(Text.translatable("item.dabaosword.qice.tip").formatted(Formatting.RED), true);}
+        }
+
+        @Override
+        public void onClickGUISlot(PlayerEntity player, ItemStack stack, PlayerEntity target, ItemStack selected, int slot) {
+            if (!player.isCreative()) {
+                while (countCards(player) > 0) {cardDecrement(getCard(player, isCard), 64);}
+                setCD(stack, 20);
+            }
+            give(player, selected);
+            voice(player, Sounds.QICE);
+            closeGUI(player);
         }
     }
 
@@ -813,7 +831,21 @@ public class SkillItem extends TrinketItem implements Skill {
 
         @Override
         public void activeSkill(PlayerEntity user, ItemStack stack, PlayerEntity target) {
-            openInv(user, target, Text.translatable("give_card.title", stack.getName()), stack, targetInv(user, false, false, 2));
+            openInv(user, target, Text.translatable("give_card.title", stack.getName()), stack, true, false, false, 2);
+        }
+
+        @Override
+        public void onClickGUISlot(PlayerEntity player, ItemStack stack, PlayerEntity target, ItemStack selected, int slot) {
+            voice(player, Sounds.RENDE);
+            target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.toHoverableText(), target.getDisplayName())));
+            player.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.toHoverableText(), target.getDisplayName())));
+            cardMove(player, target, selected, 1, CardCBs.T.INV_TO_INV);
+            int cd = getCD(stack);
+            if (player.getHealth() < player.getMaxHealth() && cd == 0 && new Random().nextFloat() < 0.5) {
+                player.heal(5); voice(player, Sounds.RECOVER);
+                player.sendMessage(Text.translatable("recover.tip").formatted(Formatting.GREEN), true);
+                setCD(stack, 30);
+            }
         }
     }
 
@@ -831,17 +863,26 @@ public class SkillItem extends TrinketItem implements Skill {
         @Override
         public void postDamage(ItemStack stack, LivingEntity entity, LivingEntity attacker, float amount) {
             if (attacker instanceof PlayerEntity player && !player.hasStatusEffect(ModItems.COOLDOWN)) {
-                if (entity instanceof PlayerEntity target) openInv(player, target, Text.translatable("dabaosword.discard.title", stack.getName()), stack, targetInv(target, true, false, 1));
+                if (entity instanceof PlayerEntity target) openInv(player, target, Text.translatable("dabaosword.discard.title", stack.getName()), stack, false, true, false, 1);
                 else {
                     voice(player, Sounds.SHANZHUAN);
                     if (new Random().nextFloat() < 0.5) {
                         entity.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, StatusEffectInstance.INFINITE,1));
-                    } else {
-                        entity.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 5));
-                    }
+                    } else {entity.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 5));}
                     player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 5,0,false,false,true));
                 }
             }
+        }
+
+        @Override
+        public void onClickGUISlot(PlayerEntity player, ItemStack stack, PlayerEntity target, ItemStack selected, int slotIndex) {
+            voice(player, Sounds.SHANZHUAN);
+            if (isRedCard.test(selected)) target.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 5));
+            else target.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, -1,1));
+            target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("dabaosword.discard")).append(selected.toHoverableText()));
+            cardDiscard(target, selected, 1, slotIndex < 4);
+            player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 8,0,false,false,true));
+            closeGUI(player);
         }
     }
 
@@ -915,10 +956,22 @@ public class SkillItem extends TrinketItem implements Skill {
                 ItemStack[] stacks = {new ItemStack(ModItems.THUNDER_SHA), new ItemStack(ModItems.FIRE_SHA), new ItemStack(ModItems.SHAN), new ItemStack(ModItems.PEACH), new ItemStack(ModItems.JIU), new ItemStack(ModItems.BINGLIANG_ITEM), new ItemStack(ModItems.TOO_HAPPY_ITEM), new ItemStack(ModItems.DISCARD), new ItemStack(ModItems.FIRE_ATTACK), new ItemStack(ModItems.JIEDAO), new ItemStack(ModItems.JUEDOU), new ItemStack(ModItems.NANMAN), new ItemStack(ModItems.STEAL), new ItemStack(ModItems.TAOYUAN), new ItemStack(ModItems.TIESUO), new ItemStack(ModItems.WANJIAN), new ItemStack(ModItems.WUXIE), new ItemStack(ModItems.WUZHONG)};
                 Inventory inventory = new SimpleInventory(20);
                 for (var stack1 : stacks) inventory.setStack(Arrays.stream(stacks).toList().indexOf(stack1), stack1);
+                inventory.setStack(18, stack);
 
-                openSimpleMenu(user, stack, inventory, Text.translatable("item.dabaosword.taoluan.screen"));
+                openSimpleMenu(user, user, inventory, Text.translatable("item.dabaosword.taoluan.screen"));
             }
             else {user.sendMessage(Text.translatable("item.dabaosword.taoluan.tip").formatted(Formatting.RED), true);}
+        }
+
+        @Override
+        public void onClickGUISlot(PlayerEntity player, ItemStack stack, PlayerEntity target, ItemStack selected, int slotIndex) {
+            give(player, selected);
+            if (!player.isCreative()) {
+                player.timeUntilRegen = 0;
+                player.damage(player.getDamageSources().genericKill(), 4.99f);
+            }
+            voice(player, Sounds.TAOLUAN);
+            closeGUI(player);
         }
     }
 
@@ -964,7 +1017,17 @@ public class SkillItem extends TrinketItem implements Skill {
         @Override
         public void activeSkill(PlayerEntity user, ItemStack stack, PlayerEntity target) {
             int i = getTag(stack);
-            if (i > 0 ) openInv(user, target, Text.translatable("give_card.title", stack.getName()), stack, targetInv(user, false, false, 2));
+            if (i > 0 ) openInv(user, target, Text.translatable("give_card.title", stack.getName()), stack, true, false, false, 2);
+        }
+
+        @Override
+        public void onClickGUISlot(PlayerEntity player, ItemStack stack, PlayerEntity target, ItemStack selected, int slotIndex) {
+            int i = getTag(stack);
+            target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.toHoverableText(), target.getDisplayName())));
+            player.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.toHoverableText(), target.getDisplayName())));
+            cardMove(player, target, selected, 1, CardCBs.T.INV_TO_INV);
+            setTag(stack, i - 1);
+            if (i - 1 == 0) closeGUI(player);
         }
     }
 
@@ -991,8 +1054,21 @@ public class SkillItem extends TrinketItem implements Skill {
         @Override
         public void activeSkill(PlayerEntity user, ItemStack stack, PlayerEntity target) {
             int z = getTag(stack);
-            if (z > 0) openInv(user, user, Text.translatable("zhiheng.title"), stack, targetInv(user, true, false, 2));
+            if (z > 0) openInv(user, user, Text.translatable("zhiheng.title"), stack, true, true, false, 2);
             else user.sendMessage(Text.translatable("zhiheng.fail").formatted(Formatting.RED), true);
+        }
+
+        @Override
+        public void onClickGUISlot(PlayerEntity player, ItemStack stack, PlayerEntity target, ItemStack selected, int slotIndex) {
+            int z = getTag(stack);
+            voice(player, Sounds.ZHIHENG);
+            cardDiscard(player, selected, 1, slotIndex < 4);
+            if (new Random().nextFloat() < 0.1) {
+                draw(player, 2);
+                player.sendMessage(Text.translatable("zhiheng.extra").formatted(Formatting.GREEN), true);
+            } else draw(player);
+            setTag(stack, z - 1);
+            if (z - 1 == 0) closeGUI(player);
         }
     }
 

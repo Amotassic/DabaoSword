@@ -43,7 +43,7 @@ public class DiscardItem extends CardItem {
     public void cardUse(LivingEntity user, ItemStack stack, LivingEntity entity) {
         if (user instanceof PlayerEntity player) {
             if (entity instanceof PlayerEntity target) {
-                openInv(player, target, Text.translatable("dabaosword.discard.title", stack.getName()), stack, targetInv(target, true, false, 1));
+                openInv(player, target, Text.translatable("dabaosword.discard.title", stack.getName()), stack, false, true, false, 1);
             } else {
                 List<ItemStack> stacks = new ArrayList<>();
                 if (isCard(entity.getMainHandStack())) stacks.add(entity.getMainHandStack());

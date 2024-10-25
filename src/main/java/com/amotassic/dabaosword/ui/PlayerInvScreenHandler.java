@@ -3,10 +3,8 @@ package com.amotassic.dabaosword.ui;
 import com.amotassic.dabaosword.api.CardPileInventory;
 import com.amotassic.dabaosword.api.event.CardCBs;
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.item.skillcard.SkillCards;
+import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.util.Sounds;
-import com.amotassic.dabaosword.util.Tags;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -33,16 +31,18 @@ public class PlayerInvScreenHandler extends ScreenHandler {
     private final PlayerEntity target;
     private final ItemStack stack;
     private final int cards;
+    private final boolean isPlayerInv;
 
     public PlayerInvScreenHandler(int syncId, PlayerInventory inv, PacketByteBuf buf) {
-        this(syncId, new SimpleInventory(60), inv.player.getWorld().getPlayerByUuid(buf.readUuid()), buf.readItemStack());
+        this(syncId, new SimpleInventory(60), inv.player.getWorld().getPlayerByUuid(buf.readUuid()));
     }
 
-    public PlayerInvScreenHandler(int syncId, Inventory inventory, PlayerEntity target, ItemStack stack) {
+    public PlayerInvScreenHandler(int syncId, Inventory inventory, PlayerEntity target) {
         super(ModItems.PLAYER_INV_SCREEN_HANDLER, syncId);
         this.target = target;
-        this.stack = stack;
         this.cards = inventory.getStack(54).getCount();
+        this.stack = inventory.getStack(55);
+        this.isPlayerInv = !inventory.getStack(56).isEmpty();
         for (int i = 0; i < 6; ++i) {
             for (int j = 0; j < 9; ++j) {
                 addSlot(new Slot(inventory, j + i * 9, 8 + j * 18, 16 + i * 18));
@@ -53,8 +53,7 @@ public class PlayerInvScreenHandler extends ScreenHandler {
     @Override
     public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
         if (slotIndex >= 0 && slotIndex < 54 && !player.getWorld().isClient) {
-            var targetStack = selected(target, slotIndex); //根据情况来判断需要选择自己的stack还是目标的stack
-            var selfStack = selected(player, slotIndex);
+            var selectedStack = selected(isPlayerInv ? player : target, slotIndex);
 
             if (stack.isOf(ModItems.WANJIAN)) {
                 ItemStack mainHand = player.getMainHandStack(); var mainCopy = mainHand.copy();
@@ -62,7 +61,7 @@ public class PlayerInvScreenHandler extends ScreenHandler {
                 ItemStack selected = ItemStack.EMPTY; //对选择的卡牌进行赋值
                 if (slotIndex == 8) selected = player.getOffHandStack();
                 if (8 < slotIndex && slotIndex < 45) selected = cards.getStack(slotIndex - 9);
-                if (slotIndex >= 45) selected = selfStack;
+                if (slotIndex >= 45) selected = selectedStack;
                 var copy = selected.copy(); //复制一份已选物品方便代码操作
 
                 if (!selected.isEmpty()) {
@@ -93,19 +92,19 @@ public class PlayerInvScreenHandler extends ScreenHandler {
 
             if (stack.isOf(ModItems.SUNSHINE_SMILE)) {
                 ItemStack mainHand = player.getMainHandStack();
-                if (selfStack.isEmpty()) { //如果玩家点了一个空的格子————
+                if (selectedStack.isEmpty()) { //如果玩家点了一个空的格子————
                     int emptySlot = player.getInventory().getEmptySlot();
                     if (emptySlot != -1) { //如果主手不为空，就把主手的物品移动到其他空格子，主手设为空
                         player.getInventory().setStack(emptySlot, mainHand.copy());
                         mainHand.setCount(0);
                     }
                 } else { //如果玩家选了一个非空的格子，就交换主手和该格子的物品
-                    ItemStack mainCopy = mainHand.copy(); ItemStack swapCopy = selfStack.copy();
-                    if (player.getOffHandStack().equals(selfStack)) {
+                    ItemStack mainCopy = mainHand.copy(); ItemStack swapCopy = selectedStack.copy();
+                    if (player.getOffHandStack().equals(selectedStack)) {
                         player.setStackInHand(Hand.MAIN_HAND, swapCopy);
                         player.setStackInHand(Hand.OFF_HAND, mainCopy);
                     } else {
-                        int swapSlot = player.getInventory().getSlotWithStack(selfStack);
+                        int swapSlot = player.getInventory().getSlotWithStack(selectedStack);
                         player.setStackInHand(Hand.MAIN_HAND, swapCopy);
                         player.getInventory().setStack(swapSlot, mainCopy);
                     }
@@ -113,76 +112,25 @@ public class PlayerInvScreenHandler extends ScreenHandler {
                 closeGUI(player);
             }
 
-            if (!selfStack.isEmpty()) {
+            if (!selectedStack.isEmpty()) {
+                if (stack.getItem() instanceof SkillItem skill) skill.onClickGUISlot(player, stack, target, selectedStack, slotIndex);
 
-                if (stack.getItem() == SkillCards.RENDE) {
-                    voice(player, Sounds.RENDE);
-                    target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.toHoverableText(), target.getDisplayName())));
-                    player.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.toHoverableText(), target.getDisplayName())));
-                    cardMove(player, target, selfStack, 1, CardCBs.T.INV_TO_INV);
-                    int cd = getCD(stack);
-                    if (player.getHealth() < player.getMaxHealth() && cd == 0 && new Random().nextFloat() < 0.5) {
-                        player.heal(5); voice(player, Sounds.RECOVER);
-                        player.sendMessage(Text.translatable("recover.tip").formatted(Formatting.GREEN), true);
-                        setCD(stack, 30);
-                    }
-                }
-
-                if (stack.getItem() == SkillCards.YIJI) {
-                    int i = getTag(stack);
-                    target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.toHoverableText(), target.getDisplayName())));
-                    player.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.toHoverableText(), target.getDisplayName())));
-                    cardMove(player, target, selfStack, 1, CardCBs.T.INV_TO_INV);
-                    setTag(stack, i - 1);
-                    if (i - 1 == 0) closeGUI(player);
-                }
-            }
-
-            if (!targetStack.isEmpty()) {
-
-                if (stack.getItem() == SkillCards.SHANZHUAN) {
-                    voice(player, Sounds.SHANZHUAN);
-                    if (targetStack.isIn(Tags.Items.BASIC_CARD)) target.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 5));
-                    else target.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, StatusEffectInstance.INFINITE,1));
-                    target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("dabaosword.discard")).append(targetStack.toHoverableText()));
-                    cardDiscard(target, targetStack, 1, slotIndex < 4);
-                    player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 8,0,false,false,true));
-                    closeGUI(player);
-                }
-
-                if (stack.getItem() == SkillCards.GONGXIN) {
-                    cardDiscard(target, targetStack, 1, false);
-                    closeGUI(player);
-                }
-
-                if (stack.getItem() == SkillCards.ZHIHENG) {
-                    int z = getTag(stack);
-                    voice(player, Sounds.ZHIHENG);
-                    cardDiscard(player, targetStack, 1, slotIndex < 4);
-                    if (new Random().nextFloat() < 0.1) {
-                        draw(player, 2);
-                        player.sendMessage(Text.translatable("zhiheng.extra").formatted(Formatting.GREEN), true);
-                    } else draw(player);
-                    setTag(stack, z - 1);
-                    if (z - 1 == 0) closeGUI(player);
-                }
-
-                if (stack.getItem() == ModItems.STEAL) {
+                if (stack.isOf(ModItems.STEAL)) {
                     voice(player, Sounds.SHUNSHOU);
-                    target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("dabaosword.steal")).append(targetStack.toHoverableText()));
+                    target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("dabaosword.steal")).append(selectedStack.toHoverableText()));
                     CardCBs.T type = slotIndex < 4 ? CardCBs.T.EQUIP_TO_INV : CardCBs.T.INV_TO_INV;
-                    if (isCard(targetStack)) cardMove(target, player, targetStack, 1, type);
-                    //如果选择的物品是卡牌才触发事件
-                    else {give(player, targetStack.copyWithCount(1)); /*顺手：复制一个物品*/
-                        targetStack.decrement(1);}
+                    if (isCard(selectedStack)) cardMove(target, player, selectedStack, 1, type);
+                        //如果选择的物品是卡牌才触发事件
+                    else {give(player, selectedStack.copyWithCount(1)); /*顺手：复制一个物品*/
+                        selectedStack.decrement(1);}
                     nonPreUseCardDecrement(player, stack, target);
                     closeGUI(player);
                 }
 
-                if (stack.getItem() == ModItems.DISCARD) {
+                if (stack.isOf(ModItems.DISCARD)) {
                     voice(player, Sounds.GUOHE);
-                    target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("dabaosword.discard")).append(targetStack.toHoverableText()));
-                    cardDiscard(target, targetStack, 1, slotIndex < 4);
+                    target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("dabaosword.discard")).append(selectedStack.toHoverableText()));
+                    cardDiscard(target, selectedStack, 1, slotIndex < 4);
                     nonPreUseCardDecrement(player, stack, target);
                     closeGUI(player);
                 }
@@ -213,10 +161,6 @@ public class PlayerInvScreenHandler extends ScreenHandler {
     @Override
     public boolean canUse(PlayerEntity player) {
         return !player.hasStatusEffect(ModItems.COOLDOWN2) || (player.hasStatusEffect(ModItems.COOLDOWN2) && Objects.requireNonNull(player.getStatusEffect(ModItems.COOLDOWN2)).getAmplifier() != 2);
-    }
-
-    private void closeGUI(PlayerEntity player) {
-        player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 1,2,false,false,false));
     }
 
 }

@@ -30,7 +30,7 @@ public class StealItem extends CardItem {
     public void cardUse(LivingEntity user, ItemStack stack, LivingEntity entity) {
         if (user instanceof PlayerEntity player) {
             if (entity instanceof PlayerEntity target) {
-                openInv(player, target, Text.translatable("dabaosword.steal.title"), stack, targetInv(target, true, true, 1));
+                openInv(player, target, Text.translatable("dabaosword.steal.title"), stack, false, true, true, 1);
             } else {
                 List<ItemStack> stacks = new ArrayList<>();
                 if (isCard(entity.getMainHandStack())) stacks.add(entity.getMainHandStack());

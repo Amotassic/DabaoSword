@@ -60,7 +60,7 @@ public class ModTools {
     public static final Predicate<ItemStack> canSaveDying = s -> s.isOf(ModItems.JIU) || s.isOf(ModItems.PEACH);
     public static final Predicate<ItemStack> isSha = s -> s.getItem() instanceof CardItem.Sha;
     //public static final Predicate<ItemStack> nonBasic = s -> s.isIn(Tags.Items.CARD) && !s.isIn(Tags.Items.BASIC_CARD);
-    //不立即生效而产生消耗的卡牌，也就是说需要写额外的消耗逻辑来处理
+    /**不立即生效而产生消耗的卡牌，也就是说需要写额外的消耗逻辑来处理*/
     public static final Predicate<ItemStack> notImmediatelyEffect =  s -> s.isOf(ModItems.DISCARD) || s.isOf(ModItems.STEAL);
     //判断是否是卡牌
     public static final Predicate<ItemStack> isCard = s -> s.isIn(Tags.Items.CARD);
@@ -74,7 +74,7 @@ public class ModTools {
 
     public static boolean noTieji(LivingEntity entity) {return !entity.hasStatusEffect(ModItems.TIEJI);}
 
-    //判断是否有某个饰品
+    /**判断是否有某个饰品*/
     public static boolean hasTrinket(Item item, LivingEntity entity) {
         if (item instanceof SkillItem) {
             if (item.getDefaultStack().isIn(Tags.Items.LOCK_SKILL)) return !trinketItem(item, entity).isEmpty();
@@ -95,17 +95,17 @@ public class ModTools {
         return optional.map(TrinketComponent::getAllEquipped).orElse(Collections.emptyList());
     }
 
-    //判断技能是否能触发（依据是否为锁定技和是否有铁骑效果）
+    /**判断技能是否能触发（依据是否为锁定技和是否有铁骑效果）*/
     public static boolean canTrigger(Item item, LivingEntity entity) {
         if (item.getDefaultStack().isIn(Tags.Items.LOCK_SKILL)) return true;
         return noTieji(entity);
     }
 
-    //判断牌堆和背包中是否有符合条件的卡牌
+    /**判断牌堆和背包中是否有符合条件的卡牌*/
     public static boolean hasCard(LivingEntity entity, Predicate<ItemStack> predicate) {
         return !getCard(entity, predicate).getRight().isEmpty();
     }
-    //获取牌堆或背包中的一张符合条件的卡牌
+    /**获取牌堆或背包中的一张符合条件的卡牌*/
     public static Pair<CardPileInventory, ItemStack> getCard(LivingEntity entity, Predicate<ItemStack> predicate) {
         if (entity instanceof PlayerEntity player) {
             CardPileInventory inventory = new CardPileInventory(player);
@@ -117,12 +117,12 @@ public class ModTools {
         return new Pair<>(null, getItem(entity, predicate));
     }
 
-    //专为处理卡牌减少而写的方法，牌堆中的卡牌减少，需要保存nbt
+    /**专为处理卡牌减少而写的方法，牌堆中的卡牌减少，需要保存nbt*/
     public static void cardDecrement(Pair<CardPileInventory, ItemStack> stack, int count) {
         if (stack.getLeft() == null) stack.getRight().decrement(count);
         else stack.getLeft().removeStack(stack.getRight(), count);
     }
-    //另一个用于处理卡牌减少的方法
+    /**另一个用于处理卡牌减少的方法，暂时只用于卡牌弃置和移动的方法中*/
     public static void cardDecrement(LivingEntity entity, ItemStack stack, int count) {
         var pair = getCard(entity, s -> ItemStack.areEqual(s, stack));
         //如果是牌堆中的卡牌，需要调用牌堆的方法来减少，以保存nbt
@@ -130,7 +130,7 @@ public class ModTools {
         //那么为什么这里没有else呢？因为此stack非彼pair.getRight()，如果不减少会出bug
         stack.decrement(count);
     }
-    //卡牌使用后减少，不需要传入原始的itemStack
+    /**卡牌使用后减少，不需要传入原始的itemStack*/
     public static void cardUseAndDecrement(LivingEntity user, ItemStack card) {
         //即使创造模式，无懈可击也会消耗，为什么呢？我也不知道
         if (card.isOf(ModItems.WUXIE)) cardDecrement(getCard(user, s -> s.isOf(ModItems.WUXIE)), 1);
@@ -139,18 +139,18 @@ public class ModTools {
             cardDecrement(getCard(user, s -> s.isOf(card.getItem())), 1);
         }
     }
-    //顾名思义，就是没有触发UsePre事件，因此需要这个方法来扣除卡牌
+    /**顾名思义，就是没有触发UsePre事件，因此需要这个方法来扣除卡牌*/
     public static void nonPreUseCardDecrement(LivingEntity user, ItemStack stack, LivingEntity target) {
         var card = stack.copy();
         cardUseAndDecrement(user, stack);
         cardUsePost(user, card, target);
     }
 
-    //判断生物是否有某个物品
+    /**判断生物是否有某个物品*/
     public static boolean hasItem(@NotNull LivingEntity entity, Predicate<ItemStack> predicate) {
         return !getItem(entity, predicate).isEmpty();
     }
-    //获取玩家背包中第一个符合条件的物品，或者生物的符合条件的主副手物品
+    /**获取玩家背包中第一个符合条件的物品，或者生物的符合条件的主副手物品*/
     public static ItemStack getItem(@NotNull LivingEntity entity, Predicate<ItemStack> predicate) {
         if (entity instanceof PlayerEntity player) {
             for (int i = 0; i < player.getInventory().size(); ++i) {
@@ -164,7 +164,7 @@ public class ModTools {
         return ItemStack.EMPTY;
     }
 
-    //播放语音
+    /**播放语音*/
     public static void voice(@NotNull LivingEntity entity, SoundEvent sound) {voice(entity, sound, 2);}
     public static void voice(@NotNull LivingEntity entity, SoundEvent sound, float volume) {
         if (entity.getWorld() instanceof ServerWorld world) {
@@ -172,16 +172,16 @@ public class ModTools {
         }
     }
 
-    //数玩家所有牌的数量
+    /**数玩家所有牌的数量*/
     public static int countCards(PlayerEntity player) {return countCard(player, isCard);}
-    //数玩家牌堆背包和物品栏的卡牌
+    /**数玩家牌堆背包和物品栏的卡牌*/
     public static int countCard(PlayerEntity player, Predicate<ItemStack> predicate) {
         int n = 0;
         for (var card : new CardPileInventory(player).cards) {if (predicate.test(card)) n += card.getCount();}
         n += count(player, predicate);
         return n;
     }
-    //只数玩家物品栏里的物品
+    /**只数玩家物品栏里的物品*/
     public static int count(PlayerEntity player, Predicate<ItemStack> predicate) {
         PlayerInventory inv = player.getInventory();
         int n = 0;
@@ -192,7 +192,7 @@ public class ModTools {
         return n;
     }
 
-    //自定义战利品表解析
+    /**自定义战利品表解析*/
     public static Identifier parseLootTable(Identifier lootTableId) {
         Gson gson = new Gson();
         InputStreamReader reader = new InputStreamReader(Objects.requireNonNull(ModTools.class.getResourceAsStream("/data/dabaosword/" + lootTableId.getPath())));
@@ -311,7 +311,7 @@ public class ModTools {
         stack.setNbt(nbt);
     }
 
-    //转化卡牌技能通用方法
+    /**转化卡牌技能通用方法*/
     public static void viewAs(PlayerEntity player, ItemStack skill, int CD, Predicate<ItemStack> predicate, ItemStack result, SoundEvent sound) {
         if (!player.getWorld().isClient && noTieji(player) && getCD(skill) == 0) {
             ItemStack stack = player.getOffHandStack();
@@ -324,13 +324,12 @@ public class ModTools {
         }
     }
 
-    public static void openInv(PlayerEntity player, PlayerEntity target, Text title, ItemStack stack, Inventory targetInv) {
+    public static void openInv(PlayerEntity player, PlayerEntity target, Text title, ItemStack stack, boolean openSelfInv, boolean equip, boolean armor, int cards) {
         if (!player.getWorld().isClient) {
             player.openHandledScreen(new ExtendedScreenHandlerFactory() {
                 @Override
                 public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
                     buf.writeUuid(target.getUuid());
-                    buf.writeItemStack(stack);
                 }
 
                 @Override
@@ -338,13 +337,14 @@ public class ModTools {
 
                 @Override
                 public @NotNull ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                    return new PlayerInvScreenHandler(syncId, targetInv, target, stack);
+                    PlayerEntity invOwner = openSelfInv ? player : target;
+                    return new PlayerInvScreenHandler(syncId, targetInv(invOwner, equip, armor, cards, stack, openSelfInv), target);
                 }
             });
         }
     }
 
-    public static Inventory targetInv(PlayerEntity target, Boolean equip, Boolean armor, int cards) {
+    public static Inventory targetInv(PlayerEntity invOwner, Boolean equip, Boolean armor, int cards, ItemStack eventStack, boolean openSelfInv) {
         /*
         Boolean equip: 是否显示装备牌
         Boolean armor: 是否显示玩家的盔甲
@@ -352,7 +352,7 @@ public class ModTools {
         */
         Inventory targetInv = new SimpleInventory(60);
         if(equip) {
-            for(var entry : allTrinkets(target)) {
+            for(var entry : allTrinkets(invOwner)) {
                 ItemStack stack = entry.getRight();
                 if (stack.streamTags().toList().equals(ModItems.GUDING_WEAPON.getDefaultStack().streamTags().toList())) targetInv.setStack(0, stack);
                 if (stack.streamTags().toList().equals(ModItems.BAGUA.getDefaultStack().streamTags().toList())) targetInv.setStack(1, stack);
@@ -361,41 +361,43 @@ public class ModTools {
             }//四件装备占1~4格
         }
 
-        List<ItemStack> armors = List.of(target.getEquippedStack(EquipmentSlot.HEAD), target.getEquippedStack(EquipmentSlot.CHEST), target.getEquippedStack(EquipmentSlot.LEGS), target.getEquippedStack(EquipmentSlot.FEET));
+        List<ItemStack> armors = List.of(invOwner.getEquippedStack(EquipmentSlot.HEAD), invOwner.getEquippedStack(EquipmentSlot.CHEST), invOwner.getEquippedStack(EquipmentSlot.LEGS), invOwner.getEquippedStack(EquipmentSlot.FEET));
         for (ItemStack stack : armors) {
             if (armor && !stack.isEmpty()) targetInv.setStack(armors.indexOf(stack) + 4, stack);
         }//4件盔甲占5~8格
 
-        ItemStack off = target.getOffHandStack();
-        DefaultedList<ItemStack> targetInventory = target.getInventory().main;
-        List<Integer> cardSlots = IntStream.range(0, targetInventory.size()).filter(i -> isCard(targetInventory.get(i))).boxed().toList();
+        ItemStack off = invOwner.getOffHandStack();
+        DefaultedList<ItemStack> inv = invOwner.getInventory().main;
+        List<Integer> cardSlots = IntStream.range(0, inv.size()).filter(i -> isCard(inv.get(i))).boxed().toList();
         if (cards == 2) {
-            var inventory = new CardPileInventory(target).cards;
+            var inventory = new CardPileInventory(invOwner).cards;
             for (var stack : inventory) {targetInv.setStack(inventory.indexOf(stack) + 9, stack);}
             if (!cardSlots.isEmpty()) { //卡牌背包中的牌显示在中间36格
                 for(Integer i : cardSlots) {
                     if (i > 8) break; //快捷栏的牌显示在最底层9格
-                    targetInv.setStack(i + 45, targetInventory.get(i));
+                    targetInv.setStack(i + 45, inv.get(i));
                 }
             }
             if (isCard(off)) targetInv.setStack(8, off);
         }
         if (cards == 3) {
-            for (ItemStack stack : targetInventory) {
-                if (!stack.isEmpty()) targetInv.setStack(targetInventory.indexOf(stack) + 9, stack);
+            for (ItemStack stack : inv) {
+                if (!stack.isEmpty()) targetInv.setStack(inv.indexOf(stack) + 9, stack);
             }
             targetInv.setStack(8, off);
         }
         targetInv.setStack(54, new ItemStack(ModItems.GAIN_CARD, cards));
+        targetInv.setStack(55, eventStack);//用于传递stack信息
+        if (openSelfInv) targetInv.setStack(56, new ItemStack(ModItems.GAIN_CARD));
         return targetInv;
     }
 
-    public static void openSimpleMenu(PlayerEntity player, ItemStack stack, Inventory inventory, Text title) {
+    public static void openSimpleMenu(PlayerEntity player, PlayerEntity target, Inventory inventory, Text title) {
         if (!player.getWorld().isClient) {
             player.openHandledScreen(new ExtendedScreenHandlerFactory() {
                 @Override
                 public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
-                    buf.writeItemStack(stack);
+                    buf.writeUuid(target.getUuid());
                 }
 
                 @Override
@@ -403,10 +405,14 @@ public class ModTools {
 
                 @Override
                 public @NotNull ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                    return new SimpleMenuHandler(syncId, inventory, stack);
+                    return new SimpleMenuHandler(syncId, inventory, target);
                 }
             });
         }
+    }
+
+    public static void closeGUI(PlayerEntity player) {
+        player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 1,2,false,false,false));
     }
 
     public static boolean cardUsePre(LivingEntity user, ItemStack stack, @Nullable LivingEntity target) {
@@ -417,11 +423,8 @@ public class ModTools {
         CardCBs.USE_POST.invoker().cardUsePost(user, stack, target);
     }
 
-    /**
-     * 以下两个调用事件监听器的方法，除非stack来自牌堆背包，否则一定要传入原始的stack！
-     * 因为还没有真正到事件触发时就已经移除了卡牌，所以事件中使用的stack是复制的！
-     * */
-
+    /**调用卡牌弃置监听器的方法，除非stack来自牌堆背包，否则一定要传入原始的stack！
+     * 因为还没有真正到事件触发时就已经移除了卡牌，所以事件中使用的stack是复制的！*/
     public static void cardDiscard(LivingEntity entity, ItemStack stack, int count, boolean fromEquip) {
         ItemStack copy = stack.copyWithCount(count);
         //移除被弃置的牌
@@ -429,6 +432,8 @@ public class ModTools {
         CardCBs.DISCARD.invoker().cardDiscard(entity, copy, count, fromEquip);
     }
 
+    /**调用卡牌移动监听器的方法，除非stack来自牌堆背包，否则一定要传入原始的stack！
+     * 因为还没有真正到事件触发时就已经移除了卡牌，所以事件中使用的stack是复制的！*/
     public static void cardMove(LivingEntity from, PlayerEntity to, ItemStack stack, int count, CardCBs.T type) {
         ItemStack copy = stack.copyWithCount(count);
         //移除来源的牌

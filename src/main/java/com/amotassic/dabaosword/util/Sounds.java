@@ -7,6 +7,8 @@ import net.minecraft.util.Identifier;
 
 public class Sounds {
     public static final SoundEvent NAHIDA = register("nahida");
+    public static final SoundEvent WUSHENG = register("wusheng");
+    public static final SoundEvent WEIMU = register("weimu");
     public static final SoundEvent SHENSU = register("shensu");
     public static final SoundEvent LIANYING = register("lianying");
     public static final SoundEvent XIAOJI = register("xiaoji");

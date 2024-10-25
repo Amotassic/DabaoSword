@@ -27,7 +27,7 @@ public class ClientTickEnd {
             .registerKeyBinding(new KeyBinding("key.dabaosword.active_skill", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_J, "category.dabaosword.keybindings"));
 
     private static final KeyBinding SELECT_CARD = KeyBindingHelper
-            .registerKeyBinding(new KeyBinding("key.dabaosword.select_card", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "category.dabaosword.keybindings"));
+            .registerKeyBinding(new KeyBinding("key.dabaosword.select_card", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_K, "category.dabaosword.keybindings"));
 
     public static void initialize() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {

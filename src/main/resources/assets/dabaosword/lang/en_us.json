@@ -59,6 +59,11 @@
   "item.dabaosword.gain_card.tooltip": "Upon use, obtain one card",
   "item.dabaosword.card_pile": "Card Pile",
   "item.dabaosword.card_pile.tooltip": "In survival or adventure mode, grants players two cards per minute",
+  "item.dabaosword.card_pile.tip1": "自动将不处于快捷栏的牌收入其中",
+  "item.dabaosword.card_pile.tip2": "按K键可选一张牌快速替换到主手上",
+  "item.dabaosword.card_pile.tip3": "shift+K 快速取物",
+  "item.dabaosword.card_pile.tip4": "ctrl+K 打开牌包，若你的手牌数大于10，可按delete键弃置牌",
+  "item.dabaosword.card_pile.tip5": "ctrl+shift+K 取消上一次自动闪避（如果你想卖血）",
   "item.dabaosword.wuzhong": "Something out of Nothing",
   "item.dabaosword.wuzhong.tooltip1": "Upon use, obtain two cards",
   "item.dabaosword.wuzhong.tooltip2": "All things sprang from something. Something sprang from nothing.  ——《Tao Te Ching》",
@@ -258,6 +263,8 @@
 
   //"Sounds"
   "sounds.dabaosword.nahida": "Nahida: 所闻遍计",
+  "sounds.dabaosword.wusheng": "武圣：发动",
+  "sounds.dabaosword.weimu": "帷幕：发动",
   "sounds.dabaosword.shensu": "Swift: Activated",
   "sounds.dabaosword.lianying": "Linked Camps: Activated",
   "sounds.dabaosword.xiaoji": "Fierce Princess: Activated",

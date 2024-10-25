@@ -10,6 +10,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
@@ -23,6 +24,12 @@ public class CardPile extends Equipment {
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         tooltip.add(Text.translatable("item.dabaosword.card_pile.tooltip"));
+        tooltip.add(Text.empty());
+        tooltip.add(Text.translatable("item.dabaosword.card_pile.tip1").formatted(Formatting.BOLD));
+        tooltip.add(Text.translatable("item.dabaosword.card_pile.tip2").formatted(Formatting.BOLD));
+        tooltip.add(Text.translatable("item.dabaosword.card_pile.tip3").formatted(Formatting.BOLD));
+        tooltip.add(Text.translatable("item.dabaosword.card_pile.tip4").formatted(Formatting.BOLD));
+        tooltip.add(Text.translatable("item.dabaosword.card_pile.tip5").formatted(Formatting.BOLD));
     }
 
     @Override

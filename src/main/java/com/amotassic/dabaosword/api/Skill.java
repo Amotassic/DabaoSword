@@ -7,22 +7,19 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Pair;
 
 public interface Skill {
-
-    //在攻击目标后，造成伤害前触发
+    /**在攻击目标后，造成伤害前触发*/
     default void preAttack(ItemStack stack, LivingEntity target, PlayerEntity attacker) {}
 
-    //在近战攻击造成伤害后触发
+    /**在近战攻击造成伤害后触发*/
     default void postAttack(ItemStack stack, LivingEntity target, LivingEntity attacker, float amount) {}
 
-    //只要攻击造成伤害即可触发，包括远程
+    /**只要攻击造成伤害即可触发，包括远程*/
     default void postDamage(ItemStack stack, LivingEntity target, LivingEntity attacker, float amount) {}
 
-    //受到伤害后触发
+    /**受到伤害后触发*/
     default void onHurt(ItemStack stack, LivingEntity entity, DamageSource source, float amount) {}
 
-    /**
-     *当发动技能键按下后，若玩家没有铁骑效果即可触发，需要继承{@link com.amotassic.dabaosword.item.skillcard.SkillItem.ActiveSkill}或者{@link com.amotassic.dabaosword.item.skillcard.SkillItem.ActiveSkillWithTarget}才会生效
-     */
+    /**当发动技能键按下后，若玩家没有铁骑效果即可触发，需要继承{@link com.amotassic.dabaosword.item.skillcard.SkillItem.ActiveSkill}或者{@link com.amotassic.dabaosword.item.skillcard.SkillItem.ActiveSkillWithTarget}才会生效*/
     default void activeSkill(PlayerEntity user, ItemStack stack, PlayerEntity target) {}
 
     /**
@@ -39,10 +36,12 @@ public interface Skill {
         return new Pair<>(0f, 0f);
     }
     //========================================分割线========================================//
-    //仅关系到cancelDamage方法的触发，与以上方法没有联系。如果不重写这个方法输出优先级，则cancelDamage方法无效！
+    /**仅关系到{@link Skill#cancelDamage(LivingEntity, DamageSource, float)}的触发。如果不覆写这个方法输出优先级，则cancelDamage方法无效！*/
     default Priority getPriority(LivingEntity target, DamageSource source, float amount) {return null;}
 
-    //取消伤害，在伤害结算之前触发，输出true之后，则伤害无效
+    /**必须同时覆写{@link Skill#getPriority(LivingEntity, DamageSource, float)}！否则此方法无效！
+     * <p>
+     * 取消伤害，在伤害结算之前触发，若输出为true，则伤害无效*/
     default boolean cancelDamage(LivingEntity target, DamageSource source, float amount) {return false;}
 
     enum Priority {
@@ -52,4 +51,7 @@ public interface Skill {
         LOW,        //一般用于卡牌，会产生消耗，如闪
         LOWEST      //最低优先级，用于确认已经绕过其余所有免伤造成伤害后，最后取消伤害，如绝情：造成伤害后触发
     }
+
+    /**当玩家发动技能打开GUI界面后，点击GUI界面某个非空槽位时触发*/
+    default void onClickGUISlot(PlayerEntity player, ItemStack stack, PlayerEntity target, ItemStack selected, int slotIndex) {}
 }
