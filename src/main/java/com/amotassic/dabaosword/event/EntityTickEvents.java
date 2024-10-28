@@ -96,12 +96,21 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
                 }
             }
 
-            int level1 = 0; int level2 = 0; //马术和飞影的效果
-            if (shouldMashu(player)) {
-                if (hasTrinket(ModItems.CHITU, player)) level1++;
-                if (hasTrinket(SkillCards.MASHU, player)) level1++;
-                if (level1 > 0) player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,level1,false,false,true));
+            //处理所有加触及距离和近战防御距离的效果
+            int level1 = 0; int longHand = 0; int level2 = 0;
+            ItemStack mainHand = player.getMainHandStack();
+            if (hasTrinket(SkillCards.BENXI, player)) longHand += getTag(trinketItem(SkillCards.BENXI, player));
+            if (mainHand.isOf(ModItems.DISCARD) || mainHand.isOf(ModItems.JUEDOU)) longHand += 114;
+            if (noTieji(player)) {
+                if (hasTrinket(SkillCards.LIEGONG, player) && !player.hasStatusEffect(ModItems.COOLDOWN)) longHand += 13;
+                if (hasTrinket(SkillCards.WUSHENG, player) && isSha.test(mainHand)) longHand += 13;
             }
+            if (hasTrinket(ModItems.CHITU, player)) level1++;
+            if (hasTrinket(SkillCards.MASHU, player)) level1++;
+            //如果有马术或赤兔，则等级加上额外加成数，否则为额外加成数-1
+            level1 = level1 > 0 ? level1 + longHand : longHand - 1;
+            if (level1 >= 0) player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,level1,false,false,true));
+
             if (hasTrinket(ModItems.DILU, player)) level2++;
             if (hasTrinket(SkillCards.FEIYING, player)) level2++;
             if (level2 > 0) player.addStatusEffect(new StatusEffectInstance(ModItems.DEFEND, 10,level2,false,false,true));
@@ -114,10 +123,6 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
             }
 
         }
-    }
-
-    boolean shouldMashu(PlayerEntity player) {
-        return !hasTrinket(SkillCards.BENXI, player) && player.getMainHandStack().getItem() != ModItems.JUEDOU && player.getMainHandStack().getItem() != ModItems.DISCARD;
     }
 
     boolean isLooking(PlayerEntity player, Entity entity) {

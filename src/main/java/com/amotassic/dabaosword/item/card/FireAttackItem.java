@@ -5,6 +5,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Vec3d;
@@ -28,7 +29,8 @@ public class FireAttackItem extends CardItem {
     public void cardUse(LivingEntity user, ItemStack stack, LivingEntity target) {
         World world = user.getWorld();
         Vec3d momentum = user.getRotationVector().multiply(3);
-        FireballEntity fireballEntity = new FireballEntity(world, user, momentum.getX(), momentum.getY() ,momentum.getZ(), 3);
+        FireballEntity fireballEntity = new FireballEntity(world, user, momentum.getX(), momentum.getY(), momentum.getZ(), 3);
+        fireballEntity.setCustomName(Text.of("a"));
         fireballEntity.setPosition(user.getX(), user.getBodyY(0.5) + 0.5, user.getZ());
         world.spawnEntity(fireballEntity);
         voice(user, Sounds.HUOGONG);

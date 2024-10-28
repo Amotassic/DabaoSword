@@ -51,7 +51,8 @@
   "dabaosword.cooldown_end": "技能冷却时间已结束",
   "item.dabaosword.shan": "闪",
   "item.dabaosword.shan.tooltip": "主动使用后，向前冲刺一段距离，1秒内无敌",
-  "item.dabaosword.sha&shan.tooltip": "位于快捷栏可自动触发",
+  "item.dabaosword.shan.tip": "受伤时自动触发闪避",
+  "item.dabaosword.sha.tip": "位于快捷栏可自动触发",
   "item.dabaosword.jiu": "酒",
   "item.dabaosword.jiu.tooltip": "使用后获得10秒力量效果",
   "item.dabaosword.recover.tip": "濒死时自动触发回血效果",
@@ -260,6 +261,11 @@
   "item.dabaosword.shensu.tooltip1": "你的背包空余空间越多，移速越高（最高到1.5倍）",
   "item.dabaosword.shensu.tooltip2": "若不处于CD中，你的攻击伤害随当前速度而增加",
   "shensu.info": "神速：当前速度：%1$s 增伤倍率：%2$s",
+  "item.dabaosword.wusheng": "武圣",
+  "item.dabaosword.wusheng.tooltip1": "将副手上的一张红色牌转化为杀",
+  "item.dabaosword.wusheng.tooltip2": "你手上拿着杀时，触及距离+13",
+  "item.dabaosword.weimu": "帷幕",
+  "item.dabaosword.weimu.tooltip": "锁定技，黑色锦囊牌对你无效",
 
   //"配音"
   "sounds.dabaosword.nahida": "纳西妲：所闻遍计",

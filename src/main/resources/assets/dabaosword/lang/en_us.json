@@ -51,7 +51,8 @@
   "dabaosword.cooldown_end": "Cooldown time has ended",
   "item.dabaosword.shan": "Dash",
   "item.dabaosword.shan.tooltip": "Upon use, dash forward and be invulnerable for 1 second",
-  "item.dabaosword.sha&shan.tooltip": "Automatically triggered when placed in hot bar",
+  "item.dabaosword.shan.tip": "Automatically triggered when getting hit by an attack",
+  "item.dabaosword.sha.tip": "Automatically triggered when placed in hot bar",
   "item.dabaosword.jiu": "Wine",
   "item.dabaosword.jiu.tooltip": "grants Strength for 10 seconds upon use",
   "item.dabaosword.recover.tip": "Automatically triggers healing effect when close to death",
@@ -260,6 +261,11 @@
   "item.dabaosword.shensu.tooltip1": "The more empty slots you have in your inventory, the faster your movement speed (up to 1.5x)",
   "item.dabaosword.shensu.tooltip2": "If not in cooldown, your attack damage increases with your current speed",
   "shensu.info": "Swift: Current Speed: %1$s  Damage Multiplier: %2$s",
+  "item.dabaosword.wusheng": "武圣",
+  "item.dabaosword.wusheng.tooltip1": "将副手上的一张红色牌转化为杀",
+  "item.dabaosword.wusheng.tooltip2": "你手上拿着杀时，触及距离+13",
+  "item.dabaosword.weimu": "帷幕",
+  "item.dabaosword.weimu.tooltip": "锁定技，黑色锦囊牌对你无效",
 
   //"Sounds"
   "sounds.dabaosword.nahida": "Nahida: 所闻遍计",

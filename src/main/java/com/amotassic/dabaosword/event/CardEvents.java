@@ -31,10 +31,18 @@ public class CardEvents implements CardCBs.PostUse, CardCBs.Discard, CardCBs.Mov
         //不论如何先消耗一张卡牌再说，除了拆顺
         if (!notImmediatelyEffect.test(card)) cardUseAndDecrement(user, stack);
 
-        if (canTrigger(card) && hasCard(target, s -> s.isOf(ModItems.WUXIE))) {
-            cardUsePre(target, new ItemStack(ModItems.WUXIE), null); //递归触发无懈，因此不用再写消耗和执行效果
-            if (notImmediatelyEffect.test(card)) cardUseAndDecrement(user, stack); //补充一个拆顺的消耗，别出bug了
-            return false;
+        if (target != null) {
+            if (isBlackCard.test(card) && card.isIn(Tags.Items.ARMOURY_CARD) && hasTrinket(SkillCards.WEIMU, target)) {
+                voice(target, Sounds.WEIMU);
+                if (notImmediatelyEffect.test(card)) cardUseAndDecrement(user, stack);
+                return false;
+            }
+
+            if (canTrigger(card) && hasCard(target, s -> s.isOf(ModItems.WUXIE))) {
+                cardUsePre(target, new ItemStack(ModItems.WUXIE), null); //递归触发无懈，因此不用再写消耗和执行效果
+                if (notImmediatelyEffect.test(card)) cardUseAndDecrement(user, stack); //补充一个拆顺的消耗，别出bug了
+                return false;
+            }
         }
         if (isCard(card)) ((Card) card.getItem()).cardUse(user, card, target); //如果卡牌没有被抵消就执行效果
         return true;

@@ -37,7 +37,7 @@ public class CardItem extends Item implements Card {
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             super.appendTooltip(stack, world, tooltip, tooltipContext);
-            tooltip.add(Text.translatable("item.dabaosword.sha&shan.tooltip").formatted(Formatting.BOLD));
+            tooltip.add(Text.translatable("item.dabaosword.sha.tip").formatted(Formatting.BOLD));
 
             if (stack.isOf(ModItems.SHA)) {
                 tooltip.add(Text.translatable("item.dabaosword.sha.tooltip"));
@@ -154,7 +154,7 @@ public class CardItem extends Item implements Card {
         }
 
         if (stack.getItem() == ModItems.SHAN) {
-            tooltip.add(Text.translatable("item.dabaosword.sha&shan.tooltip").formatted(Formatting.BOLD));
+            tooltip.add(Text.translatable("item.dabaosword.shan.tip").formatted(Formatting.BOLD));
             tooltip.add(Text.translatable("item.dabaosword.shan.tooltip"));
         }
 

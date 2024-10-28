@@ -222,6 +222,7 @@ public class ModItems {
                 entries.add(SkillCards.LONGDAN);
                 entries.add(SkillCards.RENDE);
                 entries.add(SkillCards.TIEJI);
+                entries.add(SkillCards.WUSHENG);
                 //吴
                 entries.add(SkillCards.BUQU);
                 entries.add(SkillCards.GONGXIN);
@@ -238,6 +239,7 @@ public class ModItems {
                 entries.add(SkillCards.LEIJI);
                 entries.add(SkillCards.LUANJI);
                 entries.add(SkillCards.TAOLUAN);
+                entries.add(SkillCards.WEIMU);
                 entries.add(SkillCards.MASHU);
                 entries.add(SkillCards.FEIYING);
 

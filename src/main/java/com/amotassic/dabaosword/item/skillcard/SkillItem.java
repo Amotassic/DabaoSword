@@ -8,12 +8,8 @@ import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.equipment.Equipment;
 import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
-import com.google.common.base.Supplier;
-import com.google.common.base.Suppliers;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
-import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketItem;
 import net.minecraft.client.gui.screen.Screen;
@@ -27,6 +23,7 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
@@ -63,20 +60,6 @@ public class SkillItem extends TrinketItem implements Skill {
         }
 
         @Override
-        public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (!entity.getWorld().isClient && entity instanceof PlayerEntity player && noLongHand(player) && noTieji(entity)) {
-                int benxi = getTag(stack);
-                if (hasTrinket(ModItems.CHITU, player) && hasTrinket(SkillCards.MASHU, player)) {
-                    player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,benxi + 2,false,false,true));
-                } else if (hasTrinket(ModItems.CHITU, player) || hasTrinket(SkillCards.MASHU, player)) {
-                    player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,benxi + 1,false,false,true));
-                } else if (benxi != 0) {
-                    player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,benxi - 1,false,false,true));
-                }
-            }
-        }
-
-        @Override
         public void postAttack(ItemStack stack, LivingEntity target, LivingEntity attacker, float amount) {
             if (attacker instanceof PlayerEntity player && !player.getCommandTags().contains("benxi")) {
                 int ben = getTag(stack);
@@ -87,10 +70,6 @@ public class SkillItem extends TrinketItem implements Skill {
                     voice(player, Sounds.BENXI);
                 }
             }
-        }
-
-        private boolean noLongHand(PlayerEntity player) {
-            return player.getMainHandStack().getItem() != ModItems.JUEDOU && player.getMainHandStack().getItem() != ModItems.DISCARD;
         }
     }
 
@@ -462,32 +441,10 @@ public class SkillItem extends TrinketItem implements Skill {
                     float f = Math.max(13 - attacker.distanceTo(target), 5);
                     attacker.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, (int) (40 * f),0,false,false,true));
                     voice(attacker, Sounds.LIEGONG);
-                    System.out.println(f);
                     return new Pair<>(0f, f);
                 }
             }
             return super.modifyDamage(target, source, amount);
-        }
-
-        @Override
-        public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (!entity.getWorld().isClient && noTieji(entity)) {
-                if (!entity.hasStatusEffect(ModItems.COOLDOWN)) gainReach(entity,13);
-                else gainReach(entity,0);
-            }
-            super.tick(stack, slot, entity);
-        }
-
-        @Override
-        public void onUnequip(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (!entity.getWorld().isClient) gainReach(entity,0);
-        }
-
-        private void gainReach(LivingEntity entity, int value) {
-            EntityAttributeModifier AttributeModifier = new EntityAttributeModifier(UUID.fromString("2b3df518-6e44-3554-821b-232333bcef5c"), "Range 13", value, EntityAttributeModifier.Operation.ADDITION);
-            Supplier<ImmutableMultimap<EntityAttribute, EntityAttributeModifier>> rangeModifier = Suppliers.memoize(() -> ImmutableMultimap.of(ReachEntityAttributes.REACH, AttributeModifier, ReachEntityAttributes.ATTACK_RANGE, AttributeModifier));
-
-            entity.getAttributes().addTemporaryModifiers(rangeModifier.get());
         }
     }
 
@@ -991,6 +948,45 @@ public class SkillItem extends TrinketItem implements Skill {
                 target.addStatusEffect(new StatusEffectInstance(ModItems.TIEJI,200,0,false,true,true));
                 if (new Random().nextFloat() < 0.75) target.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2,2,0,false,false,false));
             }
+        }
+    }
+
+    public static class Weimu extends SkillItem {
+        public Weimu(Settings settings) {super(settings);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
+            tooltip.add(Text.translatable("item.dabaosword.weimu.tooltip"));
+        }
+
+        @Override
+        public Priority getPriority(LivingEntity target, DamageSource source, float amount) {return Priority.HIGHEST;}
+
+        @Override
+        public boolean cancelDamage(LivingEntity target, DamageSource source, float amount) {
+            if (hasTrinket(SkillCards.WEIMU, target) && source.getSource() instanceof WolfEntity dog && dog.hasStatusEffect(ModItems.INVULNERABLE)) {
+                dog.setHealth(0);
+                voice(target, Sounds.WEIMU);
+                return true;
+            }
+            return false;
+        }
+    }
+
+    public static class Wusheng extends SkillItem {
+        public Wusheng(Settings settings) {super(settings);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
+            tooltip.add(Text.literal("CD: 5s"));
+            tooltip.add(Text.translatable("item.dabaosword.wusheng.tooltip1").formatted(Formatting.RED));
+            tooltip.add(Text.translatable("item.dabaosword.wusheng.tooltip2").formatted(Formatting.RED));
+        }
+
+        @Override
+        public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
+            if (entity instanceof PlayerEntity player) viewAs(player, stack, 5, isRedCard, new ItemStack(ModItems.SHA), Sounds.WUSHENG);
+            super.tick(stack, slot, entity);
         }
     }
 

@@ -26,6 +26,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -62,25 +63,26 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "damage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isSleeping()Z"), cancellable = true)
     private void cancelDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        this.source = source;
         if (ModifyDamage.shouldCancel(living, source, amount)) cir.setReturnValue(false);
     }
 
     @Inject(method = "tick", at = @At("TAIL"))
     private void tick(CallbackInfo ci) {
-        EndEntityTick.LIVING_EVENT.invoker().endLivingTick((LivingEntity) (Object) this);
+        EndEntityTick.LIVING_EVENT.invoker().endLivingTick(living);
     }
 
-    @Inject(method = "applyArmorToDamage", at = @At(value = "HEAD"), cancellable = true)
-    protected void modifyDamageBeforeArmor(DamageSource source, float amount, CallbackInfoReturnable<Float> cir) {
-        cir.setReturnValue(ModifyDamage.modify((LivingEntity) (Object) this, source, amount));
+    @Unique private DamageSource source; //一旦damage被调用，就将source保存起来，用于在modifyDamageBeforeArmor中传入source变量
+
+    @ModifyVariable(method = "applyArmorToDamage", at = @At(value = "HEAD"), argsOnly = true)
+    protected float modifyDamageBeforeArmor(float amount) {
+        return ModifyDamage.modify(living, source, amount);
     }
 
     @Inject(at = @At("TAIL"), method = "applyDamage", cancellable = true)
-    private void onEntityHurt (final DamageSource source, float amount, CallbackInfo ci) {
-        ActionResult result = EntityHurtCallback.EVENT.invoker().hurtEntity((LivingEntity) (Object) this, source, amount);
-        if (result == ActionResult.FAIL) {
-            ci.cancel();
-        }
+    private void onEntityHurt(DamageSource source, float amount, CallbackInfo ci) {
+        ActionResult result = EntityHurtCallback.EVENT.invoker().hurtEntity(living, source, amount);
+        if (result == ActionResult.FAIL) ci.cancel();
     }
 
     //翻面的生物无法发起攻击

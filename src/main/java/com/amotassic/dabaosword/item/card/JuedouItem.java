@@ -2,7 +2,6 @@ package com.amotassic.dabaosword.item.card;
 
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.Sounds;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
@@ -10,19 +9,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.world.World;
-
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class JuedouItem extends CardItem {
     public JuedouItem(Settings settings) {super(settings);}
-
-    @Override
-    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
-        if (!world.isClient && selected && entity instanceof PlayerEntity player) {
-            player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,114,false,false,false));
-        }
-    }
 
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
@@ -50,7 +40,7 @@ public class JuedouItem extends CardItem {
                 player.damage(player.getDamageSources().sonicBoom(target),5f);
                 player.sendMessage(Text.translatable("dabaosword.juedou1"));
                 if (targetSha != 0) { //如果目标的杀比使用者的杀多，反击使用者，则目标减少一张杀
-                    cardUsePost(target, getCard(target, isSha).getRight(), player);
+                    nonPreUseCardDecrement(target, getCard(target, isSha).getRight(), player);
                 }
             }
         } else {
