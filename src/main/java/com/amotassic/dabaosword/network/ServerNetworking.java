@@ -45,8 +45,7 @@ public class ServerNetworking {
                 player.sendMessage(Text.translatable("effect.tieji.tip").formatted(Formatting.RED), true);
                 return;
             }
-            for(var entry : allTrinkets(player)) {
-                ItemStack stack = entry.getRight();
+            for(var stack : allTrinkets(player)) {
                 if(stack.getItem() instanceof SkillItem.ActiveSkillWithTarget skill && target != player) {
                     skill.activeSkill(player, stack, target);
                     return;

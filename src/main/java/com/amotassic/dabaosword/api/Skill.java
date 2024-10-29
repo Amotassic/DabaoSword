@@ -32,10 +32,10 @@ public interface Skill {
      * 伤害结算公式：最终伤害 = [原始伤害 x (1 + 增伤倍率和) + 固定数值加减伤] x (1 + 负增伤倍率)。
      * （由此可知：你不可能在完全相同的条件下返回既增伤，又最终减伤，这是我想到最简洁的仅利用两个值就能完成伤害结算的办法）
      */
-    default Pair<Float, Float> modifyDamage(LivingEntity target, DamageSource source, float amount) {
-        return new Pair<>(0f, 0f);
-    }
+    default Pair<Float, Float> modifyDamage(LivingEntity target, DamageSource source, float amount) {return null;}
+
     //========================================分割线========================================//
+
     /**仅关系到{@link Skill#cancelDamage(LivingEntity, DamageSource, float)}的触发。如果不覆写这个方法输出优先级，则cancelDamage方法无效！*/
     default Priority getPriority(LivingEntity target, DamageSource source, float amount) {return null;}
 

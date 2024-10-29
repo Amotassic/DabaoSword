@@ -65,6 +65,7 @@ public class Sounds {
     public static final SoundEvent QINGLONG = register("qinglong");
     public static final SoundEvent TENGJIA1 = register("tengjia1");
     public static final SoundEvent TENGJIA2 = register("tengjia2");
+    public static final SoundEvent ZHANGBA = register("zhangba");
 
     public static final SoundEvent BINGLIANG = register("bingliang");
     public static final SoundEvent GUOHE = register("guohe");

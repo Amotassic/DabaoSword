@@ -12,7 +12,6 @@ import com.amotassic.dabaosword.ui.SimpleMenuHandler;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketsApi;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
@@ -90,15 +89,23 @@ public class ModTools {
         return component.getEquipped(item).stream().map(Pair::getRight).findFirst().orElse(ItemStack.EMPTY);
     }
 
-    public static List<Pair<SlotReference, ItemStack>> allTrinkets(LivingEntity entity) {
+    /**获取该实体的所有饰品，输出为ItemStack列表*/
+    public static List<ItemStack> allTrinkets(LivingEntity entity) {
         Optional<TrinketComponent> optional = TrinketsApi.getTrinketComponent(entity);
-        return optional.map(TrinketComponent::getAllEquipped).orElse(Collections.emptyList());
+        if (optional.isEmpty()) return Collections.emptyList();
+        List<ItemStack> allTrinkets = new ArrayList<>();
+        for (var pair : optional.get().getAllEquipped()) {
+            allTrinkets.add(pair.getRight());
+        }
+        return allTrinkets;
     }
 
     /**判断技能是否能触发（依据是否为锁定技和是否有铁骑效果）*/
-    public static boolean canTrigger(Item item, LivingEntity entity) {
-        if (item.getDefaultStack().isIn(Tags.Items.LOCK_SKILL)) return true;
-        return noTieji(entity);
+    public static boolean canTrigger(ItemStack item, LivingEntity entity) {
+        if (item.getItem() instanceof SkillItem) {
+            if (item.isIn(Tags.Items.LOCK_SKILL)) return true;
+            return noTieji(entity);
+        } return true;
     }
 
     /**判断牌堆和背包中是否有符合条件的卡牌*/
@@ -352,8 +359,7 @@ public class ModTools {
         */
         Inventory targetInv = new SimpleInventory(60);
         if(equip) {
-            for(var entry : allTrinkets(invOwner)) {
-                ItemStack stack = entry.getRight();
+            for(var stack : allTrinkets(invOwner)) {
                 if (stack.streamTags().toList().equals(ModItems.GUDING_WEAPON.getDefaultStack().streamTags().toList())) targetInv.setStack(0, stack);
                 if (stack.streamTags().toList().equals(ModItems.BAGUA.getDefaultStack().streamTags().toList())) targetInv.setStack(1, stack);
                 if (stack.isOf(ModItems.DILU)) targetInv.setStack(2, stack);

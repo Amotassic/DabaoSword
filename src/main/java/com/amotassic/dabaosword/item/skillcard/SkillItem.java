@@ -98,7 +98,7 @@ public class SkillItem extends TrinketItem implements Skill {
                 int c = getTag(stack);
                 voice(player, Sounds.BUQU);
                 if (new Random().nextFloat() >= (float) c /13) {
-                    player.sendMessage(Text.translatable("buqu.tip1").formatted(Formatting.GREEN).append(String.valueOf(c + 1)));
+                    player.sendMessage(Text.translatable("buqu.tip1", c + 1).formatted(Formatting.GREEN));
                     setTag(stack, c + 1);
                     player.setHealth(1);
                 } else player.sendMessage(Text.translatable("buqu.tip2").formatted(Formatting.RED));
@@ -168,13 +168,14 @@ public class SkillItem extends TrinketItem implements Skill {
                             for (Integer slot : cardSlots) {candidate.add(inventory.get(slot));}
                             //把饰品栏的卡牌添加到待选物品中
                             int equip = 0; //用于标记装备区牌的数量
-                            for(var entry : allTrinkets(target)) {
-                                ItemStack stack1 = entry.getRight();
+                            for(var stack1 : allTrinkets(target)) {
                                 if(isCard(stack1)) candidate.add(stack1); equip++;
                             }
                             if(!candidate.isEmpty()) {
                                 int index = new Random().nextInt(candidate.size()); ItemStack chosen = candidate.get(index);
-                                target.sendMessage(Text.literal(entity.getEntityName()).append(Text.translatable("dabaosword.discard")).append(chosen.toHoverableText()));
+                                Text message = Text.translatable("dabaosword.discard", entity.getDisplayName(), target.getDisplayName(), chosen.toHoverableText());
+                                entity.sendMessage(message);
+                                target.sendMessage(message);
                                 cardDiscard(target, chosen, 1, index > candidate.size() - equip);
                             }
                         } else {//如果来源不是玩家则随机弃置它的主副手物品和装备
@@ -276,6 +277,7 @@ public class SkillItem extends TrinketItem implements Skill {
 
         @Override
         public void onClickGUISlot(PlayerEntity player, ItemStack stack, PlayerEntity target, ItemStack selected, int slot) {
+            target.sendMessage(Text.translatable("dabaosword.discard", player.getDisplayName(), target.getDisplayName(), selected.toHoverableText()));
             cardDiscard(target, selected, 1, false);
             closeGUI(player);
         }
@@ -444,7 +446,7 @@ public class SkillItem extends TrinketItem implements Skill {
                     return new Pair<>(0f, f);
                 }
             }
-            return super.modifyDamage(target, source, amount);
+            return null;
         }
     }
 
@@ -771,7 +773,7 @@ public class SkillItem extends TrinketItem implements Skill {
                     return new Pair<>(0f, (float) quan);
                 }
             }
-            return super.modifyDamage(entity, source, amount);
+            return null;
         }
     }
 
@@ -794,8 +796,9 @@ public class SkillItem extends TrinketItem implements Skill {
         @Override
         public void onClickGUISlot(PlayerEntity player, ItemStack stack, PlayerEntity target, ItemStack selected, int slot) {
             voice(player, Sounds.RENDE);
-            target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.toHoverableText(), target.getDisplayName())));
-            player.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.toHoverableText(), target.getDisplayName())));
+            Text message = Text.translatable("give_card.tip", player.getDisplayName(), stack.toHoverableText(), target.getDisplayName(), selected.toHoverableText());
+            target.sendMessage(message);
+            player.sendMessage(message);
             cardMove(player, target, selected, 1, CardCBs.T.INV_TO_INV);
             int cd = getCD(stack);
             if (player.getHealth() < player.getMaxHealth() && cd == 0 && new Random().nextFloat() < 0.5) {
@@ -836,7 +839,9 @@ public class SkillItem extends TrinketItem implements Skill {
             voice(player, Sounds.SHANZHUAN);
             if (isRedCard.test(selected)) target.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 5));
             else target.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, -1,1));
-            target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("dabaosword.discard")).append(selected.toHoverableText()));
+            Text message = Text.translatable("dabaosword.discard", player.getDisplayName(), target.getDisplayName(), selected.toHoverableText());
+            player.sendMessage(message);
+            target.sendMessage(message);
             cardDiscard(target, selected, 1, slotIndex < 4);
             player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 8,0,false,false,true));
             closeGUI(player);
@@ -867,7 +872,7 @@ public class SkillItem extends TrinketItem implements Skill {
                     }
                 }
             }
-            return super.modifyDamage(target, source, amount);
+            return null;
         }
 
         @Override
@@ -1019,8 +1024,9 @@ public class SkillItem extends TrinketItem implements Skill {
         @Override
         public void onClickGUISlot(PlayerEntity player, ItemStack stack, PlayerEntity target, ItemStack selected, int slotIndex) {
             int i = getTag(stack);
-            target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.toHoverableText(), target.getDisplayName())));
-            player.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("give_card.tip", stack.toHoverableText(), target.getDisplayName())));
+            Text message = Text.translatable("give_card.tip", player.getDisplayName(), stack.toHoverableText(), target.getDisplayName(), selected.toHoverableText());
+            target.sendMessage(message);
+            player.sendMessage(message);
             cardMove(player, target, selected, 1, CardCBs.T.INV_TO_INV);
             setTag(stack, i - 1);
             if (i - 1 == 0) closeGUI(player);
@@ -1120,7 +1126,7 @@ public class SkillItem extends TrinketItem implements Skill {
     public void onEquip(ItemStack stack, SlotReference slot, LivingEntity entity) {
         if (entity.getWorld() instanceof ServerWorld world && !equipped(stack)) {
             world.getPlayers().forEach(player -> player.sendMessage(
-                    Text.literal(entity.getEntityName()).append(Text.literal("装备了 ").append(stack.toHoverableText()))
+                    Text.translatable("dabaosword.entity.equip", entity.getDisplayName(), stack.toHoverableText())
             ));
             setEquipped(stack, true);
         }

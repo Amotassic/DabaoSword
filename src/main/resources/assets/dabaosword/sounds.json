@@ -402,6 +402,14 @@
       }
     ]
   },
+  "zhangba": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/zhangba"
+      }
+    ]
+  },
 
 
   "bingliang": {

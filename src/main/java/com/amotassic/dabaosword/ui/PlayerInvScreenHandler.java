@@ -1,9 +1,9 @@
 package com.amotassic.dabaosword.ui;
 
 import com.amotassic.dabaosword.api.CardPileInventory;
+import com.amotassic.dabaosword.api.Skill;
 import com.amotassic.dabaosword.api.event.CardCBs;
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -113,11 +113,13 @@ public class PlayerInvScreenHandler extends ScreenHandler {
             }
 
             if (!selectedStack.isEmpty()) {
-                if (stack.getItem() instanceof SkillItem skill) skill.onClickGUISlot(player, stack, target, selectedStack, slotIndex);
+                if (stack.getItem() instanceof Skill skill) skill.onClickGUISlot(player, stack, target, selectedStack, slotIndex);
 
                 if (stack.isOf(ModItems.STEAL)) {
                     voice(player, Sounds.SHUNSHOU);
-                    target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("dabaosword.steal")).append(selectedStack.toHoverableText()));
+                    Text message = Text.translatable("dabaosword.steal", player.getDisplayName(), target.getDisplayName(), selectedStack.toHoverableText());
+                    player.sendMessage(message);
+                    target.sendMessage(message);
                     CardCBs.T type = slotIndex < 4 ? CardCBs.T.EQUIP_TO_INV : CardCBs.T.INV_TO_INV;
                     if (isCard(selectedStack)) cardMove(target, player, selectedStack, 1, type);
                         //如果选择的物品是卡牌才触发事件
@@ -129,7 +131,9 @@ public class PlayerInvScreenHandler extends ScreenHandler {
 
                 if (stack.isOf(ModItems.DISCARD)) {
                     voice(player, Sounds.GUOHE);
-                    target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("dabaosword.discard")).append(selectedStack.toHoverableText()));
+                    Text message = Text.translatable("dabaosword.discard", player.getDisplayName(), target.getDisplayName(), selectedStack.toHoverableText());
+                    player.sendMessage(message);
+                    target.sendMessage(message);
                     cardDiscard(target, selectedStack, 1, slotIndex < 4);
                     nonPreUseCardDecrement(player, stack, target);
                     closeGUI(player);

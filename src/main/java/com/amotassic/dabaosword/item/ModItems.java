@@ -49,6 +49,8 @@ public class ModItems {
     public static final Item QINGGANG = register("qinggang", new Equipment.QinggangWeapon(new Item.Settings().maxCount(1)));
     //青龙偃月刀
     public static final Item QINGLONG = register("qinglong", new Equipment.QinglongWeapon(new Item.Settings().maxCount(1)));
+    //丈八蛇矛
+    public static final Item ZHANGBA = register("zhangba", new Equipment.ZhangbaWeapon(new Item.Settings().maxCount(1)));
     //八卦阵
     public static final Item BAGUA = register("bagua", new Equipment.BaguaArmor(new Item.Settings().maxCount(1)));
     //白银狮子
@@ -171,6 +173,7 @@ public class ModItems {
                 entries.add(HANBING);
                 entries.add(QINGGANG);
                 entries.add(QINGLONG);
+                entries.add(ZHANGBA);
                 entries.add(BAGUA);
                 entries.add(BAIYIN);
                 entries.add(RATTAN_ARMOR);

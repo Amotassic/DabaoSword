@@ -1,9 +1,8 @@
 package com.amotassic.dabaosword.event;
 
+import com.amotassic.dabaosword.api.Skill;
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.item.equipment.Equipment;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
-import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.network.ServerNetworking;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
@@ -11,7 +10,6 @@ import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -37,10 +35,8 @@ public class AttackEntityHandler implements AttackEntityCallback {
                         ClientPlayNetworking.send(ServerNetworking.SHENSU, buf);
                     }
                 } else {
-                    for (var pair : allTrinkets(player)) {
-                        ItemStack stack = pair.getRight();
-                        if (stack.getItem() instanceof SkillItem skill && canTrigger(skill, player)) skill.preAttack(stack, target, player);
-                        if (stack.getItem() instanceof Equipment skill) skill.preAttack(stack, target, player);
+                    for (var stack : allTrinkets(player)) {
+                        if (stack.getItem() instanceof Skill skill && canTrigger(stack, player)) skill.preAttack(stack, target, player);
                     }
                 }
             }

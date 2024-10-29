@@ -9,6 +9,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class JuedouItem extends CardItem {
@@ -32,7 +33,7 @@ public class JuedouItem extends CardItem {
                 target.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2,2,0,false,false,false));
                 target.timeUntilRegen = 0;
                 target.damage(player.getDamageSources().sonicBoom(player),5f);
-                target.sendMessage(Text.literal(player.getEntityName()).append(Text.translatable("dabaosword.juedou2")));
+                target.sendMessage(Text.translatable("dabaosword.juedou2", player.getDisplayName()));
             } else {
                 target.addCommandTag("juedou"); //防止决斗触发杀、闪
                 player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2,2,0,false,false,false));

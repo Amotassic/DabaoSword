@@ -43,8 +43,7 @@ public class PlayerEvents implements PlayerConnectCallback, PlayerDeathCallback,
                     if (isCard(stack)) cardDiscard(player, stack, stack.getCount(), false);
                 }
 
-                for(var pair : allTrinkets(player)) { //移除玩家装备区的牌
-                    ItemStack stack = pair.getRight();
+                for(var stack : allTrinkets(player)) { //移除玩家装备区的牌
                     if(isCard(stack)) cardDiscard(player, stack, stack.getCount(), true);
                 }
             }

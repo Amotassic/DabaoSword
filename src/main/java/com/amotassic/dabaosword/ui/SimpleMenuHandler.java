@@ -1,7 +1,7 @@
 package com.amotassic.dabaosword.ui;
 
+import com.amotassic.dabaosword.api.Skill;
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -39,7 +39,7 @@ public class SimpleMenuHandler extends ScreenHandler {
     public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
         ItemStack itemStack = inventory.getStack(slotIndex);
         if (!itemStack.isEmpty()) {
-            if (stack.getItem() instanceof SkillItem skill) skill.onClickGUISlot(player, stack, target, itemStack, slotIndex);
+            if (stack.getItem() instanceof Skill skill) skill.onClickGUISlot(player, stack, target, itemStack, slotIndex);
         }
     }
 

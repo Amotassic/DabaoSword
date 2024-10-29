@@ -2,11 +2,7 @@ package com.amotassic.dabaosword.util;
 
 import com.amotassic.dabaosword.api.Skill;
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.item.equipment.Equipment;
-import com.amotassic.dabaosword.item.skillcard.SkillItem;
-import net.minecraft.entity.DamageUtil;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.passive.WolfEntity;
@@ -52,23 +48,17 @@ public class ModifyDamage {
         //伤害结算
         value = value * (1 + multiply) + add;
         for (var f : reducing) {value *= (1 + f);}
-
-        if (!source.isIn(DamageTypeTags.BYPASSES_ARMOR)) {
-            entity.damageArmor(source, value);
-            value = DamageUtil.getDamageLeft(value, entity.getArmor(), (float)entity.getAttributeValue(EntityAttributes.GENERIC_ARMOR_TOUGHNESS));
-        }
         return value;
     }
 
     private static Pair<Pair<Float, Float>, List<Float>> calculateDMG(LivingEntity entity, DamageSource source, float value, LivingEntity trinketOwner) {
         float m = 0; float a = 0;
         List<Float> r = new ArrayList<>();
-        for (var p : allTrinkets(trinketOwner)) {
-            var stack = p.getRight();
-            Pair<Float, Float> fp = new Pair<>(0f, 0f);
-            if (stack.getItem() instanceof SkillItem skill) fp = skill.modifyDamage(entity, source, value);
-            if (stack.getItem() instanceof Equipment skill) fp = skill.modifyDamage(entity, source, value);
+        for (var stack : allTrinkets(trinketOwner)) {
+            Pair<Float, Float> fp = null;
+            if (stack.getItem() instanceof Skill skill) fp = skill.modifyDamage(entity, source, value);
 
+            if (fp == null) continue;
             if (fp.getLeft() < 0) r.add(fp.getLeft()); else m += fp.getLeft();
             a += fp.getRight();
         }
@@ -78,12 +68,9 @@ public class ModifyDamage {
     private static List<List<ItemStack>> eventStacks(LivingEntity entity, DamageSource source, float value, LivingEntity trinketOwner) {
         List<List<ItemStack>> stacks = new ArrayList<>(Arrays.asList(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>()));
 
-        for (var p : allTrinkets(trinketOwner)) {
-            var stack = p.getRight();
+        for (var stack : allTrinkets(trinketOwner)) {
             Skill.Priority priority = null;
-
-            if (stack.getItem() instanceof SkillItem skill) priority = skill.getPriority(entity, source, value);
-            if (stack.getItem() instanceof Equipment skill) priority = skill.getPriority(entity, source, value);
+            if (stack.getItem() instanceof Skill skill) priority = skill.getPriority(entity, source, value);
 
             if (priority != null) stacks.get(priority.ordinal()).add(stack);
         }
@@ -92,10 +79,7 @@ public class ModifyDamage {
 
     private static boolean execute(LivingEntity entity, DamageSource source, float amount, List<List<ItemStack>> list, int index) {
         for (var s : list.get(index)) {
-            boolean cancel = false;
-            if (s.getItem() instanceof Equipment skill) cancel = skill.cancelDamage(entity, source, amount);
-            if (s.getItem() instanceof SkillItem skill) cancel = skill.cancelDamage(entity, source, amount);
-            if (cancel) return true;
+            if (s.getItem() instanceof Skill skill && skill.cancelDamage(entity, source, amount)) return true;
         }
         return false;
     }

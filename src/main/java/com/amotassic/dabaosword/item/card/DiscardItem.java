@@ -55,15 +55,13 @@ public class DiscardItem extends CardItem {
                 }
                 //把饰品栏的卡牌添加到待选物品中
                 int equip = 0; //用于标记装备区牌的数量
-                for (var entry : allTrinkets(player)) {
-                    ItemStack stack1 = entry.getRight();
-                    if (isCard(stack1)) candidate.add(stack1);
-                    equip++;
+                for (var stack1 : allTrinkets(player)) {
+                    if (isCard(stack1)) candidate.add(stack1); equip++;
                 }
                 if (!candidate.isEmpty()) {
                     int index = new Random().nextInt(candidate.size());
                     ItemStack chosen = candidate.get(index);
-                    player.sendMessage(Text.literal(user.getEntityName()).append(Text.translatable("dabaosword.discard")).append(chosen.toHoverableText()));
+                    player.sendMessage(Text.translatable("dabaosword.discard", user.getDisplayName(), player.getDisplayName(), chosen.toHoverableText()));
                     cardDiscard(player, chosen, 1, index > candidate.size() - equip);
                     voice(user, Sounds.GUOHE);
                     nonPreUseCardDecrement(user, stack, entity);
