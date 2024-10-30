@@ -1,19 +1,24 @@
 package com.amotassic.dabaosword.network;
 
+import com.amotassic.dabaosword.api.CardPileInventory;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
+import com.amotassic.dabaosword.ui.PileScreenHandler;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-
-import java.util.UUID;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
 
@@ -22,6 +27,7 @@ public class ServerNetworking {
     public static void registerActiveSkill() {
         PayloadTypeRegistry.playC2S().register(ActiveSkillPayload.ID, ActiveSkillPayload.CODEC);
         PayloadTypeRegistry.playC2S().register(ShensuPayload.ID, ShensuPayload.CODEC);
+        PayloadTypeRegistry.playC2S().register(QuickSwapPayload.ID, QuickSwapPayload.CODEC);
 
         ServerPlayNetworking.registerGlobalReceiver(ActiveSkillPayload.ID, (payload, context) -> {
             PlayerEntity player = context.player();
@@ -29,9 +35,8 @@ public class ServerNetworking {
                 player.sendMessage(Text.translatable("effect.tieji.tip").formatted(Formatting.RED), true);
                 return;
             }
-            UUID uuid = payload.uuid(); PlayerEntity target = context.player().server.getPlayerManager().getPlayer(uuid);
-            for(var entry : allTrinkets(player)) {
-                ItemStack stack = entry.getRight();
+            int id = payload.id(); PlayerEntity target = (PlayerEntity) player.getWorld().getEntityById(id);
+            for(var stack : allTrinkets(player)) {
                 if(stack.getItem() instanceof SkillItem.ActiveSkillWithTarget skill && target != player) {
                     skill.activeSkill(player, stack, target);
                     return;
@@ -54,6 +59,37 @@ public class ServerNetworking {
                     stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
                 }
                 //if (Objects.requireNonNull(stack.get(DataComponentTypes.CUSTOM_DATA)).copyNbt().getFloat("speed") > 0) player.sendMessage(Text.literal("Speed: " + speed), true);
+            }
+        });
+
+        ServerPlayNetworking.registerGlobalReceiver(QuickSwapPayload.ID, (p, c) -> {
+            PlayerEntity player = c.player();
+            int i = p.id();
+            if (i == 0) openInv(player, player, Text.translatable("key.dabaosword.select_card"), new ItemStack(ModItems.WANJIAN), true, false, false, 2);
+            if (i == 1) openInv(player, player, Text.translatable("key.dabaosword.select_card"), new ItemStack(ModItems.SUNSHINE_SMILE), true, false, false, 3);
+            if (i == 2 && hasTrinket(ModItems.CARD_PILE, player)) player.openHandledScreen(new ExtendedScreenHandlerFactory<>() {
+                @Override
+                public Object getScreenOpeningData(ServerPlayerEntity player) {return new ActiveSkillPayload(0);}
+
+                @Override
+                public Text getDisplayName() {return Text.translatable("card_pile.title");}
+
+                @Override
+                public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
+                    return new PileScreenHandler(syncId, inv, new CardPileInventory(player));
+                }
+            });
+            if (i == 3) {
+                var pair = getDamage(player);
+                if (pair != null) {
+                    //取消闪避后，先移除记录的伤害，给玩家一个CD防止闪触发
+                    ItemStack stack = trinketItem(ModItems.CARD_PILE, player);
+                    NbtCompound nbt = getOrCreateNbt(stack); nbt.remove("DamageDodged");
+                    stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
+                    player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2,2,0,false,false,false));
+                    player.damage(pair.getLeft().getLeft(), pair.getLeft().getRight());
+                    give(player, pair.getRight());
+                }
             }
         });
     }

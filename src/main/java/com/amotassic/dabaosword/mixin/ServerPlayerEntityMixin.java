@@ -1,6 +1,6 @@
 package com.amotassic.dabaosword.mixin;
 
-import com.amotassic.dabaosword.event.callback.PlayerDeathCallback;
+import com.amotassic.dabaosword.api.event.PlayerDeathCallback;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;

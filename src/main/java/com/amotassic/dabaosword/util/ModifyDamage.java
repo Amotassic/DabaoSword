@@ -1,11 +1,8 @@
 package com.amotassic.dabaosword.util;
 
+import com.amotassic.dabaosword.api.Skill;
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.item.equipment.Equipment;
-import com.amotassic.dabaosword.item.skillcard.SkillItem;
-import net.minecraft.entity.DamageUtil;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.passive.WolfEntity;
@@ -15,7 +12,10 @@ import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
 
@@ -48,23 +48,17 @@ public class ModifyDamage {
         //伤害结算
         value = value * (1 + multiply) + add;
         for (var f : reducing) {value *= (1 + f);}
-
-        if (!source.isIn(DamageTypeTags.BYPASSES_ARMOR)) {
-            entity.damageArmor(source, value);
-            value = DamageUtil.getDamageLeft(entity, value, source, entity.getArmor(), (float)entity.getAttributeValue(EntityAttributes.GENERIC_ARMOR_TOUGHNESS));
-        }
         return value;
     }
 
     private static Pair<Pair<Float, Float>, List<Float>> calculateDMG(LivingEntity entity, DamageSource source, float value, LivingEntity trinketOwner) {
         float m = 0; float a = 0;
         List<Float> r = new ArrayList<>();
-        for (var p : allTrinkets(trinketOwner)) {
-            var stack = p.getRight();
-            Pair<Float, Float> fp = new Pair<>(0f, 0f);
-            if (stack.getItem() instanceof SkillItem skill) fp = skill.modifyDamage(entity, source, value);
-            if (stack.getItem() instanceof Equipment skill) fp = skill.modifyDamage(entity, source, value);
+        for (var stack : allTrinkets(trinketOwner)) {
+            Pair<Float, Float> fp = null;
+            if (stack.getItem() instanceof Skill skill) fp = skill.modifyDamage(entity, source, value);
 
+            if (fp == null) continue;
             if (fp.getLeft() < 0) r.add(fp.getLeft()); else m += fp.getLeft();
             a += fp.getRight();
         }
@@ -74,12 +68,9 @@ public class ModifyDamage {
     private static List<List<ItemStack>> eventStacks(LivingEntity entity, DamageSource source, float value, LivingEntity trinketOwner) {
         List<List<ItemStack>> stacks = new ArrayList<>(Arrays.asList(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>()));
 
-        for (var p : allTrinkets(trinketOwner)) {
-            var stack = p.getRight();
+        for (var stack : allTrinkets(trinketOwner)) {
             Skill.Priority priority = null;
-
-            if (stack.getItem() instanceof SkillItem skill) priority = skill.getPriority(entity, source, value);
-            if (stack.getItem() instanceof Equipment skill) priority = skill.getPriority(entity, source, value);
+            if (stack.getItem() instanceof Skill skill) priority = skill.getPriority(entity, source, value);
 
             if (priority != null) stacks.get(priority.ordinal()).add(stack);
         }
@@ -88,10 +79,7 @@ public class ModifyDamage {
 
     private static boolean execute(LivingEntity entity, DamageSource source, float amount, List<List<ItemStack>> list, int index) {
         for (var s : list.get(index)) {
-            boolean cancel = false;
-            if (s.getItem() instanceof Equipment skill) cancel = skill.cancelDamage(entity, source, amount);
-            if (s.getItem() instanceof SkillItem skill) cancel = skill.cancelDamage(entity, source, amount);
-            if (cancel) return true;
+            if (s.getItem() instanceof Skill skill && skill.cancelDamage(entity, source, amount)) return true;
         }
         return false;
     }
@@ -138,21 +126,21 @@ public class ModifyDamage {
             //被南蛮入侵的狗打中可以消耗杀以免疫伤害
             if (entity instanceof PlayerEntity player) {
                 dog.setHealth(0);
-                if (getShaSlot(player) != -1) {
-                    ItemStack stack = player.getMainHandStack().isIn(Tags.Items.SHA) ? player.getMainHandStack() : shaStack(player);
+                if (hasCard(player, isSha)) {
+                    var stack = getCard(player, isSha).getRight();
                     if (stack.isOf(ModItems.SHA)) voice(player, Sounds.SHA);
                     if (stack.isOf(ModItems.FIRE_SHA)) voice(player, Sounds.SHA_FIRE);
                     if (stack.isOf(ModItems.THUNDER_SHA)) voice(player, Sounds.SHA_THUNDER);
-                    cardUsePost(player, stack, null);
+                    nonPreUseCardDecrement(player, stack, null);
                     return true;
                 }
             }
         }
         if (source.getAttacker() instanceof LivingEntity) {
             if (!entity.hasStatusEffect(ModItems.COOLDOWN2) && !entity.getCommandTags().contains("juedou")) {
-                boolean hasShan = entity instanceof PlayerEntity player ? getShanSlot(player) != -1 : entity.getOffHandStack().isOf(ModItems.SHAN);
-                if (hasShan && !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) { //此处条件是故意设置得与八卦阵条件不一样的，虽然感觉没啥用
-                    shan(entity, false, source);
+                //此处条件是故意设置得与八卦阵条件不一样的，虽然感觉没啥用
+                if (hasCard(entity, s -> s.isOf(ModItems.SHAN)) && !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+                    shan(entity, false, source, amount);
                     return true;
                 }
             }
@@ -162,38 +150,26 @@ public class ModifyDamage {
         //吐槽：别看这里写了那么多，一旦有一个return true，就没事了
     }
 
-    public static void shan(LivingEntity entity, boolean bl, DamageSource source) {
-        ItemStack stack = bl ? new ItemStack(ModItems.SHAN) : shanStack(entity);
+    public static void shan(LivingEntity entity, boolean bl, DamageSource source, float amount) {
+        ItemStack stack = new ItemStack(ModItems.SHAN);
         int cd = bl ? 60 : 40;
         entity.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 20,0,false,false,false));
         entity.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, cd,0,false,false,false));
         if (bl) voice(entity, Sounds.BAGUA);
         voice(entity, Sounds.SHAN);
+        //如果触发八卦阵，就不用移除闪了
+        if (bl) cardUsePost(entity, stack, null); else nonPreUseCardDecrement(entity, stack, null);
         if (entity instanceof PlayerEntity player) {
-            cardUsePost(player, stack, null);
+            writeDamage(source, amount, !bl, trinketItem(ModItems.CARD_PILE, player));
             if (bl) player.sendMessage(Text.translatable("dabaosword.bagua"),true);
-        } else stack.decrement(1);
+        }
         //虽然没有因为杀而触发闪，但如果攻击者的杀处于自动触发状态，则仍会消耗
-        if (source.getSource() instanceof PlayerEntity player && getShaSlot(player) != -1) {
-            ItemStack sha = player.getMainHandStack().isIn(Tags.Items.SHA) ? player.getMainHandStack() : shaStack(player);
-            if (sha.isOf(ModItems.SHA)) voice(player, Sounds.SHA);
-            if (sha.isOf(ModItems.FIRE_SHA)) voice(player, Sounds.SHA_FIRE);
-            if (sha.isOf(ModItems.THUNDER_SHA)) voice(player, Sounds.SHA_THUNDER);
-            cardUsePost(player, sha, entity);
+        if (source.getSource() instanceof LivingEntity SE && hasItem(SE, isSha)) {
+            ItemStack sha = isSha.test(SE.getMainHandStack()) ? SE.getMainHandStack() : getItem(SE, isSha);
+            if (sha.isOf(ModItems.SHA)) voice(SE, Sounds.SHA);
+            if (sha.isOf(ModItems.FIRE_SHA)) voice(SE, Sounds.SHA_FIRE);
+            if (sha.isOf(ModItems.THUNDER_SHA)) voice(SE, Sounds.SHA_THUNDER);
+            nonPreUseCardDecrement(SE, sha, entity);
         }
-    }
-
-    private static int getShanSlot(PlayerEntity player) {
-        for (int i = 0; i < 18; ++i) {
-            ItemStack stack = player.getInventory().getStack(i);
-            if (stack.isEmpty() || stack.getItem() != ModItems.SHAN) continue;
-            return i;
-        }
-        return -1;
-    }
-
-    private static ItemStack shanStack(LivingEntity entity) {
-        if (entity instanceof PlayerEntity player) return player.getInventory().getStack(getShanSlot(player));
-        return entity.getOffHandStack();
     }
 }

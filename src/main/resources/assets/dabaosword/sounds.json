@@ -1,9 +1,21 @@
 {
   "nahida": {
     "sounds": [
-      "dabaosword:card/nahida1","dabaosword:card/nahida2","sounds.dabaosword.nahida3"
+      "dabaosword:card/nahida1","dabaosword:card/nahida2","dabaosword:card/nahida3"
     ],
     "subtitle": "sounds.dabaosword.nahida"
+  },
+  "wusheng": {
+    "sounds": [
+      "dabaosword:skill/wusheng1", "dabaosword:skill/wusheng2"
+    ],
+    "subtitle": "sounds.dabaosword.wusheng"
+  },
+  "weimu": {
+    "sounds": [
+      "dabaosword:skill/weimu1", "dabaosword:skill/weimu2"
+    ],
+    "subtitle": "sounds.dabaosword.weimu"
   },
   "shensu": {
     "sounds": [
@@ -387,6 +399,14 @@
       {
         "type": "file",
         "name": "dabaosword:card/tengjia2"
+      }
+    ]
+  },
+  "zhangba": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/zhangba"
       }
     ]
   },

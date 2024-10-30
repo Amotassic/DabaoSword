@@ -4,31 +4,25 @@ import com.amotassic.dabaosword.util.Gamerule;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.AbstractFireballEntity;
 import net.minecraft.entity.projectile.FireballEntity;
-import net.minecraft.util.hit.HitResult;
+import net.minecraft.text.Text;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.ModifyArgs;
+import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
+
+import java.util.Objects;
 
 @Mixin(FireballEntity.class)
 public abstract class FireballEntityMixin extends AbstractFireballEntity {
-
-    @Shadow private int explosionPower;
-
     public FireballEntityMixin(EntityType<? extends AbstractFireballEntity> entityType, World world) {super(entityType, world);}
 
-    @Inject(method = "onCollision", at = @At("HEAD"), cancellable = true)
-    public void onCollision(HitResult hitResult, CallbackInfo ci) {
+    @ModifyArgs(method = "onCollision", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;createExplosion(Lnet/minecraft/entity/Entity;DDDFZLnet/minecraft/world/World$ExplosionSourceType;)Lnet/minecraft/world/explosion/Explosion;"))
+    public void onCollision(Args args) {
         boolean bl = !this.getWorld().getGameRules().getBoolean(Gamerule.FIRE_ATTACK_BREAKS_BLOCK);
-        super.onCollision(hitResult);
-        if (!this.getWorld().isClient) {
-            if (bl && this.explosionPower == 3) {
-                this.getWorld().createExplosion(this, this.getX(), this.getY(), this.getZ(), 3, false, World.ExplosionSourceType.NONE);
-                this.discard();
-                ci.cancel();
-            }
+        if (bl && Objects.equals(this.getCustomName(), Text.of("a"))) {
+            args.set(5, false);
+            args.set(6, World.ExplosionSourceType.NONE);
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.amotassic.dabaosword.event;
 
-import com.amotassic.dabaosword.event.callback.CardCBs;
+import com.amotassic.dabaosword.api.Card;
+import com.amotassic.dabaosword.api.event.CardCBs;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.Sounds;
@@ -12,40 +13,59 @@ import org.jetbrains.annotations.Nullable;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
 
-public class CardEvents implements CardCBs.PostUse, CardCBs.Discard, CardCBs.Move {
+public class CardEvents implements CardCBs.PostUse, CardCBs.Discard, CardCBs.Move, CardCBs.PreUse {
     @Override
-    public void cardUsePost(PlayerEntity user, ItemStack stack, @Nullable LivingEntity target) {
-        ItemStack copy = stack.copy();
+    public boolean cardUsePre(LivingEntity user, ItemStack stack, @Nullable LivingEntity target) {
+        ItemStack card = stack.copy();
+        //不论如何先消耗一张卡牌再说，除了拆顺
+        if (!notImmediatelyEffect.test(card)) cardUseAndDecrement(user, stack);
 
-        if (stack.getItem() == ModItems.WUXIE) stack.decrement(1); //即使创造模式，无懈可击也会消耗，为什么呢？我也不知道
-        else if (!user.isCreative()) stack.decrement(1);
+        if (target != null) {
+            if (isBlackCard.test(card) && card.isIn(Tags.Items.ARMOURY_CARD) && hasTrinket(SkillCards.WEIMU, target)) {
+                voice(target, Sounds.WEIMU);
+                if (notImmediatelyEffect.test(card)) cardUseAndDecrement(user, stack);
+                return false;
+            }
 
-        //集智技能触发
-        if (hasTrinket(SkillCards.JIZHI, user) && copy.isIn(Tags.Items.ARMOURY_CARD)) {
-            draw(user);
-            voice(user, Sounds.JIZHI);
-        }
-
-        //奔袭技能触发
-        if (hasTrinket(SkillCards.BENXI, user)) {
-            ItemStack trinketItem = trinketItem(SkillCards.BENXI, user);
-            int benxi = getTag(trinketItem);
-            if (benxi < 5) {
-                setTag(trinketItem, benxi + 1);
-                voice(user, Sounds.BENXI);
+            if (card.isIn(Tags.Items.TRIGGER_WUXIE) && hasCard(target, s -> s.isOf(ModItems.WUXIE))) {
+                cardUsePre(target, new ItemStack(ModItems.WUXIE), null); //递归触发无懈，因此不用再写消耗和执行效果
+                if (notImmediatelyEffect.test(card)) cardUseAndDecrement(user, stack); //补充一个拆顺的消耗，别出bug了
+                return false;
             }
         }
-
-        if (hasTrinket(SkillCards.LIANYING, user) && countCards(user) == 0) lianyingTrigger(user);
+        if (isCard(card)) ((Card) card.getItem()).cardUse(user, card, target); //如果卡牌没有被抵消就执行效果
+        return true;
     }
 
     @Override
-    public void cardDiscard(PlayerEntity player, ItemStack stack, int count, boolean fromEquip) {
-        //移除被弃置的牌
-        stack.decrement(count);
+    public void cardUsePost(LivingEntity user, ItemStack stack, @Nullable LivingEntity target) {
+        if (user instanceof PlayerEntity player) {
+            //集智技能触发
+            if (hasTrinket(SkillCards.JIZHI, player) && stack.isIn(Tags.Items.ARMOURY_CARD)) {
+                draw(player);
+                voice(player, Sounds.JIZHI);
+            }
+
+            //奔袭技能触发
+            if (hasTrinket(SkillCards.BENXI, player)) {
+                ItemStack trinketItem = trinketItem(SkillCards.BENXI, player);
+                int benxi = getTag(trinketItem);
+                if (benxi < 5) {
+                    setTag(trinketItem, benxi + 1);
+                    voice(player, Sounds.BENXI);
+                }
+            }
+
+            if (hasTrinket(SkillCards.LIANYING, player) && countCards(player) == 0) lianyingTrigger(player);
+        }
+    }
+
+    @Override
+    public void cardDiscard(LivingEntity entity, ItemStack stack, int count, boolean fromEquip) {
+        if (XingshangTrigger(entity, stack)) return; //todo 卡牌弃置后并被他人获得后，与其他技能的交互处理
 
         //弃置牌后，玩家的死亡判断是有必要的
-        if (player.isAlive()) {
+        if (entity instanceof PlayerEntity player && player.isAlive()) {
             if (hasTrinket(SkillCards.LIANYING, player) && !fromEquip && countCards(player) == 0) lianyingTrigger(player);
 
             if (hasTrinket(SkillCards.XIAOJI, player) && fromEquip) xiaojiTrigger(player);
@@ -54,14 +74,6 @@ public class CardEvents implements CardCBs.PostUse, CardCBs.Discard, CardCBs.Mov
 
     @Override
     public void cardMove(LivingEntity from, PlayerEntity to, ItemStack stack, int count, CardCBs.T type) {
-        ItemStack copy = stack.copyWithCount(count);
-
-        //如果是移动到物品栏的类型，则减少from的物品，给to等量的物品（移动到装备区有专门的方法）
-        if (type == CardCBs.T.INV_TO_INV || type == CardCBs.T.EQUIP_TO_INV) {
-            give(to, copy);
-            stack.decrement(count);
-        }
-
         if (type == CardCBs.T.INV_TO_EQUIP || type == CardCBs.T.INV_TO_INV) {
             if (from instanceof PlayerEntity player && hasTrinket(SkillCards.LIANYING, player) && countCards(player) == 0) lianyingTrigger(player);
         }
@@ -69,6 +81,19 @@ public class CardEvents implements CardCBs.PostUse, CardCBs.Discard, CardCBs.Mov
         if (type == CardCBs.T.EQUIP_TO_INV || type == CardCBs.T.EQUIP_TO_EQUIP) {
             if (from instanceof PlayerEntity player && hasTrinket(SkillCards.XIAOJI, player)) xiaojiTrigger(player);
         }
+    }
+
+    private static boolean XingshangTrigger(LivingEntity entity, ItemStack stack) {
+        if (entity.isAlive()) return false;
+        for (PlayerEntity player : entity.getWorld().getPlayers()) {
+            if (hasTrinket(SkillCards.XINGSHANG, player) && player.distanceTo(entity) <= 25 && player != entity) {
+                if (!player.getCommandTags().contains("xingshang")) voice(player, Sounds.XINGSHANG);
+                player.addCommandTag("xingshang"); //防止同时触发大量语音播放
+                give(player, stack.copy());
+                return true;
+            }
+        }
+        return false;
     }
 
     private void lianyingTrigger(PlayerEntity player) {

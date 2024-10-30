@@ -1,21 +1,93 @@
 package com.amotassic.dabaosword.item.card;
 
+import com.amotassic.dabaosword.api.Card;
 import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LightningEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.world.World;
 
 import java.util.List;
 
-public class CardItem extends Item {
+import static com.amotassic.dabaosword.util.ModTools.*;
+
+public class CardItem extends Item implements Card {
     public CardItem(Settings settings) {super(settings);}
+
+    public static class Wuxie extends CardItem {
+        public Wuxie(Settings settings) {super(settings);}
+
+        @Override
+        public void cardUse(LivingEntity user, ItemStack stack, LivingEntity target) {
+            voice(user, Sounds.WUXIE);
+            super.cardUse(user, stack, target);
+        }
+    }
+
+    public static class Sha extends CardItem {
+        public Sha(Settings settings) {super(settings);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+            super.appendTooltip(stack, context, tooltip, type);
+            tooltip.add(Text.translatable("item.dabaosword.sha.tip").formatted(Formatting.BOLD));
+
+            if (stack.isOf(ModItems.SHA)) {
+                tooltip.add(Text.translatable("item.dabaosword.sha.tooltip"));
+            }
+            if (stack.isOf(ModItems.FIRE_SHA)) {
+                tooltip.add(Text.translatable("item.dabaosword.fire_sha.tooltip").formatted(Formatting.RED));
+            }
+            if (stack.isOf(ModItems.THUNDER_SHA)) {
+                tooltip.add(Text.translatable("item.dabaosword.thunder_sha.tooltip").formatted(Formatting.BLUE));
+            }
+        }
+
+        @Override
+        public void cardUse(LivingEntity user, ItemStack stack, LivingEntity entity) {
+            World world = user.getWorld();
+            user.addCommandTag("sha");
+            if (stack.isOf(ModItems.SHA)) {
+                voice(user, Sounds.SHA);
+                if (!hasTrinket(ModItems.RATTAN_ARMOR, entity)) {
+                    entity.timeUntilRegen = 0; entity.damage(user.getDamageSources().mobAttack(user), 5);
+                } else voice(entity, Sounds.TENGJIA1);
+            }
+            if (stack.isOf(ModItems.FIRE_SHA)) {
+                voice(user, Sounds.SHA_FIRE);
+                entity.timeUntilRegen = 0; entity.setOnFireFor(5);
+            }
+            if (stack.isOf(ModItems.THUNDER_SHA)) {
+                voice(user, Sounds.SHA_THUNDER);
+                entity.timeUntilRegen = 0; entity.damage(user.getDamageSources().indirectMagic(user, user),5);
+                LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(world);
+                if (lightningEntity != null) {
+                    lightningEntity.refreshPositionAfterTeleport(entity.getX(), entity.getY(), entity.getZ());
+                    lightningEntity.setCosmetic(true);
+                }
+                world.spawnEntity(lightningEntity);
+            }
+            super.cardUse(user, stack, entity);
+        }
+    }
 
     //这个类用于判断物品是否是卡牌，以及添加物品提示
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type){
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+        var sr = getSuitAndRank(stack);
+        if (sr != null) {
+            Suits suit = sr.getLeft(); Ranks rank = sr.getRight();
+            if (isRedCard.test(stack)) tooltip.add(Text.translatable("card.suit_and_rank", suit.suit, rank.rank).formatted(Formatting.RED));
+            else tooltip.add(Text.translatable("card.suit_and_rank", suit.suit, rank.rank));
+        }
+
         if (stack.getItem() == ModItems.WUXIE) {
             tooltip.add(Text.translatable("item.dabaosword.wuxie.tooltip1"));
             tooltip.add(Text.translatable("item.dabaosword.wuxie.tooltip2"));
@@ -83,7 +155,7 @@ public class CardItem extends Item {
         }
 
         if (stack.getItem() == ModItems.SHAN) {
-            tooltip.add(Text.translatable("item.dabaosword.sha&shan.tooltip").formatted(Formatting.BOLD));
+            tooltip.add(Text.translatable("item.dabaosword.shan.tip").formatted(Formatting.BOLD));
             tooltip.add(Text.translatable("item.dabaosword.shan.tooltip"));
         }
 
@@ -117,21 +189,6 @@ public class CardItem extends Item {
 
         if (stack.getItem() == ModItems.GAIN_CARD) {
             tooltip.add(Text.translatable("item.dabaosword.gain_card.tooltip"));
-        }
-
-        if (stack.getItem() == ModItems.SHA) {
-            tooltip.add(Text.translatable("item.dabaosword.sha&shan.tooltip").formatted(Formatting.BOLD));
-            tooltip.add(Text.translatable("item.dabaosword.sha.tooltip"));
-        }
-
-        if (stack.getItem() == ModItems.FIRE_SHA) {
-            tooltip.add(Text.translatable("item.dabaosword.sha&shan.tooltip").formatted(Formatting.BOLD));
-            tooltip.add(Text.translatable("item.dabaosword.fire_sha.tooltip").formatted(Formatting.RED));
-        }
-
-        if (stack.getItem() == ModItems.THUNDER_SHA) {
-            tooltip.add(Text.translatable("item.dabaosword.sha&shan.tooltip").formatted(Formatting.BOLD));
-            tooltip.add(Text.translatable("item.dabaosword.thunder_sha.tooltip").formatted(Formatting.BLUE));
         }
     }
 }

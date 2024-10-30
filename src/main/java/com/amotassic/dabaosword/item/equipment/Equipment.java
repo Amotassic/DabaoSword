@@ -1,23 +1,26 @@
 package com.amotassic.dabaosword.item.equipment;
 
+import com.amotassic.dabaosword.api.Card;
+import com.amotassic.dabaosword.api.Skill;
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.util.Skill;
 import com.amotassic.dabaosword.util.Sounds;
 import dev.emi.trinkets.TrinketSlot;
 import dev.emi.trinkets.api.*;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
@@ -27,16 +30,18 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Random;
 
 import static com.amotassic.dabaosword.item.skillcard.SkillItem.equipped;
 import static com.amotassic.dabaosword.item.skillcard.SkillItem.setEquipped;
 import static com.amotassic.dabaosword.util.ModTools.*;
 import static com.amotassic.dabaosword.util.ModifyDamage.shan;
 
-public class Equipment extends TrinketItem implements Skill {
+public class Equipment extends TrinketItem implements Card, Skill {
     public Equipment(Settings settings) {super(settings);}
 
     public static class BaguaArmor extends Equipment {
@@ -44,8 +49,8 @@ public class Equipment extends TrinketItem implements Skill {
 
         @Override
         public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            tooltip.add(Text.translatable("item.dabaosword.bagua.tooltip"));
             super.appendTooltip(stack, context, tooltip, type);
+            tooltip.add(Text.translatable("item.dabaosword.bagua.tooltip"));
         }
 
         @Override
@@ -56,7 +61,7 @@ public class Equipment extends TrinketItem implements Skill {
             if (source.getAttacker() instanceof LivingEntity) {
                 if (!target.hasStatusEffect(ModItems.COOLDOWN2) && !target.getCommandTags().contains("juedou")) {
                     if (hasTrinket(ModItems.BAGUA, target) && new Random().nextFloat() < 0.5 && !source.isIn(DamageTypeTags.BYPASSES_ARMOR)) {
-                        shan(target, true, source);
+                        shan(target, true, source, amount);
                         return true;
                     }
                 }
@@ -70,8 +75,8 @@ public class Equipment extends TrinketItem implements Skill {
 
         @Override
         public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            tooltip.add(Text.translatable("item.dabaosword.baiyin.tooltip"));
             super.appendTooltip(stack, context, tooltip, type);
+            tooltip.add(Text.translatable("item.dabaosword.baiyin.tooltip"));
         }
 
         @Override
@@ -80,7 +85,7 @@ public class Equipment extends TrinketItem implements Skill {
                 voice(target, Sounds.BAIYIN);
                 return new Pair<>(-0.4f, 0f);
             }
-            return super.modifyDamage(target, source, amount);
+            return null;
         }
     }
 
@@ -89,9 +94,9 @@ public class Equipment extends TrinketItem implements Skill {
 
         @Override
         public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+            super.appendTooltip(stack, context, tooltip, type);
             tooltip.add(Text.translatable("item.dabaosword.fangtian.tooltip1"));
             tooltip.add(Text.translatable("item.dabaosword.fangtian.tooltip2").formatted(Formatting.AQUA));
-            super.appendTooltip(stack, context, tooltip, type);
         }
 
         @Override
@@ -111,9 +116,9 @@ public class Equipment extends TrinketItem implements Skill {
 
         @Override
         public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+            super.appendTooltip(stack, context, tooltip, type);
             tooltip.add(Text.translatable("item.dabaosword.gudingdao.tooltip").formatted(Formatting.GREEN));
             tooltip.add(Text.translatable("item.dabaosword.gudingdao.tooltip2").formatted(Formatting.AQUA));
-            super.appendTooltip(stack, context, tooltip, type);
         }
 
         @Override
@@ -126,7 +131,7 @@ public class Equipment extends TrinketItem implements Skill {
                     return new Pair<>(0f, 5f);
                 }
             }
-            return super.modifyDamage(target, source, amount);
+            return null;
         }
     }
 
@@ -135,8 +140,8 @@ public class Equipment extends TrinketItem implements Skill {
 
         @Override
         public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            tooltip.add(Text.translatable("item.dabaosword.hanbing.tooltip").formatted(Formatting.AQUA));
             super.appendTooltip(stack, context, tooltip, type);
+            tooltip.add(Text.translatable("item.dabaosword.hanbing.tooltip").formatted(Formatting.AQUA));
         }
 
         @Override
@@ -152,9 +157,9 @@ public class Equipment extends TrinketItem implements Skill {
 
         @Override
         public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+            super.appendTooltip(stack, context, tooltip, type);
             tooltip.add(Text.translatable("item.dabaosword.qinggang.tooltip1"));
             tooltip.add(Text.translatable("item.dabaosword.qinggang.tooltip2").formatted(Formatting.AQUA));
-            super.appendTooltip(stack, context, tooltip, type);
         }
 
         @Override
@@ -171,9 +176,9 @@ public class Equipment extends TrinketItem implements Skill {
 
         @Override
         public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+            super.appendTooltip(stack, context, tooltip, type);
             tooltip.add(Text.translatable("item.dabaosword.qinglong.tooltip1"));
             tooltip.add(Text.translatable("item.dabaosword.qinglong.tooltip2").formatted(Formatting.AQUA));
-            super.appendTooltip(stack, context, tooltip, type);
         }
 
         @Override
@@ -191,8 +196,8 @@ public class Equipment extends TrinketItem implements Skill {
 
         @Override
         public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            tooltip.add(Text.translatable("item.dabaosword.rattanarmor.tooltip"));
             super.appendTooltip(stack, context, tooltip, type);
+            tooltip.add(Text.translatable("item.dabaosword.rattanarmor.tooltip"));
         }
 
         //实现渡江不沉的效果，代码来自https://github.com/focamacho/RingsOfAscension/中的水上行走戒指
@@ -218,7 +223,7 @@ public class Equipment extends TrinketItem implements Skill {
                 voice(target, Sounds.TENGJIA2);
                 return new Pair<>(0f, Math.min(amount, 5f));
             }
-            return super.modifyDamage(target, source, amount);
+            return null;
         }
 
         @Override
@@ -228,15 +233,27 @@ public class Equipment extends TrinketItem implements Skill {
         public boolean cancelDamage(LivingEntity target, DamageSource source, float amount) {
             //弹射物对藤甲无效
             if (source.isIn(DamageTypeTags.IS_PROJECTILE) && inrattan(target)) {
-                voice(target, Sounds.TENGJIA1);
-                if (source.getSource() != null) source.getSource().discard();
-                return true;
+                Entity projectile = source.getSource();
+                if (projectile instanceof ArrowEntity) { //即使处于CD中，箭也对藤甲无效
+                    projectile.discard();
+                    voice(target, Sounds.TENGJIA1);
+                    return true;
+                }
+                ItemStack stack = trinketItem(ModItems.RATTAN_ARMOR, target);
+                if (getCD(stack) == 0) {
+                    if (projectile != null) projectile.discard();
+                    setCD(stack, 5);
+                    target.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 10,0,false,false,false));
+                    voice(target, Sounds.TENGJIA1);
+                    return true;
+                }
             }
             //若攻击者主手没有物品，则无法击穿藤甲
             if (source.getSource() instanceof LivingEntity s && inrattan(target) && s.getMainHandStack().isEmpty()) {
                 ItemStack stack = trinketItem(ModItems.RATTAN_ARMOR, target);
                 if (getCD(stack) == 0) {
-                    setCD(stack, 3);
+                    setCD(stack, 5);
+                    target.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 10,0,false,false,false));
                     voice(target, Sounds.TENGJIA1);
                     return true;
                 }
@@ -247,8 +264,45 @@ public class Equipment extends TrinketItem implements Skill {
         private static boolean inrattan(LivingEntity entity) {return hasTrinket(ModItems.RATTAN_ARMOR, entity);}
     }
 
+    public static class ZhangbaWeapon extends Equipment {
+        public ZhangbaWeapon(Settings settings) {super(settings);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+            super.appendTooltip(stack, context, tooltip, type);
+            tooltip.add(Text.translatable("item.dabaosword.zhangba.tooltip1"));
+            tooltip.add(Text.translatable("item.dabaosword.zhangba.tooltip2").formatted(Formatting.AQUA));
+        }
+
+        @Override
+        public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
+            super.tick(stack, slot, entity);
+            if (!entity.getWorld().isClient && entity instanceof PlayerEntity player && getCD(stack) == 0) {
+                ItemStack off = player.getOffHandStack();
+                NbtCompound nbt = getOrCreateNbt(stack);
+                boolean one = nbt.contains("has_one");
+                if (isCard(off)) {
+                    if (one) {
+                        nbt.remove("has_one");
+                        setCD(stack, 5);
+                        give(player, new ItemStack(ModItems.SHA));
+                        voice(player, Sounds.ZHANGBA);
+                    } else {nbt.putBoolean("has_one", true);}
+                    stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
+                    off.decrement(1);
+                }
+            }
+        }
+    }
+
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+        var sr = getSuitAndRank(stack);
+        if (sr != null) {
+            Card.Suits suit = sr.getLeft(); Card.Ranks rank = sr.getRight();
+            if (isRedCard.test(stack)) tooltip.add(Text.translatable("card.suit_and_rank", suit.suit, rank.rank).formatted(Formatting.RED));
+            else tooltip.add(Text.translatable("card.suit_and_rank", suit.suit, rank.rank));
+        }
 
         if (stack.getItem() == ModItems.CHITU) {
             tooltip.add(Text.translatable("item.dabaosword.chitu.tooltip"));
@@ -258,16 +312,11 @@ public class Equipment extends TrinketItem implements Skill {
             tooltip.add(Text.translatable("item.dabaosword.dilu.tooltip"));
         }
 
-        if (stack.getItem() == ModItems.CARD_PILE) {
-            tooltip.add(Text.translatable("item.dabaosword.card_pile.tooltip"));
-        }
+        if(Screen.hasShiftDown()) {
+            tooltip.add(Text.translatable("equipment.tip1").formatted(Formatting.BOLD));
+            tooltip.add(Text.translatable("equipment.tip2").formatted(Formatting.BOLD));
+        } else tooltip.add(Text.translatable("dabaosword.shifttooltip"));
 
-        if (stack.getItem() != ModItems.CARD_PILE) {
-            if(Screen.hasShiftDown()) {
-                tooltip.add(Text.translatable("equipment.tip1").formatted(Formatting.BOLD));
-                tooltip.add(Text.translatable("equipment.tip2").formatted(Formatting.BOLD));
-            } else tooltip.add(Text.translatable("dabaosword.shifttooltip"));
-        }
     }
 
     @Override
@@ -282,7 +331,7 @@ public class Equipment extends TrinketItem implements Skill {
     public void onEquip(ItemStack stack, SlotReference slot, LivingEntity entity) {
         if (entity.getWorld() instanceof ServerWorld world && !equipped(stack)) {
             world.getPlayers().forEach(player -> player.sendMessage(
-                    Text.literal(entity.getNameForScoreboard()).append(Text.literal("装备了 ").append(stack.toHoverableText()))
+                    Text.translatable("dabaosword.entity.equip", entity.getDisplayName(), stack.toHoverableText())
             ));
             setEquipped(stack, true);
         }
@@ -295,78 +344,85 @@ public class Equipment extends TrinketItem implements Skill {
 
     @Override
     public boolean canUnequip(ItemStack stack, SlotReference slot, LivingEntity entity) {
-        if (entity instanceof PlayerEntity player && player.isCreative()) return true;
-        if (stack.getItem() != ModItems.CARD_PILE) return false;
+        if (entity instanceof PlayerEntity player && !player.isCreative()) return false;
         return super.canUnequip(stack, slot, entity);
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        ItemStack stack = user.getStackInHand(hand);
-        if (useEquip(user, stack)) return TypedActionResult.success(stack, world.isClient);
-        if (replaceEquip(user, stack)) return TypedActionResult.success(stack, world.isClient);
-        return TypedActionResult.pass(stack);
+    public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+        if (!world.isClient && hand == Hand.MAIN_HAND) {
+            if (cardUsePre(player, player.getMainHandStack(), player)) return TypedActionResult.success(player.getMainHandStack());
+        }
+        return super.use(world, player, hand);
     }
 
-    public static boolean useEquip(PlayerEntity user, ItemStack stack) {
+    @Override
+    public void cardUse(LivingEntity user, ItemStack stack, LivingEntity target) {
+        useOrReplaceEquip(user, stack);
+        Card.super.cardUse(user, stack, target);
+    }
+
+    public static void useOrReplaceEquip(LivingEntity user, ItemStack stack) {
         Optional<TrinketComponent> optional = TrinketsApi.getTrinketComponent(user);
         if (optional.isPresent()) {
             TrinketComponent comp = optional.get();
+            SlotReference firstSlot = null;
+
             for (Map<String, TrinketInventory> group : comp.getInventory().values()) {
                 for (TrinketInventory inv : group.values()) {
                     for (int i = 0; i < inv.size(); i++) {
-                        if (inv.getStack(i).isEmpty()) {
-                            SlotReference ref = new SlotReference(inv, i);
-                            if (TrinketSlot.canInsert(stack, ref, user)) {
-                                ItemStack newStack = stack.copy();
-                                inv.setStack(i, newStack);
-                                Trinket trinket = TrinketsApi.getTrinket(stack.getItem());
-                                RegistryEntry<SoundEvent> soundEvent = trinket.getEquipSound(stack, ref, user);
-                                if (!stack.isEmpty() && soundEvent != null) {
-                                    user.emitGameEvent(GameEvent.EQUIP);
-                                    user.playSound(soundEvent.value(), 1.0F, 1.0F);
-                                }
+                        ItemStack s = inv.getStack(i);
+                        SlotReference ref = new SlotReference(inv, i);
+                        if (TrinketSlot.canInsert(stack, ref, user)) {
+                            if (s.isEmpty()) { //如果这个槽位没有物品，则直接放入
+                                inv.setStack(i, stack.copy());
                                 cardUsePost(user, stack, user);
-                                return true;
-                            }
+                                return;
+                            } else if (firstSlot == null) firstSlot = ref;
+                            //记录第一个有物品的槽位（也就是说，只能替换同类槽位的第一个物品）
                         }
                     }
                 }
             }
+
+            if (firstSlot != null) { //替换原有装备
+                ItemStack preStack = firstSlot.inventory().getStack(firstSlot.index());
+                if (user instanceof PlayerEntity player) cardDiscard(player, preStack, preStack.getCount(), true);
+                firstSlot.inventory().setStack(firstSlot.index(), stack.copy());
+                cardUsePost(user, stack, user);
+            }
         }
-        return false;
     }
 
-    public static boolean replaceEquip(PlayerEntity player, ItemStack stack) {
-        Map<Integer, TrinketInventory> map = replaceSlot(player, stack);
-        if (!map.isEmpty() && stack.getItem() != ModItems.CARD_PILE) {
-            List<Integer> slots = map.keySet().stream().toList();
-            int index = new Random().nextInt(slots.size()); int i = slots.get(index);
-            ItemStack preStack = map.values().stream().toList().get(index).getStack(i);
+    /*public static boolean replaceEquip(PlayerEntity player, ItemStack stack) {
+        var slots = replaceSlot(player, stack);
+        if (!slots.isEmpty()) {
+            SlotReference ref = slots.get(new Random().nextInt(slots.size()));
+            ItemStack preStack = ref.inventory().getStack(ref.index());
             cardDiscard(player, preStack, preStack.getCount(), true);
-            map.values().stream().toList().get(index).setStack(i, stack.copy());
+            ref.inventory().setStack(ref.index(), stack.copy());
             cardUsePost(player, stack, player);
             return true;
         }
         return false;
     }
-
-    private static Map<Integer, TrinketInventory> replaceSlot(PlayerEntity player, ItemStack stack) {
-        Map<Integer, TrinketInventory> m = new HashMap<>();
+    //旧版的随机替换同类槽位装备的逻辑，以防万一暂且保留
+    private static List<SlotReference> replaceSlot(PlayerEntity player, ItemStack stack) {
+        List<SlotReference> slots = new ArrayList<>();
         var optional = TrinketsApi.getTrinketComponent(player);
         if (optional.isPresent()) {
             TrinketComponent comp = optional.get();
             for (var group : comp.getInventory().values()) {
                 for (TrinketInventory inv : group.values()) {
                     for (int i = 0; i < inv.size(); i++) {
-                        //如果对应装备栏的物品与待装备的物品有完全相同的标签，则将该饰品栏添加到map中
+                        //如果对应装备栏的物品与待装备的物品有完全相同的标签，则记录该槽位
                         if (!inv.getStack(i).isEmpty() && inv.getStack(i).streamTags().toList().equals(stack.streamTags().toList())) {
-                            m.put(i, inv);
+                            slots.add(new SlotReference(inv, i));
                         }
                     }
                 }
             }
         }
-        return m;
-    }
+        return slots;
+    }*/
 }

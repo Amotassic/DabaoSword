@@ -31,6 +31,7 @@ public class SkillCards {
     public static final Item LONGDAN = register("longdan", new SkillItem.Longdan(new Item.Settings().maxCount(1)));
     public static final Item RENDE = register("rende", new SkillItem.Rende(new Item.Settings().maxCount(1)));
     public static final Item TIEJI = register("tieji", new SkillItem.Tieji(new Item.Settings().maxCount(1)));
+    public static final Item WUSHENG = register("wusheng", new SkillItem.Wusheng(new Item.Settings().maxCount(1)));
     //吴
     public static final Item BUQU = register("buqu", new SkillItem.Buqu(new Item.Settings().maxCount(1)));
     public static final Item GONGXIN = register("gongxin", new SkillItem.Gongxin(new Item.Settings().maxCount(1)));
@@ -47,6 +48,7 @@ public class SkillCards {
     public static final Item LEIJI = register("leiji", new SkillItem(new Item.Settings().maxCount(1)));
     public static final Item LUANJI = register("luanji", new SkillItem.Luanji(new Item.Settings().maxCount(1)));
     public static final Item TAOLUAN = register("taoluan", new SkillItem.Taoluan(new Item.Settings().maxCount(1)));
+    public static final Item WEIMU = register("weimu", new SkillItem.Weimu(new Item.Settings().maxCount(1)));
     public static final Item MASHU = register("mashu", new SkillItem(new Item.Settings().maxCount(1)));
 
     public static final Item FEIYING = register("feiying", new SkillItem(new Item.Settings().maxCount(1)));

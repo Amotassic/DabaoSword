@@ -2,6 +2,7 @@ package com.amotassic.dabaosword.client;
 
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.ui.FullInvHandledScreen;
+import com.amotassic.dabaosword.ui.PileHandledScreen;
 import com.amotassic.dabaosword.ui.PlayerInvHandledScreen;
 import com.amotassic.dabaosword.ui.SimpleMenuScreen;
 import net.fabricmc.api.ClientModInitializer;
@@ -18,6 +19,7 @@ public class DabaoSwordClient implements ClientModInitializer {
         HandledScreens.register(ModItems.SIMPLE_MENU_HANDLER, SimpleMenuScreen::new);
         HandledScreens.register(ModItems.PLAYER_INV_SCREEN_HANDLER, PlayerInvHandledScreen::new);
         HandledScreens.register(ModItems.FULL_INV_SCREEN_HANDLER, FullInvHandledScreen::new);
+        HandledScreens.register(ModItems.PILE_SCREEN_HANDLER, PileHandledScreen::new);
         ClientTickEnd.initialize();
 
         //自定义谓词，用于改变铁索连环的纹理

@@ -1,0 +1,52 @@
+{
+  "suits_and_ranks": [
+    {
+      "suit": "Heart",
+      "rank": "3"
+    },
+    {
+      "suit": "Heart",
+      "rank": "4"
+    },
+    {
+      "suit": "Heart",
+      "rank": "5"
+    },
+    {
+      "suit": "Heart",
+      "rank": "6"
+    },
+    {
+      "suit": "Heart",
+      "rank": "6"
+    },
+    {
+      "suit": "Heart",
+      "rank": "7"
+    },
+    {
+      "suit": "Heart",
+      "rank": "8"
+    },
+    {
+      "suit": "Heart",
+      "rank": "9"
+    },
+    {
+      "suit": "Heart",
+      "rank": "Q"
+    },
+    {
+      "suit": "Diamond",
+      "rank": "2"
+    },
+    {
+      "suit": "Diamond",
+      "rank": "3"
+    },
+    {
+      "suit": "Diamond",
+      "rank": "Q"
+    }
+  ]
+}

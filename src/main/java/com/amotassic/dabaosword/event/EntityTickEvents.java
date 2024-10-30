@@ -1,6 +1,6 @@
 package com.amotassic.dabaosword.event;
 
-import com.amotassic.dabaosword.event.callback.EndEntityTick;
+import com.amotassic.dabaosword.api.event.EndEntityTick;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.Gamerule;
@@ -25,8 +25,13 @@ import static com.amotassic.dabaosword.util.ModTools.*;
 public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityTick.EndPlayerTick {
     @Override
     public void endLivingTick(LivingEntity entity) {
-        //若方天画戟被触发了，只要左键就可以造成群伤
-        if (entity.getEntityWorld() instanceof ServerWorld world) {
+        if (entity.getWorld() instanceof ServerWorld world) {
+            if (world.getTime() % 2 == 0) {
+                entity.getCommandTags().remove("sha");
+                entity.getCommandTags().remove("juedou");
+            }
+
+            //若方天画戟被触发了，只要左键就可以造成群伤
             PlayerEntity closestPlayer = world.getClosestPlayer(entity, 5);
             if (closestPlayer != null && hasTrinket(ModItems.FANGTIAN, closestPlayer) && entity.isAlive()) {
                 ItemStack stack = trinketItem(ModItems.FANGTIAN, closestPlayer);
@@ -52,8 +57,7 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
 
             if (time % giveCard == 0) { // 每分钟摸两张牌
                 if (hasTrinket(ModItems.CARD_PILE, player) && !player.isCreative() && !player.isSpectator() && player.isAlive()) {
-                    if (countCards(player) > player.getMaxHealth() && limit) return;
-                    else { //如果不限制摸牌就继续发牌
+                    if (countCards(player) < player.getMaxHealth() || !limit) {
                         draw(player, 2);
                         player.sendMessage(Text.translatable("dabaosword.draw"),true);
                     }
@@ -72,9 +76,7 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
             }
 
             if (time % 2 == 0) {
-                player.getCommandTags().remove("sha");
                 player.getCommandTags().remove("benxi");
-                player.getCommandTags().remove("juedou");
                 player.getCommandTags().remove("xingshang");
 
                 //牌堆恢复饱食度
@@ -93,15 +95,24 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
                 }
             }
 
-            int level1 = 0; int level2 = 0; //马术和飞影的效果
-            if (shouldMashu(player)) {
-                if (hasTrinket(ModItems.CHITU, player)) level1++;
-                if (hasTrinket(SkillCards.MASHU, player)) level1++;
-                if (level1 > 0) player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,level1,false,false,true));
+            //处理所有加触及距离和近战防御距离的效果
+            int level1 = 0; int longHand = 0; int level2 = 0;
+            ItemStack mainHand = player.getMainHandStack();
+            if (hasTrinket(SkillCards.BENXI, player)) longHand += getTag(trinketItem(SkillCards.BENXI, player));
+            if (mainHand.isOf(ModItems.DISCARD) || mainHand.isOf(ModItems.JUEDOU)) longHand += 114;
+            if (noTieji(player)) {
+                if (hasTrinket(SkillCards.LIEGONG, player) && !player.hasStatusEffect(ModItems.COOLDOWN)) longHand += 13;
+                if (hasTrinket(SkillCards.WUSHENG, player) && isSha.test(mainHand)) longHand += 13;
             }
+            if (hasTrinket(ModItems.CHITU, player)) level1++;
+            if (hasTrinket(SkillCards.MASHU, player)) level1++;
+            //如果有马术或赤兔，则等级加上额外加成数，否则为额外加成数-1
+            level1 = level1 > 0 ? level1 + longHand : longHand - 1;
+            if (level1 >= 0) player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 2,level1,false,false,false));
+
             if (hasTrinket(ModItems.DILU, player)) level2++;
             if (hasTrinket(SkillCards.FEIYING, player)) level2++;
-            if (level2 > 0) player.addStatusEffect(new StatusEffectInstance(ModItems.DEFEND, 10,level2,false,false,true));
+            if (level2 > 0) player.addStatusEffect(new StatusEffectInstance(ModItems.DEFEND, 2,level2,false,false,false));
 
             //下落攻击触发：脚底下两格是空气，手里拿着有耐久度的物品左键即可触发
             BlockPos blockPos = player.getBlockPos().down(1); BlockPos blockPos2 = player.getBlockPos().down(2);
@@ -111,10 +122,6 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
             }
 
         }
-    }
-
-    boolean shouldMashu(PlayerEntity player) {
-        return !hasTrinket(SkillCards.BENXI, player) && player.getMainHandStack().getItem() != ModItems.JUEDOU && player.getMainHandStack().getItem() != ModItems.DISCARD;
     }
 
     boolean isLooking(PlayerEntity player, Entity entity) {
