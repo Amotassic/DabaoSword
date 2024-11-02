@@ -45,11 +45,16 @@ public interface Skill {
     default boolean cancelDamage(LivingEntity target, DamageSource source, float amount) {return false;}
 
     enum Priority {
-        HIGHEST,    //最高优先级，高于buff但低于原版的伤害免疫检查。但真的会用到吗？
-        HIGH,       //高优先级，一般用于不产生消耗的装备，如藤甲、八卦阵
-        NORMAL,     //一般用于技能，如流离
-        LOW,        //一般用于卡牌，会产生消耗，如闪
-        LOWEST      //最低优先级，用于确认已经绕过其余所有免伤造成伤害后，最后取消伤害，如绝情：造成伤害后触发
+        /**最高优先级，高于buff但低于原版的伤害免疫检查。但真的会用到吗？（划掉，已经用于帷幕了）*/
+        HIGHEST,
+        /**高优先级，一般用于不产生消耗的装备，如藤甲、八卦阵*/
+        HIGH,
+        /**一般优先级，一般用于技能，如流离*/
+        NORMAL,
+        /**低优先级，一般用于卡牌，会产生消耗，如闪*/
+        LOW,
+        /**最低优先级，用于确认已经绕过其余所有免伤造成伤害后，最后取消伤害，如绝情：造成伤害后触发*/
+        LOWEST
     }
 
     /**当玩家发动技能打开GUI界面后，点击GUI界面某个非空槽位时触发*/

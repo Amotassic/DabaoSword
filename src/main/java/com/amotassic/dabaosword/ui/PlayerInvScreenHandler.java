@@ -4,7 +4,6 @@ import com.amotassic.dabaosword.api.CardPileInventory;
 import com.amotassic.dabaosword.api.Skill;
 import com.amotassic.dabaosword.api.event.CardCBs;
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -116,7 +115,6 @@ public class PlayerInvScreenHandler extends ScreenHandler {
                 if (stack.getItem() instanceof Skill skill) skill.onClickGUISlot(player, stack, target, selectedStack, slotIndex);
 
                 if (stack.isOf(ModItems.STEAL)) {
-                    voice(player, Sounds.SHUNSHOU);
                     Text message = Text.translatable("dabaosword.steal", player.getDisplayName(), target.getDisplayName(), selectedStack.toHoverableText());
                     player.sendMessage(message);
                     target.sendMessage(message);
@@ -125,17 +123,16 @@ public class PlayerInvScreenHandler extends ScreenHandler {
                         //如果选择的物品是卡牌才触发事件
                     else {give(player, selectedStack.copyWithCount(1)); /*顺手：复制一个物品*/
                         selectedStack.decrement(1);}
-                    nonPreUseCardDecrement(player, stack, target);
+                    cardUsePost(player, stack, target);
                     closeGUI(player);
                 }
 
                 if (stack.isOf(ModItems.DISCARD)) {
-                    voice(player, Sounds.GUOHE);
                     Text message = Text.translatable("dabaosword.discard", player.getDisplayName(), target.getDisplayName(), selectedStack.toHoverableText());
                     player.sendMessage(message);
                     target.sendMessage(message);
                     cardDiscard(target, selectedStack, 1, slotIndex < 4);
-                    nonPreUseCardDecrement(player, stack, target);
+                    cardUsePost(player, stack, target);
                     closeGUI(player);
                 }
             }

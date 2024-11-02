@@ -21,16 +21,6 @@ import static com.amotassic.dabaosword.util.ModTools.*;
 public class CardItem extends Item implements Card {
     public CardItem(Settings settings) {super(settings);}
 
-    public static class Wuxie extends CardItem {
-        public Wuxie(Settings settings) {super(settings);}
-
-        @Override
-        public void cardUse(LivingEntity user, ItemStack stack, LivingEntity target) {
-            voice(user, Sounds.WUXIE);
-            super.cardUse(user, stack, target);
-        }
-    }
-
     public static class Sha extends CardItem {
         public Sha(Settings settings) {super(settings);}
 
@@ -55,17 +45,14 @@ public class CardItem extends Item implements Card {
             World world = user.getWorld();
             user.addCommandTag("sha");
             if (stack.isOf(ModItems.SHA)) {
-                voice(user, Sounds.SHA);
                 if (!hasTrinket(ModItems.RATTAN_ARMOR, entity)) {
                     entity.timeUntilRegen = 0; entity.damage(user.getDamageSources().mobAttack(user), 5);
                 } else voice(entity, Sounds.TENGJIA1);
             }
             if (stack.isOf(ModItems.FIRE_SHA)) {
-                voice(user, Sounds.SHA_FIRE);
                 entity.timeUntilRegen = 0; entity.setOnFireFor(5);
             }
             if (stack.isOf(ModItems.THUNDER_SHA)) {
-                voice(user, Sounds.SHA_THUNDER);
                 entity.timeUntilRegen = 0; entity.damage(user.getDamageSources().indirectMagic(user, user),5);
                 LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(world);
                 if (lightningEntity != null) {
@@ -74,7 +61,6 @@ public class CardItem extends Item implements Card {
                 }
                 world.spawnEntity(lightningEntity);
             }
-            super.cardUse(user, stack, entity);
         }
     }
 

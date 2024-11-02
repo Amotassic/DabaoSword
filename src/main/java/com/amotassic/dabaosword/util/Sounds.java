@@ -68,15 +68,15 @@ public class Sounds {
     public static final SoundEvent ZHANGBA = register("zhangba");
 
     public static final SoundEvent BINGLIANG = register("bingliang");
-    public static final SoundEvent GUOHE = register("guohe");
+    public static final SoundEvent GUOHE = register("discard");
     public static final SoundEvent HUOGONG = register("huogong");
     public static final SoundEvent JIEDAO = register("jiedao");
     public static final SoundEvent JIU = register("jiu");
     public static final SoundEvent JUEDOU = register("juedou");
-    public static final SoundEvent LEBU = register("lebu");
-    public static final SoundEvent RECOVER = register("recover");
+    public static final SoundEvent LEBU = register("too_happy");
+    public static final SoundEvent RECOVER = register("peach");
     public static final SoundEvent SHAN = register("shan");
-    public static final SoundEvent SHUNSHOU = register("shunshou");
+    public static final SoundEvent SHUNSHOU = register("steal");
     public static final SoundEvent TAOYUAN = register("taoyuan");
     public static final SoundEvent TIESUO = register("tiesuo");
     public static final SoundEvent WANJIAN = register("wanjian");
@@ -84,8 +84,8 @@ public class Sounds {
     public static final SoundEvent WUZHONG = register("wuzhong");
     public static final SoundEvent NANMAN = register("nanman");
     public static final SoundEvent SHA = register("sha");
-    public static final SoundEvent SHA_FIRE = register("sha_fire");
-    public static final SoundEvent SHA_THUNDER = register("sha_thunder");
+    public static final SoundEvent SHA_FIRE = register("fire_sha");
+    public static final SoundEvent SHA_THUNDER = register("thunder_sha");
 
     public static void sound() {}
     public static SoundEvent register(String name){

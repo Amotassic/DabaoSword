@@ -46,8 +46,8 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
         @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-            tooltip.add(Text.translatable("item.dabaosword.bagua.tooltip"));
             super.appendTooltip(stack, world, tooltip, context);
+            tooltip.add(Text.translatable("item.dabaosword.bagua.tooltip"));
         }
 
         @Override
@@ -72,8 +72,8 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
         @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-            tooltip.add(Text.translatable("item.dabaosword.baiyin.tooltip"));
             super.appendTooltip(stack, world, tooltip, context);
+            tooltip.add(Text.translatable("item.dabaosword.baiyin.tooltip"));
         }
 
         @Override
@@ -91,9 +91,9 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
         @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+            super.appendTooltip(stack, world, tooltip, context);
             tooltip.add(Text.translatable("item.dabaosword.fangtian.tooltip1"));
             tooltip.add(Text.translatable("item.dabaosword.fangtian.tooltip2").formatted(Formatting.AQUA));
-            super.appendTooltip(stack, world, tooltip, context);
         }
 
         @Override
@@ -113,9 +113,9 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
         @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+            super.appendTooltip(stack, world, tooltip, context);
             tooltip.add(Text.translatable("item.dabaosword.gudingdao.tooltip").formatted(Formatting.GREEN));
             tooltip.add(Text.translatable("item.dabaosword.gudingdao.tooltip2").formatted(Formatting.AQUA));
-            super.appendTooltip(stack, world, tooltip, context);
         }
 
         @Override
@@ -137,8 +137,8 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
         @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-            tooltip.add(Text.translatable("item.dabaosword.hanbing.tooltip").formatted(Formatting.AQUA));
             super.appendTooltip(stack, world, tooltip, context);
+            tooltip.add(Text.translatable("item.dabaosword.hanbing.tooltip").formatted(Formatting.AQUA));
         }
 
         @Override
@@ -154,9 +154,9 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
         @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+            super.appendTooltip(stack, world, tooltip, context);
             tooltip.add(Text.translatable("item.dabaosword.qinggang.tooltip1"));
             tooltip.add(Text.translatable("item.dabaosword.qinggang.tooltip2").formatted(Formatting.AQUA));
-            super.appendTooltip(stack, world, tooltip, context);
         }
 
         @Override
@@ -173,9 +173,9 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
         @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+            super.appendTooltip(stack, world, tooltip, context);
             tooltip.add(Text.translatable("item.dabaosword.qinglong.tooltip1"));
             tooltip.add(Text.translatable("item.dabaosword.qinglong.tooltip2").formatted(Formatting.AQUA));
-            super.appendTooltip(stack, world, tooltip, context);
         }
 
         @Override
@@ -193,8 +193,8 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
         @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-            tooltip.add(Text.translatable("item.dabaosword.rattanarmor.tooltip"));
             super.appendTooltip(stack, world, tooltip, context);
+            tooltip.add(Text.translatable("item.dabaosword.rattanarmor.tooltip"));
         }
 
         //实现渡江不沉的效果，代码来自https://github.com/focamacho/RingsOfAscension/中的水上行走戒指
@@ -266,9 +266,9 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
         @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+            super.appendTooltip(stack, world, tooltip, context);
             tooltip.add(Text.translatable("item.dabaosword.zhangba.tooltip1"));
             tooltip.add(Text.translatable("item.dabaosword.zhangba.tooltip2").formatted(Formatting.AQUA));
-            super.appendTooltip(stack, world, tooltip, context);
         }
 
         @Override
@@ -350,7 +350,6 @@ public class Equipment extends TrinketItem implements Card, Skill {
     @Override
     public void cardUse(LivingEntity user, ItemStack stack, LivingEntity target) {
         useOrReplaceEquip(user, stack);
-        Card.super.cardUse(user, stack, target);
     }
 
     public static void useOrReplaceEquip(LivingEntity user, ItemStack stack) {
@@ -367,7 +366,6 @@ public class Equipment extends TrinketItem implements Card, Skill {
                         if (TrinketSlot.canInsert(stack, ref, user)) {
                             if (s.isEmpty()) { //如果这个槽位没有物品，则直接放入
                                 inv.setStack(i, stack.copy());
-                                cardUsePost(user, stack, user);
                                 return;
                             } else if (firstSlot == null) firstSlot = ref;
                             //记录第一个有物品的槽位（也就是说，只能替换同类槽位的第一个物品）
@@ -380,7 +378,6 @@ public class Equipment extends TrinketItem implements Card, Skill {
                 ItemStack preStack = firstSlot.inventory().getStack(firstSlot.index());
                 cardDiscard(user, preStack, preStack.getCount(), true);
                 firstSlot.inventory().setStack(firstSlot.index(), stack.copy());
-                cardUsePost(user, stack, user);
             }
         }
     }

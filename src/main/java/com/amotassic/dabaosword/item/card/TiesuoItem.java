@@ -35,8 +35,6 @@ public class TiesuoItem extends CardItem {
             near.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, -1, 0, false, true,false));
         }
         user.removeStatusEffect(StatusEffects.GLOWING);
-        voice(user, Sounds.TIESUO);
-        super.cardUse(user, stack, target);
     }
 
     //使用战技时播放纳西妲的语音

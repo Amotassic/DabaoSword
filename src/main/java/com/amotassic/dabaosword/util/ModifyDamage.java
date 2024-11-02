@@ -124,16 +124,12 @@ public class ModifyDamage {
         if (execute(entity, source, amount, list, 3)) return true;
         if (source.getSource() instanceof WolfEntity dog && dog.hasStatusEffect(ModItems.INVULNERABLE)) {
             //被南蛮入侵的狗打中可以消耗杀以免疫伤害
-            if (entity instanceof PlayerEntity player) {
+            if (hasCard(entity, isSha)) {
                 dog.setHealth(0);
-                if (hasCard(player, isSha)) {
-                    var stack = getCard(player, isSha).getRight();
-                    if (stack.isOf(ModItems.SHA)) voice(player, Sounds.SHA);
-                    if (stack.isOf(ModItems.FIRE_SHA)) voice(player, Sounds.SHA_FIRE);
-                    if (stack.isOf(ModItems.THUNDER_SHA)) voice(player, Sounds.SHA_THUNDER);
-                    nonPreUseCardDecrement(player, stack, null);
-                    return true;
-                }
+                var stack = getCard(entity, isSha).getRight();
+                voice(entity, stack);
+                cardUsePost(entity, stack, null);
+                return true;
             }
         }
         if (source.getAttacker() instanceof LivingEntity) {
@@ -156,9 +152,7 @@ public class ModifyDamage {
         entity.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 20,0,false,false,false));
         entity.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, cd,0,false,false,false));
         if (bl) voice(entity, Sounds.BAGUA);
-        voice(entity, Sounds.SHAN);
-        //如果触发八卦阵，就不用移除闪了
-        if (bl) cardUsePost(entity, stack, null); else nonPreUseCardDecrement(entity, stack, null);
+        cardUsePost(entity, stack, null, !bl); //如果触发八卦阵，就不用移除闪了
         if (entity instanceof PlayerEntity player) {
             writeDamage(source, amount, !bl, trinketItem(ModItems.CARD_PILE, player));
             if (bl) player.sendMessage(Text.translatable("dabaosword.bagua"),true);
@@ -166,10 +160,8 @@ public class ModifyDamage {
         //虽然没有因为杀而触发闪，但如果攻击者的杀处于自动触发状态，则仍会消耗
         if (source.getSource() instanceof LivingEntity SE && hasItem(SE, isSha)) {
             ItemStack sha = isSha.test(SE.getMainHandStack()) ? SE.getMainHandStack() : getItem(SE, isSha);
-            if (sha.isOf(ModItems.SHA)) voice(SE, Sounds.SHA);
-            if (sha.isOf(ModItems.FIRE_SHA)) voice(SE, Sounds.SHA_FIRE);
-            if (sha.isOf(ModItems.THUNDER_SHA)) voice(SE, Sounds.SHA_THUNDER);
-            nonPreUseCardDecrement(SE, sha, entity);
+            voice(SE, sha);
+            cardUsePost(SE, sha, entity);
         }
     }
 }

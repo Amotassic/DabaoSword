@@ -66,6 +66,7 @@
   "item.dabaosword.card_pile.tip3": "shift+K 快速取物",
   "item.dabaosword.card_pile.tip4": "ctrl+K 打开牌包，若你的手牌数大于10，可按delete键弃置牌",
   "item.dabaosword.card_pile.tip5": "ctrl+shift+K 取消上一次自动闪避（如果你想卖血）",
+  "card_pile.title": "你的手牌",
   "item.dabaosword.wuzhong": "无中生有",
   "item.dabaosword.wuzhong.tooltip1": "使用后，获得两张卡牌",
   "item.dabaosword.wuzhong.tooltip2": "“天下万物生于有，有生于无”  ——《老子》",
@@ -146,7 +147,7 @@
   "item.dabaosword.sunshine_smile": "阳光开朗的笑容",
   "item.dabaosword.sunshine_smile.tooltip": "暂时没有实际作用",
   "card_pile.player_inv.full": "你的背包已满，无法取出卡牌！",
-  "card.suit_and_rank": "%1$s %2$s",
+  "card.suit_and_rank": "%1$s%2$s",
 
   //"技能"
   "item.dabaosword.guose": "国色",

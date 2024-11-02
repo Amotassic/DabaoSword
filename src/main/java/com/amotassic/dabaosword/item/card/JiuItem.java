@@ -1,6 +1,5 @@
 package com.amotassic.dabaosword.item.card;
 
-import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -11,7 +10,6 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 import static com.amotassic.dabaosword.util.ModTools.cardUsePre;
-import static com.amotassic.dabaosword.util.ModTools.voice;
 
 public class JiuItem extends CardItem {
     public JiuItem(Settings settings) {super(settings);}
@@ -27,7 +25,5 @@ public class JiuItem extends CardItem {
     @Override
     public void cardUse(LivingEntity user, ItemStack stack, LivingEntity target) {
         user.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 20 * 10, 0));
-        voice(user, Sounds.JIU);
-        super.cardUse(user, stack, target);
     }
 }

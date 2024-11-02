@@ -174,7 +174,7 @@ public class SkillItem extends TrinketItem implements Skill {
                             if(!candidate.isEmpty()) {
                                 int index = new Random().nextInt(candidate.size()); ItemStack chosen = candidate.get(index);
                                 Text message = Text.translatable("dabaosword.discard", entity.getDisplayName(), target.getDisplayName(), chosen.toHoverableText());
-                                entity.sendMessage(message);
+                                if (entity instanceof PlayerEntity player) player.sendMessage(message);
                                 target.sendMessage(message);
                                 cardDiscard(target, chosen, 1, index > candidate.size() - equip);
                             }
@@ -1153,7 +1153,7 @@ public class SkillItem extends TrinketItem implements Skill {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         if (!user.getWorld().isClient && user.getCommandTags().contains("change_skill") && hand == Hand.OFF_HAND && user.isSneaking()) {
             ItemStack stack = user.getStackInHand(hand);
-            if (stack.isIn(Tags.Items.SKILL)) {
+            if (stack.getItem() instanceof SkillItem) {
                 stack.setCount(0);
                 changeSkill(user);
                 user.getCommandTags().remove("change_skill");

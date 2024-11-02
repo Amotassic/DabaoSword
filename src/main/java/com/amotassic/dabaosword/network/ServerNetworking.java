@@ -76,7 +76,7 @@ public class ServerNetworking {
             public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {}
 
             @Override
-            public Text getDisplayName() {return Text.literal("你的手牌");}
+            public Text getDisplayName() {return Text.translatable("card_pile.title");}
 
             @Override
             public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {

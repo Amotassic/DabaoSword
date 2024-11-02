@@ -421,7 +421,7 @@
     ],
     "subtitle": "sounds.dabaosword.bingliang"
   },
-  "guohe": {
+  "discard": {
     "sounds": [
       {
         "type": "file",
@@ -466,7 +466,7 @@
     ],
     "subtitle": "sounds.dabaosword.juedou"
   },
-  "lebu": {
+  "too_happy": {
     "sounds": [
       {
         "type": "file",
@@ -475,7 +475,7 @@
     ],
     "subtitle": "sounds.dabaosword.lebu"
   },
-  "recover": {
+  "peach": {
     "sounds": [
       {
         "type": "file",
@@ -493,7 +493,7 @@
     ],
     "subtitle": "sounds.dabaosword.shan"
   },
-  "shunshou": {
+  "steal": {
     "sounds": [
       {
         "type": "file",
@@ -565,7 +565,7 @@
     ],
     "subtitle": "sounds.dabaosword.sha"
   },
-  "sha_fire": {
+  "fire_sha": {
     "sounds": [
       {
         "type": "file",
@@ -574,7 +574,7 @@
     ],
     "subtitle": "sounds.dabaosword.sha_fire"
   },
-  "sha_thunder": {
+  "thunder_sha": {
     "sounds": [
       {
         "type": "file",

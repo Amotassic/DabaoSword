@@ -109,11 +109,11 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
             if (hasTrinket(SkillCards.MASHU, player)) level1++;
             //如果有马术或赤兔，则等级加上额外加成数，否则为额外加成数-1
             level1 = level1 > 0 ? level1 + longHand : longHand - 1;
-            if (level1 >= 0) player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 10,level1,false,false,true));
+            if (level1 >= 0) player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 2,level1,false,false,false));
 
             if (hasTrinket(ModItems.DILU, player)) level2++;
             if (hasTrinket(SkillCards.FEIYING, player)) level2++;
-            if (level2 > 0) player.addStatusEffect(new StatusEffectInstance(ModItems.DEFEND, 10,level2,false,false,true));
+            if (level2 > 0) player.addStatusEffect(new StatusEffectInstance(ModItems.DEFEND, 2,level2,false,false,false));
 
             //下落攻击触发：脚底下两格是空气，手里拿着有耐久度的物品左键即可触发
             BlockPos blockPos = player.getBlockPos().down(1); BlockPos blockPos2 = player.getBlockPos().down(2);

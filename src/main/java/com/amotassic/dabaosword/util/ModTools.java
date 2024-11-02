@@ -42,6 +42,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.collection.DefaultedList;
@@ -59,8 +60,6 @@ public class ModTools {
     public static final Predicate<ItemStack> canSaveDying = s -> s.isOf(ModItems.JIU) || s.isOf(ModItems.PEACH);
     public static final Predicate<ItemStack> isSha = s -> s.getItem() instanceof CardItem.Sha;
     //public static final Predicate<ItemStack> nonBasic = s -> s.isIn(Tags.Items.CARD) && !s.isIn(Tags.Items.BASIC_CARD);
-    /**不立即生效而产生消耗的卡牌，也就是说需要写额外的消耗逻辑来处理*/
-    public static final Predicate<ItemStack> notImmediatelyEffect =  s -> s.isOf(ModItems.DISCARD) || s.isOf(ModItems.STEAL);
     //判断是否是卡牌
     public static final Predicate<ItemStack> isCard = s -> s.isIn(Tags.Items.CARD);
     public static boolean isCard(ItemStack stack) {return stack.isIn(Tags.Items.CARD);}
@@ -142,15 +141,25 @@ public class ModTools {
         //即使创造模式，无懈可击也会消耗，为什么呢？我也不知道
         if (card.isOf(ModItems.WUXIE)) cardDecrement(getCard(user, s -> s.isOf(ModItems.WUXIE)), 1);
         else {
+            //如果使用者是创造模式玩家，则不消耗卡牌
             if (user instanceof PlayerEntity player && player.getAbilities().creativeMode) return;
-            cardDecrement(getCard(user, s -> s.isOf(card.getItem())), 1);
+            //找到和要消耗的完全相同的卡牌，若找不到，则找和要消耗的卡牌同名的牌
+            var pair = getCard(user, s -> ItemStack.areEqual(s, card));
+            if (pair.getRight().isEmpty()) pair = getCard(user, s -> s.isOf(card.getItem()));
+            var mainHand = user.getMainHandStack();
+            //如果使用者是玩家，且消耗了主手上的卡牌后主手空出，则补充一张同名牌到主手上
+            if (user instanceof PlayerEntity player && ItemStack.areEqual(pair.getRight(), mainHand)) {
+                cardDecrement(pair, 1);
+                if (mainHand.isEmpty()) {
+                    var p = getCard(user, s -> s.isOf(card.getItem()));
+                    if (!p.getRight().isEmpty()) {
+                        player.setStackInHand(Hand.MAIN_HAND, p.getRight().copy());
+                        player.getMainHandStack().setBobbingAnimationTime(5);
+                        cardDecrement(p, p.getRight().getCount());
+                    }
+                }
+            } else cardDecrement(pair, 1);
         }
-    }
-    /**顾名思义，就是没有触发UsePre事件，因此需要这个方法来扣除卡牌*/
-    public static void nonPreUseCardDecrement(LivingEntity user, ItemStack stack, LivingEntity target) {
-        var card = stack.copy();
-        cardUseAndDecrement(user, stack);
-        cardUsePost(user, card, target);
     }
 
     /**判断生物是否有某个物品*/
@@ -178,14 +187,17 @@ public class ModTools {
             world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), sound, SoundCategory.PLAYERS, volume, 1.0F);
         }
     }
+    public static void voice(@NotNull LivingEntity entity, ItemStack stack) {
+        SoundEvent sound = Registries.SOUND_EVENT.get(Identifier.of("dabaosword", stack.getItem().toString()));
+        if (sound != null) voice(entity, sound);
+    }
 
     /**数玩家所有牌的数量*/
     public static int countCards(PlayerEntity player) {return countCard(player, isCard);}
     /**数玩家牌堆背包和物品栏的卡牌*/
     public static int countCard(PlayerEntity player, Predicate<ItemStack> predicate) {
-        int n = 0;
+        int n = count(player, predicate);
         for (var card : new CardPileInventory(player).cards) {if (predicate.test(card)) n += card.getCount();}
-        n += count(player, predicate);
         return n;
     }
     /**只数玩家物品栏里的物品*/
@@ -421,12 +433,27 @@ public class ModTools {
         player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 1,2,false,false,false));
     }
 
+    /**如果卡牌可以生效，则触发卡牌的效果，然后调用卡牌使用后事件的方法*/
     public static boolean cardUsePre(LivingEntity user, ItemStack stack, @Nullable LivingEntity target) {
-        return CardCBs.USE_PRE.invoker().cardUsePre(user, stack, target);
+        if (CardCBs.USE_PRE.invoker().cardUsePre(user, stack, target)) {
+            Card card = (Card) stack.getItem();
+            card.cardUse(user, stack, target);
+            //如果卡牌可以立即生效，则直接触发卡牌使用后事件
+            if (!card.notImmediatelyEffective()) cardUsePost(user, stack, target);
+            return true;
+        }
+        return false;
     }
 
+    /**播放音效以及移除卡牌，然后触发卡牌使用后事件*/
     public static void cardUsePost(LivingEntity user, ItemStack stack, @Nullable LivingEntity target) {
-        CardCBs.USE_POST.invoker().cardUsePost(user, stack, target);
+        cardUsePost(user, stack, target, true);
+    }
+    public static void cardUsePost(LivingEntity user, ItemStack stack, @Nullable LivingEntity target, boolean consume) {
+        if (stack.getItem() instanceof CardItem) voice(user, stack);
+        ItemStack copy = stack.copy();
+        if (consume) cardUseAndDecrement(user, copy);
+        CardCBs.USE_POST.invoker().cardUsePost(user, copy, target);
     }
 
     /**调用卡牌弃置监听器的方法，除非stack来自牌堆背包，否则一定要传入原始的stack！
