@@ -107,7 +107,7 @@ public class ModItems {
     public static final Item ARROW_RAIN = register("arrow_rain", new ArrowRainItem(new Item.Settings().maxDamage(50).rarity(Rarity.UNCOMMON)));
     public static final Item WANJIAN = register("wanjian", new WanjianItem(new Item.Settings()));
     //无懈可击
-    public static final Item WUXIE = register("wuxie", new CardItem.Wuxie(new Item.Settings()));
+    public static final Item WUXIE = register("wuxie", new CardItem(new Item.Settings()));
     //无中生有
     public static final Item WUZHONG = register("wuzhong", new GainCardItem(new Item.Settings()));
     //礼盒

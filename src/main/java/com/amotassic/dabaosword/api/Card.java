@@ -7,12 +7,11 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.Random;
 
-import static com.amotassic.dabaosword.util.ModTools.cardUsePost;
-
 public interface Card {
-    default void cardUse(LivingEntity user, ItemStack stack, LivingEntity target) {
-        cardUsePost(user, stack, target);
-    }
+    default void cardUse(LivingEntity user, ItemStack stack, LivingEntity target) {}
+
+    /**若卡牌不立即消耗，就不会在{@link com.amotassic.dabaosword.util.ModTools#cardUsePre(LivingEntity, ItemStack, LivingEntity)}中直接调用{@link com.amotassic.dabaosword.util.ModTools#cardUsePost(LivingEntity, ItemStack, LivingEntity)}方法，因此需要在合适的时机调用后者*/
+    default boolean notImmediatelyEffective() {return false;}
 
     enum Suits {
         Heart ("♥"),

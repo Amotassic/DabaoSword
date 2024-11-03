@@ -1,6 +1,5 @@
 package com.amotassic.dabaosword.item.card;
 
-import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireballEntity;
@@ -12,7 +11,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 import static com.amotassic.dabaosword.util.ModTools.cardUsePre;
-import static com.amotassic.dabaosword.util.ModTools.voice;
 
 public class FireAttackItem extends CardItem {
     public FireAttackItem(Settings settings) {super(settings);}
@@ -33,7 +31,5 @@ public class FireAttackItem extends CardItem {
         fireballEntity.setCustomName(Text.of("a"));
         fireballEntity.setPosition(user.getX(), user.getBodyY(0.5) + 0.5, user.getZ());
         world.spawnEntity(fireballEntity);
-        voice(user, Sounds.HUOGONG);
-        super.cardUse(user, stack, target);
     }
 }

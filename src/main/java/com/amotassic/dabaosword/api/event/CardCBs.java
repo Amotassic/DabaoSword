@@ -9,7 +9,10 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * 卡牌事件，用于监听卡牌的移动、丢弃、使用等事件
- * 不要直接调用这个类里面的方法，而是通过使用{@link com.amotassic.dabaosword.util.ModTools}中已有的静态方法来调用监听器
+ * <p>
+ * 注意：
+ * 不要直接调用这个类里面的方法，而是通过使用{@link com.amotassic.dabaosword.util.ModTools}中已有的静态方法来调用监听器。
+ * 因为事件内不会处理卡牌的减少，所有卡牌减少和相关的逻辑都在ModTools对应的方法中处理。
  */
 
 public class CardCBs {
@@ -45,8 +48,9 @@ public class CardCBs {
 
     public interface PreUse {
         /**
-         * 当卡牌使用时触发，用于判断是否能执行卡牌的效果，以及移除卡牌。自动触发的卡牌不会触发该事件，因此还需要用{@link com.amotassic.dabaosword.util.ModTools#nonPreUseCardDecrement(LivingEntity, ItemStack, LivingEntity)}移除卡牌
+         * 当卡牌使用时触发，用于判断是否能执行卡牌的效果。自动触发的卡牌不会触发该事件，因此还需要用{@link com.amotassic.dabaosword.util.ModTools#cardUsePost(LivingEntity, ItemStack, LivingEntity)}移除卡牌
          * @param stack 必须传入原始的stack
+         * @return true 卡牌能生效，false 卡牌不能生效  注意：不论卡牌是否生效，都会触发{@link PostUse#cardUsePost(LivingEntity, ItemStack, LivingEntity)}
          */
         boolean cardUsePre(LivingEntity user, ItemStack stack, @Nullable LivingEntity target);
     }

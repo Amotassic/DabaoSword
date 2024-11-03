@@ -2,7 +2,6 @@ package com.amotassic.dabaosword.item.card;
 
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
-import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
@@ -12,7 +11,8 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-import static com.amotassic.dabaosword.util.ModTools.*;
+import static com.amotassic.dabaosword.util.ModTools.cardUsePre;
+import static com.amotassic.dabaosword.util.ModTools.hasTrinket;
 
 public class ShanItem extends CardItem {
 
@@ -34,7 +34,5 @@ public class ShanItem extends CardItem {
         int i = hasTrinket(SkillCards.LEIJI, user) ? 3 : 0;
         user.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 20,0,false,false,false));
         user.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 20,i,false,false,false));
-        voice(user, Sounds.SHAN);
-        super.cardUse(user, stack, target);
     }
 }

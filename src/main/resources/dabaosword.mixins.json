@@ -15,6 +15,7 @@
     "ServerPlayerEntityMixin"
   ],
   "client": [
+    "client.DrawContextMixin",
     "client.GameRendererMixin",
     "client.LivingEntityRendererMixin"
   ],

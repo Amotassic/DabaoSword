@@ -1,7 +1,6 @@
 package com.amotassic.dabaosword.item.card;
 
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
@@ -18,7 +17,6 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
 import static com.amotassic.dabaosword.util.ModTools.cardUsePre;
-import static com.amotassic.dabaosword.util.ModTools.voice;
 
 public class NanmanItem extends CardItem {
     public NanmanItem(Settings settings) {super(settings);}
@@ -39,9 +37,6 @@ public class NanmanItem extends CardItem {
                 Text.translatable("nanman.dog3")
         };
         if (user instanceof PlayerEntity player) for (Text name : names) {summonDog(user.getWorld(), player, name);}
-
-        voice(user, Sounds.NANMAN);
-        super.cardUse(user, stack, target);
     }
 
     private void summonDog(World world, PlayerEntity player, Text name) {

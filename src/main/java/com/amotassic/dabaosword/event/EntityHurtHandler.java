@@ -3,7 +3,6 @@ package com.amotassic.dabaosword.event;
 import com.amotassic.dabaosword.api.Skill;
 import com.amotassic.dabaosword.api.event.EntityHurtCallback;
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
@@ -28,9 +27,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
             if (entity.isAlive()) return;
             if (hasCard(entity, canSaveDying)) {
                 ItemStack stack = getCard(entity, canSaveDying).getRight();
-                if (stack.isOf(ModItems.PEACH))  voice(entity, Sounds.RECOVER);
-                if (stack.isOf(ModItems.JIU))    voice(entity, Sounds.JIU);
-                nonPreUseCardDecrement(entity, stack, entity);
+                cardUsePost(entity, stack, entity);
                 entity.setHealth(entity.getHealth() - amount + 5); amount -= 5;
             }
         }

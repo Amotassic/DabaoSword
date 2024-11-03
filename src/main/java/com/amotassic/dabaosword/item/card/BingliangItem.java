@@ -1,7 +1,6 @@
 package com.amotassic.dabaosword.item.card;
 
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
@@ -10,7 +9,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 
 import static com.amotassic.dabaosword.util.ModTools.cardUsePre;
-import static com.amotassic.dabaosword.util.ModTools.voice;
 
 public class BingliangItem extends CardItem {
     public BingliangItem(Settings settings) {super(settings);}
@@ -27,7 +25,5 @@ public class BingliangItem extends CardItem {
     @Override
     public void cardUse(LivingEntity user, ItemStack stack, LivingEntity target) {
         target.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, StatusEffectInstance.INFINITE,1));
-        voice(user, Sounds.BINGLIANG);
-        super.cardUse(user, stack, target);
     }
 }

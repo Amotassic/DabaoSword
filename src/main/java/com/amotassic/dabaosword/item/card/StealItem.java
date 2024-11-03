@@ -1,7 +1,6 @@
 package com.amotassic.dabaosword.item.card;
 
 import com.amotassic.dabaosword.api.event.CardCBs;
-import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -37,11 +36,13 @@ public class StealItem extends CardItem {
                 if (isCard(entity.getOffHandStack())) stacks.add(entity.getOffHandStack());
                 if (!stacks.isEmpty()) {
                     ItemStack chosen = stacks.get(new Random().nextInt(stacks.size()));
-                    voice(user, Sounds.SHUNSHOU);
                     cardMove(entity, player, chosen, 1, CardCBs.T.INV_TO_INV);
-                    nonPreUseCardDecrement(player, stack, entity);
+                    cardUsePost(player, stack, entity);
                 }
             }
-        } else nonPreUseCardDecrement(user, stack, entity);
+        } else cardUsePost(user, stack, entity);
     }
+
+    @Override
+    public boolean notImmediatelyEffective() {return true;}
 }

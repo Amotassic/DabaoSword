@@ -359,7 +359,6 @@ public class Equipment extends TrinketItem implements Card, Skill {
     @Override
     public void cardUse(LivingEntity user, ItemStack stack, LivingEntity target) {
         useOrReplaceEquip(user, stack);
-        Card.super.cardUse(user, stack, target);
     }
 
     public static void useOrReplaceEquip(LivingEntity user, ItemStack stack) {
@@ -376,7 +375,6 @@ public class Equipment extends TrinketItem implements Card, Skill {
                         if (TrinketSlot.canInsert(stack, ref, user)) {
                             if (s.isEmpty()) { //如果这个槽位没有物品，则直接放入
                                 inv.setStack(i, stack.copy());
-                                cardUsePost(user, stack, user);
                                 return;
                             } else if (firstSlot == null) firstSlot = ref;
                             //记录第一个有物品的槽位（也就是说，只能替换同类槽位的第一个物品）
@@ -387,9 +385,8 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
             if (firstSlot != null) { //替换原有装备
                 ItemStack preStack = firstSlot.inventory().getStack(firstSlot.index());
-                if (user instanceof PlayerEntity player) cardDiscard(player, preStack, preStack.getCount(), true);
+                cardDiscard(user, preStack, preStack.getCount(), true);
                 firstSlot.inventory().setStack(firstSlot.index(), stack.copy());
-                cardUsePost(user, stack, user);
             }
         }
     }

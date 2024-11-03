@@ -1,9 +1,9 @@
 package com.amotassic.dabaosword.event;
 
-import com.amotassic.dabaosword.api.Card;
 import com.amotassic.dabaosword.api.event.CardCBs;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
+import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
 import net.minecraft.entity.LivingEntity;
@@ -16,24 +16,19 @@ import static com.amotassic.dabaosword.util.ModTools.*;
 public class CardEvents implements CardCBs.PostUse, CardCBs.Discard, CardCBs.Move, CardCBs.PreUse {
     @Override
     public boolean cardUsePre(LivingEntity user, ItemStack stack, @Nullable LivingEntity target) {
-        ItemStack card = stack.copy();
-        //不论如何先消耗一张卡牌再说，除了拆顺
-        if (!notImmediatelyEffect.test(card)) cardUseAndDecrement(user, stack);
-
         if (target != null) {
-            if (isBlackCard.test(card) && card.isIn(Tags.Items.ARMOURY_CARD) && hasTrinket(SkillCards.WEIMU, target)) {
+            if (isBlackCard.test(stack) && stack.isIn(Tags.Items.ARMOURY_CARD) && hasTrinket(SkillCards.WEIMU, target)) {
                 voice(target, Sounds.WEIMU);
-                if (notImmediatelyEffect.test(card)) cardUseAndDecrement(user, stack);
+                ModTools.cardUsePost(user, stack, target);
                 return false;
             }
 
-            if (card.isIn(Tags.Items.TRIGGER_WUXIE) && hasCard(target, s -> s.isOf(ModItems.WUXIE))) {
-                cardUsePre(target, new ItemStack(ModItems.WUXIE), null); //递归触发无懈，因此不用再写消耗和执行效果
-                if (notImmediatelyEffect.test(card)) cardUseAndDecrement(user, stack); //补充一个拆顺的消耗，别出bug了
+            if (stack.isIn(Tags.Items.TRIGGER_WUXIE) && hasCard(target, s -> s.isOf(ModItems.WUXIE))) {
+                ModTools.cardUsePre(target, new ItemStack(ModItems.WUXIE), null); //递归触发无懈，因此不用再写消耗和执行效果
+                ModTools.cardUsePost(user, stack, target);
                 return false;
             }
         }
-        if (isCard(card)) ((Card) card.getItem()).cardUse(user, card, target); //如果卡牌没有被抵消就执行效果
         return true;
     }
 

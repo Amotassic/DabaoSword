@@ -147,7 +147,7 @@
   "item.dabaosword.sunshine_smile": "阳光开朗的笑容",
   "item.dabaosword.sunshine_smile.tooltip": "暂时没有实际作用",
   "card_pile.player_inv.full": "你的背包已满，无法取出卡牌！",
-  "card.suit_and_rank": "%1$s %2$s",
+  "card.suit_and_rank": "%1$s%2$s",
 
   //"技能"
   "item.dabaosword.guose": "国色",
@@ -156,7 +156,7 @@
   "item.dabaosword.liuli.tooltip": "被攻击时，弃置一张牌并将伤害转移给5格内的其他生物",
   "item.dabaosword.jueqing": "绝情",
   "item.dabaosword.jueqing.tooltip1": "锁定技，攻击命中时，改为对方受到无来源的伤害",
-  "item.dabaosword.jueqing.tooltip2": "伤害值等于当前伤害(至多为6)，无视防御，不能暴击",
+  "item.dabaosword.jueqing.tooltip2": "伤害值等于当前伤害(至多为7)，无视防御，不能暴击",
   "item.dabaosword.luanji": "乱击",
   "item.dabaosword.luanji.tooltip": "将副手上的两张花色相同的牌转化为万箭齐发",
   "item.dabaosword.luanji.suit": "%1$s：你还需要一张 %2$s 牌以获得万箭齐发",

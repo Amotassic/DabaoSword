@@ -1,7 +1,6 @@
 package com.amotassic.dabaosword.item.card;
 
 import com.amotassic.dabaosword.api.event.CardCBs;
-import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -34,7 +33,5 @@ public class JiedaoItem extends CardItem {
             user.setStackInHand(Hand.MAIN_HAND, stack1.copy());
             stack1.setCount(0);
         }
-        voice(user, Sounds.JIEDAO);
-        super.cardUse(user, stack, entity);
     }
 }

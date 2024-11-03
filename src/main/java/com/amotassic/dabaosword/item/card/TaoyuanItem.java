@@ -27,8 +27,7 @@ public class TaoyuanItem extends CardItem {
     public void cardUse(LivingEntity user, ItemStack stack, LivingEntity target) {
         ((ServerWorld) user.getWorld()).getPlayers().forEach(player -> {
             player.heal(5.0F);
-            voice(player, Sounds.TAOYUAN);
+            if (player != user) voice(player, Sounds.TAOYUAN);
         });
-        super.cardUse(user, stack, target);
     }
 }

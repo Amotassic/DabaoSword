@@ -1145,7 +1145,7 @@ public class SkillItem extends TrinketItem implements Skill {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         if (!user.getWorld().isClient && user.getCommandTags().contains("change_skill") && hand == Hand.OFF_HAND && user.isSneaking()) {
             ItemStack stack = user.getStackInHand(hand);
-            if (stack.isIn(Tags.Items.SKILL)) {
+            if (stack.getItem() instanceof SkillItem) {
                 stack.setCount(0);
                 changeSkill(user);
                 user.getCommandTags().remove("change_skill");

@@ -1,7 +1,6 @@
 package com.amotassic.dabaosword.item.card;
 
 import com.amotassic.dabaosword.api.CardPileInventory;
-import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -39,9 +38,8 @@ public class DiscardItem extends CardItem {
                 if (isCard(entity.getOffHandStack())) stacks.add(entity.getOffHandStack());
                 if (!stacks.isEmpty()) {
                     ItemStack chosen = stacks.get(new Random().nextInt(stacks.size()));
-                    voice(player, Sounds.GUOHE);
                     cardDiscard(entity, chosen, 1, false);
-                    nonPreUseCardDecrement(player, stack, entity);
+                    cardUsePost(player, stack, entity);
                 }
             }
         } else {
@@ -63,8 +61,7 @@ public class DiscardItem extends CardItem {
                     ItemStack chosen = candidate.get(index);
                     player.sendMessage(Text.translatable("dabaosword.discard", user.getDisplayName(), player.getDisplayName(), chosen.toHoverableText()));
                     cardDiscard(player, chosen, 1, index > candidate.size() - equip);
-                    voice(user, Sounds.GUOHE);
-                    nonPreUseCardDecrement(user, stack, entity);
+                    cardUsePost(user, stack, entity);
                 }
             } else { //如果不是玩家则随机弃置它的主副手物品和装备
                 List<ItemStack> candidate = new ArrayList<>();
@@ -77,10 +74,12 @@ public class DiscardItem extends CardItem {
                     int index = new Random().nextInt(candidate.size());
                     ItemStack chosen = candidate.get(index);
                     if (isCard(chosen)) cardDiscard(entity, chosen, 1, false);
-                    voice(user, Sounds.GUOHE);
-                    nonPreUseCardDecrement(user, stack, entity);
+                    cardUsePost(user, stack, entity);
                 }
             }
         }
     }
+
+    @Override
+    public boolean notImmediatelyEffective() {return true;}
 }

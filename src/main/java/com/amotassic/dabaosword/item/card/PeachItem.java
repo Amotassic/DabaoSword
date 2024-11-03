@@ -1,6 +1,5 @@
 package com.amotassic.dabaosword.item.card;
 
-import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -10,7 +9,6 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 import static com.amotassic.dabaosword.util.ModTools.cardUsePre;
-import static com.amotassic.dabaosword.util.ModTools.voice;
 
 public class PeachItem extends CardItem {
     public PeachItem(Settings settings) {super(settings);}
@@ -34,7 +32,5 @@ public class PeachItem extends CardItem {
     @Override
     public void cardUse(LivingEntity user, ItemStack stack, LivingEntity target) {
         target.heal(5);
-        voice(target, Sounds.RECOVER);
-        super.cardUse(user, stack, target);
     }
 }

@@ -147,7 +147,7 @@
   "item.dabaosword.sunshine_smile": "Sunshine Smile",
   "item.dabaosword.sunshine_smile.tooltip": "Currently no practical effect",
   "card_pile.player_inv.full": "Your inventory is full, cannot retrieve cards!",
-  "card.suit_and_rank": "%1$s %2$s",
+  "card.suit_and_rank": "%1$s%2$s",
 
   //"Skills"
   "item.dabaosword.guose": "Alluring Beauty",
@@ -156,7 +156,7 @@
   "item.dabaosword.liuli.tooltip": "When attacked, discard a card and transfer damage to other creatures within 5 blocks",
   "item.dabaosword.jueqing": "Heartless",
   "item.dabaosword.jueqing.tooltip1": "Lock-on skill. When hitting, changes to dealing damage without a source",
-  "item.dabaosword.jueqing.tooltip2": "Ignores defense, and cannot crit(up tp 6)",
+  "item.dabaosword.jueqing.tooltip2": "Ignores defense, and cannot crit(up tp 7)",
   "item.dabaosword.luanji": "Chaos Strikes",
   "item.dabaosword.luanji.tooltip": "Converts two cards with the same suit on the off-hand into 'Arrow Rain'",
   "item.dabaosword.luanji.suit": "%1$s: You need one more %2$s card to get 'Arrow Rain'",

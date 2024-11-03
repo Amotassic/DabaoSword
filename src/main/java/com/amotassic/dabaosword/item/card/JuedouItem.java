@@ -1,7 +1,6 @@
 package com.amotassic.dabaosword.item.card;
 
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
@@ -41,7 +40,7 @@ public class JuedouItem extends CardItem {
                 player.damage(player.getDamageSources().sonicBoom(target),5f);
                 player.sendMessage(Text.translatable("dabaosword.juedou1"));
                 if (targetSha != 0) { //如果目标的杀比使用者的杀多，反击使用者，则目标减少一张杀
-                    nonPreUseCardDecrement(target, getCard(target, isSha).getRight(), player);
+                    cardUsePost(target, getCard(target, isSha).getRight(), player);
                 }
             }
         } else {
@@ -49,7 +48,5 @@ public class JuedouItem extends CardItem {
             entity.timeUntilRegen = 0;
             entity.damage(user.getDamageSources().sonicBoom(user),5f);
         }
-        voice(user, Sounds.JUEDOU);
-        super.cardUse(user, stack, entity);
     }
 }
