@@ -5,8 +5,11 @@ import net.minecraft.registry.Registry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 
+@SuppressWarnings("unused")
 public class Sounds {
     public static final SoundEvent NAHIDA = register("nahida");
+    public static final SoundEvent JIZHAN = register("jizhan");
+    public static final SoundEvent YINGZI = register("yingzi");
     public static final SoundEvent WUSHENG = register("wusheng");
     public static final SoundEvent WEIMU = register("weimu");
     public static final SoundEvent SHENSU = register("shensu");

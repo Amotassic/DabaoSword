@@ -29,10 +29,12 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
 
 public class ModItems {
+    public static final Item YES = register("yes", new Item(new Item.Settings()));
+    public static final Item NO = register("no", new Item(new Item.Settings()));
     //摸牌
-    public static final Item GAIN_CARD = register("gain_card",new GainCardItem(new Item.Settings()));
+    public static final Item GAIN_CARD = register("gain_card", new GainCardItem(new Item.Settings()));
     //牌堆
-    public static final Item CARD_PILE = register("card_pile",new CardPile(new Item.Settings().maxCount(1)));
+    public static final Item CARD_PILE = register("card_pile", new CardPile(new Item.Settings().maxCount(1)));
 
     // 古锭刀
     public static final Item GUDINGDAO = register("gudingdao", new GudingdaoItem(new Item.Settings()));
@@ -236,9 +238,11 @@ public class ModItems {
                 entries.add(SkillCards.POJUN);
                 entries.add(SkillCards.QIXI);
                 entries.add(SkillCards.XIAOJI);
+                entries.add(SkillCards.YINGZI);
                 entries.add(SkillCards.ZHIHENG);
                 entries.add(SkillCards.ZHIJIAN);
                 //群
+                entries.add(SkillCards.JIZHAN);
                 entries.add(SkillCards.LEIJI);
                 entries.add(SkillCards.LUANJI);
                 entries.add(SkillCards.TAOLUAN);

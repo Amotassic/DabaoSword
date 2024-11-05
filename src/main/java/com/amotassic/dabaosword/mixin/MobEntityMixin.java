@@ -1,6 +1,7 @@
 package com.amotassic.dabaosword.mixin;
 
 import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Tags;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -56,8 +57,14 @@ public abstract class MobEntityMixin extends LivingEntity {
 
     @Unique
     private void initCards() {
-        if (getMainHandStack().isEmpty()) setStackInHand(Hand.MAIN_HAND, new ItemStack(getMainCard(), (int)(3 * Math.random()) + 1));
-        if (getOffHandStack().isEmpty()) setStackInHand(Hand.OFF_HAND, new ItemStack(getOffCard(), (int)(2 * Math.random()) + 1));
+        if (getMainHandStack().isEmpty()) {
+            setStackInHand(Hand.MAIN_HAND, new ItemStack(getMainCard(), (int) (3 * Math.random()) + 1));
+            ModTools.initSuitsAndRanks(getMainHandStack());
+        }
+        if (getOffHandStack().isEmpty()) {
+            setStackInHand(Hand.OFF_HAND, new ItemStack(getOffCard(), (int) (2 * Math.random()) + 1));
+            ModTools.initSuitsAndRanks(getOffHandStack());
+        }
     }
 
     @Unique private Item getMainCard() {

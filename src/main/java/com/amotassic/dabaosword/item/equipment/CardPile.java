@@ -57,4 +57,7 @@ public class CardPile extends Equipment {
             }
         }
     }
+
+    @Override
+    public int onDrawPhase(PlayerEntity player, ItemStack stack) {return 2;}
 }

@@ -317,6 +317,50 @@ public class SkillItem extends TrinketItem implements Skill {
         }
     }
 
+    public static class Jizhan extends SkillItem {
+        public Jizhan(Settings settings) {super(settings);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
+            tooltip.add(Text.translatable("item.dabaosword.jizhan.tooltip1"));
+            tooltip.add(Text.translatable("item.dabaosword.jizhan.tooltip2"));
+        }
+
+        @Override
+        public int onDrawPhase(PlayerEntity player, ItemStack stack) {
+            voice(player, stack);
+            var inv = yesAndNo();
+            inv.setStack(18, stack);
+            openSimpleMenu(player, player, inv, Text.translatable("jizhan.title", stack.getName()));
+            ItemStack last = newCard();
+            give(player, last); //先让玩家摸一张牌，保存到lastCard
+            player.getWorld().getPlayers().forEach(p -> p.sendMessage(Text.translatable("jizhan.draw", player.getDisplayName(), stack.toHoverableText(), last.toHoverableText(), Objects.requireNonNull(getRank(last)).rank), false));
+            NbtCompound tag = stack.getOrCreateNbt();
+            NbtCompound nbt = new NbtCompound(); last.writeNbt(nbt);
+            tag.put("lastCard", nbt);
+            stack.setNbt(tag);
+            return -114;
+        }
+
+        @Override @SuppressWarnings("all")
+        public void onClickGUISlot(PlayerEntity player, ItemStack stack, PlayerEntity target, ItemStack selected, int slotIndex) {
+            if (selected.isEmpty()) return;
+            ItemStack last = ItemStack.fromNbt(stack.getOrCreateNbt().getCompound("lastCard"));
+            ItemStack next = newCard();
+            give(player, next); //又让玩家摸一张牌后，比较两张牌的点数，如果玩家选对了，就把新的牌保存到lastCard，否则关闭菜单
+            player.getWorld().getPlayers().forEach(p -> p.sendMessage(Text.translatable("jizhan.draw", player.getDisplayName(), stack.toHoverableText(), next.toHoverableText(), Objects.requireNonNull(getRank(next)).rank), false));
+            if ((yes.test(selected) && getRank(next).ordinal() > getRank(last).ordinal()) || (no.test(selected) && getRank(next).ordinal() < getRank(last).ordinal())) {
+                NbtCompound tag = stack.getOrCreateNbt();
+                NbtCompound nbt = new NbtCompound(); next.writeNbt(nbt);
+                tag.put("lastCard", nbt);
+                stack.setNbt(tag);
+            } else closeGUI(player);
+        }
+
+        @Override
+        public boolean canCloseGUI(ItemStack stack) {return false;}
+    }
+
     public static class Jueqing extends SkillItem {
         public Jueqing(Settings settings) {super(settings);}
 
@@ -693,6 +737,7 @@ public class SkillItem extends TrinketItem implements Skill {
 
         @Override
         public void onClickGUISlot(PlayerEntity player, ItemStack stack, PlayerEntity target, ItemStack selected, int slot) {
+            if (selected.isEmpty()) return;
             if (!player.isCreative()) {
                 while (countCards(player) > 0) {cardDecrement(getCard(player, isCard), 64);}
                 setCD(stack, 20);
@@ -927,6 +972,7 @@ public class SkillItem extends TrinketItem implements Skill {
 
         @Override
         public void onClickGUISlot(PlayerEntity player, ItemStack stack, PlayerEntity target, ItemStack selected, int slotIndex) {
+            if (selected.isEmpty()) return;
             give(player, selected);
             if (!player.isCreative()) {
                 player.timeUntilRegen = 0;
@@ -1030,6 +1076,21 @@ public class SkillItem extends TrinketItem implements Skill {
             cardMove(player, target, selected, 1, CardCBs.T.INV_TO_INV);
             setTag(stack, i - 1);
             if (i - 1 == 0) closeGUI(player);
+        }
+    }
+
+    public static class Yingzi extends SkillItem {
+        public Yingzi(Settings settings) {super(settings);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
+            tooltip.add(Text.translatable("item.dabaosword.yingzi.tooltip").formatted(Formatting.GREEN));
+        }
+
+        @Override
+        public int onDrawPhase(PlayerEntity player, ItemStack stack) {
+            voice(player, stack);
+            return 1;
         }
     }
 
@@ -1171,7 +1232,7 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static void changeSkill(PlayerEntity player) {
-        var selectedId = parseLootTable(new Identifier("dabaosword", "loot_tables/change_skill.json"));
+        var selectedId = parseLootTable(new Identifier("dabaosword", "loot_tables/draw_skill.json"));
         ItemStack stack = new ItemStack(Registries.ITEM.get(selectedId));
         if (stack.getItem() != Items.AIR) voice(player, Sounds.GIFTBOX,3);
         give(player, stack);

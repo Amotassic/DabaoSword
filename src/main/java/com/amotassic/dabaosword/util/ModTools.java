@@ -69,6 +69,18 @@ public class ModTools {
     public static final Predicate<ItemStack> isSpadeCard = s -> getSuit(s) == Card.Suits.Spade;
     public static final Predicate<ItemStack> isRedCard = s -> isDiamondCard.test(s) || isHeartCard.test(s);
     public static final Predicate<ItemStack> isBlackCard = s -> isClubCard.test(s) || isSpadeCard.test(s);
+    public static Inventory yesAndNo() {
+        SimpleInventory inventory = new SimpleInventory(20);
+        for (int i = 0; i < 18; i++) {
+            switch (i) {
+                case 0, 1, 2, 9, 10, 11 -> inventory.setStack(i, new ItemStack(ModItems.YES));
+                case 6, 7, 8, 15, 16, 17 -> inventory.setStack(i, new ItemStack(ModItems.NO));
+            }
+        }
+        return inventory;
+    }
+    public static final Predicate<ItemStack> yes = s -> s.isOf(ModItems.YES);
+    public static final Predicate<ItemStack> no = s -> s.isOf(ModItems.NO);
 
     public static boolean noTieji(LivingEntity entity) {return !entity.hasStatusEffect(ModItems.TIEJI);}
 
@@ -243,11 +255,17 @@ public class ModTools {
                     player.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, -1, amplifier - 1));
                 } //如果有兵粮寸断效果就不摸牌，改为将debuff等级减一
             } else {
-                var selectedId = parseLootTable(new Identifier("dabaosword", "loot_tables/draw.json"));
-                give(player, new ItemStack(Registries.ITEM.get(selectedId)));
+                give(player, newCard());
                 voice(player, SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP,1);
             }
         }
+    }
+
+    public static ItemStack newCard() {
+        var selectedId = parseLootTable(new Identifier("dabaosword", "loot_tables/draw.json"));
+        ItemStack stack = new ItemStack(Registries.ITEM.get(selectedId));
+        initSuitsAndRanks(stack);
+        return stack;
     }
 
     public static void give(PlayerEntity player, ItemStack stack) {
@@ -308,6 +326,10 @@ public class ModTools {
     public static Card.Suits getSuit(ItemStack stack) {
         var sr = getSuitAndRank(stack);
         if (sr == null) return null; return sr.getLeft();
+    }
+    public static Card.Ranks getRank(ItemStack stack) {
+        var sr = getSuitAndRank(stack);
+        if (sr == null) return null; return sr.getRight();
     }
 
     public static int getCD(ItemStack stack) { //获取物品的内置冷却时间

@@ -42,9 +42,11 @@ public class SkillCards {
     public static final Item POJUN = register("pojun", new SkillItem.Pojun(new Item.Settings().maxCount(1)));
     public static final Item QIXI = register("qixi", new SkillItem.Qixi(new Item.Settings().maxCount(1)));
     public static final Item XIAOJI = register("xiaoji", new SkillItem(new Item.Settings().maxCount(1)));
+    public static final Item YINGZI = register("yingzi", new SkillItem.Yingzi(new Item.Settings().maxCount(1)));
     public static final Item ZHIHENG = register("zhiheng", new SkillItem.Zhiheng(new Item.Settings().maxCount(1)));
     public static final Item ZHIJIAN = register("zhijian", new SkillItem.Zhijian(new Item.Settings().maxCount(1)));
     //群
+    public static final Item JIZHAN = register("jizhan", new SkillItem.Jizhan(new Item.Settings().maxCount(1)));
     public static final Item LEIJI = register("leiji", new SkillItem(new Item.Settings().maxCount(1)));
     public static final Item LUANJI = register("luanji", new SkillItem.Luanji(new Item.Settings().maxCount(1)));
     public static final Item TAOLUAN = register("taoluan", new SkillItem.Taoluan(new Item.Settings().maxCount(1)));

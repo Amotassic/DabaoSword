@@ -5,6 +5,18 @@
     ],
     "subtitle": "sounds.dabaosword.nahida"
   },
+  "jizhan": {
+    "sounds": [
+      "dabaosword:skill/jizhan1", "dabaosword:skill/jizhan2"
+    ],
+    "subtitle": "sounds.dabaosword.jizhan"
+  },
+  "yingzi": {
+    "sounds": [
+      "dabaosword:skill/yingzi1", "dabaosword:skill/yingzi2"
+    ],
+    "subtitle": "sounds.dabaosword.yingzi"
+  },
   "wusheng": {
     "sounds": [
       "dabaosword:skill/wusheng1", "dabaosword:skill/wusheng2"
