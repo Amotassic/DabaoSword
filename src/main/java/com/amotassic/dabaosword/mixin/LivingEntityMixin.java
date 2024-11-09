@@ -63,8 +63,9 @@ public abstract class LivingEntityMixin extends Entity {
 
     @Inject(method = "damage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;isSleeping()Z"), cancellable = true)
     private void cancelDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-        this.source = source;
-        if (ModifyDamage.shouldCancel(living, source, amount)) cir.setReturnValue(false);
+        int i = ModifyDamage.shouldCancel(living, source, amount);
+        if (i == 1) cir.setReturnValue(false);
+        if (i == 2) cir.setReturnValue(true);
     }
 
     @Inject(method = "tick", at = @At("TAIL"))
@@ -72,10 +73,8 @@ public abstract class LivingEntityMixin extends Entity {
         EndEntityTick.LIVING_EVENT.invoker().endLivingTick(living);
     }
 
-    @Unique private DamageSource source; //一旦damage被调用，就将source保存起来，用于在modifyDamageBeforeArmor中传入source变量
-
     @ModifyVariable(method = "applyArmorToDamage", at = @At(value = "HEAD"), argsOnly = true)
-    protected float modifyDamageBeforeArmor(float amount) {
+    protected float modifyDamageBeforeArmor(float amount, DamageSource source) {
         return ModifyDamage.modify(living, source, amount);
     }
 

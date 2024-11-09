@@ -12,6 +12,7 @@ public class SkillCards {
     public static final Item XINGSHANG = register("xingshang", new SkillItem(new Item.Settings().maxCount(1)));
     public static final Item GANGLIE = register("ganglie", new SkillItem.Ganglie(new Item.Settings().maxCount(1)));
     public static final Item GONGAO = register("gongao", new SkillItem.Gongao(new Item.Settings().maxCount(1)));
+    public static final Item JIANXIONG = register("jianxiong", new SkillItem.Jianxiong(new Item.Settings().maxCount(1)));
     public static final Item JUEQING = register("jueqing", new SkillItem.Jueqing(new Item.Settings().maxCount(1)));
     public static final Item LUOSHEN = register("luoshen", new SkillItem.Luoshen(new Item.Settings().maxCount(1)));
     public static final Item QINGGUO = register("qingguo", new SkillItem.Qingguo(new Item.Settings().maxCount(1)));

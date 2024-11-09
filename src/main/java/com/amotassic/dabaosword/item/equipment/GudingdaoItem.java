@@ -13,7 +13,7 @@ import net.minecraft.world.World;
 import java.util.List;
 
 public class GudingdaoItem extends SwordItem {
-    public GudingdaoItem(Settings Settings) {
+    public GudingdaoItem() {
         super(ToolMaterials.NETHERITE, 5, -2.4F,new FabricItemSettings().maxDamage(999).rarity(Rarity.EPIC));
     }
     

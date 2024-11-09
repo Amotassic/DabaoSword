@@ -47,7 +47,7 @@ public class Equipment extends TrinketItem implements Card, Skill {
         @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
             super.appendTooltip(stack, world, tooltip, context);
-            tooltip.add(Text.translatable("item.dabaosword.bagua.tooltip"));
+            tooltip.add(Text.translatable("item.dabaosword.bagua.tooltip").formatted(Formatting.AQUA));
         }
 
         @Override
@@ -56,7 +56,7 @@ public class Equipment extends TrinketItem implements Card, Skill {
         @Override
         public boolean cancelDamage(LivingEntity target, DamageSource source, float amount) {
             if (source.getAttacker() instanceof LivingEntity) {
-                if (!target.hasStatusEffect(ModItems.COOLDOWN2) && !target.getCommandTags().contains("juedou")) {
+                if (!target.hasStatusEffect(ModItems.COOLDOWN2)) {
                     if (hasTrinket(ModItems.BAGUA, target) && new Random().nextFloat() < 0.5 && !source.isIn(DamageTypeTags.BYPASSES_ARMOR)) {
                         shan(target, true, source, amount);
                         return true;
@@ -73,7 +73,7 @@ public class Equipment extends TrinketItem implements Card, Skill {
         @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
             super.appendTooltip(stack, world, tooltip, context);
-            tooltip.add(Text.translatable("item.dabaosword.baiyin.tooltip"));
+            tooltip.add(Text.translatable("item.dabaosword.baiyin.tooltip").formatted(Formatting.AQUA));
         }
 
         @Override
@@ -188,6 +188,17 @@ public class Equipment extends TrinketItem implements Card, Skill {
         }
     }
 
+    public static class RenwangArmor extends Equipment {
+        public RenwangArmor(Settings settings) {super(settings);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+            super.appendTooltip(stack, world, tooltip, context);
+            tooltip.add(Text.translatable("item.dabaosword.renwang.tooltip1"));
+            tooltip.add(Text.translatable("item.dabaosword.renwang.tooltip2").formatted(Formatting.AQUA));
+        }
+    }
+
     public static class RattanArmor extends Equipment {
         public RattanArmor(Settings settings) {super(settings);}
 
@@ -228,6 +239,7 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
         @Override
         public boolean cancelDamage(LivingEntity target, DamageSource source, float amount) {
+            ItemStack stack = trinketItem(ModItems.RATTAN_ARMOR, target);
             //弹射物对藤甲无效
             if (source.isIn(DamageTypeTags.IS_PROJECTILE) && inrattan(target)) {
                 Entity projectile = source.getSource();
@@ -236,7 +248,6 @@ public class Equipment extends TrinketItem implements Card, Skill {
                     voice(target, Sounds.TENGJIA1);
                     return true;
                 }
-                ItemStack stack = trinketItem(ModItems.RATTAN_ARMOR, target);
                 if (getCD(stack) == 0) {
                     if (projectile != null) projectile.discard();
                     setCD(stack, 5);
@@ -247,7 +258,6 @@ public class Equipment extends TrinketItem implements Card, Skill {
             }
             //若攻击者主手没有物品，则无法击穿藤甲
             if (source.getSource() instanceof LivingEntity s && inrattan(target) && s.getMainHandStack().isEmpty()) {
-                ItemStack stack = trinketItem(ModItems.RATTAN_ARMOR, target);
                 if (getCD(stack) == 0) {
                     setCD(stack, 5);
                     target.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 10,0,false,false,false));

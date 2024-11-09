@@ -23,7 +23,6 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.HostileEntity;
-import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
@@ -314,6 +313,26 @@ public class SkillItem extends TrinketItem implements Skill {
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
             if (entity instanceof PlayerEntity player) viewAs(player, stack, 15, isRedCard, new ItemStack(ModItems.FIRE_ATTACK), Sounds.HUOJI);
             super.tick(stack, slot, entity);
+        }
+    }
+
+    public static class Jianxiong extends SkillItem {
+        public Jianxiong(Settings settings) {super(settings);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
+            tooltip.add(Text.literal("CD: 15s"));
+            tooltip.add(Text.translatable("item.dabaosword.jianxiong.tooltip1").formatted(Formatting.BLUE));
+            tooltip.add(Text.translatable("item.dabaosword.jianxiong.tooltip2").formatted(Formatting.BLUE));
+        }
+
+        @Override
+        public void onHurt(ItemStack stack, LivingEntity entity, DamageSource source, float amount) {
+            if (source.getAttacker() instanceof LivingEntity && !entity.hasStatusEffect(ModItems.COOLDOWN)) {
+                voice(entity, stack);
+                if (entity instanceof PlayerEntity player) draw(player);
+                entity.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 15,0,false,false,true));
+            }
         }
     }
 
@@ -1008,19 +1027,6 @@ public class SkillItem extends TrinketItem implements Skill {
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             tooltip.add(Text.translatable("item.dabaosword.weimu.tooltip"));
-        }
-
-        @Override
-        public Priority getPriority(LivingEntity target, DamageSource source, float amount) {return Priority.HIGHEST;}
-
-        @Override
-        public boolean cancelDamage(LivingEntity target, DamageSource source, float amount) {
-            if (hasTrinket(SkillCards.WEIMU, target) && source.getSource() instanceof WolfEntity dog && dog.hasStatusEffect(ModItems.INVULNERABLE)) {
-                dog.setHealth(0);
-                voice(target, Sounds.WEIMU);
-                return true;
-            }
-            return false;
         }
     }
 

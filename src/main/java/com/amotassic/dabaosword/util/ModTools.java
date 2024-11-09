@@ -15,15 +15,15 @@ import com.google.gson.JsonObject;
 import dev.emi.trinkets.api.TrinketComponent;
 import dev.emi.trinkets.api.TrinketsApi;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.projectile.ArrowEntity;
+import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
@@ -81,6 +81,18 @@ public class ModTools {
     }
     public static final Predicate<ItemStack> yes = s -> s.isOf(ModItems.YES);
     public static final Predicate<ItemStack> no = s -> s.isOf(ModItems.NO);
+    public static boolean isNanman(DamageSource source) {
+        return source.getSource() instanceof WolfEntity dog && dog.hasStatusEffect(ModItems.INVULNERABLE);
+    }
+    public static boolean isWanjian(DamageSource source) {
+        return source.getSource() instanceof ArrowEntity arrow && Objects.equals(arrow.getCustomName(), Text.of("a"));
+    }
+    public static boolean isHuogong(DamageSource source) {
+        return source.getSource() instanceof FireballEntity fireball && Objects.equals(fireball.getCustomName(), Text.of("a"));
+    }
+    public static boolean isShandian(DamageSource source) {
+        return source.getSource() instanceof LightningEntity lightning && Objects.equals(lightning.getCustomName(), Text.of("a"));
+    }
 
     public static boolean noTieji(LivingEntity entity) {return !entity.hasStatusEffect(ModItems.TIEJI);}
 
@@ -272,6 +284,7 @@ public class ModTools {
         initSuitsAndRanks(stack); //仅有通过这个方法获得的牌才会有花色和点数
         ItemEntity item = player.dropItem(stack, false);
         if (item == null) return;
+        item.setInvulnerable(true);
         item.resetPickupDelay();
         item.setOwner(player.getUuid());
     }
@@ -498,6 +511,19 @@ public class ModTools {
         //如果是移动到装备栏的类型，则目标使用或替换该装备
         if (type == CardCBs.T.INV_TO_EQUIP || type == CardCBs.T.EQUIP_TO_EQUIP) Equipment.useOrReplaceEquip(to, copy);
         CardCBs.MOVE.invoker().cardMove(from, to, copy, count, type);
+    }
+
+    public static boolean notHurtBy(LivingEntity e,DamageSource s,Item c) {return !canHurtByCard(e,s,new ItemStack(c));}
+    public static boolean canHurtByCard(LivingEntity entity, DamageSource source, ItemStack card) {
+        return CardCBs.CAN_HURT_BY_CARD.invoker().canHurtByCard(entity, source, card);
+    }
+    public static void hurtBy(LivingEntity e, DamageSource s, Item c) {hurtByCard(e, s, new ItemStack(c));}
+    public static void hurtByCard(LivingEntity entity, DamageSource source, ItemStack card) {
+        CardCBs.HURT_BY_CARD.invoker().hurtByCard(entity, source, card);
+    }
+
+    public static DamageSource getDamageSource(Entity source, RegistryKey<DamageType> type) {
+        return new DamageSource(source.getWorld().getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).entryOf(type), source);
     }
 
     public static void writeDamage(DamageSource source, float amount, boolean returnShan, ItemStack stack) {

@@ -9,6 +9,7 @@
     "dabaosword:jiu",
     "dabaosword:bingliang",
     "dabaosword:too_happy",
+    "dabaosword:shandian",
     "dabaosword:steal",
     "dabaosword:discard",
     "dabaosword:wuzhong",
@@ -16,6 +17,7 @@
     "dabaosword:taoyuan",
     "dabaosword:tiesuo",
     "dabaosword:juedou",
+    "dabaosword:wugu",
     "dabaosword:wuxie",
     "dabaosword:jiedao",
     "dabaosword:nanman",
@@ -30,6 +32,7 @@
     "dabaosword:bagua",
     "dabaosword:qinglong",
     "dabaosword:fangtian",
-    "dabaosword:zhangba"
+    "dabaosword:zhangba",
+    "dabaosword:renwang"
   ]
 }

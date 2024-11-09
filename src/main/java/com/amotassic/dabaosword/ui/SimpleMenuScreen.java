@@ -1,6 +1,7 @@
 package com.amotassic.dabaosword.ui;
 
 import com.amotassic.dabaosword.api.Skill;
+import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.entity.player.PlayerInventory;
@@ -19,7 +20,8 @@ public class SimpleMenuScreen extends HandledScreen<SimpleMenuHandler> {
     @Override
     protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
         int x = this.x; int y = this.y;
-        context.drawTexture(TEXTURE, x, y,0,0, backgroundWidth, backgroundHeight);
+        if (handler.slots.get(18).getStack().isOf(SkillCards.JIZHAN)) context.drawTexture(TEXTURE, x, y,0,75, backgroundWidth, backgroundHeight);
+        else context.drawTexture(TEXTURE, x, y,0,0, backgroundWidth, backgroundHeight);
     }
 
     @Override

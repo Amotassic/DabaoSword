@@ -1,0 +1,29 @@
+{
+  "tooltip_lines": 2,
+  "effects": [
+    {
+      "heal": 5.0,
+      "draw": 2,
+      "condition": [
+        "no_cd",
+        "on_hurt"
+      ],
+      "cd": 20
+    },
+    {
+      "priority": 2,
+      "cancel_damage": "false",
+      "condition": [
+        "no_cd",
+        "on_hurt"
+      ],
+      "cd": 0
+    },
+    {
+      "modify_damage": [0.0, 0.0],
+      "condition": [
+        "post_damage"
+      ]
+    }
+  ]
+}

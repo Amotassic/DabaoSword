@@ -2,12 +2,8 @@ package com.amotassic.dabaosword.item.card;
 
 import com.amotassic.dabaosword.api.Card;
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LightningEntity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -39,29 +35,6 @@ public class CardItem extends Item implements Card {
                 tooltip.add(Text.translatable("item.dabaosword.thunder_sha.tooltip").formatted(Formatting.BLUE));
             }
         }
-
-        @Override
-        public void cardUse(LivingEntity user, ItemStack stack, LivingEntity entity) {
-            World world = user.getWorld();
-            user.addCommandTag("sha");
-            if (stack.isOf(ModItems.SHA)) {
-                if (!hasTrinket(ModItems.RATTAN_ARMOR, entity)) {
-                    entity.timeUntilRegen = 0; entity.damage(user.getDamageSources().mobAttack(user), 5);
-                } else voice(entity, Sounds.TENGJIA1);
-            }
-            if (stack.isOf(ModItems.FIRE_SHA)) {
-                entity.timeUntilRegen = 0; entity.setOnFireFor(5);
-            }
-            if (stack.isOf(ModItems.THUNDER_SHA)) {
-                entity.timeUntilRegen = 0; entity.damage(user.getDamageSources().indirectMagic(user, user),5);
-                LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(world);
-                if (lightningEntity != null) {
-                    lightningEntity.refreshPositionAfterTeleport(entity.getX(), entity.getY(), entity.getZ());
-                    lightningEntity.setCosmetic(true);
-                }
-                world.spawnEntity(lightningEntity);
-            }
-        }
     }
 
     @Override
@@ -73,13 +46,22 @@ public class CardItem extends Item implements Card {
             else tooltip.add(Text.translatable("card.suit_and_rank", suit.suit, rank.rank));
         }
 
+        if (stack.isOf(ModItems.SHANDIAN_ITEM)) {
+            tooltip.add(Text.translatable("item.dabaosword.shandian.tooltip"));
+        }
+
+        if (stack.isOf(ModItems.WUGU)) {
+            tooltip.add(Text.translatable("item.dabaosword.wugu.tooltip1"));
+            tooltip.add(Text.translatable("item.dabaosword.wugu.tooltip2"));
+        }
+
         if (stack.getItem() == ModItems.WUXIE) {
             tooltip.add(Text.translatable("item.dabaosword.wuxie.tooltip1"));
             tooltip.add(Text.translatable("item.dabaosword.wuxie.tooltip2"));
         }
 
         if (stack.getItem() == ModItems.ARROW_RAIN || stack.getItem() == ModItems.WANJIAN) {//有大病的工具提示
-            if(Screen.hasShiftDown()){
+            if (Screen.hasShiftDown()) {
                 int i = (int) (System.currentTimeMillis() / 1000) % 7;
                 if (i==0) {tooltip.add(Text.translatable("item.dabaosword.arrowrain.tooltip7").formatted(Formatting.BLUE));}
                 if (i==1) {tooltip.add(Text.translatable("item.dabaosword.arrowrain.tooltip1").formatted(Formatting.AQUA));}
@@ -88,17 +70,17 @@ public class CardItem extends Item implements Card {
                 if (i==4) {tooltip.add(Text.translatable("item.dabaosword.arrowrain.tooltip4").formatted(Formatting.GREEN));}
                 if (i==5) {tooltip.add(Text.translatable("item.dabaosword.arrowrain.tooltip5").formatted(Formatting.DARK_PURPLE));}
                 if (i==6) {tooltip.add(Text.translatable("item.dabaosword.arrowrain.tooltip6").formatted(Formatting.YELLOW));}
-            }else{
-                tooltip.add(Text.translatable("item.dabaosword.arrowrain.tooltip").formatted(Formatting.GREEN));
+            } else {
+                tooltip.add(Text.translatable("item.dabaosword.arrowrain.tooltip"));
                 tooltip.add(Text.translatable("item.dabaosword.arrowrain.shift").formatted(Formatting.ITALIC));
             }
         }
 
         if (stack.getItem() == ModItems.BINGLIANG_ITEM) {
-            if(Screen.hasShiftDown()){
+            if (Screen.hasShiftDown()) {
                 tooltip.add(Text.translatable("item.dabaosword.bingliang.tooltip1"));
                 tooltip.add(Text.translatable("item.dabaosword.bingliang.tooltip2"));
-            }else{
+            } else {
                 tooltip.add(Text.translatable("item.dabaosword.bingliang.tooltip").formatted(Formatting.BLUE));
                 tooltip.add(Text.translatable("dabaosword.shifttooltip"));
             }
@@ -158,10 +140,10 @@ public class CardItem extends Item implements Card {
         }
 
         if (stack.getItem() == ModItems.TOO_HAPPY_ITEM) {
-            if(Screen.hasShiftDown()){
+            if (Screen.hasShiftDown()) {
                 tooltip.add(Text.translatable("item.dabaosword.too_happy.tooltip1"));
                 tooltip.add(Text.translatable("item.dabaosword.too_happy.tooltip2"));
-            }else{
+            } else {
                 tooltip.add(Text.translatable("item.dabaosword.too_happy.tooltip").formatted(Formatting.RED));
                 tooltip.add(Text.translatable("dabaosword.shifttooltip"));
             }

@@ -1,6 +1,6 @@
 {
-  "parent": "item/generated",
-  "textures": {
-    "layer0": "dabaosword:item/nanman"
-  }
+	"parent": "dabaosword:item/card",
+	"textures": {
+		"0": "dabaosword:item/nanman"
+	}
 }

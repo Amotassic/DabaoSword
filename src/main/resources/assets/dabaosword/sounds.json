@@ -5,6 +5,12 @@
     ],
     "subtitle": "sounds.dabaosword.nahida"
   },
+  "jianxiong": {
+    "sounds": [
+      "dabaosword:skill/jianxiong1", "dabaosword:skill/jianxiong2"
+    ],
+    "subtitle": "sounds.dabaosword.jianxiong"
+  },
   "jizhan": {
     "sounds": [
       "dabaosword:skill/jizhan1", "dabaosword:skill/jizhan2"
@@ -505,6 +511,15 @@
     ],
     "subtitle": "sounds.dabaosword.shan"
   },
+  "shandian": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/shandian"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.shandian"
+  },
   "steal": {
     "sounds": [
       {
@@ -540,6 +555,15 @@
       }
     ],
     "subtitle": "sounds.dabaosword.wanjian"
+  },
+  "wugu": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/wugu"
+      }
+    ],
+    "subtitle": "sounds.dabaosword.wugu"
   },
   "wuxie": {
     "sounds": [

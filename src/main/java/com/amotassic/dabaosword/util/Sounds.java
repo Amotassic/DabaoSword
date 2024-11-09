@@ -8,6 +8,7 @@ import net.minecraft.util.Identifier;
 @SuppressWarnings("unused")
 public class Sounds {
     public static final SoundEvent NAHIDA = register("nahida");
+    public static final SoundEvent JIANXIONG = register("jianxiong");
     public static final SoundEvent JIZHAN = register("jizhan");
     public static final SoundEvent YINGZI = register("yingzi");
     public static final SoundEvent WUSHENG = register("wusheng");
@@ -66,6 +67,7 @@ public class Sounds {
     public static final SoundEvent HANBING = register("hanbing");
     public static final SoundEvent QINGGANG = register("qinggang");
     public static final SoundEvent QINGLONG = register("qinglong");
+    public static final SoundEvent RENWANG = register("renwang");
     public static final SoundEvent TENGJIA1 = register("tengjia1");
     public static final SoundEvent TENGJIA2 = register("tengjia2");
     public static final SoundEvent ZHANGBA = register("zhangba");
@@ -79,10 +81,12 @@ public class Sounds {
     public static final SoundEvent LEBU = register("too_happy");
     public static final SoundEvent RECOVER = register("peach");
     public static final SoundEvent SHAN = register("shan");
+    public static final SoundEvent SHANDIAN = register("shandian");
     public static final SoundEvent SHUNSHOU = register("steal");
     public static final SoundEvent TAOYUAN = register("taoyuan");
     public static final SoundEvent TIESUO = register("tiesuo");
     public static final SoundEvent WANJIAN = register("wanjian");
+    public static final SoundEvent WUGU = register("wugu");
     public static final SoundEvent WUXIE = register("wuxie");
     public static final SoundEvent WUZHONG = register("wuzhong");
     public static final SoundEvent NANMAN = register("nanman");

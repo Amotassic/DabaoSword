@@ -21,17 +21,20 @@ public class ArrowRainItem extends CardItem {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
         ItemStack stack = playerEntity.getStackInHand(hand);
         if (!world.isClient && hand == Hand.MAIN_HAND) {
-            arrowRain(playerEntity, 5);
+            arrowRain(playerEntity, 5, 5);
             if (!playerEntity.isCreative()) stack.damage(1, playerEntity,player -> player.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
             return TypedActionResult.success(stack);
         }
         return TypedActionResult.pass(stack);
     }
 
-    public static void arrowRain(LivingEntity entity, float speed) {
+    public static void arrowRain(LivingEntity entity, float speed, int count) {
         ServerWorld world = (ServerWorld) entity.getWorld();
-        int[] angles = {10, 5, 0, -5, -10};
-        for (int angle : angles) {summonArrow(entity, angle, speed);}
+        for (int i = 0; i < count; i++) {
+            int j;
+            if (i % 2 == 0) j = -5 * i / 2; else j = 5 * (i + 1) / 2;
+            summonArrow(entity, j, speed);
+        }
         world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0F, 1.0F / (world.getRandom().nextFloat() * 0.4F + 1.2F) + 0.5F);
     }
 
