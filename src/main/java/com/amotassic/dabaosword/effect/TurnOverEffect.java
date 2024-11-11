@@ -9,7 +9,7 @@ import net.minecraft.text.Text;
 import java.util.Objects;
 
 public class TurnOverEffect extends StatusEffect {
-    public TurnOverEffect(StatusEffectCategory category, int color) {super(category, color);}
+    public TurnOverEffect() {super(StatusEffectCategory.HARMFUL, 0x07050F);}
 
     @Override
     public boolean canApplyUpdateEffect(int duration, int amplifier) {return true;}

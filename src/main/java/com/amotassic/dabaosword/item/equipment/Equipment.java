@@ -15,6 +15,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.DamageTypeTags;
@@ -39,11 +40,9 @@ import static com.amotassic.dabaosword.util.ModTools.*;
 import static com.amotassic.dabaosword.util.ModifyDamage.shan;
 
 public class Equipment extends TrinketItem implements Card, Skill {
-    public Equipment(Settings settings) {super(settings);}
+    public Equipment() {super(new Item.Settings().maxCount(1));}
 
     public static class BaguaArmor extends Equipment {
-        public BaguaArmor(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
             super.appendTooltip(stack, world, tooltip, context);
@@ -68,8 +67,6 @@ public class Equipment extends TrinketItem implements Card, Skill {
     }
 
     public static class BaiyinArmor extends Equipment {
-        public BaiyinArmor(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
             super.appendTooltip(stack, world, tooltip, context);
@@ -87,8 +84,6 @@ public class Equipment extends TrinketItem implements Card, Skill {
     }
 
     public static class FangtianWeapon extends Equipment {
-        public FangtianWeapon(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
             super.appendTooltip(stack, world, tooltip, context);
@@ -109,8 +104,6 @@ public class Equipment extends TrinketItem implements Card, Skill {
     }
 
     public static class GudingWeapon extends Equipment {
-        public GudingWeapon(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
             super.appendTooltip(stack, world, tooltip, context);
@@ -133,8 +126,6 @@ public class Equipment extends TrinketItem implements Card, Skill {
     }
 
     public static class HanbingWeapon extends Equipment {
-        public HanbingWeapon(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
             super.appendTooltip(stack, world, tooltip, context);
@@ -150,8 +141,6 @@ public class Equipment extends TrinketItem implements Card, Skill {
     }
 
     public static class QinggangWeapon extends Equipment {
-        public QinggangWeapon(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
             super.appendTooltip(stack, world, tooltip, context);
@@ -169,8 +158,6 @@ public class Equipment extends TrinketItem implements Card, Skill {
     }
 
     public static class QinglongWeapon extends Equipment {
-        public QinglongWeapon(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
             super.appendTooltip(stack, world, tooltip, context);
@@ -189,8 +176,6 @@ public class Equipment extends TrinketItem implements Card, Skill {
     }
 
     public static class RenwangArmor extends Equipment {
-        public RenwangArmor(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
             super.appendTooltip(stack, world, tooltip, context);
@@ -200,8 +185,6 @@ public class Equipment extends TrinketItem implements Card, Skill {
     }
 
     public static class RattanArmor extends Equipment {
-        public RattanArmor(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
             super.appendTooltip(stack, world, tooltip, context);
@@ -272,8 +255,6 @@ public class Equipment extends TrinketItem implements Card, Skill {
     }
 
     public static class ZhangbaWeapon extends Equipment {
-        public ZhangbaWeapon(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
             super.appendTooltip(stack, world, tooltip, context);

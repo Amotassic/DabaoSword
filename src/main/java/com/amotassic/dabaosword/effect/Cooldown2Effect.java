@@ -18,7 +18,7 @@ import static com.amotassic.dabaosword.util.ModTools.hasTrinket;
 import static com.amotassic.dabaosword.util.ModTools.voice;
 
 public class Cooldown2Effect extends StatusEffect {
-    public Cooldown2Effect(StatusEffectCategory category, int color) {super(category, color);}
+    public Cooldown2Effect() {super(StatusEffectCategory.NEUTRAL, 0xFFFFFF);}
 
     @Override
     public boolean canApplyUpdateEffect(int duration, int amplifier) {return true;}

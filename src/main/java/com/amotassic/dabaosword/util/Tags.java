@@ -10,7 +10,6 @@ public class Tags {
 
     public static class Items {
 
-        public static final TagKey<Item> CARD = createTag("card");
         public static final TagKey<Item> BASIC_CARD = createTag("basic_card");
         public static final TagKey<Item> ARMOURY_CARD = createTag("armoury_card");
         public static final TagKey<Item> LOCK_SKILL = createTag("lock_skill");

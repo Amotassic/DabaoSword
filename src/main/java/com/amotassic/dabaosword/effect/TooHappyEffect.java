@@ -10,7 +10,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import java.util.Objects;
 
 public class TooHappyEffect extends StatusEffect {
-    public TooHappyEffect(StatusEffectCategory category, int color) {super(category, color);}
+    public TooHappyEffect() {super(StatusEffectCategory.HARMFUL, 0xF73C0A);}
 
     @Override
     public boolean canApplyUpdateEffect(int duration, int amplifier) {return true;}
@@ -18,7 +18,7 @@ public class TooHappyEffect extends StatusEffect {
     @Override
     public void applyUpdateEffect(LivingEntity entity, int amplifier) {
         int restTime = Objects.requireNonNull(entity.getStatusEffect(ModItems.TOO_HAPPY)).getDuration();
-        if(restTime<=1) {entity.setPose(EntityPose.STANDING);}
+        if (restTime<=1) {entity.setPose(EntityPose.STANDING);}
         else {
             if (!(entity instanceof PlayerEntity)) {entity.setPose(EntityPose.SLEEPING);}
             entity.setVelocity(0, 0, 0);

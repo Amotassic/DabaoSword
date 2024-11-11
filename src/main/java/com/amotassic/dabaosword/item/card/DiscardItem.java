@@ -17,8 +17,6 @@ import java.util.stream.IntStream;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class DiscardItem extends CardItem {
-    public DiscardItem(Settings settings) {super(settings);}
-
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         if (!user.getWorld().isClient && hand == Hand.MAIN_HAND) {

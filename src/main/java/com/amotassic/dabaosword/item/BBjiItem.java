@@ -18,7 +18,7 @@ import java.util.List;
 import static com.amotassic.dabaosword.util.ModTools.voice;
 
 public class BBjiItem extends Item {
-    public BBjiItem(Settings settings) {super(settings);}
+    public BBjiItem() {super(new Item.Settings().maxDamage(250));}
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {

@@ -59,6 +59,7 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
 
             if (time % giveCard == 0) { // 每分钟摸两张牌
                 if (!player.isCreative() && !player.isSpectator() && player.isAlive()) {
+                    player.sendMessage(Text.translatable("dabaosword.draw"),true);
                     if (player.hasStatusEffect(ModItems.BINGLIANG)) player.removeStatusEffect(ModItems.BINGLIANG);
                     else if (countCards(player) < player.getMaxHealth() || !limit) {
                         int draw = 0;
@@ -70,7 +71,6 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
                             }
                         }
                         if (draw > 0) draw(player, draw);
-                        player.sendMessage(Text.translatable("dabaosword.draw"),true);
                     }
                 }
             }

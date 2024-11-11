@@ -13,7 +13,7 @@ import java.util.Objects;
 import java.util.Random;
 
 public class ShandianEffect extends StatusEffect {
-    public ShandianEffect(StatusEffectCategory category, int color) {super(category, color);}
+    public ShandianEffect() {super(StatusEffectCategory.HARMFUL, 0x000000);}
 
     @Override
     public boolean canApplyUpdateEffect(int duration, int amplifier) {return true;}

@@ -3,7 +3,6 @@ package com.amotassic.dabaosword.mixin.client;
 import com.amotassic.dabaosword.api.Card;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.ModTools;
-import com.amotassic.dabaosword.util.Tags;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -47,7 +46,7 @@ public abstract class DrawContextMixin {
     @ModifyArgs(method = "drawItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/world/World;Lnet/minecraft/item/ItemStack;IIII)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;renderItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/client/render/model/json/ModelTransformationMode;ZLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;IILnet/minecraft/client/render/model/BakedModel;)V"))
     private void drawItem(Args args) {
         ItemStack stack = args.get(0);
-        if (stack.isIn(Tags.Items.CARD) || stack.isOf(ModItems.GAIN_CARD)) {
+        if (ModTools.isCard(stack) || stack.isOf(ModItems.GAIN_CARD)) {
             String path = "card/" + stack.getItem().toString();
             if (stack.isOf(ModItems.TIESUO) && client.player != null && client.player.getOffHandStack().isOf(Items.KNOWLEDGE_BOOK)) path = "nahida";
             ModelIdentifier modelId = new ModelIdentifier("dabaosword", path, "inventory");

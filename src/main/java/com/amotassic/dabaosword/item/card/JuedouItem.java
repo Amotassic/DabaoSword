@@ -12,8 +12,6 @@ import net.minecraft.util.Hand;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class JuedouItem extends CardItem {
-    public JuedouItem(Settings settings) {super(settings);}
-
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         if (!user.getWorld().isClient && hand == Hand.MAIN_HAND && entity.isAlive()) {

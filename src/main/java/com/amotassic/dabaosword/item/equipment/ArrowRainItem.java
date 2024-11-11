@@ -1,21 +1,31 @@
 package com.amotassic.dabaosword.item.equipment;
 
-import com.amotassic.dabaosword.item.card.CardItem;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Rarity;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
-public class ArrowRainItem extends CardItem {
-    public ArrowRainItem(Settings settings) {super(settings);}
+import java.util.List;
+
+public class ArrowRainItem extends Item {
+    public ArrowRainItem() {super(new Settings().maxDamage(50).rarity(Rarity.UNCOMMON));}
+
+    @Override
+    public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
+        tooltip.add(Text.translatable("item.dabaosword.arrowrain.tooltip"));
+    }
+
     //一次射五发
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {

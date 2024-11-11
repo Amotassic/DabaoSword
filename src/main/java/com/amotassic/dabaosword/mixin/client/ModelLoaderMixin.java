@@ -19,6 +19,7 @@ public abstract class ModelLoaderMixin {
     @Inject(method = "<init>", at = @At("TAIL"))
     public void init(CallbackInfo ci) {
         addModel(new ModelIdentifier(new Identifier("dabaosword", "nahida"), "inventory"));
+        addModel(new ModelIdentifier(new Identifier("dabaosword:card/gain_card"), "inventory"));
         var itemList = Registries.ITEM.stream().filter(item -> item instanceof Card).toList();
         for (var item : itemList) {
             String path = "card/" + item.toString();

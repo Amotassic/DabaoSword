@@ -61,14 +61,14 @@ public class ModTools {
     public static final Predicate<ItemStack> isSha = s -> s.getItem() instanceof CardItem.Sha;
     //public static final Predicate<ItemStack> nonBasic = s -> s.isIn(Tags.Items.CARD) && !s.isIn(Tags.Items.BASIC_CARD);
     //判断是否是卡牌
-    public static final Predicate<ItemStack> isCard = s -> s.isIn(Tags.Items.CARD);
-    public static boolean isCard(ItemStack stack) {return stack.isIn(Tags.Items.CARD);}
+    public static final Predicate<ItemStack> isCard = ModTools::isCard;
+    public static boolean isCard(ItemStack s) {return !s.isOf(ModItems.CARD_PILE) && s.getItem() instanceof Card;}
     public static final Predicate<ItemStack> isDiamondCard = s -> getSuit(s) == Card.Suits.Diamond;
     public static final Predicate<ItemStack> isHeartCard = s -> getSuit(s) == Card.Suits.Heart;
     public static final Predicate<ItemStack> isClubCard = s -> getSuit(s) == Card.Suits.Club;
     public static final Predicate<ItemStack> isSpadeCard = s -> getSuit(s) == Card.Suits.Spade;
-    public static final Predicate<ItemStack> isRedCard = s -> isDiamondCard.test(s) || isHeartCard.test(s);
-    public static final Predicate<ItemStack> isBlackCard = s -> isClubCard.test(s) || isSpadeCard.test(s);
+    public static final Predicate<ItemStack> isRedCard = isDiamondCard.or(isHeartCard);
+    public static final Predicate<ItemStack> isBlackCard = isClubCard.or(isSpadeCard);
     public static Inventory yesAndNo() {
         SimpleInventory inventory = new SimpleInventory(20);
         for (int i = 0; i < 18; i++) {

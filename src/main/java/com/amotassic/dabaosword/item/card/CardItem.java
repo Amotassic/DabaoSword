@@ -4,10 +4,14 @@ import com.amotassic.dabaosword.api.Card;
 import com.amotassic.dabaosword.item.ModItems;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -15,11 +19,9 @@ import java.util.List;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class CardItem extends Item implements Card {
-    public CardItem(Settings settings) {super(settings);}
+    public CardItem() {super(new Settings());}
 
     public static class Sha extends CardItem {
-        public Sha(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             super.appendTooltip(stack, world, tooltip, tooltipContext);
@@ -37,6 +39,28 @@ public class CardItem extends Item implements Card {
         }
     }
 
+    public static class Wuzhong extends CardItem {
+        @Override
+        public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
+            super.appendTooltip(stack, world, tooltip, tooltipContext);
+            tooltip.add(Text.translatable("item.dabaosword.wuzhong.tooltip1"));
+            tooltip.add(Text.translatable("item.dabaosword.wuzhong.tooltip2"));
+        }
+
+        @Override
+        public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+            if (!world.isClient && hand == Hand.MAIN_HAND) {
+                if (cardUsePre(user, user.getMainHandStack(), null)) return TypedActionResult.success(user.getMainHandStack());
+            }
+            return super.use(world, user, hand);
+        }
+
+        @Override
+        public void cardUse(LivingEntity user, ItemStack stack, LivingEntity target) {
+            if (user instanceof PlayerEntity player) draw(player,2);
+        }
+    }
+
     @Override
     public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
         var sr = getSuitAndRank(stack);
@@ -47,7 +71,8 @@ public class CardItem extends Item implements Card {
         }
 
         if (stack.isOf(ModItems.SHANDIAN_ITEM)) {
-            tooltip.add(Text.translatable("item.dabaosword.shandian.tooltip"));
+            tooltip.add(Text.translatable("item.dabaosword.shandian.tooltip1"));
+            tooltip.add(Text.translatable("item.dabaosword.shandian.tooltip2"));
         }
 
         if (stack.isOf(ModItems.WUGU)) {
@@ -60,7 +85,7 @@ public class CardItem extends Item implements Card {
             tooltip.add(Text.translatable("item.dabaosword.wuxie.tooltip2"));
         }
 
-        if (stack.getItem() == ModItems.ARROW_RAIN || stack.getItem() == ModItems.WANJIAN) {//有大病的工具提示
+        if (stack.getItem() == ModItems.WANJIAN) {//有大病的工具提示
             if (Screen.hasShiftDown()) {
                 int i = (int) (System.currentTimeMillis() / 1000) % 7;
                 if (i==0) {tooltip.add(Text.translatable("item.dabaosword.arrowrain.tooltip7").formatted(Formatting.BLUE));}
@@ -147,15 +172,6 @@ public class CardItem extends Item implements Card {
                 tooltip.add(Text.translatable("item.dabaosword.too_happy.tooltip").formatted(Formatting.RED));
                 tooltip.add(Text.translatable("dabaosword.shifttooltip"));
             }
-        }
-
-        if (stack.getItem() == ModItems.WUZHONG) {
-            tooltip.add(Text.translatable("item.dabaosword.wuzhong.tooltip1"));
-            tooltip.add(Text.translatable("item.dabaosword.wuzhong.tooltip2"));
-        }
-
-        if (stack.getItem() == ModItems.GAIN_CARD) {
-            tooltip.add(Text.translatable("item.dabaosword.gain_card.tooltip"));
         }
     }
 }

@@ -19,8 +19,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class CardPile extends Equipment {
-    public CardPile(Settings settings) {super(settings);}
-
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         tooltip.add(Text.translatable("item.dabaosword.card_pile.tooltip"));

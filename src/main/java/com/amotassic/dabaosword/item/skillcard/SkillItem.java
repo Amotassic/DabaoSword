@@ -26,6 +26,7 @@ import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -45,11 +46,9 @@ import java.util.stream.IntStream;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class SkillItem extends TrinketItem implements Skill {
-    public SkillItem(Settings settings) {super(settings);}
+    public SkillItem() {super(new Item.Settings().maxCount(1));}
 
     public static class Benxi extends SkillItem {
-        public Benxi(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             int benxi = getTag(stack);
@@ -73,8 +72,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Buqu extends SkillItem {
-        public Buqu(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             int c = getTag(stack);
@@ -106,8 +103,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Duanliang extends SkillItem {
-        public Duanliang(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             tooltip.add(Text.literal("CD: 5s"));
@@ -123,8 +118,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Fangzhu extends SkillItem {
-        public Fangzhu(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             tooltip.add(Text.translatable("item.dabaosword.fangzhu.tooltip").formatted(Formatting.BLUE));
@@ -141,8 +134,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Ganglie extends SkillItem {
-        public Ganglie(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             tooltip.add(Text.translatable("item.dabaosword.ganglie.tooltip1").formatted(Formatting.BLUE));
@@ -194,8 +185,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Gongao extends SkillItem {
-        public Gongao(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             tooltip.add(Text.translatable("item.dabaosword.gongao.tooltip1").formatted(Formatting.BLUE));
@@ -254,8 +243,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Gongxin extends ActiveSkillWithTarget {
-        public Gongxin(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             int cd = getCD(stack);
@@ -283,8 +270,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Guose extends SkillItem {
-        public Guose(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             int cd = getCD(stack);
@@ -300,8 +285,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Huoji extends SkillItem {
-        public Huoji(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             int cd = getCD(stack);
@@ -317,8 +300,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Jianxiong extends SkillItem {
-        public Jianxiong(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             tooltip.add(Text.literal("CD: 15s"));
@@ -328,7 +309,7 @@ public class SkillItem extends TrinketItem implements Skill {
 
         @Override
         public void onHurt(ItemStack stack, LivingEntity entity, DamageSource source, float amount) {
-            if (source.getAttacker() instanceof LivingEntity && !entity.hasStatusEffect(ModItems.COOLDOWN)) {
+            if (source.getAttacker() instanceof Entity && !entity.hasStatusEffect(ModItems.COOLDOWN)) {
                 voice(entity, stack);
                 if (entity instanceof PlayerEntity player) draw(player);
                 entity.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 15,0,false,false,true));
@@ -337,8 +318,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Jizhan extends SkillItem {
-        public Jizhan(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             tooltip.add(Text.translatable("item.dabaosword.jizhan.tooltip1"));
@@ -381,8 +360,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Jueqing extends SkillItem {
-        public Jueqing(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             tooltip.add(Text.translatable("item.dabaosword.jueqing.tooltip1").formatted(Formatting.BLUE));
@@ -404,8 +381,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Kanpo extends SkillItem {
-        public Kanpo(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             int cd = getCD(stack);
@@ -421,8 +396,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Kuanggu extends SkillItem {
-        public Kuanggu(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             tooltip.add(Text.literal("CD: 8s"));
@@ -441,8 +414,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Kurou extends ActiveSkill {
-        public Kurou(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             tooltip.add(Text.translatable("item.dabaosword.kurou.tooltip").formatted(Formatting.GREEN));
@@ -462,8 +433,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Lianying extends SkillItem {
-        public Lianying(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             tooltip.add(Text.translatable("item.dabaosword.lianying.tooltip").formatted(Formatting.GREEN));
@@ -483,8 +452,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Liegong extends SkillItem {
-        public Liegong(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             tooltip.add(Text.translatable("item.dabaosword.liegong.tooltip1").formatted(Formatting.RED));
@@ -514,8 +481,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Liuli extends SkillItem {
-        public Liuli(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             tooltip.add(Text.translatable("item.dabaosword.liuli.tooltip").formatted(Formatting.GREEN));
@@ -559,8 +524,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Longdan extends SkillItem {
-        public Longdan(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             tooltip.add(Text.translatable("item.dabaosword.longdan.tooltip1").formatted(Formatting.RED));
@@ -585,8 +548,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Luanji extends SkillItem {
-        public Luanji(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             int cd = getCD(stack);
@@ -627,8 +588,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Luoshen extends ActiveSkill {
-        public Luoshen(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             int cd = getCD(stack);
@@ -654,8 +613,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Luoyi extends SkillItem {
-        public Luoyi(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             tooltip.add(Text.translatable("item.dabaosword.luoyi.tooltip").formatted(Formatting.BLUE));
@@ -693,8 +650,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Pojun extends SkillItem {
-        public Pojun(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             tooltip.add(Text.literal("CD: 10s"));
@@ -728,8 +683,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Qice extends ActiveSkill {
-        public Qice(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             int cd = getCD(stack);
@@ -768,8 +721,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Qingguo extends SkillItem {
-        public Qingguo(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             tooltip.add(Text.literal("CD: 5s"));
@@ -784,8 +735,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Qixi extends SkillItem {
-        public Qixi(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             tooltip.add(Text.literal("CD: 5s"));
@@ -800,8 +749,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Quanji extends SkillItem {
-        public Quanji(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             int quan = getTag(stack);
@@ -842,8 +789,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Rende extends ActiveSkillWithTarget {
-        public Rende(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             int cd = getCD(stack);
@@ -874,8 +819,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Shanzhuan extends SkillItem {
-        public Shanzhuan(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             tooltip.add(Text.literal("CD: 8s"));
@@ -913,8 +856,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Shensu extends SkillItem {
-        public Shensu(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             tooltip.add(Text.translatable("item.dabaosword.shensu.tooltip1").formatted(Formatting.BLUE));
@@ -968,8 +909,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Taoluan extends ActiveSkill {
-        public Taoluan(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             tooltip.add(Text.translatable("item.dabaosword.taoluan.tooltip"));
@@ -1003,8 +942,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Tieji extends SkillItem {
-        public Tieji(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             tooltip.add(Text.translatable("item.dabaosword.tieji.tooltip1").formatted(Formatting.RED));
@@ -1022,8 +959,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Weimu extends SkillItem {
-        public Weimu(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             tooltip.add(Text.translatable("item.dabaosword.weimu.tooltip"));
@@ -1031,8 +966,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Wusheng extends SkillItem {
-        public Wusheng(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             tooltip.add(Text.literal("CD: 5s"));
@@ -1048,8 +981,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Yiji extends ActiveSkillWithTarget {
-        public Yiji(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             tooltip.add(Text.literal("CD: 20s"));
@@ -1086,8 +1017,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Yingzi extends SkillItem {
-        public Yingzi(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             tooltip.add(Text.translatable("item.dabaosword.yingzi.tooltip").formatted(Formatting.GREEN));
@@ -1101,8 +1030,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Zhiheng extends ActiveSkill {
-        public Zhiheng(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             int z = getTag(stack);
@@ -1142,8 +1069,6 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static class Zhijian extends ActiveSkillWithTarget {
-        public Zhijian(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             tooltip.add(Text.translatable("item.dabaosword.zhijian.tooltip1").formatted(Formatting.GREEN));
@@ -1244,11 +1169,7 @@ public class SkillItem extends TrinketItem implements Skill {
         give(player, stack);
     }
 
-    public static class ActiveSkill extends SkillItem {
-        public ActiveSkill(Settings settings) {super(settings);}
-    }
+    public static class ActiveSkill extends SkillItem {}
 
-    public static class ActiveSkillWithTarget extends SkillItem {
-        public ActiveSkillWithTarget(Settings settings) {super(settings);}
-    }
+    public static class ActiveSkillWithTarget extends SkillItem {}
 }
