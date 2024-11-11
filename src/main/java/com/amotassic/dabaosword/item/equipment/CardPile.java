@@ -18,8 +18,6 @@ import net.minecraft.world.World;
 import java.util.List;
 
 public class CardPile extends Equipment {
-    public CardPile(Settings settings) {super(settings);}
-
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         tooltip.add(Text.translatable("item.dabaosword.card_pile.tooltip"));
@@ -56,4 +54,7 @@ public class CardPile extends Equipment {
             }
         }
     }
+
+    @Override
+    public int onDrawPhase(PlayerEntity player, ItemStack stack) {return 2;}
 }

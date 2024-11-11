@@ -18,7 +18,6 @@ import static com.amotassic.dabaosword.util.ModTools.cardUsePre;
 import static com.amotassic.dabaosword.util.ModTools.voice;
 
 public class TiesuoItem extends CardItem {
-    public TiesuoItem(Settings settings) {super(settings);}
     //原始的铁索连环
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {

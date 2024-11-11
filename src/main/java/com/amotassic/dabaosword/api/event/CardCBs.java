@@ -3,6 +3,7 @@ package com.amotassic.dabaosword.api.event;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -91,5 +92,29 @@ public class CardCBs {
         INV_TO_EQUIP,
         EQUIP_TO_INV,
         EQUIP_TO_EQUIP
+    }
+
+    public static Event<CanHurtByCard> CAN_HURT_BY_CARD = EventFactory.createArrayBacked(CanHurtByCard.class,
+            listeners -> (entity, source, card) -> {
+                for (CanHurtByCard listener: listeners){
+                    return listener.canHurtByCard(entity, source, card);
+                }
+                return true;
+            });
+
+    public interface CanHurtByCard {
+        boolean canHurtByCard(LivingEntity entity, DamageSource source, ItemStack card);
+    }
+
+    public static Event<HurtByCard> HURT_BY_CARD = EventFactory.createArrayBacked(HurtByCard.class,
+            listeners -> (entity, source, card) -> {
+                for (HurtByCard listener: listeners){
+                    listener.hurtByCard(entity, source, card);
+                }
+            });
+
+    public interface HurtByCard {
+        /**主要用于受伤后获取造成伤害的卡牌*/
+        void hurtByCard(LivingEntity entity, DamageSource source, ItemStack card);
     }
 }

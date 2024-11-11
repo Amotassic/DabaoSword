@@ -10,6 +10,18 @@
     },
     {
       "weight": 3.0,
+      "item": "dabaosword:jianxiong"
+    },
+    {
+      "weight": 2.0,
+      "item": "dabaosword:jizhan"
+    },
+    {
+      "weight": 3.0,
+      "item": "dabaosword:yingzi"
+    },
+    {
+      "weight": 3.0,
       "item": "dabaosword:weimu"
     },
     {
@@ -163,10 +175,6 @@
     {
       "weight": 3.0,
       "item": "dabaosword:yiji"
-    },
-    {
-      "weight": 35.0,
-      "item": "minecraft:air"
     }
   ]
 }

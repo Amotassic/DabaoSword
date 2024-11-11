@@ -25,7 +25,7 @@ import static com.amotassic.dabaosword.command.InfoCommand.openFullInv;
 import static com.amotassic.dabaosword.util.ModTools.voice;
 
 public class LetMeCCItem extends Item {
-    public LetMeCCItem(Settings settings) {super(settings);}
+    public LetMeCCItem() {super(new Item.Settings().maxCount(1));}
 
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {

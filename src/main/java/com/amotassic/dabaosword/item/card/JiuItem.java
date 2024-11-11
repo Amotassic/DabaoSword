@@ -12,8 +12,6 @@ import net.minecraft.world.World;
 import static com.amotassic.dabaosword.util.ModTools.cardUsePre;
 
 public class JiuItem extends CardItem {
-    public JiuItem(Settings settings) {super(settings);}
-
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         if (!user.hasStatusEffect(StatusEffects.STRENGTH) && !world.isClient && hand == Hand.MAIN_HAND) {

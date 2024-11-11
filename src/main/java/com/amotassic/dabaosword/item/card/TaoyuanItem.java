@@ -13,8 +13,6 @@ import static com.amotassic.dabaosword.util.ModTools.cardUsePre;
 import static com.amotassic.dabaosword.util.ModTools.voice;
 
 public class TaoyuanItem extends CardItem {
-    public TaoyuanItem(Settings settings) {super(settings);}
-
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         if (!world.isClient && hand == Hand.MAIN_HAND) {

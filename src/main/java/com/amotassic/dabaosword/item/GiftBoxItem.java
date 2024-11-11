@@ -8,10 +8,7 @@ import net.minecraft.item.Items;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.*;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,7 +18,7 @@ import java.util.Random;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class GiftBoxItem extends Item {
-    public GiftBoxItem(Settings settings) {super(settings);}
+    public GiftBoxItem() {super(new Item.Settings().rarity(Rarity.UNCOMMON));}
 
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {

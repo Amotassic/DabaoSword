@@ -26,14 +26,13 @@ public class SimpleMenuHandler extends ScreenHandler {
                 this.addSlot(new Slot(inventory, j + i * 9, 8 + j * 18, 16 + i * 18));
             }
         }
+        addSlot(new Slot(inventory, 18, 114514, 114514));
     }
 
     @Override
     public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
         ItemStack itemStack = inventory.getStack(slotIndex);
-        if (!itemStack.isEmpty()) {
-            if (stack.getItem() instanceof Skill skill) skill.onClickGUISlot(player, stack, target, itemStack, slotIndex);
-        }
+        if (stack.getItem() instanceof Skill skill) skill.onClickGUISlot(player, stack, target, itemStack, slotIndex);
     }
 
     @Override

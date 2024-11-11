@@ -42,15 +42,13 @@ import static com.amotassic.dabaosword.util.ModTools.*;
 import static com.amotassic.dabaosword.util.ModifyDamage.shan;
 
 public class Equipment extends TrinketItem implements Card, Skill {
-    public Equipment(Settings settings) {super(settings);}
+    public Equipment() {super(new Settings().maxCount(1));}
 
     public static class BaguaArmor extends Equipment {
-        public BaguaArmor(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
             super.appendTooltip(stack, context, tooltip, type);
-            tooltip.add(Text.translatable("item.dabaosword.bagua.tooltip"));
+            tooltip.add(Text.translatable("item.dabaosword.bagua.tooltip").formatted(Formatting.AQUA));
         }
 
         @Override
@@ -59,7 +57,7 @@ public class Equipment extends TrinketItem implements Card, Skill {
         @Override
         public boolean cancelDamage(LivingEntity target, DamageSource source, float amount) {
             if (source.getAttacker() instanceof LivingEntity) {
-                if (!target.hasStatusEffect(ModItems.COOLDOWN2) && !target.getCommandTags().contains("juedou")) {
+                if (!target.hasStatusEffect(ModItems.COOLDOWN2)) {
                     if (hasTrinket(ModItems.BAGUA, target) && new Random().nextFloat() < 0.5 && !source.isIn(DamageTypeTags.BYPASSES_ARMOR)) {
                         shan(target, true, source, amount);
                         return true;
@@ -71,12 +69,10 @@ public class Equipment extends TrinketItem implements Card, Skill {
     }
 
     public static class BaiyinArmor extends Equipment {
-        public BaiyinArmor(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
             super.appendTooltip(stack, context, tooltip, type);
-            tooltip.add(Text.translatable("item.dabaosword.baiyin.tooltip"));
+            tooltip.add(Text.translatable("item.dabaosword.baiyin.tooltip").formatted(Formatting.AQUA));
         }
 
         @Override
@@ -90,8 +86,6 @@ public class Equipment extends TrinketItem implements Card, Skill {
     }
 
     public static class FangtianWeapon extends Equipment {
-        public FangtianWeapon(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
             super.appendTooltip(stack, context, tooltip, type);
@@ -112,8 +106,6 @@ public class Equipment extends TrinketItem implements Card, Skill {
     }
 
     public static class GudingWeapon extends Equipment {
-        public GudingWeapon(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
             super.appendTooltip(stack, context, tooltip, type);
@@ -136,8 +128,6 @@ public class Equipment extends TrinketItem implements Card, Skill {
     }
 
     public static class HanbingWeapon extends Equipment {
-        public HanbingWeapon(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
             super.appendTooltip(stack, context, tooltip, type);
@@ -153,8 +143,6 @@ public class Equipment extends TrinketItem implements Card, Skill {
     }
 
     public static class QinggangWeapon extends Equipment {
-        public QinggangWeapon(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
             super.appendTooltip(stack, context, tooltip, type);
@@ -172,8 +160,6 @@ public class Equipment extends TrinketItem implements Card, Skill {
     }
 
     public static class QinglongWeapon extends Equipment {
-        public QinglongWeapon(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
             super.appendTooltip(stack, context, tooltip, type);
@@ -191,9 +177,16 @@ public class Equipment extends TrinketItem implements Card, Skill {
         }
     }
 
-    public static class RattanArmor extends Equipment {
-        public RattanArmor(Settings settings) {super(settings);}
+    public static class RenwangArmor extends Equipment {
+        @Override
+        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+            super.appendTooltip(stack, context, tooltip, type);
+            tooltip.add(Text.translatable("item.dabaosword.renwang.tooltip1"));
+            tooltip.add(Text.translatable("item.dabaosword.renwang.tooltip2").formatted(Formatting.AQUA));
+        }
+    }
 
+    public static class RattanArmor extends Equipment {
         @Override
         public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
             super.appendTooltip(stack, context, tooltip, type);
@@ -231,6 +224,7 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
         @Override
         public boolean cancelDamage(LivingEntity target, DamageSource source, float amount) {
+            ItemStack stack = trinketItem(ModItems.RATTAN_ARMOR, target);
             //弹射物对藤甲无效
             if (source.isIn(DamageTypeTags.IS_PROJECTILE) && inrattan(target)) {
                 Entity projectile = source.getSource();
@@ -239,7 +233,6 @@ public class Equipment extends TrinketItem implements Card, Skill {
                     voice(target, Sounds.TENGJIA1);
                     return true;
                 }
-                ItemStack stack = trinketItem(ModItems.RATTAN_ARMOR, target);
                 if (getCD(stack) == 0) {
                     if (projectile != null) projectile.discard();
                     setCD(stack, 5);
@@ -250,7 +243,6 @@ public class Equipment extends TrinketItem implements Card, Skill {
             }
             //若攻击者主手没有物品，则无法击穿藤甲
             if (source.getSource() instanceof LivingEntity s && inrattan(target) && s.getMainHandStack().isEmpty()) {
-                ItemStack stack = trinketItem(ModItems.RATTAN_ARMOR, target);
                 if (getCD(stack) == 0) {
                     setCD(stack, 5);
                     target.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 10,0,false,false,false));
@@ -265,8 +257,6 @@ public class Equipment extends TrinketItem implements Card, Skill {
     }
 
     public static class ZhangbaWeapon extends Equipment {
-        public ZhangbaWeapon(Settings settings) {super(settings);}
-
         @Override
         public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
             super.appendTooltip(stack, context, tooltip, type);

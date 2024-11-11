@@ -15,8 +15,6 @@ import static com.amotassic.dabaosword.util.ModTools.cardUsePre;
 import static com.amotassic.dabaosword.util.ModTools.hasTrinket;
 
 public class ShanItem extends CardItem {
-
-    public ShanItem(Settings settings) {super(settings);}
     //使用后，向前冲刺一段距离，无敌0.5秒，冷却时间1秒
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {

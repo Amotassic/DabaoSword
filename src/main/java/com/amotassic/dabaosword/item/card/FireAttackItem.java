@@ -13,8 +13,6 @@ import net.minecraft.world.World;
 import static com.amotassic.dabaosword.util.ModTools.cardUsePre;
 
 public class FireAttackItem extends CardItem {
-    public FireAttackItem(Settings settings) {super(settings);}
-
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         if (!world.isClient && hand == Hand.MAIN_HAND) {

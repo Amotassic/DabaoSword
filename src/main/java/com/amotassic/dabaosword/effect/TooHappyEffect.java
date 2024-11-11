@@ -10,7 +10,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import java.util.Objects;
 
 public class TooHappyEffect extends StatusEffect {
-    public TooHappyEffect(StatusEffectCategory category, int color) {super(category, color);}
+    public TooHappyEffect() {super(StatusEffectCategory.HARMFUL, 0xF73C0A);}
 
     @Override
     public boolean canApplyUpdateEffect(int duration, int amplifier) {return true;}

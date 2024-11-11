@@ -1,11 +1,13 @@
 package com.amotassic.dabaosword.util;
 
 import com.amotassic.dabaosword.api.Skill;
+import com.amotassic.dabaosword.effect.ShandianEffect;
 import com.amotassic.dabaosword.item.ModItems;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.DamageTypeTags;
@@ -84,66 +86,97 @@ public class ModifyDamage {
         return false;
     }
 
-    //取消伤害结算：先获取所有输出了结算优先度的ItemStack，将它们按照优先度依次排列（见eventStacks方法），再分别结算（见execute方法）
-    public static boolean shouldCancel(LivingEntity entity, DamageSource source, float amount) {
+    /**取消伤害结算：先获取所有输出了结算优先度的ItemStack，将它们按照优先度依次排列（见eventStacks方法），再分别结算（见execute方法）
+     * @return 0表示不取消伤害，1表示取消伤害以及后续处理，2表示仅取消伤害，但可以执行后续处理*/
+    public static int shouldCancel(LivingEntity entity, DamageSource source, float amount) {
+        Entity so = source.getSource(); Entity at = source.getAttacker();
         //检查事件优先度，获取输出了优先度的stack
         List<List<ItemStack>> list = eventStacks(entity, source, amount, entity);
         List<List<ItemStack>> l1 = null; List<List<ItemStack>> l2 = null;
-        if (source.getSource() instanceof LivingEntity SE) l1 = eventStacks(entity, source, amount, SE);
-        else if (source.getAttacker() instanceof LivingEntity AT) l2 = eventStacks(entity, source, amount, AT);
+        if (so instanceof LivingEntity SE) l1 = eventStacks(entity, source, amount, SE);
+        else if (at instanceof LivingEntity AT) l2 = eventStacks(entity, source, amount, AT);
         //合并3个list中的所有优先度和stack
         for (int i = 0; i < 5; i++) {
             if (l1 != null) list.get(i).addAll(l1.get(i));
             if (l2 != null) list.get(i).addAll(l2.get(i));
         }
         //0.最高优先度执行，暂无用途
-        if (execute(entity, source, amount, list, 0)) return true;
+        if (execute(entity, source, amount, list, 0)) return 1;
         //无敌效果
-        if (entity.hasStatusEffect(ModItems.INVULNERABLE) && !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) return true;
+        if (entity.hasStatusEffect(ModItems.INVULNERABLE) && !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) return 1;
 
-        if (source.getSource() instanceof LivingEntity SE) {
+        if (so instanceof LivingEntity SE) {
             //被乐的生物无法造成伤害
-            if (SE.hasStatusEffect(ModItems.TOO_HAPPY)) return true;
+            if (SE.hasStatusEffect(ModItems.TOO_HAPPY)) return 1;
             //沈佳宜防御效果
             if (!(SE instanceof PlayerEntity) && entity.hasStatusEffect(ModItems.DEFEND)) {
-                if (Objects.requireNonNull(entity.getStatusEffect(ModItems.DEFEND)).getAmplifier() >= 2) return true;
+                if (Objects.requireNonNull(entity.getStatusEffect(ModItems.DEFEND)).getAmplifier() >= 2) return 1;
             }
             //决斗等物品虽然手长，但过远时普通伤害无效
             if (!source.isIn(DamageTypeTags.BYPASSES_ARMOR) && entity.distanceTo(SE) > 5) {
-                if (SE.getMainHandStack().isOf(ModItems.JUEDOU) || SE.getMainHandStack().isOf(ModItems.DISCARD)) return true;
+                if (SE.getMainHandStack().isOf(ModItems.JUEDOU) || SE.getMainHandStack().isOf(ModItems.DISCARD)) return 1;
             }
-        } else if (source.getAttacker() instanceof LivingEntity AT) {
+        } else if (at instanceof LivingEntity AT) {
             //被乐的生物无法造成伤害
-            if (AT.hasStatusEffect(ModItems.TOO_HAPPY)) return true;
+            if (AT.hasStatusEffect(ModItems.TOO_HAPPY)) return 1;
         }
+
+        if (isNanman(source) && notHurtBy(entity, source, ModItems.NANMAN)) {((LivingEntity) so).setHealth(0); return 1;}
+        if (isWanjian(source) && notHurtBy(entity, source, ModItems.WANJIAN)) return 1;
+        if (isHuogong(source) && notHurtBy(entity, source, ModItems.FIRE_ATTACK)) return 1;
+        if (isShandian(source) && notHurtBy(entity, source, ModItems.SHANDIAN_ITEM)) return 1;
+        if (so instanceof LivingEntity SE && shouldSha(SE)) { //只要能触发杀，伤害就会被取消
+            ItemStack sha = isSha.test(SE.getMainHandStack()) ? SE.getMainHandStack() : getItem(SE, isSha);
+            SE.addCommandTag("sha");
+            if (canHurtByCard(entity, source, sha)) sha(SE, entity, sha, source, amount);
+            cardUsePost(SE, sha, entity);
+            return 2;
+        }
+
         //1.高优先度执行：装备
-        if (execute(entity, source, amount, list, 1)) return true;
+        if (execute(entity, source, amount, list, 1)) return 1;
         //2.一般优先度执行：技能
-        if (execute(entity, source, amount, list, 2)) return true;
+        if (execute(entity, source, amount, list, 2)) return 1;
         //3.低优先度执行：卡牌 闪以及响应南蛮的杀
-        if (execute(entity, source, amount, list, 3)) return true;
-        if (source.getSource() instanceof WolfEntity dog && dog.hasStatusEffect(ModItems.INVULNERABLE)) {
+        if (execute(entity, source, amount, list, 3)) return 1;
+        if (isNanman(source)) {
+            var stack = getCard(entity, isSha).getRight();
+            if (!stack.isEmpty() || entity instanceof PlayerEntity) ((LivingEntity) so).setHealth(0);
             //被南蛮入侵的狗打中可以消耗杀以免疫伤害
-            if (hasCard(entity, isSha)) {
-                dog.setHealth(0);
-                var stack = getCard(entity, isSha).getRight();
+            if (!stack.isEmpty()) {
                 voice(entity, stack);
                 cardUsePost(entity, stack, null);
-                return true;
+                return 1;
             }
         }
-        if (source.getAttacker() instanceof LivingEntity) {
-            if (!entity.hasStatusEffect(ModItems.COOLDOWN2) && !entity.getCommandTags().contains("juedou")) {
+        if (at instanceof LivingEntity) {
+            if (!entity.hasStatusEffect(ModItems.COOLDOWN2)) {
                 //此处条件是故意设置得与八卦阵条件不一样的，虽然感觉没啥用
                 if (hasCard(entity, s -> s.isOf(ModItems.SHAN)) && !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
                     shan(entity, false, source, amount);
-                    return true;
+                    return 1;
                 }
             }
         }
         //4.最低优先度执行：绝情
-        return execute(entity, source, amount, list, 4);
-        //吐槽：别看这里写了那么多，一旦有一个return true，就没事了
+        if (execute(entity, source, amount, list, 4)) return 1;
+        return 0;
+    }
+
+    private static boolean shouldSha(LivingEntity entity) {
+        return hasItem(entity, isSha) && !entity.getCommandTags().contains("sha") && !entity.getCommandTags().contains("juedou");
+    }
+
+    private static void sha(LivingEntity user, LivingEntity entity, ItemStack sha, DamageSource source, float amount) {
+        if (sha.isOf(ModItems.SHA) && entity.damage(source, amount + 5)) hurtByCard(entity, source, sha);
+        if (sha.isOf(ModItems.FIRE_SHA) && entity.damage(getDamageSource(user, DamageTypes.IN_FIRE), amount)) {
+            entity.setOnFireFor(6);
+            hurtByCard(entity, source, sha);
+        }
+        if (sha.isOf(ModItems.THUNDER_SHA) && entity.damage(getDamageSource(user, DamageTypes.LIGHTNING_BOLT), amount + 5)) {
+            ShandianEffect.summonLightning(entity, true, false);
+            hurtByCard(entity, source, sha);
+        }
     }
 
     public static void shan(LivingEntity entity, boolean bl, DamageSource source, float amount) {
@@ -156,12 +189,6 @@ public class ModifyDamage {
         if (entity instanceof PlayerEntity player) {
             writeDamage(source, amount, !bl, trinketItem(ModItems.CARD_PILE, player));
             if (bl) player.sendMessage(Text.translatable("dabaosword.bagua"),true);
-        }
-        //虽然没有因为杀而触发闪，但如果攻击者的杀处于自动触发状态，则仍会消耗
-        if (source.getSource() instanceof LivingEntity SE && hasItem(SE, isSha)) {
-            ItemStack sha = isSha.test(SE.getMainHandStack()) ? SE.getMainHandStack() : getItem(SE, isSha);
-            voice(SE, sha);
-            cardUsePost(SE, sha, entity);
         }
     }
 }

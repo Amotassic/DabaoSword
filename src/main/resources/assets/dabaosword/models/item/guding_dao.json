@@ -1,6 +1,6 @@
 {
-  "parent": "item/handheld",
+  "parent": "dabaosword:item/card",
   "textures": {
-    "layer0": "dabaosword:item/gudingdao"
+    "0": "dabaosword:item/gudingdao"
   }
 }

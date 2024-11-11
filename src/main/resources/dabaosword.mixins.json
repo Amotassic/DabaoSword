@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "ArrowEntiytMixin",
+    "EntityMixin",
     "FireballEntityMixin",
     "ItemEntityMixin",
     "LivingEntityMixin",
@@ -17,7 +18,8 @@
   "client": [
     "client.DrawContextMixin",
     "client.GameRendererMixin",
-    "client.LivingEntityRendererMixin"
+    "client.LivingEntityRendererMixin",
+    "client.ModelLoaderMixin"
   ],
   "injectors": {
     "defaultRequire": 1

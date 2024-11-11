@@ -6,7 +6,8 @@
     "chest/armor",
     "hand/weapon",
     "head/skills",
-    "legs/horses",
+    "legs/attack",
+    "legs/defend",
     "offhand/card_pile"
   ]
 }

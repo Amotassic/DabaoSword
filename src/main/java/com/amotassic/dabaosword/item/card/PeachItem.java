@@ -11,8 +11,6 @@ import net.minecraft.world.World;
 import static com.amotassic.dabaosword.util.ModTools.cardUsePre;
 
 public class PeachItem extends CardItem {
-    public PeachItem(Settings settings) {super(settings);}
-
     //非潜行时右键，给自己回血
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {

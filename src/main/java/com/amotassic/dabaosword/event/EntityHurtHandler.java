@@ -1,29 +1,34 @@
 package com.amotassic.dabaosword.event;
 
 import com.amotassic.dabaosword.api.Skill;
+import com.amotassic.dabaosword.api.event.CardCBs;
 import com.amotassic.dabaosword.api.event.EntityHurtCallback;
+import com.amotassic.dabaosword.effect.ShandianEffect;
 import com.amotassic.dabaosword.item.ModItems;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LightningEntity;
+import com.amotassic.dabaosword.item.skillcard.SkillCards;
+import com.amotassic.dabaosword.util.Sounds;
+import com.amotassic.dabaosword.util.Tags;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.Box;
+import net.minecraft.world.World;
 
 import java.util.Random;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
 
-public class EntityHurtHandler implements EntityHurtCallback {
+public class EntityHurtHandler implements EntityHurtCallback, CardCBs.CanHurtByCard, CardCBs.HurtByCard {
 
     private static void trySave(LivingEntity entity, float amount) {
-        for (int i = 0; i < 1145; i++) {
+        for (int i = 0; i < 114; i++) {
             if (entity.isAlive()) return;
             if (hasCard(entity, canSaveDying)) {
                 ItemStack stack = getCard(entity, canSaveDying).getRight();
@@ -33,15 +38,41 @@ public class EntityHurtHandler implements EntityHurtCallback {
         }
     }
 
+    private static void tiesuoTrigger(LivingEntity entity, DamageSource source, float amount) {
+        World world = entity.getWorld();
+        if (entity.isGlowing() && source.isIn(Tags.TRIGGER_TIESUO)) {
+            entity.removeStatusEffect(StatusEffects.GLOWING);
+            Box box = new Box(entity.getBlockPos()).expand(20);
+            for (LivingEntity near : world.getEntitiesByClass(LivingEntity.class, box, e -> e != entity && e.isGlowing())) {
+                near.removeStatusEffect(StatusEffects.GLOWING);
+                near.damage(source, amount);
+                if (source.isIn(DamageTypeTags.IS_FREEZING)) near.setFrozenTicks(entity.getFrozenTicks());
+                if (source.isIn(DamageTypeTags.IS_FIRE)) {
+                    int fireTicks = entity.getFireTicks() / 20;
+                    int fireTime = fireTicks == 0 ? 6 : fireTicks;
+                    near.setOnFireFor(fireTime);
+                }
+                if (source.isIn(DamageTypeTags.IS_LIGHTNING)) ShandianEffect.summonLightning(near, true, false);
+            }
+        }
+    }
+
     @Override
     public ActionResult hurtEntity(LivingEntity entity, DamageSource source, float amount) {
-        if (entity.getWorld() instanceof ServerWorld world) {
+        if (entity.getWorld() instanceof ServerWorld) {
+
+            tiesuoTrigger(entity, source, amount);
 
             for (var stack : allTrinkets(entity)) { //受伤害后触发，优先级高
                 if (stack.getItem() instanceof Skill skill && canTrigger(stack, entity)) skill.onHurt(stack, entity, source, amount);
             }
 
             trySave(entity, amount);
+
+            if (isNanman(source)) hurtBy(entity, source, ModItems.NANMAN);
+            if (isWanjian(source)) hurtBy(entity, source, ModItems.WANJIAN);
+            if (isHuogong(source)) hurtBy(entity, source, ModItems.FIRE_ATTACK);
+            if (isShandian(source)) hurtBy(entity, source, ModItems.SHANDIAN_ITEM);
 
             if (source.getAttacker() instanceof LivingEntity living) {
                 if (living.getCommandTags().contains("px")) entity.timeUntilRegen = 0;
@@ -61,35 +92,6 @@ public class EntityHurtHandler implements EntityHurtCallback {
                 }
             }
 
-            if (source.getSource() instanceof LivingEntity SE) {
-                //杀的相关结算
-                if (shouldSha(SE) && entity.isAlive()) {
-                    ItemStack stack = isSha.test(SE.getMainHandStack()) ? SE.getMainHandStack() : getItem(SE, isSha);
-                    ItemStack sha = stack.copy();
-                    //处理铁索连环的效果 铁索传导过去的伤害会触发2次加伤，这符合三国杀的逻辑，所以不改了
-                    if (cardUsePre(SE, stack, entity) && entity.isGlowing()) {
-                        if (!sha.isOf(ModItems.SHA)) entity.removeStatusEffect(StatusEffects.GLOWING);
-                        Box box = new Box(SE.getBlockPos()).expand(20); // 检测范围，根据需要修改
-                        for (LivingEntity near : world.getEntitiesByClass(LivingEntity.class, box, e -> e.isGlowing() && e != entity)) {
-                            if (sha.isOf(ModItems.FIRE_SHA)) {
-                                near.removeStatusEffect(StatusEffects.GLOWING); near.damage(source, amount);
-                                near.timeUntilRegen = 0; near.setOnFireFor(5);
-                            }
-                            if (sha.isOf(ModItems.THUNDER_SHA)) {
-                                near.removeStatusEffect(StatusEffects.GLOWING); near.damage(source, amount);
-                                near.timeUntilRegen = 0; near.damage(SE.getDamageSources().magic(), 5);
-                                LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(world);
-                                if (lightningEntity != null) {
-                                    lightningEntity.refreshPositionAfterTeleport(near.getX(), near.getY(), near.getZ());
-                                    lightningEntity.setCosmetic(true);
-                                }
-                                world.spawnEntity(lightningEntity);
-                            }
-                        }
-                    }
-                }
-            }
-
             if (source.getSource() instanceof LivingEntity living) { //在近战攻击造成伤害后触发
                 for (var stack : allTrinkets(living)) {
                     if (stack.getItem() instanceof Skill skill && canTrigger(stack, living)) skill.postAttack(stack, entity, living, amount);
@@ -106,7 +108,34 @@ public class EntityHurtHandler implements EntityHurtCallback {
         return ActionResult.PASS;
     }
 
-    boolean shouldSha(LivingEntity entity) {
-        return hasItem(entity, isSha) && !entity.getCommandTags().contains("sha") && !entity.getCommandTags().contains("juedou");
+    @Override
+    public boolean canHurtByCard(LivingEntity entity, DamageSource source, ItemStack card) {
+        if (isSha.test(card) && isBlackCard.test(card) && hasTrinket(ModItems.RENWANG, entity)) {
+            voice(entity, Sounds.RENWANG); return false;
+        }
+        if (card.isOf(ModItems.NANMAN)) {
+            if (hasTrinket(SkillCards.WEIMU, entity)) {voice(entity, Sounds.WEIMU); return false;}
+        }
+        return !canTriggerTengjia(entity, card);
+    }
+
+    private boolean canTriggerTengjia(LivingEntity entity, ItemStack card) {
+        if (card.isOf(ModItems.WANJIAN) || card.isOf(ModItems.NANMAN) || card.isOf(ModItems.SHA)) {
+            if (hasTrinket(ModItems.RATTAN_ARMOR, entity)) {
+                voice(entity, Sounds.TENGJIA1);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void hurtByCard(LivingEntity entity, DamageSource source, ItemStack card) {
+        ItemStack jianxiong = trinketItem(SkillCards.JIANXIONG, entity);
+        if (!jianxiong.isEmpty() && getCD(jianxiong) == 0) {
+            voice(entity, jianxiong);
+            setCD(jianxiong, 15);
+            if (entity instanceof PlayerEntity player) give(player, card.copyWithCount(1));
+        }
     }
 }

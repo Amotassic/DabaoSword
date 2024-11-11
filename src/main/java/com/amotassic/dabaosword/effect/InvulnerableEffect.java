@@ -9,7 +9,7 @@ import net.minecraft.entity.effect.StatusEffectCategory;
 import java.util.Objects;
 
 public class InvulnerableEffect extends StatusEffect {
-    public InvulnerableEffect(StatusEffectCategory category, int color) {super(category, color);}
+    public InvulnerableEffect() {super(StatusEffectCategory.BENEFICIAL,0x35F5DF);}
 
     @Override
     public boolean canApplyUpdateEffect(int duration, int amplifier) {return true;}

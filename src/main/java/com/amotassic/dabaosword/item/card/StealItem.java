@@ -15,8 +15,6 @@ import java.util.Random;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class StealItem extends CardItem {
-    public StealItem(Settings settings) {super(settings);}
-
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         if (!user.getWorld().isClient && hand == Hand.MAIN_HAND) {
