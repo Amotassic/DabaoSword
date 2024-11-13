@@ -78,12 +78,18 @@ public class ModItems {
     public static final Item GUDING_WEAPON = register("guding_dao", new Equipment.GudingWeapon());
     //寒冰剑
     public static final Item HANBING = register("hanbing", new Equipment.HanbingWeapon());
+    //麒麟弓
+    public static final Item QILIN = register("qilin", new Equipment.QilinWeapon());
     //青釭剑
     public static final Item QINGGANG = register("qinggang", new Equipment.QinggangWeapon());
     //青龙偃月刀
     public static final Item QINGLONG = register("qinglong", new Equipment.QinglongWeapon());
     //丈八蛇矛
     public static final Item ZHANGBA = register("zhangba", new Equipment.ZhangbaWeapon());
+    //诸葛连弩
+    public static final Item LIANNU = register("liannu", new Equipment.LiannuWeapon());
+    //朱雀羽扇
+    public static final Item ZHUQUE = register("zhuque", new Equipment.ZhuqueWeapon());
     //八卦阵
     public static final Item BAGUA = register("bagua", new Equipment.BaguaArmor());
     //白银狮子
@@ -93,9 +99,9 @@ public class ModItems {
     //寿衣
     public static final Item RATTAN_ARMOR = register("rattan_armor", new Equipment.RattanArmor());
     //-1马
-    public static final Item CHITU = register("chitu", new Equipment());
+    public static final Item CHITU = register("chitu", new Equipment.AttackHorse());
     //+1马
-    public static final Item DILU = register("dilu", new Equipment());
+    public static final Item DILU = register("dilu", new Equipment.DefendHorse());
 
     //摸牌
     public static final Item GAIN_CARD = register("gain_card", new GainCardItem());
@@ -153,9 +159,12 @@ public class ModItems {
                         entries.add(FANGTIAN);
                         entries.add(GUDING_WEAPON);
                         entries.add(HANBING);
+                        entries.add(QILIN);
                         entries.add(QINGGANG);
                         entries.add(QINGLONG);
                         entries.add(ZHANGBA);
+                        entries.add(LIANNU);
+                        entries.add(ZHUQUE);
                         entries.add(BAGUA);
                         entries.add(BAIYIN);
                         entries.add(RENWANG);

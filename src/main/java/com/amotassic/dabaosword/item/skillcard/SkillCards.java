@@ -54,9 +54,9 @@ public class SkillCards {
     public static final Item LUANJI = register("luanji", new SkillItem.Luanji());
     public static final Item TAOLUAN = register("taoluan", new SkillItem.Taoluan());
     public static final Item WEIMU = register("weimu", new SkillItem.Weimu());
-    public static final Item MASHU = register("mashu", new SkillItem());
+    public static final Item MASHU = register("mashu", new SkillItem.Mashu());
 
-    public static final Item FEIYING = register("feiying", new SkillItem());
+    public static final Item FEIYING = register("feiying", new SkillItem.Feiying());
 
     private static Item register(String name,Item item){
         return Registry.register(Registries.ITEM, new Identifier("dabaosword", name), item);

@@ -68,12 +68,15 @@ public class Sounds {
     public static final SoundEvent FANGTIAN = register("fangtian");
     public static final SoundEvent GUDING = register("guding");
     public static final SoundEvent HANBING = register("hanbing");
+    public static final SoundEvent LIANNU = register("liannu");
+    public static final SoundEvent QILIN = register("qilin");
     public static final SoundEvent QINGGANG = register("qinggang");
     public static final SoundEvent QINGLONG = register("qinglong");
     public static final SoundEvent RENWANG = register("renwang");
     public static final SoundEvent TENGJIA1 = register("tengjia1");
     public static final SoundEvent TENGJIA2 = register("tengjia2");
     public static final SoundEvent ZHANGBA = register("zhangba");
+    public static final SoundEvent ZHUQUE = register("zhuque");
 
     public static final SoundEvent BINGLIANG = register("bingliang");
     public static final SoundEvent GUOHE = register("discard");

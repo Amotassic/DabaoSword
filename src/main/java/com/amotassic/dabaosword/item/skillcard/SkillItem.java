@@ -2,6 +2,7 @@ package com.amotassic.dabaosword.item.skillcard;
 
 import com.amotassic.dabaosword.api.Card;
 import com.amotassic.dabaosword.api.CardPileInventory;
+import com.amotassic.dabaosword.api.ReachDefend;
 import com.amotassic.dabaosword.api.Skill;
 import com.amotassic.dabaosword.api.event.CardCBs;
 import com.amotassic.dabaosword.item.ModItems;
@@ -48,7 +49,7 @@ import static com.amotassic.dabaosword.util.ModTools.*;
 public class SkillItem extends TrinketItem implements Skill {
     public SkillItem() {super(new Item.Settings().maxCount(1));}
 
-    public static class Benxi extends SkillItem {
+    public static class Benxi extends SkillItem implements ReachDefend {
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             int benxi = getTag(stack);
@@ -56,6 +57,9 @@ public class SkillItem extends TrinketItem implements Skill {
             tooltip.add(Text.translatable("item.dabaosword.benxi.tooltip1").formatted(Formatting.RED));
             tooltip.add(Text.translatable("item.dabaosword.benxi.tooltip2").formatted(Formatting.RED));
         }
+
+        @Override
+        public int getExtraReach(PlayerEntity player, ItemStack stack) {return getTag(stack);}
 
         @Override
         public void postAttack(ItemStack stack, LivingEntity target, LivingEntity attacker, float amount) {
@@ -479,11 +483,16 @@ public class SkillItem extends TrinketItem implements Skill {
         }
     }
 
-    public static class Liegong extends SkillItem {
+    public static class Liegong extends SkillItem implements ReachDefend {
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             tooltip.add(Text.translatable("item.dabaosword.liegong.tooltip1").formatted(Formatting.RED));
             tooltip.add(Text.translatable("item.dabaosword.liegong.tooltip2").formatted(Formatting.RED));
+        }
+
+        @Override
+        public int getExtraReach(PlayerEntity player, ItemStack stack) {
+            return player.hasStatusEffect(ModItems.COOLDOWN) ? 0 : 13;
         }
 
         @Override
@@ -993,12 +1002,17 @@ public class SkillItem extends TrinketItem implements Skill {
         }
     }
 
-    public static class Wusheng extends SkillItem {
+    public static class Wusheng extends SkillItem implements ReachDefend {
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             tooltip.add(Text.literal("CD: 5s"));
             tooltip.add(Text.translatable("item.dabaosword.wusheng.tooltip1").formatted(Formatting.RED));
             tooltip.add(Text.translatable("item.dabaosword.wusheng.tooltip2").formatted(Formatting.RED));
+        }
+
+        @Override
+        public int getExtraReach(PlayerEntity player, ItemStack stack) {
+            return isSha.test(player.getMainHandStack()) ? 13 : 0;
         }
 
         @Override
@@ -1132,14 +1146,6 @@ public class SkillItem extends TrinketItem implements Skill {
         if (stack.getItem() == SkillCards.JIZHI) {
             tooltip.add(Text.translatable("item.dabaosword.jizhi.tooltip").formatted(Formatting.RED));
         }
-
-        if (stack.getItem() == SkillCards.MASHU) {
-            tooltip.add(Text.translatable("item.dabaosword.chitu.tooltip"));
-        }
-
-        if (stack.getItem() == SkillCards.FEIYING) {
-            tooltip.add(Text.translatable("item.dabaosword.dilu.tooltip"));
-        }
     }
 
     @Override
@@ -1213,4 +1219,24 @@ public class SkillItem extends TrinketItem implements Skill {
     public static class ActiveSkill extends SkillItem {}
 
     public static class ActiveSkillWithTarget extends SkillItem {}
+
+    public static class Mashu extends SkillItem implements ReachDefend {
+        @Override
+        public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
+            tooltip.add(Text.translatable("item.dabaosword.chitu.tooltip"));
+        }
+
+        @Override
+        public int getExtraReach(PlayerEntity player, ItemStack stack) {return 1;}
+    }
+
+    public static class Feiying extends SkillItem implements ReachDefend {
+        @Override
+        public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
+            tooltip.add(Text.translatable("item.dabaosword.dilu.tooltip"));
+        }
+
+        @Override
+        public int getDefend(PlayerEntity player, ItemStack stack) {return 1;}
+    }
 }

@@ -390,6 +390,14 @@
       }
     ]
   },
+  "liannu": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/liannu"
+      }
+    ]
+  },
   "qilin": {
     "sounds": [
       {
@@ -443,6 +451,14 @@
       {
         "type": "file",
         "name": "dabaosword:card/zhangba"
+      }
+    ]
+  },
+  "zhuque": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/zhuque"
       }
     ]
   },
