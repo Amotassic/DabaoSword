@@ -205,6 +205,8 @@ public class ModItems {
                         entries.add(SkillCards.ZHIHENG);
                         entries.add(SkillCards.ZHIJIAN);
                         //群
+                        entries.add(SkillCards.JIJIU);
+                        entries.add(SkillCards.JIUCHI);
                         entries.add(SkillCards.JIZHAN);
                         entries.add(SkillCards.LEIJI);
                         entries.add(SkillCards.LUANJI);
@@ -256,7 +258,7 @@ public class ModItems {
     public static final StatusEffect COOLDOWN = register("cooldown", new CooldownEffect());
     public static final StatusEffect COOLDOWN2 = register("cooldown2", new Cooldown2Effect());
     //无敌效果
-    public static final StatusEffect INVULNERABLE = register("invulnerable", new InvulnerableEffect());
+    public static final StatusEffect INVULNERABLE = register("invulnerable", new CommonEffect(StatusEffectCategory.BENEFICIAL,0x35F5DF));
     //下落攻击效果
     public static final StatusEffect FALLING_ATTACK = register("falling_attack", new FallingEffect());
     //翻面效果

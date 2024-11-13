@@ -8,6 +8,9 @@ import net.minecraft.util.Identifier;
 @SuppressWarnings("unused")
 public class Sounds {
     public static final SoundEvent NAHIDA = register("nahida");
+    public static final SoundEvent FENYIN = register("fenyin");
+    public static final SoundEvent JIJIU = register("jijiu");
+    public static final SoundEvent JIUCHI = register("jiuchi");
     public static final SoundEvent JIANXIONG = register("jianxiong");
     public static final SoundEvent JIZHAN = register("jizhan");
     public static final SoundEvent YINGZI = register("yingzi");

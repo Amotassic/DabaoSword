@@ -47,6 +47,8 @@ public class SkillCards {
     public static final Item ZHIHENG = register("zhiheng", new SkillItem.Zhiheng());
     public static final Item ZHIJIAN = register("zhijian", new SkillItem.Zhijian());
     //群
+    public static final Item JIJIU = register("jijiu", new SkillItem.Jijiu());
+    public static final Item JIUCHI = register("jiuchi", new SkillItem.Jiuchi());
     public static final Item JIZHAN = register("jizhan", new SkillItem.Jizhan());
     public static final Item LEIJI = register("leiji", new SkillItem());
     public static final Item LUANJI = register("luanji", new SkillItem.Luanji());

@@ -136,8 +136,7 @@ public class CardItem extends Item implements Card {
         }
 
         if (stack.getItem() == ModItems.NANMAN) {
-            tooltip.add(Text.translatable("item.dabaosword.nanman.tooltip1"));
-            tooltip.add(Text.translatable("item.dabaosword.nanman.tooltip2"));
+            tooltip.add(Text.translatable("item.dabaosword.nanman.tooltip"));
         }
 
         if (stack.getItem() == ModItems.PEACH) {

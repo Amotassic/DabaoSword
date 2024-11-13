@@ -5,6 +5,24 @@
     ],
     "subtitle": "sounds.dabaosword.nahida"
   },
+  "fenyin": {
+    "sounds": [
+      "dabaosword:skill/fenyin1", "dabaosword:skill/fenyin2"
+    ],
+    "subtitle": "sounds.dabaosword.fenyin"
+  },
+  "jijiu": {
+    "sounds": [
+      "dabaosword:skill/jijiu1", "dabaosword:skill/jijiu2"
+    ],
+    "subtitle": "sounds.dabaosword.jijiu"
+  },
+  "jiuchi": {
+    "sounds": [
+      "dabaosword:skill/jiuchi1", "dabaosword:skill/jiuchi2"
+    ],
+    "subtitle": "sounds.dabaosword.jiuchi"
+  },
   "jianxiong": {
     "sounds": [
       "dabaosword:skill/jianxiong1", "dabaosword:skill/jianxiong2"

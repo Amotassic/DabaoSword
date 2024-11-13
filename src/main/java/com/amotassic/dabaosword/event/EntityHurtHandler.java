@@ -69,7 +69,6 @@ public class EntityHurtHandler implements EntityHurtCallback, CardCBs.CanHurtByC
 
             trySave(entity, amount);
 
-            if (isNanman(source)) hurtBy(entity, source, ModItems.NANMAN);
             if (isWanjian(source)) hurtBy(entity, source, ModItems.WANJIAN);
             if (isHuogong(source)) hurtBy(entity, source, ModItems.FIRE_ATTACK);
             if (isShandian(source)) hurtBy(entity, source, ModItems.SHANDIAN_ITEM);

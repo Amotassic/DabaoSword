@@ -51,7 +51,7 @@ public class ArrowRainItem extends Item {
     private static void summonArrow(LivingEntity entity, int angle, float speed) {
         ServerWorld world = (ServerWorld) entity.getWorld();
         ArrowEntity arrow = new ArrowEntity(world, entity);
-        arrow.setCustomName(Text.of("a"));
+        arrow.addCommandTag("a");
         arrow.setVelocity(entity, entity.getPitch(), entity.getYaw() + angle, 0.0F, speed, 1.0F);
         arrow.setCritical(true);
         world.spawnEntity(arrow);

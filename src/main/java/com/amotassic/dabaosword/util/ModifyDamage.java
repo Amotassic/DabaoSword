@@ -121,7 +121,6 @@ public class ModifyDamage {
             if (AT.hasStatusEffect(ModItems.TOO_HAPPY)) return 1;
         }
 
-        if (isNanman(source) && notHurtBy(entity, source, ModItems.NANMAN)) {((LivingEntity) so).setHealth(0); return 1;}
         if (isWanjian(source) && notHurtBy(entity, source, ModItems.WANJIAN)) return 1;
         if (isHuogong(source) && notHurtBy(entity, source, ModItems.FIRE_ATTACK)) return 1;
         if (isShandian(source) && notHurtBy(entity, source, ModItems.SHANDIAN_ITEM)) return 1;
@@ -139,13 +138,12 @@ public class ModifyDamage {
         if (execute(entity, source, amount, list, 2)) return 1;
         //3.低优先度执行：卡牌 闪以及响应南蛮的杀
         if (execute(entity, source, amount, list, 3)) return 1;
-        if (isNanman(source)) {
+        if (at != null && at.getCommandTags().contains("nanman")) {
             var stack = getCard(entity, isSha).getRight();
-            if (!stack.isEmpty() || entity instanceof PlayerEntity) ((LivingEntity) so).setHealth(0);
-            //被南蛮入侵的狗打中可以消耗杀以免疫伤害
             if (!stack.isEmpty()) {
                 voice(entity, stack);
                 cardUsePost(entity, stack, null);
+                entity.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 2, 0, false, false, false));
                 return 1;
             }
         }
@@ -164,7 +162,7 @@ public class ModifyDamage {
     }
 
     private static boolean shouldSha(LivingEntity entity) {
-        return hasItem(entity, isSha) && !entity.getCommandTags().contains("sha") && !entity.getCommandTags().contains("juedou");
+        return hasItem(entity, isSha) && !entity.getCommandTags().contains("sha") && !entity.getCommandTags().contains("juedou") && !entity.getCommandTags().contains("nanman");
     }
 
     private static void sha(LivingEntity user, LivingEntity entity, ItemStack sha, DamageSource source, float amount) {

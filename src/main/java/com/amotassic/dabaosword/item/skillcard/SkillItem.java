@@ -112,7 +112,7 @@ public class SkillItem extends TrinketItem implements Skill {
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
             Predicate<ItemStack> dl = s -> isBlackCard.test(s) && !s.isIn(Tags.Items.ARMOURY_CARD);
-            if (entity instanceof PlayerEntity player) viewAs(player, stack, 5, dl, new ItemStack(ModItems.BINGLIANG_ITEM), Sounds.DUANLIANG);
+            if (entity instanceof PlayerEntity player) viewAs(player, stack, 5, dl, new ItemStack(ModItems.BINGLIANG_ITEM));
             super.tick(stack, slot, entity);
         }
     }
@@ -279,7 +279,7 @@ public class SkillItem extends TrinketItem implements Skill {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (entity instanceof PlayerEntity player) viewAs(player, stack, 15, isDiamondCard, new ItemStack(ModItems.TOO_HAPPY_ITEM), Sounds.GUOSE);
+            if (entity instanceof PlayerEntity player) viewAs(player, stack, 15, isDiamondCard, new ItemStack(ModItems.TOO_HAPPY_ITEM));
             super.tick(stack, slot, entity);
         }
     }
@@ -294,7 +294,7 @@ public class SkillItem extends TrinketItem implements Skill {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (entity instanceof PlayerEntity player) viewAs(player, stack, 15, isRedCard, new ItemStack(ModItems.FIRE_ATTACK), Sounds.HUOJI);
+            if (entity instanceof PlayerEntity player) viewAs(player, stack, 15, isRedCard, new ItemStack(ModItems.FIRE_ATTACK));
             super.tick(stack, slot, entity);
         }
     }
@@ -314,6 +314,34 @@ public class SkillItem extends TrinketItem implements Skill {
                 if (entity instanceof PlayerEntity player) draw(player);
                 entity.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 15,0,false,false,true));
             }
+        }
+    }
+
+    public static class Jijiu extends SkillItem {
+        @Override
+        public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
+            tooltip.add(Text.literal("CD: 10s"));
+            tooltip.add(Text.translatable("item.dabaosword.jijiu.tooltip"));
+        }
+
+        @Override
+        public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
+            if (entity instanceof PlayerEntity player) viewAs(player, stack, 10, isRedCard, new ItemStack(ModItems.PEACH));
+            super.tick(stack, slot, entity);
+        }
+    }
+
+    public static class Jiuchi extends SkillItem {
+        @Override
+        public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
+            tooltip.add(Text.literal("CD: 10s"));
+            tooltip.add(Text.translatable("item.dabaosword.jiuchi.tooltip"));
+        }
+
+        @Override
+        public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
+            if (entity instanceof PlayerEntity player) viewAs(player, stack, 10, isSpadeCard, new ItemStack(ModItems.JIU));
+            super.tick(stack, slot, entity);
         }
     }
 
@@ -390,7 +418,7 @@ public class SkillItem extends TrinketItem implements Skill {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (entity instanceof PlayerEntity player) viewAs(player, stack, 10, isBlackCard, new ItemStack(ModItems.WUXIE), Sounds.KANPO);
+            if (entity instanceof PlayerEntity player) viewAs(player, stack, 10, isBlackCard, new ItemStack(ModItems.WUXIE));
             super.tick(stack, slot, entity);
         }
     }
@@ -729,7 +757,7 @@ public class SkillItem extends TrinketItem implements Skill {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (entity instanceof PlayerEntity player) viewAs(player, stack, 5, isBlackCard, new ItemStack(ModItems.SHAN), Sounds.QINGGUO);
+            if (entity instanceof PlayerEntity player) viewAs(player, stack, 5, isBlackCard, new ItemStack(ModItems.SHAN));
             super.tick(stack, slot, entity);
         }
     }
@@ -743,7 +771,7 @@ public class SkillItem extends TrinketItem implements Skill {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (entity instanceof PlayerEntity player) viewAs(player, stack, 5, isBlackCard, new ItemStack(ModItems.DISCARD), Sounds.QIXI);
+            if (entity instanceof PlayerEntity player) viewAs(player, stack, 5, isBlackCard, new ItemStack(ModItems.DISCARD));
             super.tick(stack, slot, entity);
         }
     }
@@ -975,7 +1003,7 @@ public class SkillItem extends TrinketItem implements Skill {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (entity instanceof PlayerEntity player) viewAs(player, stack, 5, isRedCard, new ItemStack(ModItems.SHA), Sounds.WUSHENG);
+            if (entity instanceof PlayerEntity player) viewAs(player, stack, 5, isRedCard, new ItemStack(ModItems.SHA));
             super.tick(stack, slot, entity);
         }
     }
@@ -1167,6 +1195,19 @@ public class SkillItem extends TrinketItem implements Skill {
         ItemStack stack = new ItemStack(Registries.ITEM.get(selectedId));
         if (stack.getItem() != Items.AIR) voice(player, Sounds.GIFTBOX,3);
         give(player, stack);
+    }
+
+    /**转化卡牌技能通用方法*/
+    public static void viewAs(PlayerEntity player, ItemStack skill, int CD, Predicate<ItemStack> predicate, ItemStack result) {
+        if (!player.getWorld().isClient && noTieji(player) && getCD(skill) == 0) {
+            ItemStack stack = player.getOffHandStack();
+            if (predicate.test(stack)) {
+                setCD(skill, CD);
+                stack.decrement(1);
+                give(player, result);
+                voice(player, skill);
+            }
+        }
     }
 
     public static class ActiveSkill extends SkillItem {}

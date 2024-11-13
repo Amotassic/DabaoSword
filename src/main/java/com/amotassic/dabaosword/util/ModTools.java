@@ -19,7 +19,6 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.projectile.ArrowEntity;
@@ -81,17 +80,14 @@ public class ModTools {
     }
     public static final Predicate<ItemStack> yes = s -> s.isOf(ModItems.YES);
     public static final Predicate<ItemStack> no = s -> s.isOf(ModItems.NO);
-    public static boolean isNanman(DamageSource source) {
-        return source.getSource() instanceof WolfEntity dog && dog.hasStatusEffect(ModItems.INVULNERABLE);
-    }
     public static boolean isWanjian(DamageSource source) {
-        return source.getSource() instanceof ArrowEntity arrow && Objects.equals(arrow.getCustomName(), Text.of("a"));
+        return source.getSource() instanceof ArrowEntity arrow && arrow.getCommandTags().contains("a");
     }
     public static boolean isHuogong(DamageSource source) {
-        return source.getSource() instanceof FireballEntity fireball && Objects.equals(fireball.getCustomName(), Text.of("a"));
+        return source.getSource() instanceof FireballEntity fireball && fireball.getCommandTags().contains("a");
     }
     public static boolean isShandian(DamageSource source) {
-        return source.getSource() instanceof LightningEntity lightning && Objects.equals(lightning.getCustomName(), Text.of("a"));
+        return source.getSource() instanceof LightningEntity lightning && lightning.getCommandTags().contains("a");
     }
 
     public static boolean noTieji(LivingEntity entity) {return !entity.hasStatusEffect(ModItems.TIEJI);}
@@ -363,19 +359,6 @@ public class ModTools {
         NbtCompound nbt = stack.getOrCreateNbt();
         nbt.putInt("tags", value);
         stack.setNbt(nbt);
-    }
-
-    /**转化卡牌技能通用方法*/
-    public static void viewAs(PlayerEntity player, ItemStack skill, int CD, Predicate<ItemStack> predicate, ItemStack result, SoundEvent sound) {
-        if (!player.getWorld().isClient && noTieji(player) && getCD(skill) == 0) {
-            ItemStack stack = player.getOffHandStack();
-            if (predicate.test(stack)) {
-                setCD(skill, CD);
-                stack.decrement(1);
-                give(player, result);
-                voice(player, sound);
-            }
-        }
     }
 
     public static void openInv(PlayerEntity player, PlayerEntity target, Text title, ItemStack stack, boolean openSelfInv, boolean equip, boolean armor, int cards) {
