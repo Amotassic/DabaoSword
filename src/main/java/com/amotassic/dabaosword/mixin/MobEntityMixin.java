@@ -23,7 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Arrays;
 
-import static com.amotassic.dabaosword.util.ModTools.cardUsePre;
+import static com.amotassic.dabaosword.api.event.CardEvents.cardUsePre;
 import static com.amotassic.dabaosword.util.ModTools.isCard;
 
 @Mixin(MobEntity.class)

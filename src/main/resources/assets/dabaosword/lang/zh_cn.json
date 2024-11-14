@@ -303,6 +303,8 @@
   "item.dabaosword.jijiu.tooltip": "将副手上的一张红色牌转化为桃",
   "item.dabaosword.jiuchi": "酒池",
   "item.dabaosword.jiuchi.tooltip": "将副手上的一张黑桃牌转化为酒",
+  "item.dabaosword.fenyin": "奋音",
+  "item.dabaosword.fenyin.tooltip": "使用一张牌后，若颜色与你上一张使用的牌不同，你摸一张牌",
 
   //"配音"
   "sounds.dabaosword.nahida": "纳西妲：所闻遍计",

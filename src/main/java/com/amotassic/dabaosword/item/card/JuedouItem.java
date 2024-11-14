@@ -9,6 +9,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 
+import static com.amotassic.dabaosword.api.event.CardEvents.*;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class JuedouItem extends CardItem {

@@ -17,7 +17,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 
-import static com.amotassic.dabaosword.util.ModTools.cardUsePre;
+import static com.amotassic.dabaosword.api.event.CardEvents.cardUsePre;
 import static com.amotassic.dabaosword.util.ModTools.voice;
 
 public class ShandianItem extends CardItem {

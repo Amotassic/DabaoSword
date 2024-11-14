@@ -9,7 +9,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-import static com.amotassic.dabaosword.util.ModTools.cardUsePre;
+import static com.amotassic.dabaosword.api.event.CardEvents.cardUsePre;
 
 public class FireAttackItem extends CardItem {
     @Override

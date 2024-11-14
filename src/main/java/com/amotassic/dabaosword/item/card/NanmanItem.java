@@ -14,7 +14,7 @@ import net.minecraft.world.World;
 
 import java.util.function.Predicate;
 
-import static com.amotassic.dabaosword.util.ModTools.cardUsePre;
+import static com.amotassic.dabaosword.api.event.CardEvents.cardUsePre;
 
 public class NanmanItem extends CardItem {
     @Override

@@ -16,6 +16,7 @@ import net.minecraft.network.ClientConnection;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 
+import static com.amotassic.dabaosword.api.event.CardEvents.cardDiscard;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class PlayerEvents implements PlayerConnectCallback, PlayerDeathCallback, PlayerRespawnCallback {

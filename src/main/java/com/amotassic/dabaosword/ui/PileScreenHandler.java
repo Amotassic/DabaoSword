@@ -12,6 +12,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 
+import static com.amotassic.dabaosword.api.event.CardEvents.cardDiscard;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class PileScreenHandler extends ScreenHandler {

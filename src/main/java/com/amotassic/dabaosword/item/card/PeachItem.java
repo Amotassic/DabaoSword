@@ -8,7 +8,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
-import static com.amotassic.dabaosword.util.ModTools.cardUsePre;
+import static com.amotassic.dabaosword.api.event.CardEvents.cardUsePre;
 
 public class PeachItem extends CardItem {
     //非潜行时右键，给自己回血

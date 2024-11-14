@@ -65,7 +65,7 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
                     else if (countCards(player) < player.getMaxHealth() || !limit) {
                         int draw = 0;
                         for (var stack : allTrinkets(player)) {
-                            if (stack.getItem() instanceof Skill s) {
+                            if (stack.getItem() instanceof Skill s && canTrigger(stack, player)) {
                                 int i = s.onDrawPhase(player, stack);
                                 if (i <= -114) {draw = 0; break;}
                                 draw += i;
@@ -112,7 +112,7 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
             ItemStack mainHand = player.getMainHandStack();
             if (mainHand.isOf(ModItems.DISCARD) || mainHand.isOf(ModItems.JUEDOU)) level1 += 114;
             for (var stack : allTrinkets(player)) {
-                if (stack.getItem() instanceof ReachDefend rd) {
+                if (stack.getItem() instanceof ReachDefend rd && canTrigger(stack, player)) {
                     level1 += rd.getExtraReach(player, stack);
                     level2 += rd.getDefend(player, stack);
                 }

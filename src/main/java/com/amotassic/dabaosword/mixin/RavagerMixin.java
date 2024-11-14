@@ -17,8 +17,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Objects;
 import java.util.function.Predicate;
 
-import static com.amotassic.dabaosword.util.ModTools.hurtBy;
-import static com.amotassic.dabaosword.util.ModTools.notHurtBy;
+import static com.amotassic.dabaosword.api.event.CardEvents.hurtBy;
+import static com.amotassic.dabaosword.api.event.CardEvents.notHurtBy;
 
 @Mixin(RavagerEntity.class)
 public abstract class RavagerMixin extends RaiderEntity {

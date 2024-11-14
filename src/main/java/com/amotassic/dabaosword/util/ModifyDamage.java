@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+import static com.amotassic.dabaosword.api.event.CardEvents.*;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class ModifyDamage {

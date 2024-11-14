@@ -1,6 +1,7 @@
 package com.amotassic.dabaosword.item.equipment;
 
 import com.amotassic.dabaosword.api.Card;
+import com.amotassic.dabaosword.api.ICardEvent;
 import com.amotassic.dabaosword.api.ReachDefend;
 import com.amotassic.dabaosword.api.Skill;
 import com.amotassic.dabaosword.item.ModItems;
@@ -36,6 +37,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
+import static com.amotassic.dabaosword.api.event.CardEvents.cardDiscard;
+import static com.amotassic.dabaosword.api.event.CardEvents.cardUsePre;
 import static com.amotassic.dabaosword.util.ModTools.*;
 import static com.amotassic.dabaosword.util.ModifyDamage.shan;
 
@@ -227,16 +230,22 @@ public class Equipment extends TrinketItem implements Card, Skill {
         }
     }
 
-    public static class RenwangArmor extends Equipment {
+    public static class RenwangArmor extends Equipment implements ICardEvent {
         @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
             super.appendTooltip(stack, world, tooltip, context);
             tooltip.add(Text.translatable("item.dabaosword.renwang.tooltip1"));
             tooltip.add(Text.translatable("item.dabaosword.renwang.tooltip2").formatted(Formatting.AQUA));
         }
+
+        @Override
+        public boolean canHurtByCard(LivingEntity entity, ItemStack skill, ItemStack card, DamageSource source) {
+            if (isSha.test(card) && isBlackCard.test(card)) {voice(entity, skill); return false;}
+            return true;
+        }
     }
 
-    public static class RattanArmor extends Equipment {
+    public static class RattanArmor extends Equipment implements ICardEvent {
         @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
             super.appendTooltip(stack, world, tooltip, context);
@@ -267,6 +276,13 @@ public class Equipment extends TrinketItem implements Card, Skill {
                 return new Pair<>(0f, Math.min(amount, 5f));
             }
             return null;
+        }
+
+        @Override
+        public boolean canHurtByCard(LivingEntity entity, ItemStack skill, ItemStack card, DamageSource source) {
+            if (card.isOf(ModItems.WANJIAN) || card.isOf(ModItems.NANMAN) || card.isOf(ModItems.SHA)) {
+                voice(entity, Sounds.TENGJIA1); return false;
+            } return true;
         }
 
         @Override

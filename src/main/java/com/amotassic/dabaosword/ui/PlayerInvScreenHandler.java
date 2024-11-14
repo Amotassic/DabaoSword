@@ -2,7 +2,6 @@ package com.amotassic.dabaosword.ui;
 
 import com.amotassic.dabaosword.api.CardPileInventory;
 import com.amotassic.dabaosword.api.Skill;
-import com.amotassic.dabaosword.api.event.CardCBs;
 import com.amotassic.dabaosword.item.ModItems;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -24,6 +23,7 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.stream.IntStream;
 
+import static com.amotassic.dabaosword.api.event.CardEvents.*;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class PlayerInvScreenHandler extends ScreenHandler {
@@ -118,8 +118,7 @@ public class PlayerInvScreenHandler extends ScreenHandler {
                     Text message = Text.translatable("dabaosword.steal", player.getDisplayName(), target.getDisplayName(), selectedStack.toHoverableText());
                     player.sendMessage(message);
                     target.sendMessage(message);
-                    CardCBs.T type = slotIndex < 4 ? CardCBs.T.EQUIP_TO_INV : CardCBs.T.INV_TO_INV;
-                    if (isCard(selectedStack)) cardMove(target, player, selectedStack, 1, type);
+                    if (isCard(selectedStack)) cardMove(target, player, selectedStack, 1, slotIndex < 4, false);
                         //如果选择的物品是卡牌才触发事件
                     else {give(player, selectedStack.copyWithCount(1)); /*顺手：复制一个物品*/
                         selectedStack.decrement(1);}

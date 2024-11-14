@@ -16,6 +16,7 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
+import static com.amotassic.dabaosword.api.event.CardEvents.cardUsePre;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class CardItem extends Item implements Card {
@@ -57,7 +58,7 @@ public class CardItem extends Item implements Card {
 
         @Override
         public void cardUse(LivingEntity user, ItemStack stack, LivingEntity target) {
-            if (user instanceof PlayerEntity player) draw(player,2);
+            draw(user,2);
         }
     }
 

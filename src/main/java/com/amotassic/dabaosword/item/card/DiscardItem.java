@@ -14,12 +14,13 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.IntStream;
 
+import static com.amotassic.dabaosword.api.event.CardEvents.*;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class DiscardItem extends CardItem {
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (!user.getWorld().isClient && hand == Hand.MAIN_HAND) {
+        if (!user.getWorld().isClient && hand == Hand.MAIN_HAND && countAllCards(entity) > 0) {
             if (cardUsePre(user, user.getMainHandStack(), entity)) return ActionResult.SUCCESS;
         }
         return ActionResult.PASS;

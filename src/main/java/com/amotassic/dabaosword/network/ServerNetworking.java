@@ -61,7 +61,7 @@ public class ServerNetworking {
     private static void receiveShensuPacket(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
         float speed = buf.readFloat();
         ItemStack stack = trinketItem(SkillCards.SHENSU, player);
-        if (stack != null) {
+        if (!stack.isEmpty()) {
             NbtCompound nbt = stack.getOrCreateNbt(); nbt.putFloat("speed", speed); stack.setNbt(nbt);
             //if (stack.getNbt() != null && stack.getNbt().getFloat("speed") > 0) player.sendMessage(Text.literal("Speed: " + speed), true);
         }

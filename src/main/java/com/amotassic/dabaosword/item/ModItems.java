@@ -2,7 +2,10 @@ package com.amotassic.dabaosword.item;
 
 import com.amotassic.dabaosword.api.event.*;
 import com.amotassic.dabaosword.effect.*;
-import com.amotassic.dabaosword.event.*;
+import com.amotassic.dabaosword.event.AttackEntityHandler;
+import com.amotassic.dabaosword.event.EntityHurtHandler;
+import com.amotassic.dabaosword.event.EntityTickEvents;
+import com.amotassic.dabaosword.event.PlayerEvents;
 import com.amotassic.dabaosword.item.card.*;
 import com.amotassic.dabaosword.item.equipment.*;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
@@ -202,6 +205,7 @@ public class ModItems {
                         entries.add(SkillCards.WUSHENG);
                         //吴
                         entries.add(SkillCards.BUQU);
+                        entries.add(SkillCards.FENYIN);
                         entries.add(SkillCards.GONGXIN);
                         entries.add(SkillCards.GUOSE);
                         entries.add(SkillCards.LIANYING);
@@ -236,14 +240,8 @@ public class ModItems {
         PlayerConnectCallback.EVENT.register(new PlayerEvents());
         PlayerDeathCallback.EVENT.register(new PlayerEvents());
         PlayerRespawnCallback.EVENT.register(new PlayerEvents());
-        CardCBs.USE_PRE.register(new CardEvents());
-        CardCBs.USE_POST.register(new CardEvents());
-        CardCBs.DISCARD.register(new CardEvents());
-        CardCBs.MOVE.register(new CardEvents());
         EndEntityTick.LIVING_EVENT.register(new EntityTickEvents());
         EndEntityTick.PLAYER_EVENT.register(new EntityTickEvents());
-        CardCBs.CAN_HURT_BY_CARD.register(new EntityHurtHandler());
-        CardCBs.HURT_BY_CARD.register(new EntityHurtHandler());
     }
 
     private static StatusEffect register(String id, StatusEffect entry) {
