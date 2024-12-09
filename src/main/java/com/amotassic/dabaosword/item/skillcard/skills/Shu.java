@@ -68,7 +68,7 @@ public class Shu {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (entity instanceof PlayerEntity player) viewAs(player, stack, 15, isRedCard, new ItemStack(ModItems.FIRE_ATTACK));
+            viewAs(entity, stack, 15, isRedCard, new ItemStack(ModItems.FIRE_ATTACK));
             super.tick(stack, slot, entity);
         }
     }
@@ -95,7 +95,7 @@ public class Shu {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (entity instanceof PlayerEntity player) viewAs(player, stack, 10, isBlackCard, new ItemStack(ModItems.WUXIE));
+            viewAs(entity, stack, 10, isBlackCard, new ItemStack(ModItems.WUXIE));
             super.tick(stack, slot, entity);
         }
     }
@@ -237,7 +237,7 @@ public class Shu {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (entity instanceof PlayerEntity player) viewAs(player, stack, 5, isRedCard, new ItemStack(ModItems.SHA));
+            viewAs(entity, stack, 5, isRedCard, new ItemStack(ModItems.SHA));
             super.tick(stack, slot, entity);
         }
     }

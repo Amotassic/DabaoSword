@@ -84,8 +84,9 @@ public class EntityHurtHandler implements EntityHurtCallback {
                         player.sendMessage(Text.translatable("dabaosword.draw.monster"),true);
                     }
                 }
-                if (entity instanceof PlayerEntity) {
-                    draw(player, 2);
+                if (entity instanceof PlayerEntity && player!= entity) {
+                    if (player.getHealth() < 20) player.heal(20 - player.getHealth());
+                    draw(player);
                     player.sendMessage(Text.translatable("dabaosword.draw.player"),true);
                 }
             }

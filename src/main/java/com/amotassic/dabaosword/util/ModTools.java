@@ -53,7 +53,8 @@ import java.util.stream.IntStream;
 
 public class ModTools {
     //通过predicate寻找对应物品，免得添加标签
-    public static final Predicate<ItemStack> canSaveDying = s -> s.isOf(ModItems.JIU) || s.isOf(ModItems.PEACH);
+    public static Predicate<ItemStack> p(Item item) {return s -> s.isOf(item);}
+    public static final Predicate<ItemStack> canSaveDying = p(ModItems.JIU).or(p(ModItems.PEACH));
     public static final Predicate<ItemStack> isSha = s -> s.getItem() instanceof CardItem.Sha;
     //public static final Predicate<ItemStack> nonBasic = s -> s.isIn(Tags.Items.CARD) && !s.isIn(Tags.Items.BASIC_CARD);
     //判断是否是卡牌
@@ -75,8 +76,6 @@ public class ModTools {
         }
         return inventory;
     }
-    public static final Predicate<ItemStack> yes = s -> s.isOf(ModItems.YES);
-    public static final Predicate<ItemStack> no = s -> s.isOf(ModItems.NO);
     public static boolean isWanjian(DamageSource source) {
         return source.getSource() instanceof ArrowEntity arrow && arrow.getCommandTags().contains("a");
     }
@@ -431,6 +430,7 @@ public class ModTools {
     public static void writeDamage(DamageSource source, float amount, boolean returnShan, ItemStack stack) {
         NbtList list = new NbtList();
         NbtCompound compound = new NbtCompound();
+        //noinspection OptionalGetWithoutIsPresent
         compound.putString("type", source.getTypeRegistryEntry().getKey().get().getValue().toString());
         if (source.getSource() != null) compound.putInt("source", source.getSource().getId());
         if (source.getAttacker() != null) compound.putInt("attacker", source.getAttacker().getId());

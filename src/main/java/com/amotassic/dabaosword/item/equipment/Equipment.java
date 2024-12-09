@@ -5,6 +5,7 @@ import com.amotassic.dabaosword.api.ICardEvent;
 import com.amotassic.dabaosword.api.ReachDefend;
 import com.amotassic.dabaosword.api.Skill;
 import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.item.card.CardItem;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.Sounds;
 import dev.emi.trinkets.TrinketSlot;
@@ -86,6 +87,15 @@ public class Equipment extends TrinketItem implements Card, Skill {
         }
     }
 
+    public static class CixiongWeapon extends Equipment {
+        @Override
+        public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+            super.appendTooltip(stack, world, tooltip, context);
+            tooltip.add(Text.translatable("item.dabaosword.cixiong.tooltip1"));
+            tooltip.add(Text.translatable("item.dabaosword.cixiong.tooltip2").formatted(Formatting.AQUA));
+        }
+    }
+
     public static class FangtianWeapon extends Equipment {
         @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
@@ -103,6 +113,15 @@ public class Equipment extends TrinketItem implements Card, Skill {
                 voice(player, Sounds.FANGTIAN);
                 player.sendMessage(Text.translatable("dabaosword.fangtian").formatted(Formatting.RED), true);
             }
+        }
+    }
+
+    public static class GuanshiWeapon extends Equipment {
+        @Override
+        public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
+            super.appendTooltip(stack, world, tooltip, context);
+            tooltip.add(Text.translatable("item.dabaosword.guanshi.tooltip1"));
+            tooltip.add(Text.translatable("item.dabaosword.guanshi.tooltip2").formatted(Formatting.AQUA));
         }
     }
 
@@ -390,17 +409,12 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-        var sr = getSuitAndRank(stack);
-        if (sr != null) {
-            Suits suit = sr.getLeft(); Ranks rank = sr.getRight();
-            if (isRedCard.test(stack)) tooltip.add(Text.translatable("card.suit_and_rank", suit.suit, rank.rank).formatted(Formatting.RED));
-            else tooltip.add(Text.translatable("card.suit_and_rank", suit.suit, rank.rank));
-        }
+        CardItem.addSRTip(stack, tooltip);
 
         if(Screen.hasShiftDown()) {
             tooltip.add(Text.translatable("equipment.tip1").formatted(Formatting.BOLD));
             tooltip.add(Text.translatable("equipment.tip2").formatted(Formatting.BOLD));
-        } else tooltip.add(Text.translatable("dabaosword.shifttooltip"));
+        } else tooltip.add(Text.translatable("dabaosword.shift_tip", Text.keybind("key.sneak")));
     }
 
     @Override
@@ -432,7 +446,7 @@ public class Equipment extends TrinketItem implements Card, Skill {
         if (!world.isClient && hand == Hand.MAIN_HAND) {
             if (cardUsePre(player, player.getMainHandStack(), player)) return TypedActionResult.success(player.getMainHandStack());
         }
-        return super.use(world, player, hand);
+        return TypedActionResult.pass(player.getMainHandStack());
     }
 
     @Override

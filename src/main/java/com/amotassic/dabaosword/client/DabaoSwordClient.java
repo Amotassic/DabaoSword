@@ -2,6 +2,10 @@ package com.amotassic.dabaosword.client;
 
 import com.amotassic.dabaosword.DabaoSword;
 import com.amotassic.dabaosword.api.Card;
+import com.amotassic.dabaosword.entity.ModEntity;
+import com.amotassic.dabaosword.entity.client.ModModelLayers;
+import com.amotassic.dabaosword.entity.client.XuyouModel;
+import com.amotassic.dabaosword.entity.client.XuyouRenderer;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.ui.FullInvHandledScreen;
 import com.amotassic.dabaosword.ui.PileHandledScreen;
@@ -9,6 +13,8 @@ import com.amotassic.dabaosword.ui.PlayerInvHandledScreen;
 import com.amotassic.dabaosword.ui.SimpleMenuScreen;
 import com.amotassic.dabaosword.util.ModTools;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.item.Item;
@@ -28,6 +34,8 @@ public class DabaoSwordClient implements ClientModInitializer {
         HandledScreens.register(ModItems.PILE_SCREEN_HANDLER, PileHandledScreen::new);
         ClientTickEnd.initialize();
         registerPredicates();
+        EntityModelLayerRegistry.registerModelLayer(ModModelLayers.XUYOU, XuyouModel::getTexturedModelData);
+        EntityRendererRegistry.register(ModEntity.XUYOU, XuyouRenderer::new);
     }
 
     private void registerPredicates() {

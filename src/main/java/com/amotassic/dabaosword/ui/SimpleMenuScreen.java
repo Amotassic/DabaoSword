@@ -20,7 +20,12 @@ public class SimpleMenuScreen extends HandledScreen<SimpleMenuHandler> {
     @Override
     protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
         int x = this.x; int y = this.y;
-        if (handler.slots.get(18).getStack().isOf(SkillCards.JIZHAN)) context.drawTexture(TEXTURE, x, y,0,75, backgroundWidth, backgroundHeight);
+        ItemStack stack = handler.slots.get(18).getStack();
+        if (stack.isOf(SkillCards.JIZHAN)) {
+            context.drawTexture(TEXTURE, x, y, 0, 75, backgroundWidth, backgroundHeight);
+            int last = stack.getOrCreateNbt().getInt("lastCardRank");
+            context.drawText(this.textRenderer, "Last: " + (last + 1), x + 64, y + 24, 0x404040, false);
+        }
         else context.drawTexture(TEXTURE, x, y,0,0, backgroundWidth, backgroundHeight);
     }
 

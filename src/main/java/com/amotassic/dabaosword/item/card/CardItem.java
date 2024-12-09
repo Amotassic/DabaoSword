@@ -64,12 +64,7 @@ public class CardItem extends Item implements Card {
 
     @Override
     public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
-        var sr = getSuitAndRank(stack);
-        if (sr != null) {
-            Suits suit = sr.getLeft(); Ranks rank = sr.getRight();
-            if (isRedCard.test(stack)) tooltip.add(Text.translatable("card.suit_and_rank", suit.suit, rank.rank).formatted(Formatting.RED));
-            else tooltip.add(Text.translatable("card.suit_and_rank", suit.suit, rank.rank));
-        }
+        addSRTip(stack, tooltip);
 
         if (stack.isOf(ModItems.SHANDIAN_ITEM)) {
             tooltip.add(Text.translatable("item.dabaosword.shandian.tooltip1"));
@@ -98,7 +93,7 @@ public class CardItem extends Item implements Card {
                 if (i==6) {tooltip.add(Text.translatable("item.dabaosword.arrowrain.tooltip6").formatted(Formatting.YELLOW));}
             } else {
                 tooltip.add(Text.translatable("item.dabaosword.arrowrain.tooltip"));
-                tooltip.add(Text.translatable("item.dabaosword.arrowrain.shift").formatted(Formatting.ITALIC));
+                tooltip.add(Text.translatable("item.dabaosword.arrowrain.shift", Text.keybind("key.sneak")).formatted(Formatting.ITALIC));
             }
         }
 
@@ -108,7 +103,7 @@ public class CardItem extends Item implements Card {
                 tooltip.add(Text.translatable("item.dabaosword.bingliang.tooltip2"));
             } else {
                 tooltip.add(Text.translatable("item.dabaosword.bingliang.tooltip").formatted(Formatting.BLUE));
-                tooltip.add(Text.translatable("dabaosword.shifttooltip"));
+                tooltip.add(Text.translatable("dabaosword.shift_tip", Text.keybind("key.sneak")));
             }
         }
 
@@ -170,8 +165,17 @@ public class CardItem extends Item implements Card {
                 tooltip.add(Text.translatable("item.dabaosword.too_happy.tooltip2"));
             } else {
                 tooltip.add(Text.translatable("item.dabaosword.too_happy.tooltip").formatted(Formatting.RED));
-                tooltip.add(Text.translatable("dabaosword.shifttooltip"));
+                tooltip.add(Text.translatable("dabaosword.shift_tip", Text.keybind("key.sneak")));
             }
+        }
+    }
+
+    public static void addSRTip(ItemStack stack, List<Text> tooltip) {
+        var sr = getSuitAndRank(stack);
+        if (sr != null) {
+            Suits suit = sr.getLeft(); Ranks rank = sr.getRight();
+            if (isRedCard.test(stack)) tooltip.add(Text.translatable("card.suit_and_rank", suit.suit, rank.rank).formatted(Formatting.RED));
+            else tooltip.add(Text.translatable("card.suit_and_rank", suit.suit, rank.rank));
         }
     }
 }

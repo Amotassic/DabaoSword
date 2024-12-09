@@ -41,9 +41,7 @@ public class SkillItem extends TrinketItem implements Skill {
         if (!world.isClient && equipped(stack)) setEquipped(stack, false);
     }
 
-    private boolean equipped(ItemStack stack) {
-        return stack.getOrCreateNbt().contains("equipped");
-    }
+    private boolean equipped(ItemStack stack) {return stack.getOrCreateNbt().contains("equipped");}
 
     private void setEquipped(ItemStack stack, boolean equipped) {
         NbtCompound nbt = stack.getOrCreateNbt();
@@ -81,14 +79,14 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     /**转化卡牌技能通用方法*/
-    public static void viewAs(PlayerEntity player, ItemStack skill, int CD, Predicate<ItemStack> predicate, ItemStack result) {
-        if (!player.getWorld().isClient && noTieji(player) && getCD(skill) == 0) {
-            ItemStack stack = player.getOffHandStack();
+    public static void viewAs(LivingEntity entity, ItemStack skill, int CD, Predicate<ItemStack> predicate, ItemStack result) {
+        if (!entity.getWorld().isClient && noTieji(entity) && getCD(skill) == 0) {
+            ItemStack stack = entity.getOffHandStack();
             if (predicate.test(stack)) {
                 setCD(skill, CD);
                 stack.decrement(1);
-                give(player, result);
-                voice(player, skill);
+                give(entity, result);
+                voice(entity, skill);
             }
         }
     }
@@ -96,5 +94,4 @@ public class SkillItem extends TrinketItem implements Skill {
     public static class ActiveSkill extends SkillItem {}
 
     public static class ActiveSkillWithTarget extends SkillItem {}
-
 }

@@ -50,7 +50,7 @@ public class Wei {
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
             Predicate<ItemStack> dl = s -> isBlackCard.test(s) && !s.isIn(Tags.Items.ARMOURY_CARD);
-            if (entity instanceof PlayerEntity player) viewAs(player, stack, 5, dl, new ItemStack(ModItems.BINGLIANG_ITEM));
+            viewAs(entity, stack, 5, dl, new ItemStack(ModItems.BINGLIANG_ITEM));
             super.tick(stack, slot, entity);
         }
     }
@@ -337,7 +337,7 @@ public class Wei {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (entity instanceof PlayerEntity player) viewAs(player, stack, 5, isBlackCard, new ItemStack(ModItems.SHAN));
+            viewAs(entity, stack, 5, isBlackCard, new ItemStack(ModItems.SHAN));
             super.tick(stack, slot, entity);
         }
     }

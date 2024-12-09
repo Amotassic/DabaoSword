@@ -151,7 +151,7 @@ public class ModifyDamage {
         if (at instanceof LivingEntity) {
             if (!entity.hasStatusEffect(ModItems.COOLDOWN2)) {
                 //此处条件是故意设置得与八卦阵条件不一样的，虽然感觉没啥用
-                if (hasCard(entity, s -> s.isOf(ModItems.SHAN)) && !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+                if (hasCard(entity, p(ModItems.SHAN)) && !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
                     shan(entity, false, source, amount);
                     return 1;
                 }

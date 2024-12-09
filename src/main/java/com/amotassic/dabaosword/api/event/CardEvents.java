@@ -44,7 +44,7 @@ public class CardEvents {
                 }
             }
 
-            if (stack.isIn(Tags.Items.TRIGGER_WUXIE) && hasCard(target, s -> s.isOf(ModItems.WUXIE))) {
+            if (stack.isIn(Tags.Items.TRIGGER_WUXIE) && hasCard(target, p(ModItems.WUXIE))) {
                 cardUsePre(target, new ItemStack(ModItems.WUXIE), null);
                 cardUsePost(user, stack, target);
                 return false;
@@ -144,25 +144,24 @@ public class CardEvents {
     /**卡牌使用后减少，不需要传入原始的itemStack*/
     public static void cardUseAndDecrement(LivingEntity user, ItemStack card) {
         //即使创造模式，无懈可击也会消耗，为什么呢？我也不知道
-        if (card.isOf(ModItems.WUXIE)) cardDecrement(getCard(user, s -> s.isOf(ModItems.WUXIE)), 1);
+        if (card.isOf(ModItems.WUXIE)) cardDecrement(getCard(user, p(ModItems.WUXIE)), 1);
         else {
             //如果使用者是创造模式玩家，则不消耗卡牌
             if (user instanceof PlayerEntity player && player.getAbilities().creativeMode) return;
             //找到和要消耗的完全相同的卡牌，若找不到，则找和要消耗的卡牌同名的牌
             var pair = getCard(user, s -> ItemStack.areEqual(s, card));
-            if (pair.getRight().isEmpty()) pair = getCard(user, s -> s.isOf(card.getItem()));
-            var mainHand = user.getMainHandStack();
-            //如果使用者是玩家，且消耗了主手上的卡牌后主手空出，则补充一张同名牌到主手上
-            if (user instanceof PlayerEntity player && ItemStack.areEqual(pair.getRight(), mainHand)) {
-                cardDecrement(pair, 1);
-                if (mainHand.isEmpty()) {
-                    var p = getCard(user, s -> s.isOf(card.getItem()));
-                    if (!p.getRight().isEmpty()) {
-                        player.setStackInHand(Hand.MAIN_HAND, p.getRight().copy());
-                        player.getMainHandStack().setBobbingAnimationTime(5);
-                        cardDecrement(p, p.getRight().getCount());
-                    }
-                }
+            if (pair.getRight().isEmpty()) pair = getCard(user, p(card.getItem()));
+            //如果使用者是玩家，且即将消耗的卡牌stack数量为1，则尝试补充卡牌
+            if (user instanceof PlayerEntity player && pair.getRight().getCount() == 1) {
+                if (isSha.test(card)) { //如果使用了杀则补充杀，否则补充同名牌
+                    cardDecrement(pair, 1);
+                    var p = getCard(user, isSha); var s = p.getRight();
+                    if (!s.isEmpty()) {give(player, s.copy()); cardDecrement(p, s.getCount());}
+                } else if (ItemStack.areEqual(pair.getRight(), user.getMainHandStack())) {
+                    cardDecrement(pair, 1);
+                    var p = getCard(user, p(card.getItem())); var s = p.getRight();
+                    if (!s.isEmpty()) {player.setStackInHand(Hand.MAIN_HAND, s.copy()); cardDecrement(p, s.getCount());}
+                } else cardDecrement(pair, 1);
             } else cardDecrement(pair, 1);
         }
     }

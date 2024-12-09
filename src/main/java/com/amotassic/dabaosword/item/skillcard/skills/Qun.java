@@ -39,7 +39,7 @@ public class Qun {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (entity instanceof PlayerEntity player) viewAs(player, stack, 10, isRedCard, new ItemStack(ModItems.PEACH));
+            viewAs(entity, stack, 10, isRedCard, new ItemStack(ModItems.PEACH));
             super.tick(stack, slot, entity);
         }
     }
@@ -53,7 +53,7 @@ public class Qun {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (entity instanceof PlayerEntity player) viewAs(player, stack, 10, isSpadeCard, new ItemStack(ModItems.JIU));
+            viewAs(entity, stack, 10, isSpadeCard, new ItemStack(ModItems.JIU));
             super.tick(stack, slot, entity);
         }
     }
@@ -68,30 +68,31 @@ public class Qun {
         @Override
         public int onDrawPhase(PlayerEntity player, ItemStack stack) {
             voice(player, stack);
-            var inv = yesAndNo();
-            inv.setStack(18, stack);
-            openSimpleMenu(player, player, inv, Text.translatable("jizhan.title", stack.getName()));
             ItemStack last = newCard();
             give(player, last); //先让玩家摸一张牌，保存到lastCard
-            player.getWorld().getPlayers().forEach(p -> p.sendMessage(Text.translatable("jizhan.draw", player.getDisplayName(), stack.toHoverableText(), last.toHoverableText(), Objects.requireNonNull(getRank(last)).rank), false));
+            player.getWorld().getPlayers().forEach(p -> p.sendMessage(Text.translatable("jizhan.draw", player.getDisplayName(), stack.toHoverableText(), last.toHoverableText()), false));
             NbtCompound tag = stack.getOrCreateNbt();
-            NbtCompound nbt = new NbtCompound(); last.writeNbt(nbt);
-            tag.put("lastCard", nbt);
+            tag.putInt("lastCardRank", Objects.requireNonNull(getRank(last)).ordinal());
             stack.setNbt(tag);
+            var inv = yesAndNo(); inv.setStack(18, stack);
+            openSimpleMenu(player, player, inv, Text.translatable("jizhan.title", stack.getName()));
             return -114;
         }
 
-        @Override @SuppressWarnings("all")
+        @Override
         public void onClickGUISlot(PlayerEntity player, ItemStack stack, PlayerEntity target, ItemStack selected, int slotIndex) {
             if (selected.isEmpty()) return;
-            ItemStack last = ItemStack.fromNbt(stack.getOrCreateNbt().getCompound("lastCard"));
+            int last = stack.getOrCreateNbt().getInt("lastCardRank");
             ItemStack next = newCard();
             give(player, next); //又让玩家摸一张牌后，比较两张牌的点数，如果玩家选对了，就把新的牌保存到lastCard，否则关闭菜单
-            player.getWorld().getPlayers().forEach(p -> p.sendMessage(Text.translatable("jizhan.draw", player.getDisplayName(), stack.toHoverableText(), next.toHoverableText(), Objects.requireNonNull(getRank(next)).rank), false));
-            if ((yes.test(selected) && getRank(next).ordinal() > getRank(last).ordinal()) || (no.test(selected) && getRank(next).ordinal() < getRank(last).ordinal())) {
+            player.getWorld().getPlayers().forEach(p -> p.sendMessage(Text.translatable("jizhan.draw", player.getDisplayName(), stack.toHoverableText(), next.toHoverableText()), false));
+            //下一张牌与上一张牌点数比较，有3种情况：更大返回1，更小返回-1，相等返回0
+            int cmp = Objects.requireNonNull(getRank(next)).ordinal() - last; int cmp2 = Integer.compare(cmp, 0);
+            //玩家选择只有两张情况：选更大返回1，选更小返回-1
+            int select = p(ModItems.YES).test(selected) ? 1 : -1;
+            if (cmp2 == select) {
                 NbtCompound tag = stack.getOrCreateNbt();
-                NbtCompound nbt = new NbtCompound(); next.writeNbt(nbt);
-                tag.put("lastCard", nbt);
+                tag.putInt("lastCardRank", Objects.requireNonNull(getRank(next)).ordinal());
                 stack.setNbt(tag);
             } else closeGUI(player);
         }

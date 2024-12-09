@@ -75,8 +75,12 @@ public class ModItems {
     //无中生有
     public static final Item WUZHONG = register("wuzhong", new CardItem.Wuzhong());
 
+    //雌雄双股剑
+    public static final Item CIXIONG = register("cixiong", new Equipment.CixiongWeapon());
     //方天画戟
     public static final Item FANGTIAN = register("fangtian", new Equipment.FangtianWeapon());
+    //贯石斧
+    public static final Item GUANSHI = register("guanshi", new Equipment.GuanshiWeapon());
     // 古锭刀
     public static final Item GUDING_WEAPON = register("guding_dao", new Equipment.GudingWeapon());
     //寒冰剑
@@ -159,7 +163,9 @@ public class ModItems {
                         entries.add(WUXIE);
                         entries.add(WUZHONG);
 
+                        entries.add(CIXIONG);
                         entries.add(FANGTIAN);
+                        entries.add(GUANSHI);
                         entries.add(GUDING_WEAPON);
                         entries.add(HANBING);
                         entries.add(QILIN);

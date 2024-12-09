@@ -1,6 +1,7 @@
 package com.amotassic.dabaosword.mixin;
 
 import com.amotassic.dabaosword.item.ModItems;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -26,7 +27,7 @@ public abstract class RavagerMixin extends RaiderEntity {
 
     @Shadow private int roarTick;
 
-    @Shadow protected abstract void knockback(LivingEntity target);
+    @Shadow protected abstract void knockBack(Entity entity);
 
     protected RavagerMixin(EntityType<? extends RaiderEntity> entityType, World world) {super(entityType, world);}
 
@@ -44,6 +45,7 @@ public abstract class RavagerMixin extends RaiderEntity {
         if (isAlive() && hasCustomName() && getCommandTags().contains("b")) {
             int id = Integer.parseInt(Objects.requireNonNull(getCustomName()).getString());
             LivingEntity user = (LivingEntity) getWorld().getEntityById(id);
+            if (user == null) return;
             Predicate<LivingEntity> target = e -> e.isAlive() && id != e.getId();
             for (LivingEntity entity : getWorld().getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(7.0), target)) {
                 user.addCommandTag("nanman");
@@ -51,7 +53,7 @@ public abstract class RavagerMixin extends RaiderEntity {
                 if (notHurtBy(entity, source, ModItems.NANMAN)) continue;
                 entity.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 2, 0, false, false));
                 if (entity.damage(source, 6)) hurtBy(entity, source, ModItems.NANMAN);
-                knockback(entity);
+                knockBack(entity);
             }
             ci.cancel();
         }

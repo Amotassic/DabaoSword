@@ -44,7 +44,7 @@ public class Wu {
             } else {
                 tooltip.add(Text.literal("创：" + c));
                 tooltip.add(Text.translatable("item.dabaosword.buqu.tooltip").formatted(Formatting.GREEN));
-                tooltip.add(Text.translatable("dabaosword.shifttooltip"));
+                tooltip.add(Text.translatable("dabaosword.shift_tip", Text.keybind("key.sneak")));
             }
         }
 
@@ -116,7 +116,7 @@ public class Wu {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (entity instanceof PlayerEntity player) viewAs(player, stack, 15, isDiamondCard, new ItemStack(ModItems.TOO_HAPPY_ITEM));
+            viewAs(entity, stack, 15, isDiamondCard, new ItemStack(ModItems.TOO_HAPPY_ITEM));
             super.tick(stack, slot, entity);
         }
     }
@@ -259,7 +259,7 @@ public class Wu {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (entity instanceof PlayerEntity player) viewAs(player, stack, 5, isBlackCard, new ItemStack(ModItems.DISCARD));
+            viewAs(entity, stack, 5, isBlackCard, new ItemStack(ModItems.DISCARD));
             super.tick(stack, slot, entity);
         }
     }

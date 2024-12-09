@@ -65,7 +65,9 @@ public class Sounds {
 
     public static final SoundEvent BAGUA = register("bagua");
     public static final SoundEvent BAIYIN = register("baiyin");
+    public static final SoundEvent CIXIONG = register("cixiong");
     public static final SoundEvent FANGTIAN = register("fangtian");
+    public static final SoundEvent GUANSHI = register("guanshi");
     public static final SoundEvent GUDING = register("guding");
     public static final SoundEvent HANBING = register("hanbing");
     public static final SoundEvent LIANNU = register("liannu");

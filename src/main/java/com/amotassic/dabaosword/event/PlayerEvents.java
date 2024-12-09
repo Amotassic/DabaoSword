@@ -49,7 +49,7 @@ public class PlayerEvents implements PlayerConnectCallback, PlayerDeathCallback,
                 }
             }
 
-            if (hasItem(player, stack -> stack.isOf(ModItems.BBJI))) voice(player, Sounds.XUYOU);
+            if (hasItem(player, p(ModItems.BBJI))) voice(player, Sounds.XUYOU);
 
             if (hasTrinket(SkillCards.BUQU, player)) {
                 ItemStack stack = trinketItem(SkillCards.BUQU, player);
@@ -73,6 +73,7 @@ public class PlayerEvents implements PlayerConnectCallback, PlayerDeathCallback,
                 give(player, new ItemStack(ModItems.SHA));
                 give(player, new ItemStack(ModItems.SHAN));
                 give(player, new ItemStack(ModItems.PEACH));
+                draw(player);
             }
 
         }

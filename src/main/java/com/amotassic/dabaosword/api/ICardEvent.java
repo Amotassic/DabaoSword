@@ -6,12 +6,12 @@ import net.minecraft.item.ItemStack;
 
 public interface ICardEvent {
 
-    /**如果卡牌所选目标用于某个技能，卡牌是否能够生效
+    /**如果卡牌所选目标拥有某个技能，卡牌是否能够生效
      * @param skill 目标玩家的技能*/
     default boolean canUseIfTargetHasSkill(LivingEntity user, ItemStack card, LivingEntity target, ItemStack skill) {return true;}
 
     /**当卡牌使用后，如果使用者有技能，则触发该技能的效果
-     * @param skill 使用者的技能*/
+     * @param skill 使用者能在使用牌之后发动的技能*/
     default void postCardUse(LivingEntity user, ItemStack card, LivingEntity target, ItemStack skill) {}
 
     /**当即将被弃置牌的生物拥有技能，是否允许卡牌被弃置

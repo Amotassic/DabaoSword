@@ -1,6 +1,7 @@
 {
   "entities": [
-    "player"
+    "player",
+    "dabaosword:xuyou"
   ],
   "slots": [
     "chest/armor",

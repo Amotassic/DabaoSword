@@ -366,11 +366,27 @@
       }
     ]
   },
+  "cixiong": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/cixiong"
+      }
+    ]
+  },
   "fangtian": {
     "sounds": [
       {
         "type": "file",
         "name": "dabaosword:card/fangtian"
+      }
+    ]
+  },
+  "guanshi": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/guanshi"
       }
     ]
   },
