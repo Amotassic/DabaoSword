@@ -1,12 +1,11 @@
 package com.amotassic.dabaosword.util;
 
+import com.amotassic.dabaosword.api.ISha;
 import com.amotassic.dabaosword.api.Skill;
-import com.amotassic.dabaosword.effect.ShandianEffect;
 import com.amotassic.dabaosword.item.ModItems;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -128,7 +127,18 @@ public class ModifyDamage {
         if (so instanceof LivingEntity SE && shouldSha(SE)) { //只要能触发杀，伤害就会被取消
             ItemStack sha = isSha.test(SE.getMainHandStack()) ? SE.getMainHandStack() : getItem(SE, isSha);
             SE.addCommandTag("sha");
-            if (canHurtByCard(entity, source, sha)) sha(SE, entity, sha, source, amount);
+            if (canHurtByCard(entity, source, sha)) {
+                ISha iSha = (ISha) sha.getItem();
+                if (iSha.sha(SE, entity, amount)) iSha.shaEffect(SE, entity, sha);
+                else { //如果杀被无效化了，就会尝试触发贯石斧的效果
+                    var guanshi = trinketItem(ModItems.GUANSHI, SE);
+                    if (!guanshi.isEmpty() && getCD(guanshi) == 0 && entity.hasStatusEffect(ModItems.INVULNERABLE)) {
+                        setCD(guanshi, 10); voice(SE, guanshi);
+                        entity.removeStatusEffect(ModItems.INVULNERABLE);
+                        if (iSha.sha(SE, entity, amount)) iSha.shaEffect(SE, entity, sha);
+                    }
+                }
+            }
             cardUsePost(SE, sha, entity);
             return 2;
         }
@@ -164,18 +174,6 @@ public class ModifyDamage {
 
     private static boolean shouldSha(LivingEntity entity) {
         return hasItem(entity, isSha) && !entity.getCommandTags().contains("sha") && !entity.getCommandTags().contains("juedou") && !entity.getCommandTags().contains("nanman");
-    }
-
-    private static void sha(LivingEntity user, LivingEntity entity, ItemStack sha, DamageSource source, float amount) {
-        if (sha.isOf(ModItems.SHA) && entity.damage(source, amount + 5)) hurtByCard(entity, source, sha);
-        if (sha.isOf(ModItems.FIRE_SHA) && entity.damage(getDamageSource(user, DamageTypes.IN_FIRE), amount)) {
-            entity.setOnFireFor(6);
-            hurtByCard(entity, source, sha);
-        }
-        if (sha.isOf(ModItems.THUNDER_SHA) && entity.damage(getDamageSource(user, DamageTypes.LIGHTNING_BOLT), amount + 5)) {
-            ShandianEffect.summonLightning(entity, true, false);
-            hurtByCard(entity, source, sha);
-        }
     }
 
     public static void shan(LivingEntity entity, boolean bl, DamageSource source, float amount) {

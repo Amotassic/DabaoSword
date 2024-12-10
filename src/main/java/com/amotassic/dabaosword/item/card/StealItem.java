@@ -7,7 +7,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -29,12 +28,10 @@ public class StealItem extends CardItem {
             if (entity instanceof PlayerEntity target) {
                 openInv(player, target, Text.translatable("dabaosword.steal.title"), stack, false, true, true, 1);
             } else {
-                List<ItemStack> stacks = new ArrayList<>();
-                if (isCard(entity.getMainHandStack())) stacks.add(entity.getMainHandStack());
-                if (isCard(entity.getOffHandStack())) stacks.add(entity.getOffHandStack());
+                List<ItemStack> stacks = getItems(entity, isCard, true, false, true, false);
                 if (!stacks.isEmpty()) {
                     ItemStack chosen = stacks.get(new Random().nextInt(stacks.size()));
-                    cardMove(entity, player, chosen, 1, false, false);
+                    cardMove(entity, player, chosen, 1, isEquipped(entity, s -> s.equals(chosen)), false);
                     cardUsePost(player, stack, entity);
                 }
             }

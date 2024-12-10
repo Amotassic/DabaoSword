@@ -13,6 +13,8 @@ import net.minecraft.world.World;
 import static com.amotassic.dabaosword.api.event.CardEvents.cardUsePre;
 
 public class ShanItem extends CardItem {
+    @Override public Type getType() {return Type.BASIC;}
+
     //使用后，向前冲刺一段距离，无敌0.5秒，冷却时间1秒
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {

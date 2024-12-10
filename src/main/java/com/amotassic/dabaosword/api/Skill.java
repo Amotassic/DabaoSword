@@ -60,7 +60,7 @@ public interface Skill {
     /**当玩家发动技能打开GUI界面后，点击GUI界面某个非空槽位时触发*/
     default void onClickGUISlot(PlayerEntity player, ItemStack stack, PlayerEntity target, ItemStack selected, int slotIndex) {}
 
-    /**在打开GUI界面后，玩家是否能手动关闭GUI*/
+    /**未完成，勿用！！！在打开GUI界面后，玩家是否能手动关闭GUI*/
     default boolean canCloseGUI(ItemStack stack) {return true;}
 
     /**摸牌阶段开始时触发

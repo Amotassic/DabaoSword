@@ -1,18 +1,14 @@
 package com.amotassic.dabaosword.item.card;
 
-import com.amotassic.dabaosword.api.CardPileInventory;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.collection.DefaultedList;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.stream.IntStream;
 
 import static com.amotassic.dabaosword.api.event.CardEvents.*;
 import static com.amotassic.dabaosword.util.ModTools.*;
@@ -32,47 +28,28 @@ public class DiscardItem extends CardItem {
             if (entity instanceof PlayerEntity target) {
                 openInv(player, target, Text.translatable("dabaosword.discard.title", stack.getName()), stack, false, true, false, 1);
             } else {
-                List<ItemStack> stacks = new ArrayList<>();
-                if (isCard(entity.getMainHandStack())) stacks.add(entity.getMainHandStack());
-                if (isCard(entity.getOffHandStack())) stacks.add(entity.getOffHandStack());
+                List<ItemStack> stacks = getItems(entity, isCard, true, false, true, false);
                 if (!stacks.isEmpty()) {
                     ItemStack chosen = stacks.get(new Random().nextInt(stacks.size()));
-                    cardDiscard(entity, chosen, 1, false);
+                    cardDiscard(entity, chosen, 1, isEquipped(entity, s -> s.equals(chosen)));
                     cardUsePost(player, stack, entity);
                 }
             }
         } else {
             if (entity instanceof PlayerEntity player) { //如果是玩家则弃牌
-                List<ItemStack> candidate = new ArrayList<>(new CardPileInventory(player).nonEmpty);
-                //把背包中的卡牌添加到待选物品中
-                DefaultedList<ItemStack> inventory = player.getInventory().main;
-                List<Integer> cardSlots = IntStream.range(0, inventory.size()).filter(j -> isCard(inventory.get(j))).boxed().toList();
-                for (Integer slot : cardSlots) {
-                    candidate.add(inventory.get(slot));
-                }
-                //把饰品栏的卡牌添加到待选物品中
-                int equip = 0; //用于标记装备区牌的数量
-                for (var stack1 : allTrinkets(player)) {
-                    if (isCard(stack1)) candidate.add(stack1); equip++;
-                }
+                List<ItemStack> candidate = getItems(entity, isCard, true, false, true, true);
                 if (!candidate.isEmpty()) {
-                    int index = new Random().nextInt(candidate.size());
-                    ItemStack chosen = candidate.get(index);
+                    ItemStack chosen = candidate.get(new Random().nextInt(candidate.size()));
                     player.sendMessage(Text.translatable("dabaosword.discard", user.getDisplayName(), player.getDisplayName(), chosen.toHoverableText()));
-                    cardDiscard(player, chosen, 1, index > candidate.size() - equip);
+                    cardDiscard(player, chosen, 1, isEquipped(entity, s -> s.equals(chosen)));
                     cardUsePost(user, stack, entity);
                 }
             } else { //如果不是玩家则随机弃置它的主副手物品和装备
-                List<ItemStack> candidate = new ArrayList<>();
-                if (!entity.getMainHandStack().isEmpty()) candidate.add(entity.getMainHandStack());
-                if (!entity.getOffHandStack().isEmpty()) candidate.add(entity.getOffHandStack());
-                for (ItemStack armor : entity.getArmorItems()) {
-                    if (!armor.isEmpty()) candidate.add(armor);
-                }
+                List<ItemStack> candidate = getItems(entity, s -> !s.isEmpty(), true, true, true, false);
                 if (!candidate.isEmpty()) {
-                    int index = new Random().nextInt(candidate.size());
-                    ItemStack chosen = candidate.get(index);
-                    if (isCard(chosen)) cardDiscard(entity, chosen, 1, false);
+                    ItemStack chosen = candidate.get(new Random().nextInt(candidate.size()));
+                    if (isCard(chosen)) cardDiscard(entity, chosen, 1, isEquipped(entity, s -> s.equals(chosen)));
+                    else chosen.decrement(1);
                     cardUsePost(user, stack, entity);
                 }
             }

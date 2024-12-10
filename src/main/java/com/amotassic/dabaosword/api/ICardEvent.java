@@ -33,5 +33,5 @@ public interface ICardEvent {
     default boolean canHurtByCard(LivingEntity entity, ItemStack skill, ItemStack card, DamageSource source) {return true;}
 
     /**当受到卡牌带来的伤害时，触发受伤者的技能*/
-    default void onHurtByCard(LivingEntity entity, ItemStack skill, ItemStack card, DamageSource source) {}
+    default void onHurtByCard(LivingEntity entity, ItemStack skill, ItemStack card) {}
 }

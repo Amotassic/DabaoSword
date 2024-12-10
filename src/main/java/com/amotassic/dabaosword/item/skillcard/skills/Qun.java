@@ -3,10 +3,10 @@ package com.amotassic.dabaosword.item.skillcard.skills;
 import com.amotassic.dabaosword.api.Card;
 import com.amotassic.dabaosword.api.ICardEvent;
 import com.amotassic.dabaosword.api.ReachDefend;
+import com.amotassic.dabaosword.command.TriggerSkillCommand;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.util.Sounds;
-import com.amotassic.dabaosword.util.Tags;
 import dev.emi.trinkets.api.SlotReference;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
@@ -18,6 +18,9 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
@@ -58,47 +61,47 @@ public class Qun {
         }
     }
 
-    public static class Jizhan extends SkillItem {
+    public static class Jizhan extends SkillItem implements TriggerSkillCommand.CSkill {
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             tooltip.add(Text.translatable("item.dabaosword.jizhan.tooltip1"));
             tooltip.add(Text.translatable("item.dabaosword.jizhan.tooltip2"));
         }
 
+        private final MutableText JIZHAN_TEXT = Text.translatable("jizhan.text",
+                Text.literal("更大").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword dabaosword:jizhan 1"))),
+                Text.literal("更小").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword dabaosword:jizhan -1"))));
+
         @Override
         public int onDrawPhase(PlayerEntity player, ItemStack stack) {
             voice(player, stack);
             ItemStack last = newCard();
             give(player, last); //先让玩家摸一张牌，保存到lastCard
-            player.getWorld().getPlayers().forEach(p -> p.sendMessage(Text.translatable("jizhan.draw", player.getDisplayName(), stack.toHoverableText(), last.toHoverableText()), false));
+            player.getWorld().getPlayers().forEach(p -> p.sendMessage(Text.translatable("jizhan.draw", player.getDisplayName(), stack.toHoverableText(), last.toHoverableText(), Objects.requireNonNull(getRank(last)).rank), false));
             NbtCompound tag = stack.getOrCreateNbt();
             tag.putInt("lastCardRank", Objects.requireNonNull(getRank(last)).ordinal());
             stack.setNbt(tag);
-            var inv = yesAndNo(); inv.setStack(18, stack);
-            openSimpleMenu(player, player, inv, Text.translatable("jizhan.title", stack.getName()));
+            player.sendMessage(JIZHAN_TEXT, false);
             return -114;
         }
 
         @Override
-        public void onClickGUISlot(PlayerEntity player, ItemStack stack, PlayerEntity target, ItemStack selected, int slotIndex) {
-            if (selected.isEmpty()) return;
+        public void triggerSkill(LivingEntity entity, ItemStack stack, int value) {
             int last = stack.getOrCreateNbt().getInt("lastCardRank");
+            if (last == -1 || !(entity instanceof PlayerEntity player)) return;
             ItemStack next = newCard();
             give(player, next); //又让玩家摸一张牌后，比较两张牌的点数，如果玩家选对了，就把新的牌保存到lastCard，否则关闭菜单
-            player.getWorld().getPlayers().forEach(p -> p.sendMessage(Text.translatable("jizhan.draw", player.getDisplayName(), stack.toHoverableText(), next.toHoverableText()), false));
+            player.getWorld().getPlayers().forEach(p -> p.sendMessage(Text.translatable("jizhan.draw", player.getDisplayName(), stack.toHoverableText(), next.toHoverableText(), Objects.requireNonNull(getRank(next)).rank), false));
             //下一张牌与上一张牌点数比较，有3种情况：更大返回1，更小返回-1，相等返回0
-            int cmp = Objects.requireNonNull(getRank(next)).ordinal() - last; int cmp2 = Integer.compare(cmp, 0);
+            int cmp = Integer.compare(Objects.requireNonNull(getRank(next)).ordinal(), last);
             //玩家选择只有两张情况：选更大返回1，选更小返回-1
-            int select = p(ModItems.YES).test(selected) ? 1 : -1;
-            if (cmp2 == select) {
-                NbtCompound tag = stack.getOrCreateNbt();
+            NbtCompound tag = stack.getOrCreateNbt();
+            if (cmp == value) {
                 tag.putInt("lastCardRank", Objects.requireNonNull(getRank(next)).ordinal());
-                stack.setNbt(tag);
-            } else closeGUI(player);
+                player.sendMessage(JIZHAN_TEXT, false);
+            } else tag.putInt("lastCardRank", -1);
+            stack.setNbt(tag);
         }
-
-        @Override
-        public boolean canCloseGUI(ItemStack stack) {return false;}
     }
 
     public static class Leiji extends SkillItem implements ICardEvent {
@@ -172,11 +175,19 @@ public class Qun {
 
         @Override
         public void activeSkill(PlayerEntity user, ItemStack stack, PlayerEntity target) {
+            String[] used = stack.getOrCreateNbt().getString("used").split(";");
+            if (used.length == 18) {
+                user.sendMessage(Text.translatable("item.dabaosword.taoluan.fail").formatted(Formatting.RED), true);
+                return;
+            }
             if (user.getHealth() + 5 * countCard(user, canSaveDying) > 4.99) {
 
                 ItemStack[] stacks = {new ItemStack(ModItems.THUNDER_SHA), new ItemStack(ModItems.FIRE_SHA), new ItemStack(ModItems.SHAN), new ItemStack(ModItems.PEACH), new ItemStack(ModItems.JIU), new ItemStack(ModItems.BINGLIANG_ITEM), new ItemStack(ModItems.TOO_HAPPY_ITEM), new ItemStack(ModItems.DISCARD), new ItemStack(ModItems.FIRE_ATTACK), new ItemStack(ModItems.JIEDAO), new ItemStack(ModItems.JUEDOU), new ItemStack(ModItems.NANMAN), new ItemStack(ModItems.STEAL), new ItemStack(ModItems.TAOYUAN), new ItemStack(ModItems.TIESUO), new ItemStack(ModItems.WANJIAN), new ItemStack(ModItems.WUXIE), new ItemStack(ModItems.WUZHONG)};
                 Inventory inventory = new SimpleInventory(20);
-                for (var stack1 : stacks) inventory.setStack(Arrays.stream(stacks).toList().indexOf(stack1), stack1);
+                for (var stack1 : stacks) {
+                    if (Arrays.stream(used).toList().contains(Registries.ITEM.getId(stack1.getItem()).getPath())) continue;
+                    inventory.setStack(Arrays.stream(stacks).toList().indexOf(stack1), stack1);
+                }
                 inventory.setStack(18, stack);
 
                 openSimpleMenu(user, user, inventory, Text.translatable("item.dabaosword.taoluan.screen"));
@@ -189,6 +200,10 @@ public class Qun {
             if (selected.isEmpty()) return;
             give(player, selected);
             if (!player.isCreative()) {
+                NbtCompound nbt = stack.getOrCreateNbt();
+                String used = nbt.getString("used"); String item = Registries.ITEM.getId(selected.getItem()).getPath();
+                used = used.isEmpty() ? item : used + ";" + item;
+                nbt.putString("used", used); stack.setNbt(nbt);
                 player.timeUntilRegen = 0;
                 player.damage(player.getDamageSources().genericKill(), 4.99f);
             }
@@ -205,7 +220,7 @@ public class Qun {
 
         @Override
         public boolean canUseIfTargetHasSkill(LivingEntity user, ItemStack card, LivingEntity target, ItemStack skill) {
-            if (isBlackCard.test(card) && card.isIn(Tags.Items.ARMOURY_CARD)) {
+            if (isBlackCard.and(isArmoury).test(card)) {
                 voice(target, skill); return false;
             }
             return true;

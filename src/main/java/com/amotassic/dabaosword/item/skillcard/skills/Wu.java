@@ -2,7 +2,6 @@ package com.amotassic.dabaosword.item.skillcard.skills;
 
 import com.amotassic.dabaosword.api.ICardEvent;
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.item.equipment.Equipment;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.util.Sounds;
@@ -343,7 +342,7 @@ public class Wu {
         @Override
         public void activeSkill(PlayerEntity user, ItemStack stack, PlayerEntity target) {
             ItemStack itemStack = user.getMainHandStack();
-            if (itemStack.getItem() instanceof Equipment && itemStack.getItem() != ModItems.CARD_PILE) {
+            if (isEquipment.test(itemStack)) {
                 cardMove(user, target, itemStack, itemStack.getCount(), false, true);
                 voice(user, Sounds.ZHIJIAN);
                 draw(user);

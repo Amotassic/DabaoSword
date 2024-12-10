@@ -6,7 +6,6 @@ import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.util.Sounds;
-import com.amotassic.dabaosword.util.Tags;
 import dev.emi.trinkets.api.SlotReference;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
@@ -81,7 +80,7 @@ public class Shu {
 
         @Override
         public void postCardUse(LivingEntity user, ItemStack card, LivingEntity target, ItemStack skill) {
-            if (card.isIn(Tags.Items.ARMOURY_CARD)) {draw(user); voice(user, skill);}
+            if (isArmoury.test(card)) {draw(user); voice(user, skill);}
         }
     }
 
@@ -161,13 +160,13 @@ public class Shu {
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
             if (entity.getWorld() instanceof ServerWorld world && entity instanceof PlayerEntity player && noTieji(entity)) {
-                ItemStack stack1 = player.getOffHandStack();
-                if (world.getTime() % 20 == 0 && stack1.isIn(Tags.Items.BASIC_CARD)) {
+                ItemStack stack1 = player.getOffHandStack(); ItemStack copy = stack1.copy();
+                if (world.getTime() % 20 == 0 && isBasic.test(stack1)) {
                     stack1.decrement(1);
-                    if (isSha.test(stack1)) give(player, new ItemStack(ModItems.SHAN));
-                    if (stack1.isOf(ModItems.SHAN)) give(player, new ItemStack(ModItems.SHA));
-                    if (stack1.isOf(ModItems.PEACH)) give(player, new ItemStack(ModItems.JIU));
-                    if (stack1.isOf(ModItems.JIU)) give(player, new ItemStack(ModItems.PEACH));
+                    if (isSha.test(copy)) give(player, new ItemStack(ModItems.SHAN));
+                    if (copy.isOf(ModItems.SHAN)) give(player, new ItemStack(ModItems.SHA));
+                    if (copy.isOf(ModItems.PEACH)) give(player, new ItemStack(ModItems.JIU));
+                    if (copy.isOf(ModItems.JIU)) give(player, new ItemStack(ModItems.PEACH));
                     voice(player, Sounds.LONGDAN);
                 }
             }

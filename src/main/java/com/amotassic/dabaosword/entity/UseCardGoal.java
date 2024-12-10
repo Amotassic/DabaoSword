@@ -1,7 +1,6 @@
 package com.amotassic.dabaosword.entity;
 
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.item.equipment.Equipment;
 import com.amotassic.dabaosword.util.Tags;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
@@ -39,7 +38,7 @@ public class UseCardGoal extends Goal {
     public void tick() {
         if (mob.getWorld().getTime() % 20 != 0) return;
         for (ItemStack card : getCards()) {
-            if (card.getItem() instanceof Equipment) cardUsePre(mob, card, mob);
+            if (isEquipment.test(card)) cardUsePre(mob, card, mob);
             if (isSha.test(card) || card.isOf(ModItems.SHAN) || card.isOf(ModItems.WUXIE)) continue;
             if (card.isOf(ModItems.WUGU) || card.isOf(ModItems.TAOYUAN)) card.setCount(0);
             if (card.isOf(ModItems.PEACH)) {
@@ -57,7 +56,7 @@ public class UseCardGoal extends Goal {
                 mob.getLookControl().lookAt(target);
                 cardUsePre(mob, card, null);
             }
-            if (card.isIn(Tags.Items.TRIGGER_WUXIE)) {
+            if (card.isIn(Tags.TRIGGER_WUXIE)) {
                 if (mob.distanceTo(target) > 5) continue;
                 cardUsePre(mob, card, target);
             }

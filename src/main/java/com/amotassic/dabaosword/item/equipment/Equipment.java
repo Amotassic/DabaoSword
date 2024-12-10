@@ -46,6 +46,8 @@ import static com.amotassic.dabaosword.util.ModifyDamage.shan;
 public class Equipment extends TrinketItem implements Card, Skill {
     public Equipment() {super(new Item.Settings().maxCount(1));}
 
+    @Override public Type getType() {return Type.EQUIPMENT;}
+
     public static class BaguaArmor extends Equipment {
         @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {

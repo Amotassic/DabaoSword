@@ -34,9 +34,9 @@ import net.minecraft.util.Identifier;
 
 public class ModItems {
     //杀
-    public static final Item SHA = register("sha", new CardItem.Sha());
-    public static final Item FIRE_SHA = register("fire_sha", new CardItem.Sha());
-    public static final Item THUNDER_SHA = register("thunder_sha", new CardItem.Sha());
+    public static final Item SHA = register("sha", new Sha());
+    public static final Item FIRE_SHA = register("fire_sha", new Sha.Fire());
+    public static final Item THUNDER_SHA = register("thunder_sha", new Sha.Thunder());
     //闪
     public static final Item SHAN = register("shan", new ShanItem());
     //桃
@@ -124,8 +124,6 @@ public class ModItems {
     public static final Item LET_ME_CC = register("let_me_cc", new LetMeCCItem());
     //阳光开朗的笑容
     public static final Item SUNSHINE_SMILE = register("sunshine_smile", new SunshineSmile());
-    public static final Item YES = register("yes", new Item(new Item.Settings()));
-    public static final Item NO = register("no", new Item(new Item.Settings()));
     @SuppressWarnings("unused")
     public static final Item GUDING_ITEM = register("guding", new Item(new Item.Settings()));
     @SuppressWarnings("unused")

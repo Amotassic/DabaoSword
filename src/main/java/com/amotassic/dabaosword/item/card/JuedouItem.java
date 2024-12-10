@@ -44,7 +44,7 @@ public class JuedouItem extends CardItem {
         DamageSource source = getDamageSource(attacker, DamageTypes.GENERIC_KILL);
         if (canHurtByCard(target, source, juedou)) {
             target.timeUntilRegen = 0;
-            if (target.damage(source, 5f)) hurtByCard(target, source, juedou);
+            if (target.damage(source, 5f)) hurtByCard(target, juedou);
         }
     }
 }

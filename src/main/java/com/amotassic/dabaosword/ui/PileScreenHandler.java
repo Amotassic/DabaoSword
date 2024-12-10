@@ -74,12 +74,12 @@ public class PileScreenHandler extends ScreenHandler {
 
     @Override
     public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
-        if (button == 261 && !player.getWorld().isClient && countCards(player) > 10) {
+        if (button == 261 && !player.getWorld().isClient) {
             ItemStack pile = trinketItem(ModItems.CARD_PILE, player);
             NbtCompound nbt = pile.getOrCreateNbt();
             int dropped = nbt.getInt("DroppedCards");
             ItemStack stack = getSlot(slotIndex).getStack();
-            if (isCard(stack)) { //按下delete键后，如果卡片数量大于10，则丢弃卡片，当丢弃3张卡片后，摸一张牌
+            if (isCard(stack)) { //按下delete键后丢弃卡片，当丢弃3张卡片后，摸一张牌
                 cardDiscard(player, stack, 1, false);
                 if (dropped == 2) {
                     nbt.remove("DroppedCards");

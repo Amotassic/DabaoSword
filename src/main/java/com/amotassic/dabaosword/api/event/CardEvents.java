@@ -44,7 +44,7 @@ public class CardEvents {
                 }
             }
 
-            if (stack.isIn(Tags.Items.TRIGGER_WUXIE) && hasCard(target, p(ModItems.WUXIE))) {
+            if (stack.isIn(Tags.TRIGGER_WUXIE) && hasCard(target, p(ModItems.WUXIE))) {
                 cardUsePre(target, new ItemStack(ModItems.WUXIE), null);
                 cardUsePost(user, stack, target);
                 return false;
@@ -120,10 +120,10 @@ public class CardEvents {
         return true;
     }
 
-    public static void hurtBy(LivingEntity e, DamageSource s, Item c) {hurtByCard(e, s, new ItemStack(c));}
-    public static void hurtByCard(LivingEntity entity, DamageSource source, ItemStack card) {
+    public static void hurtBy(LivingEntity e, Item c) {hurtByCard(e, new ItemStack(c));}
+    public static void hurtByCard(LivingEntity entity, ItemStack card) {
         for (var skill : allTrinkets(entity)) {
-            if (skill.getItem() instanceof ICardEvent e && canTrigger(skill, entity)) e.onHurtByCard(entity, skill, card, source);
+            if (skill.getItem() instanceof ICardEvent e && canTrigger(skill, entity)) e.onHurtByCard(entity, skill, card);
         }
     }
 

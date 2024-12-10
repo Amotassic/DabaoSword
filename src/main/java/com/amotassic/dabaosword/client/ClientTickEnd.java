@@ -2,8 +2,6 @@ package com.amotassic.dabaosword.client;
 
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.network.ServerNetworking;
-import dev.emi.trinkets.api.TrinketComponent;
-import dev.emi.trinkets.api.TrinketsApi;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -12,15 +10,12 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Pair;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.Optional;
-import java.util.function.Predicate;
+import static com.amotassic.dabaosword.util.ModTools.isEquipped;
 
 public class ClientTickEnd {
     private static final KeyBinding ACTIVE_SKILL = KeyBindingHelper
@@ -46,26 +41,18 @@ public class ClientTickEnd {
 
                 if (result != null && result.getType() == HitResult.Type.ENTITY) {
                     if (((EntityHitResult) result).getEntity() instanceof PlayerEntity player) {
-                        if (ACTIVE_SKILL.wasPressed() && haveSkill(user, stack -> stack.getItem() instanceof SkillItem.ActiveSkillWithTarget)) {
+                        if (ACTIVE_SKILL.wasPressed() && isEquipped(user, s -> s.getItem() instanceof SkillItem.ActiveSkillWithTarget)) {
                             buf.writeUuid(player.getUuid());
                             ClientPlayNetworking.send(ServerNetworking.ACTIVE_SKILL, buf);
                             return;
                         }
                     }
                 }
-                if (ACTIVE_SKILL.wasPressed() && haveSkill(user, stack -> stack.getItem() instanceof SkillItem.ActiveSkill)) {
+                if (ACTIVE_SKILL.wasPressed() && isEquipped(user, s -> s.getItem() instanceof SkillItem.ActiveSkill)) {
                     buf.writeUuid(user.getUuid());
                     ClientPlayNetworking.send(ServerNetworking.ACTIVE_SKILL, buf);
                 }
             }
         });
-    }
-
-    public static boolean haveSkill(PlayerEntity player, Predicate<ItemStack> predicate) {
-        Optional<TrinketComponent> optionalComponent = TrinketsApi.getTrinketComponent(player);
-        if(optionalComponent.isEmpty()) return false;
-        TrinketComponent component = optionalComponent.get();
-        ItemStack itemStack = component.getEquipped(predicate).stream().map(Pair::getRight).findFirst().orElse(null);
-        return itemStack != null;
     }
 }

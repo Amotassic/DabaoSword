@@ -68,9 +68,9 @@ public class EntityHurtHandler implements EntityHurtCallback {
 
             trySave(entity, amount);
 
-            if (isWanjian(source)) hurtBy(entity, source, ModItems.WANJIAN);
-            if (isHuogong(source)) hurtBy(entity, source, ModItems.FIRE_ATTACK);
-            if (isShandian(source)) hurtBy(entity, source, ModItems.SHANDIAN_ITEM);
+            if (isWanjian(source)) hurtBy(entity, ModItems.WANJIAN);
+            if (isHuogong(source)) hurtBy(entity, ModItems.FIRE_ATTACK);
+            if (isShandian(source)) hurtBy(entity, ModItems.SHANDIAN_ITEM);
 
             if (source.getAttacker() instanceof LivingEntity living) {
                 if (living.getCommandTags().contains("px")) entity.timeUntilRegen = 0;

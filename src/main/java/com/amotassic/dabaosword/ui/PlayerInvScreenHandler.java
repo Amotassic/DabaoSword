@@ -15,13 +15,10 @@ import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
-import net.minecraft.util.collection.DefaultedList;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
-import java.util.stream.IntStream;
 
 import static com.amotassic.dabaosword.api.event.CardEvents.*;
 import static com.amotassic.dabaosword.util.ModTools.*;
@@ -141,16 +138,8 @@ public class PlayerInvScreenHandler extends ScreenHandler {
     private ItemStack selected(PlayerEntity player, int slotIndex) {
         var itemStack = getSlot(slotIndex).getStack();
         if (itemStack.isEmpty() && cards == 1 && slotIndex >= 8) {
-            List<ItemStack> candidate = new ArrayList<>(new CardPileInventory(player).nonEmpty);
-            DefaultedList<ItemStack> inventory = player.getInventory().main;
-            List<Integer> cardSlots = IntStream.range(0, inventory.size()).filter(i -> isCard(inventory.get(i))).boxed().toList();
-            for (Integer slot : cardSlots) {candidate.add(inventory.get(slot));}
-            ItemStack off = player.getOffHandStack();
-            if (isCard(off)) candidate.add(off);
-            if(!candidate.isEmpty()) {
-                int index = new Random().nextInt(candidate.size());
-                return candidate.get(index);
-            }
+            List<ItemStack> candidate = getItems(player, isCard, true, false, false, true);
+            if(!candidate.isEmpty()) return candidate.get(new Random().nextInt(candidate.size()));
         }
         return itemStack;
     }

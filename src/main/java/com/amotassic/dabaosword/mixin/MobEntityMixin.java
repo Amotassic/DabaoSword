@@ -2,7 +2,6 @@ package com.amotassic.dabaosword.mixin;
 
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.ModTools;
-import com.amotassic.dabaosword.util.Tags;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -24,6 +23,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.Arrays;
 
 import static com.amotassic.dabaosword.api.event.CardEvents.cardUsePre;
+import static com.amotassic.dabaosword.util.ModTools.isBasic;
 import static com.amotassic.dabaosword.util.ModTools.isCard;
 
 @Mixin(MobEntity.class)
@@ -44,7 +44,7 @@ public abstract class MobEntityMixin extends LivingEntity {
 
     @Unique
     private void tryUseCard(ItemStack stack, LivingEntity target) {
-        if (!stack.isIn(Tags.Items.BASIC_CARD) && !stack.isOf(ModItems.WUXIE)) cardUsePre(mob, stack, target);
+        if (!isBasic.test(stack) && !stack.isOf(ModItems.WUXIE)) cardUsePre(mob, stack, target);
     }
 
     @Unique private float getChance() {

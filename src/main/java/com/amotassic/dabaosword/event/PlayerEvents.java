@@ -12,6 +12,7 @@ import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -44,12 +45,18 @@ public class PlayerEvents implements PlayerConnectCallback, PlayerDeathCallback,
                     if (isCard(stack)) cardDiscard(player, stack, stack.getCount(), false);
                 }
 
-                for(var stack : allTrinkets(player)) { //移除玩家装备区的牌
+                for (var stack : allTrinkets(player)) { //移除玩家装备区的牌
                     if(isCard(stack)) cardDiscard(player, stack, stack.getCount(), true);
                 }
             }
 
             if (hasItem(player, p(ModItems.BBJI))) voice(player, Sounds.XUYOU);
+
+            if (hasTrinket(SkillCards.TAOLUAN, player)) {
+                ItemStack stack = trinketItem(SkillCards.TAOLUAN, player);
+                NbtCompound nbt = stack.getOrCreateNbt();
+                nbt.remove("used"); stack.setNbt(nbt);
+            }
 
             if (hasTrinket(SkillCards.BUQU, player)) {
                 ItemStack stack = trinketItem(SkillCards.BUQU, player);
@@ -57,10 +64,7 @@ public class PlayerEvents implements PlayerConnectCallback, PlayerDeathCallback,
                 if (c > 1) setTag(stack, (c+1)/2);
             }
 
-            if (hasTrinket(SkillCards.LIANYING, player)) {
-                ItemStack stack = trinketItem(SkillCards.LIANYING, player);
-                if (stack != null) setCD(stack, 0);
-            }
+            if (hasTrinket(SkillCards.LIANYING, player)) setCD(trinketItem(SkillCards.LIANYING, player), 0);
         }
     }
 

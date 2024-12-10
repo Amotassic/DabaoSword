@@ -1,12 +1,10 @@
 package com.amotassic.dabaosword.item.skillcard.skills;
 
-import com.amotassic.dabaosword.api.CardPileInventory;
 import com.amotassic.dabaosword.api.ICardEvent;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.util.Sounds;
-import com.amotassic.dabaosword.util.Tags;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import dev.emi.trinkets.api.SlotReference;
@@ -28,12 +26,9 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Pair;
 import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
 import java.util.*;
-import java.util.function.Predicate;
-import java.util.stream.IntStream;
 
 import static com.amotassic.dabaosword.api.event.CardEvents.*;
 import static com.amotassic.dabaosword.util.ModTools.*;
@@ -49,8 +44,7 @@ public class Wei {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            Predicate<ItemStack> dl = s -> isBlackCard.test(s) && !s.isIn(Tags.Items.ARMOURY_CARD);
-            viewAs(entity, stack, 5, dl, new ItemStack(ModItems.BINGLIANG_ITEM));
+            viewAs(entity, stack, 5, isBlackCard.and(isArmoury.negate()), new ItemStack(ModItems.BINGLIANG_ITEM));
             super.tick(stack, slot, entity);
         }
     }
@@ -88,32 +82,21 @@ public class Wei {
                         float f = i + 5 < amount ? 5 : amount - i;
                         attacker.timeUntilRegen = 0; attacker.damage(entity.getDamageSources().mobAttack(entity), f);
                     } else {//弃牌
-                        if (attacker instanceof PlayerEntity target) {//如果来源是玩家则弃牌
-                            List<ItemStack> candidate = new ArrayList<>(new CardPileInventory(target).nonEmpty);
-                            //把背包中的卡牌添加到待选物品中
-                            DefaultedList<ItemStack> inventory = target.getInventory().main;
-                            List<Integer> cardSlots = IntStream.range(0, inventory.size()).filter(j -> isCard(inventory.get(j))).boxed().toList();
-                            for (Integer slot : cardSlots) {candidate.add(inventory.get(slot));}
-                            //把饰品栏的卡牌添加到待选物品中
-                            int equip = 0; //用于标记装备区牌的数量
-                            for(var stack1 : allTrinkets(target)) {
-                                if(isCard(stack1)) candidate.add(stack1); equip++;
-                            }
+                        if (attacker instanceof PlayerEntity target) { //如果来源是玩家则弃牌
+                            List<ItemStack> candidate = getItems(target, isCard, true, false, true, true);
                             if(!candidate.isEmpty()) {
-                                int index = new Random().nextInt(candidate.size()); ItemStack chosen = candidate.get(index);
+                                ItemStack chosen = candidate.get(new Random().nextInt(candidate.size()));
                                 Text message = Text.translatable("dabaosword.discard", entity.getDisplayName(), target.getDisplayName(), chosen.toHoverableText());
                                 if (entity instanceof PlayerEntity player) player.sendMessage(message);
                                 target.sendMessage(message);
-                                cardDiscard(target, chosen, 1, index > candidate.size() - equip);
+                                cardDiscard(target, chosen, 1, isEquipped(entity, s -> s.equals(chosen)));
                             }
-                        } else {//如果来源不是玩家则随机弃置它的主副手物品和装备
-                            List<ItemStack> candidate = new ArrayList<>();
-                            if (!attacker.getMainHandStack().isEmpty()) candidate.add(attacker.getMainHandStack());
-                            if (!attacker.getOffHandStack().isEmpty()) candidate.add(attacker.getOffHandStack());
-                            for (ItemStack armor : attacker.getArmorItems()) {if (!armor.isEmpty()) candidate.add(armor);}
+                        } else { //如果来源不是玩家则随机弃置它的主副手物品和装备
+                            List<ItemStack> candidate = getItems(attacker, s -> !s.isEmpty(), true, false, true, false);
                             if(!candidate.isEmpty()) {
-                                int index = new Random().nextInt(candidate.size()); ItemStack chosen = candidate.get(index);
-                                chosen.decrement(1);
+                                ItemStack chosen = candidate.get(new Random().nextInt(candidate.size()));
+                                if (isCard(chosen)) cardDiscard(entity, chosen, 1, isEquipped(entity, s -> s.equals(chosen)));
+                                else chosen.decrement(1);
                             }
                         }
                     }
@@ -198,7 +181,7 @@ public class Wei {
         }
 
         @Override
-        public void onHurtByCard(LivingEntity entity, ItemStack skill, ItemStack card, DamageSource source) {
+        public void onHurtByCard(LivingEntity entity, ItemStack skill, ItemStack card) {
             if (getCD(skill) == 0) {
                 voice(entity, skill);
                 setCD(skill, 15);

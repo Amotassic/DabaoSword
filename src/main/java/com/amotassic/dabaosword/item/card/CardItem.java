@@ -22,23 +22,7 @@ import static com.amotassic.dabaosword.util.ModTools.*;
 public class CardItem extends Item implements Card {
     public CardItem() {super(new Settings());}
 
-    public static class Sha extends CardItem {
-        @Override
-        public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
-            super.appendTooltip(stack, world, tooltip, tooltipContext);
-            tooltip.add(Text.translatable("item.dabaosword.sha.tip").formatted(Formatting.BOLD));
-
-            if (stack.isOf(ModItems.SHA)) {
-                tooltip.add(Text.translatable("item.dabaosword.sha.tooltip"));
-            }
-            if (stack.isOf(ModItems.FIRE_SHA)) {
-                tooltip.add(Text.translatable("item.dabaosword.fire_sha.tooltip").formatted(Formatting.RED));
-            }
-            if (stack.isOf(ModItems.THUNDER_SHA)) {
-                tooltip.add(Text.translatable("item.dabaosword.thunder_sha.tooltip").formatted(Formatting.BLUE));
-            }
-        }
-    }
+    @Override public Type getType() {return Type.ARMOURY;}
 
     public static class Wuzhong extends CardItem {
         @Override

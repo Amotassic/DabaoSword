@@ -52,7 +52,7 @@ public abstract class RavagerMixin extends RaiderEntity {
                 DamageSource source = getDamageSources().mobAttack(user);
                 if (notHurtBy(entity, source, ModItems.NANMAN)) continue;
                 entity.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 2, 0, false, false));
-                if (entity.damage(source, 6)) hurtBy(entity, source, ModItems.NANMAN);
+                if (entity.damage(source, 6)) hurtBy(entity, ModItems.NANMAN);
                 knockBack(entity);
             }
             ci.cancel();
