@@ -69,8 +69,8 @@ public class Qun {
         }
 
         private final MutableText JIZHAN_TEXT = Text.translatable("jizhan.text",
-                Text.literal("更大").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword dabaosword:jizhan 1"))),
-                Text.literal("更小").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword dabaosword:jizhan -1"))));
+                Text.translatable("rank.higher").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword dabaosword:jizhan 1"))),
+                Text.translatable("rank.lower").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword dabaosword:jizhan -1"))));
 
         @Override
         public int onDrawPhase(PlayerEntity player, ItemStack stack) {

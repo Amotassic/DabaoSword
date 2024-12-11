@@ -2,6 +2,7 @@ package com.amotassic.dabaosword.item;
 
 import com.amotassic.dabaosword.api.event.*;
 import com.amotassic.dabaosword.effect.*;
+import com.amotassic.dabaosword.entity.ModEntity;
 import com.amotassic.dabaosword.event.AttackEntityHandler;
 import com.amotassic.dabaosword.event.EntityHurtHandler;
 import com.amotassic.dabaosword.event.EntityTickEvents;
@@ -24,6 +25,7 @@ import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.SpawnEggItem;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -124,6 +126,7 @@ public class ModItems {
     public static final Item LET_ME_CC = register("let_me_cc", new LetMeCCItem());
     //阳光开朗的笑容
     public static final Item SUNSHINE_SMILE = register("sunshine_smile", new SunshineSmile());
+    public static final Item XUYOU_SPAWN_EGG = register("xuyou_spawn_egg", new SpawnEggItem(ModEntity.XUYOU, 0x52BDF7, 0x8D8B96, new Item.Settings()));
     @SuppressWarnings("unused")
     public static final Item GUDING_ITEM = register("guding", new Item(new Item.Settings()));
     @SuppressWarnings("unused")
@@ -236,6 +239,7 @@ public class ModItems {
                         entries.add(BBJI);
                         entries.add(LET_ME_CC);
                         entries.add(SUNSHINE_SMILE);
+                        entries.add(XUYOU_SPAWN_EGG);
                     }).build());
 
     public static void register() {

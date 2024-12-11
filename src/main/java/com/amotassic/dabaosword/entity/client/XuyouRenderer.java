@@ -20,6 +20,6 @@ public class XuyouRenderer extends BipedEntityRenderer<XuyouEntity, XuyouModel<X
 
     @Override
     public Identifier getTexture(XuyouEntity entity) {
-        return new Identifier("textures/entity/zombie/zombie.png");
+        return new Identifier("dabaosword" ,"textures/entity/xuyou.png");
     }
 }

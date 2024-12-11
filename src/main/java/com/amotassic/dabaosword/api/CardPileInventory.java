@@ -15,17 +15,12 @@ public class CardPileInventory implements Inventory {
     public DefaultedList<ItemStack> cards;
     public PlayerEntity player;
     public ItemStack pile;
-    public DefaultedList<ItemStack> nonEmpty = DefaultedList.of();
 
     public CardPileInventory(PlayerEntity player) {
         this.player = player;
         this.pile = ModTools.trinketItem(ModItems.CARD_PILE, player);
         this.cards = DefaultedList.ofSize(36, ItemStack.EMPTY);
         readNbt();
-        for (var stack : cards) { //生成非空的卡牌列表
-            if (stack.isEmpty()) continue;
-            nonEmpty.add(stack);
-        }
     }
 
     @Override
@@ -140,7 +135,7 @@ public class CardPileInventory implements Inventory {
     }
 
     public void insertStack(ItemStack stack) {
-        if (insertStack(-1, stack)) writeNbtToStack();;
+        if (insertStack(-1, stack)) writeNbtToStack();
     }
 
     public boolean insertStack(int slot, ItemStack stack) {

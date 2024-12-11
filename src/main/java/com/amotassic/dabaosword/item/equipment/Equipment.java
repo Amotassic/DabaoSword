@@ -89,12 +89,19 @@ public class Equipment extends TrinketItem implements Card, Skill {
         }
     }
 
-    public static class CixiongWeapon extends Equipment {
+    public static class CixiongWeapon extends Equipment implements ICardEvent {
         @Override
         public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
             super.appendTooltip(stack, world, tooltip, context);
             tooltip.add(Text.translatable("item.dabaosword.cixiong.tooltip1"));
             tooltip.add(Text.translatable("item.dabaosword.cixiong.tooltip2").formatted(Formatting.AQUA));
+        }
+
+        @Override
+        public void postCardUse(LivingEntity user, ItemStack card, LivingEntity target, ItemStack skill) {
+            if (isSha.test(card) && target != null && new Random().nextFloat() < 0.5) {
+                draw(user); voice(user, skill);
+            }
         }
     }
 

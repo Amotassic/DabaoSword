@@ -193,18 +193,16 @@ public class ModTools {
         Gson gson = new Gson();
         InputStreamReader reader = new InputStreamReader(Objects.requireNonNull(ModTools.class.getResourceAsStream("/data/dabaosword/" + lootTableId.getPath())));
         JsonObject o = gson.fromJson(reader, JsonObject.class);
-        double totalWeight = 0;
+        float totalWeight = 0;
         for (var element : o.getAsJsonArray("results")) {
-            totalWeight += element.getAsJsonObject().get("weight").getAsDouble();
+            totalWeight += element.getAsJsonObject().get("weight").getAsFloat();
         }
-        double randomValue = new Random().nextDouble() * totalWeight;
-        double currentWeight = 0;
+        float randomValue = new Random().nextFloat(totalWeight);
+        float currentWeight = 0;
         for (JsonElement element : o.getAsJsonArray("results")) {
             JsonObject result = element.getAsJsonObject();
-            currentWeight += result.get("weight").getAsDouble();
-            if (randomValue < currentWeight) {
-                return new Identifier(result.get("item").getAsString());
-            }
+            currentWeight += result.get("weight").getAsFloat();
+            if (randomValue < currentWeight) return new Identifier(result.get("item").getAsString());
         }
         return new Identifier("minecraft:air");
     }
@@ -307,7 +305,7 @@ public class ModTools {
     }
 
     public static int getCD(ItemStack stack) { //获取物品的内置冷却时间
-        return stack.getNbt() == null ? 0 : stack.getNbt().getInt("cooldown");
+        return stack.getOrCreateNbt().getInt("cooldown");
     }
 
     public static void setCD(ItemStack stack, int seconds) { //设置物品的内置冷却时间
@@ -317,7 +315,7 @@ public class ModTools {
     }
 
     public static int getTag(ItemStack stack) { //获取物品的标签的数量
-        return stack.getNbt() == null ? 0 : stack.getNbt().getInt("tags");
+        return stack.getOrCreateNbt().getInt("tags");
     }
 
     public static void setTag(ItemStack stack, int value) { //设置物品的标签的数量

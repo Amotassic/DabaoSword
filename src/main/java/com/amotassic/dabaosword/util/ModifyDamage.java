@@ -154,7 +154,7 @@ public class ModifyDamage {
             if (!stack.isEmpty()) {
                 voice(entity, stack);
                 cardUsePost(entity, stack, null);
-                entity.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 2, 0, false, false, false));
+                entity.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 2, 0, false, false, false)); //防止被其他南蛮入侵召唤物误伤
                 return 1;
             }
         }

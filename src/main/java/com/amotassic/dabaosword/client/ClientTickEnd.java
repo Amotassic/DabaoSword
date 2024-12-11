@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.client;
 
+import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.network.ServerNetworking;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -13,8 +14,10 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.Vec3d;
 import org.lwjgl.glfw.GLFW;
 
+import static com.amotassic.dabaosword.util.ModTools.hasTrinket;
 import static com.amotassic.dabaosword.util.ModTools.isEquipped;
 
 public class ClientTickEnd {
@@ -30,6 +33,14 @@ public class ClientTickEnd {
             var result = MinecraftClient.getInstance().crosshairTarget;
             PacketByteBuf buf = PacketByteBufs.create();
             if (user != null) {
+                if (hasTrinket(SkillCards.SHENSU, user)) {
+                    Vec3d lastPos = new Vec3d(user.lastRenderX, user.lastRenderY, user.lastRenderZ);
+                    float speed = (float) (user.getPos().distanceTo(lastPos) * 20);
+                    PacketByteBuf buf1 = PacketByteBufs.create();
+                    buf1.writeFloat(speed);
+                    ClientPlayNetworking.send(ServerNetworking.SHENSU, buf1);
+                }
+
                 if (SELECT_CARD.wasPressed()) {
                     if (user.isSneaking() && client.options.sprintKey.wasPressed()) buf.writeInt(3);
                     else if (user.isSneaking()) buf.writeInt(1);

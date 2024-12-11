@@ -152,7 +152,7 @@
   "item.dabaosword.zhuque.tooltip2": "对目标造成伤害后，使其着火3秒",
   "item.dabaosword.cixiong": "雌雄双股剑",
   "item.dabaosword.cixiong.tooltip1": "“又名鸳鸯剑，鸳剑长三尺七寸，鸯剑长三尺四寸，利可断金” ——《三国演义》",
-  "item.dabaosword.cixiong.tooltip2": "暂无实际用途，无法获得",
+  "item.dabaosword.cixiong.tooltip2": "当你使用杀指定目标后，你有50%的概率摸一张牌",
   "item.dabaosword.guanshi": "贯石斧",
   "item.dabaosword.guanshi.tooltip1": "“斧，甫也，甫，始也。凡将制器，始用斧伐木，已乃制之也。” ——《释名·释用器》",
   "item.dabaosword.guanshi.tooltip2": "CD 10s，当你使用的杀被目标闪避后，强制对其造成伤害",
@@ -303,6 +303,8 @@
   "item.dabaosword.jizhan.tooltip2": "若猜对，重复摸牌和猜测流程，直到猜错为止",
   "jizhan.draw": "%1$s通过%2$s摸了一张%3$s，点数为%4$s",
   "jizhan.text": "猜测下一张牌的点数%1$s还是%2$s",
+  "rank.higher": "更大",
+  "rank.lower": "更小",
   "item.dabaosword.jianxiong": "奸雄",
   "item.dabaosword.jianxiong.tooltip1": "受到生物造成的伤害后，你摸一张牌",
   "item.dabaosword.jianxiong.tooltip2": "受到卡牌造成的伤害后，你获得一张造成伤害的牌",
@@ -314,6 +316,7 @@
   "item.dabaosword.fenyin.tooltip": "使用一张牌后，若颜色与你上一张使用的牌不同，你摸一张牌",
 
   "entity.dabaosword.xuyou": "许攸",
+  "item.dabaosword.xuyou_spawn_egg": "许攸刷怪蛋",
 
   //"配音"
   "sounds.dabaosword.nahida": "纳西妲：所闻遍计",
