@@ -8,16 +8,11 @@ import net.minecraft.util.Identifier;
 
 public class Tags {
 
-    public static class Items {
+    public static final TagKey<Item> LOCK_SKILL = of("lock_skill");
+    public static final TagKey<Item> TRIGGER_WUXIE = of("trigger_wuxie");
 
-        public static final TagKey<Item> BASIC_CARD = of("basic_card");
-        public static final TagKey<Item> ARMOURY_CARD = of("armoury_card");
-        public static final TagKey<Item> LOCK_SKILL = of("lock_skill");
-        public static final TagKey<Item> TRIGGER_WUXIE = of("trigger_wuxie");
-
-        private static TagKey<Item> of(String id) {
-            return TagKey.of(RegistryKeys.ITEM, Identifier.of("dabaosword", id));
-        }
+    private static TagKey<Item> of(String id) {
+        return TagKey.of(RegistryKeys.ITEM, Identifier.of("dabaosword", id));
     }
 
     public static final TagKey<DamageType> TRIGGER_TIESUO = TagKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of("dabaosword", "trigger_tiesuo"));

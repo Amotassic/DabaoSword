@@ -9,6 +9,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 
+import static com.amotassic.dabaosword.api.event.CardEvents.*;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class JuedouItem extends CardItem {
@@ -41,9 +42,9 @@ public class JuedouItem extends CardItem {
     private void juedou(LivingEntity attacker, LivingEntity target) {
         ItemStack juedou = new ItemStack(this);
         DamageSource source = getDamageSource(attacker, DamageTypes.GENERIC_KILL);
-        if (canHurtByCard(target, source, juedou)) {
+        if (canHurtByCard(target, juedou)) {
             target.timeUntilRegen = 0;
-            if (target.damage(source, 5f)) hurtByCard(target, source, juedou);
+            if (target.damage(source, 5f)) hurtByCard(target, juedou);
         }
     }
 }

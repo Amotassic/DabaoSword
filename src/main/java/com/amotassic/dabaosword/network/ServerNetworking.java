@@ -8,8 +8,6 @@ import com.amotassic.dabaosword.ui.PileScreenHandler;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -52,13 +50,10 @@ public class ServerNetworking {
             PlayerEntity player =c.player();
             float speed = p.f();
             ItemStack stack = trinketItem(SkillCards.SHENSU, player);
-            if (stack != null) {
-                NbtComponent component = stack.get(DataComponentTypes.CUSTOM_DATA);
-                if (component != null) {
-                    NbtCompound nbt = component.copyNbt(); nbt.putFloat("speed", speed);
-                    stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
-                }
-                //if (Objects.requireNonNull(stack.get(DataComponentTypes.CUSTOM_DATA)).copyNbt().getFloat("speed") > 0) player.sendMessage(Text.literal("Speed: " + speed), true);
+            if (!stack.isEmpty()) {
+                NbtCompound nbt = getOrCreateNbt(stack); nbt.putFloat("speed", speed);
+                setNbt(stack, nbt);
+                //if (getOrCreateNbt(stack).getFloat("speed") > 0) player.sendMessage(Text.literal("Speed: " + speed), true);
             }
         });
 
@@ -85,7 +80,7 @@ public class ServerNetworking {
                     //取消闪避后，先移除记录的伤害，给玩家一个CD防止闪触发
                     ItemStack stack = trinketItem(ModItems.CARD_PILE, player);
                     NbtCompound nbt = getOrCreateNbt(stack); nbt.remove("DamageDodged");
-                    stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
+                    setNbt(stack, nbt);
                     player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2,2,0,false,false,false));
                     player.damage(pair.getLeft().getLeft(), pair.getLeft().getRight());
                     give(player, pair.getRight());

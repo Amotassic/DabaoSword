@@ -1,11 +1,16 @@
 {
   "replace": false,
   "values": [
+    "dabaosword:cixiong",
     "dabaosword:guding_dao",
     "dabaosword:hanbing",
     "dabaosword:qinggang",
     "dabaosword:qinglong",
     "dabaosword:fangtian",
-    "dabaosword:zhangba"
+    "dabaosword:guanshi",
+    "dabaosword:zhangba",
+    "dabaosword:liannu",
+    "dabaosword:qilin",
+    "dabaosword:zhuque"
   ]
 }

@@ -18,15 +18,17 @@ import net.minecraft.world.World;
 import java.util.List;
 
 public class CardPile extends Equipment {
+    @Override public Type getType() {return null;}
+
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
         tooltip.add(Text.translatable("item.dabaosword.card_pile.tooltip"));
         tooltip.add(Text.empty());
         tooltip.add(Text.translatable("item.dabaosword.card_pile.tip1").formatted(Formatting.BOLD));
-        tooltip.add(Text.translatable("item.dabaosword.card_pile.tip2").formatted(Formatting.BOLD));
-        tooltip.add(Text.translatable("item.dabaosword.card_pile.tip3").formatted(Formatting.BOLD));
-        tooltip.add(Text.translatable("item.dabaosword.card_pile.tip4").formatted(Formatting.BOLD));
-        tooltip.add(Text.translatable("item.dabaosword.card_pile.tip5").formatted(Formatting.BOLD));
+        tooltip.add(Text.translatable("item.dabaosword.card_pile.tip2", Text.keybind("key.dabaosword.select_card")).formatted(Formatting.BOLD));
+        tooltip.add(Text.translatable("item.dabaosword.card_pile.tip3", Text.keybind("key.sneak"), Text.keybind("key.dabaosword.select_card")).formatted(Formatting.BOLD));
+        tooltip.add(Text.translatable("item.dabaosword.card_pile.tip4", Text.keybind("key.sprint"), Text.keybind("key.dabaosword.select_card")).formatted(Formatting.BOLD));
+        tooltip.add(Text.translatable("item.dabaosword.card_pile.tip5", Text.keybind("key.sprint"), Text.keybind("key.sneak"), Text.keybind("key.dabaosword.select_card")).formatted(Formatting.BOLD));
     }
 
     @Override

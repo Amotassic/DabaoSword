@@ -1,18 +1,21 @@
 package com.amotassic.dabaosword.item.equipment;
 
 import com.amotassic.dabaosword.api.Card;
+import com.amotassic.dabaosword.api.ICardEvent;
+import com.amotassic.dabaosword.api.ReachDefend;
 import com.amotassic.dabaosword.api.Skill;
 import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.item.card.CardItem;
+import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.Sounds;
 import dev.emi.trinkets.TrinketSlot;
 import dev.emi.trinkets.api.*;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.fluid.Fluids;
@@ -31,11 +34,10 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
+import static com.amotassic.dabaosword.api.event.CardEvents.cardDiscard;
+import static com.amotassic.dabaosword.api.event.CardEvents.cardUsePre;
 import static com.amotassic.dabaosword.item.skillcard.SkillItem.equipped;
 import static com.amotassic.dabaosword.item.skillcard.SkillItem.setEquipped;
 import static com.amotassic.dabaosword.util.ModTools.*;
@@ -43,6 +45,8 @@ import static com.amotassic.dabaosword.util.ModifyDamage.shan;
 
 public class Equipment extends TrinketItem implements Card, Skill {
     public Equipment() {super(new Settings().maxCount(1));}
+
+    @Override public Type getType() {return Type.EQUIPMENT;}
 
     public static class BaguaArmor extends Equipment {
         @Override
@@ -85,6 +89,22 @@ public class Equipment extends TrinketItem implements Card, Skill {
         }
     }
 
+    public static class CixiongWeapon extends Equipment implements ICardEvent {
+        @Override
+        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+            super.appendTooltip(stack, context, tooltip, type);
+            tooltip.add(Text.translatable("item.dabaosword.cixiong.tooltip1"));
+            tooltip.add(Text.translatable("item.dabaosword.cixiong.tooltip2").formatted(Formatting.AQUA));
+        }
+
+        @Override
+        public void postCardUse(LivingEntity user, ItemStack card, LivingEntity target, ItemStack skill) {
+            if (isSha.test(card) && target != null && new Random().nextFloat() < 0.5) {
+                draw(user); voice(user, skill);
+            }
+        }
+    }
+
     public static class FangtianWeapon extends Equipment {
         @Override
         public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
@@ -102,6 +122,15 @@ public class Equipment extends TrinketItem implements Card, Skill {
                 voice(player, Sounds.FANGTIAN);
                 player.sendMessage(Text.translatable("dabaosword.fangtian").formatted(Formatting.RED), true);
             }
+        }
+    }
+
+    public static class GuanshiWeapon extends Equipment {
+        @Override
+        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+            super.appendTooltip(stack, context, tooltip, type);
+            tooltip.add(Text.translatable("item.dabaosword.guanshi.tooltip1"));
+            tooltip.add(Text.translatable("item.dabaosword.guanshi.tooltip2").formatted(Formatting.AQUA));
         }
     }
 
@@ -142,6 +171,58 @@ public class Equipment extends TrinketItem implements Card, Skill {
         }
     }
 
+    public static class LiannuWeapon extends Equipment {
+        @Override
+        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+            super.appendTooltip(stack, context, tooltip, type);
+            tooltip.add(Text.translatable("item.dabaosword.liannu.tooltip1"));
+            tooltip.add(Text.translatable("item.dabaosword.liannu.tooltip2").formatted(Formatting.AQUA));
+        }
+
+        @Override
+        public void preAttack(ItemStack stack, LivingEntity target, PlayerEntity attacker) {
+            int i = 2;
+            if (hasTrinket(ModItems.CHITU, attacker)) i++;
+            if (hasTrinket(SkillCards.MASHU, attacker)) i++;
+            if (hasTrinket(ModItems.DILU, target)) i--;
+            if (hasTrinket(SkillCards.FEIYING, target)) i--;
+            if (attacker.distanceTo(target) <= i) {
+                attacker.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, 3, 255,false, false, false));
+                voice(attacker, stack);
+            }
+        }
+    }
+
+    public static class QilinWeapon extends Equipment implements ReachDefend {
+        @Override
+        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+            super.appendTooltip(stack, context, tooltip, type);
+            tooltip.add(Text.translatable("item.dabaosword.qilin.tooltip1"));
+            tooltip.add(Text.translatable("item.dabaosword.qilin.tooltip2").formatted(Formatting.AQUA));
+            tooltip.add(Text.translatable("item.dabaosword.qilin.tooltip3").formatted(Formatting.AQUA));
+        }
+
+        @Override
+        public int getExtraReach(PlayerEntity player, ItemStack stack) {return 1;}
+
+        @Override
+        public void postDamage(ItemStack stack, LivingEntity target, LivingEntity attacker, float amount) {
+            if (getCD(stack) != 0) return;
+            ItemStack chitu = trinketItem(ModItems.CHITU, target);
+            ItemStack dilu = trinketItem(ModItems.DILU, target);
+            List<ItemStack> horse = new ArrayList<>();
+            if (!chitu.isEmpty()) horse.add(chitu); if (!dilu.isEmpty()) horse.add(dilu);
+            if (horse.isEmpty()) return;
+            ItemStack selected = horse.get(new Random().nextInt(horse.size()));
+            Text message = Text.translatable("dabaosword.discard", attacker.getDisplayName(), target.getDisplayName(), selected.toHoverableText());
+            if (attacker instanceof PlayerEntity player) player.sendMessage(message);
+            if (target instanceof PlayerEntity player) player.sendMessage(message);
+            cardDiscard(target, selected, 1, true);
+            voice(attacker, stack);
+            setCD(stack, 30);
+        }
+    }
+
     public static class QinggangWeapon extends Equipment {
         @Override
         public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
@@ -177,16 +258,22 @@ public class Equipment extends TrinketItem implements Card, Skill {
         }
     }
 
-    public static class RenwangArmor extends Equipment {
+    public static class RenwangArmor extends Equipment implements ICardEvent {
         @Override
         public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
             super.appendTooltip(stack, context, tooltip, type);
             tooltip.add(Text.translatable("item.dabaosword.renwang.tooltip1"));
             tooltip.add(Text.translatable("item.dabaosword.renwang.tooltip2").formatted(Formatting.AQUA));
         }
+
+        @Override
+        public boolean canHurtByCard(LivingEntity entity, ItemStack skill, ItemStack card) {
+            if (isSha.test(card) && isBlackCard.test(card)) {voice(entity, skill); return false;}
+            return true;
+        }
     }
 
-    public static class RattanArmor extends Equipment {
+    public static class RattanArmor extends Equipment implements ICardEvent {
         @Override
         public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
             super.appendTooltip(stack, context, tooltip, type);
@@ -217,6 +304,13 @@ public class Equipment extends TrinketItem implements Card, Skill {
                 return new Pair<>(0f, Math.min(amount, 5f));
             }
             return null;
+        }
+
+        @Override
+        public boolean canHurtByCard(LivingEntity entity, ItemStack skill, ItemStack card) {
+            if (card.isOf(ModItems.WANJIAN) || card.isOf(ModItems.NANMAN) || card.isOf(ModItems.SHA)) {
+                voice(entity, Sounds.TENGJIA1); return false;
+            } return true;
         }
 
         @Override
@@ -278,34 +372,58 @@ public class Equipment extends TrinketItem implements Card, Skill {
                         give(player, new ItemStack(ModItems.SHA));
                         voice(player, Sounds.ZHANGBA);
                     } else {nbt.putBoolean("has_one", true);}
-                    stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
+                    setNbt(stack, nbt);
                     off.decrement(1);
                 }
             }
         }
     }
 
-    @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        var sr = getSuitAndRank(stack);
-        if (sr != null) {
-            Card.Suits suit = sr.getLeft(); Card.Ranks rank = sr.getRight();
-            if (isRedCard.test(stack)) tooltip.add(Text.translatable("card.suit_and_rank", suit.suit, rank.rank).formatted(Formatting.RED));
-            else tooltip.add(Text.translatable("card.suit_and_rank", suit.suit, rank.rank));
+    public static class ZhuqueWeapon extends Equipment {
+        @Override
+        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+            super.appendTooltip(stack, context, tooltip, type);
+            tooltip.add(Text.translatable("item.dabaosword.zhuque.tooltip1"));
+            tooltip.add(Text.translatable("item.dabaosword.zhuque.tooltip2").formatted(Formatting.AQUA));
         }
 
-        if (stack.getItem() == ModItems.CHITU) {
+        @Override
+        public void postDamage(ItemStack stack, LivingEntity target, LivingEntity attacker, float amount) {
+            voice(attacker, stack);
+            target.setOnFireFor(4);
+        }
+    }
+
+    public static class AttackHorse extends Equipment implements ReachDefend {
+        @Override
+        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+            super.appendTooltip(stack, context, tooltip, type);
             tooltip.add(Text.translatable("item.dabaosword.chitu.tooltip"));
         }
 
-        if (stack.getItem() == ModItems.DILU) {
+        @Override
+        public int getExtraReach(PlayerEntity player, ItemStack stack) {return 1;}
+    }
+
+    public static class DefendHorse extends Equipment implements ReachDefend {
+        @Override
+        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+            super.appendTooltip(stack, context, tooltip, type);
             tooltip.add(Text.translatable("item.dabaosword.dilu.tooltip"));
         }
+
+        @Override
+        public int getDefend(PlayerEntity player, ItemStack stack) {return 1;}
+    }
+
+    @Override
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+        CardItem.addSRTip(stack, tooltip);
 
         if(Screen.hasShiftDown()) {
             tooltip.add(Text.translatable("equipment.tip1").formatted(Formatting.BOLD));
             tooltip.add(Text.translatable("equipment.tip2").formatted(Formatting.BOLD));
-        } else tooltip.add(Text.translatable("dabaosword.shifttooltip"));
+        } else tooltip.add(Text.translatable("dabaosword.shift_tip", Text.keybind("key.sneak")));
 
     }
 
@@ -343,7 +461,7 @@ public class Equipment extends TrinketItem implements Card, Skill {
         if (!world.isClient && hand == Hand.MAIN_HAND) {
             if (cardUsePre(player, player.getMainHandStack(), player)) return TypedActionResult.success(player.getMainHandStack());
         }
-        return super.use(world, player, hand);
+        return TypedActionResult.pass(player.getMainHandStack());
     }
 
     @Override

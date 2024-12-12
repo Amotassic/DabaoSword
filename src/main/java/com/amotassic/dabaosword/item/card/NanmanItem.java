@@ -1,22 +1,20 @@
 package com.amotassic.dabaosword.item.card;
 
-import com.amotassic.dabaosword.item.ModItems;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.passive.WolfEntity;
+import net.minecraft.entity.mob.RavagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-import static com.amotassic.dabaosword.util.ModTools.cardUsePre;
+import java.util.function.Predicate;
+
+import static com.amotassic.dabaosword.api.event.CardEvents.cardUsePre;
 
 public class NanmanItem extends CardItem {
     @Override
@@ -29,24 +27,32 @@ public class NanmanItem extends CardItem {
 
     @Override
     public void cardUse(LivingEntity user, ItemStack stack, LivingEntity target) {
-        Text[] names = {
-                Text.translatable("nanman.dog1"),
-                Text.translatable("nanman.dog2"),
-                Text.translatable("nanman.dog3")
-        };
-        if (user instanceof PlayerEntity player) for (Text name : names) {summonDog(user.getWorld(), player, name);}
+        World world = user.getWorld();
+        world.getPlayers().forEach(player -> {
+            if (player != user) summonRavager(user, player);
+        });
+        Box box = new Box(user.getBlockPos()).expand(10);
+        Predicate<LivingEntity> p = e -> !(e instanceof PlayerEntity) && e != user && e.isAlive() && !e.getCommandTags().contains("b");
+        for (LivingEntity near : world.getEntitiesByClass(LivingEntity.class, box, p)) {
+            summonRavager(user, near);
+        }
     }
 
-    private void summonDog(World world, PlayerEntity player, Text name) {
-        BlockPos blockPos = player.getBlockPos();
-        WolfEntity wolf = new WolfEntity(EntityType.WOLF, world);
-        wolf.initialize((ServerWorldAccess) world, world.getLocalDifficulty(blockPos), SpawnReason.MOB_SUMMONED, null);
-        wolf.setOwner(player);
-        wolf.setTamed(true, true);
-        world.spawnEntity(wolf);
-        wolf.setCustomName(name);
-        wolf.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 20 * 20,0,false,false,false));
-        wolf.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 20 * 20,1,false,false,false));
-        wolf.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 20 * 20,1,false,false,false));
+    private void summonRavager(LivingEntity user, LivingEntity entity) {
+        World world = entity.getWorld();
+        RavagerEntity ravager = new RavagerEntity(EntityType.RAVAGER, world);
+        ravager.setCustomName(Text.of(String.valueOf(user.getId())));
+        world.spawnEntity(ravager);
+        ravager.setInvulnerable(true);
+        ravager.addCommandTag("a"); ravager.addCommandTag("b");
+        ravager.refreshPositionAfterTeleport(getBlockInFront(entity, 3));
+    }
+
+    public Vec3d getBlockInFront(LivingEntity entity, int distance) {
+        Vec3d pos = entity.getPos();
+        Vec3d playerDirection = entity.getRotationVec(1.0F);
+        double x = pos.x + playerDirection.x * distance;
+        double z = pos.z + playerDirection.z * distance;
+        return new Vec3d(x, pos.y, z);
     }
 }

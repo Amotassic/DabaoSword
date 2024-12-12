@@ -9,6 +9,18 @@
       "item": "dabaosword:feiying"
     },
     {
+      "weight": 1.0,
+      "item": "dabaosword:fenyin"
+    },
+    {
+      "weight": 2.0,
+      "item": "dabaosword:jijiu"
+    },
+    {
+      "weight": 2.0,
+      "item": "dabaosword:jiuchi"
+    },
+    {
       "weight": 3.0,
       "item": "dabaosword:jianxiong"
     },

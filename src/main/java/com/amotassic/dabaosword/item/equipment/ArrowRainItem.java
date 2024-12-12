@@ -53,7 +53,7 @@ public class ArrowRainItem extends Item {
         ItemStack stack = new ItemStack(Items.ARROW);
         ServerWorld world = (ServerWorld) entity.getWorld();
         ArrowEntity arrow = new ArrowEntity(world, entity, stack, null);
-        arrow.setCustomName(Text.of("a"));
+        arrow.addCommandTag("a");
         arrow.setVelocity(entity, entity.getPitch(), entity.getYaw() + angle, 0.0F, speed, 1.0F);
         arrow.setCritical(true);
         world.spawnEntity(arrow);

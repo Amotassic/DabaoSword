@@ -1,6 +1,8 @@
 package com.amotassic.dabaosword;
 
 import com.amotassic.dabaosword.command.InfoCommand;
+import com.amotassic.dabaosword.command.TriggerSkillCommand;
+import com.amotassic.dabaosword.entity.ModEntity;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.network.ServerNetworking;
@@ -28,6 +30,9 @@ public class DabaoSword implements ModInitializer {
         Gamerule.registerGamerules();
         ServerNetworking.registerActiveSkill();
         CommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess, environment) -> InfoCommand.register(dispatcher)));
+        CommandRegistrationCallback.EVENT.register(((d, a, e) -> TriggerSkillCommand.register(d,a)));
+        ModEntity.register();
+        ModEntity.entitySpawn();
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register(content -> {
             content.addAfter(Items.NETHERITE_SWORD,ModItems.GUDINGDAO);

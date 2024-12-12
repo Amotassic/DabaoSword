@@ -13,6 +13,7 @@
     "MobEntityMixin",
     "PlayerEntityMixin",
     "PlayerManagerMixin",
+    "RavagerMixin",
     "ServerPlayerEntityMixin"
   ],
   "client": [

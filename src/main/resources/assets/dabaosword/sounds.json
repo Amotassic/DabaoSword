@@ -5,6 +5,24 @@
     ],
     "subtitle": "sounds.dabaosword.nahida"
   },
+  "fenyin": {
+    "sounds": [
+      "dabaosword:skill/fenyin1", "dabaosword:skill/fenyin2"
+    ],
+    "subtitle": "sounds.dabaosword.fenyin"
+  },
+  "jijiu": {
+    "sounds": [
+      "dabaosword:skill/jijiu1", "dabaosword:skill/jijiu2"
+    ],
+    "subtitle": "sounds.dabaosword.jijiu"
+  },
+  "jiuchi": {
+    "sounds": [
+      "dabaosword:skill/jiuchi1", "dabaosword:skill/jiuchi2"
+    ],
+    "subtitle": "sounds.dabaosword.jiuchi"
+  },
   "jianxiong": {
     "sounds": [
       "dabaosword:skill/jianxiong1", "dabaosword:skill/jianxiong2"
@@ -348,11 +366,27 @@
       }
     ]
   },
+  "cixiong": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/cixiong"
+      }
+    ]
+  },
   "fangtian": {
     "sounds": [
       {
         "type": "file",
         "name": "dabaosword:card/fangtian"
+      }
+    ]
+  },
+  "guanshi": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/guanshi"
       }
     ]
   },
@@ -369,6 +403,14 @@
       {
         "type": "file",
         "name": "dabaosword:card/hanbing"
+      }
+    ]
+  },
+  "liannu": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/liannu"
       }
     ]
   },
@@ -425,6 +467,14 @@
       {
         "type": "file",
         "name": "dabaosword:card/zhangba"
+      }
+    ]
+  },
+  "zhuque": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:card/zhuque"
       }
     ]
   },

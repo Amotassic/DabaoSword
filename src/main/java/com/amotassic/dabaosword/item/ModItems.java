@@ -3,7 +3,11 @@ package com.amotassic.dabaosword.item;
 import com.amotassic.dabaosword.api.CardPileInventory;
 import com.amotassic.dabaosword.api.event.*;
 import com.amotassic.dabaosword.effect.*;
-import com.amotassic.dabaosword.event.*;
+import com.amotassic.dabaosword.entity.ModEntity;
+import com.amotassic.dabaosword.event.AttackEntityHandler;
+import com.amotassic.dabaosword.event.EntityHurtHandler;
+import com.amotassic.dabaosword.event.EntityTickEvents;
+import com.amotassic.dabaosword.event.PlayerEvents;
 import com.amotassic.dabaosword.item.card.*;
 import com.amotassic.dabaosword.item.equipment.*;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
@@ -26,6 +30,7 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.SpawnEggItem;
 import net.minecraft.network.codec.PacketCodecs;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -41,9 +46,9 @@ import java.util.function.UnaryOperator;
 
 public class ModItems {
     //杀
-    public static final Item SHA = register("sha", new CardItem.Sha());
-    public static final Item FIRE_SHA = register("fire_sha", new CardItem.Sha());
-    public static final Item THUNDER_SHA = register("thunder_sha", new CardItem.Sha());
+    public static final Item SHA = register("sha", new Sha());
+    public static final Item FIRE_SHA = register("fire_sha", new Sha.Fire());
+    public static final Item THUNDER_SHA = register("thunder_sha", new Sha.Thunder());
     //闪
     public static final Item SHAN = register("shan", new ShanItem());
     //桃
@@ -82,18 +87,28 @@ public class ModItems {
     //无中生有
     public static final Item WUZHONG = register("wuzhong", new CardItem.Wuzhong());
 
+    //雌雄双股剑
+    public static final Item CIXIONG = register("cixiong", new Equipment.CixiongWeapon());
     //方天画戟
     public static final Item FANGTIAN = register("fangtian", new Equipment.FangtianWeapon());
+    //贯石斧
+    public static final Item GUANSHI = register("guanshi", new Equipment.GuanshiWeapon());
     // 古锭刀
     public static final Item GUDING_WEAPON = register("guding_dao", new Equipment.GudingWeapon());
     //寒冰剑
     public static final Item HANBING = register("hanbing", new Equipment.HanbingWeapon());
+    //麒麟弓
+    public static final Item QILIN = register("qilin", new Equipment.QilinWeapon());
     //青釭剑
     public static final Item QINGGANG = register("qinggang", new Equipment.QinggangWeapon());
     //青龙偃月刀
     public static final Item QINGLONG = register("qinglong", new Equipment.QinglongWeapon());
     //丈八蛇矛
     public static final Item ZHANGBA = register("zhangba", new Equipment.ZhangbaWeapon());
+    //诸葛连弩
+    public static final Item LIANNU = register("liannu", new Equipment.LiannuWeapon());
+    //朱雀羽扇
+    public static final Item ZHUQUE = register("zhuque", new Equipment.ZhuqueWeapon());
     //八卦阵
     public static final Item BAGUA = register("bagua", new Equipment.BaguaArmor());
     //白银狮子
@@ -103,9 +118,9 @@ public class ModItems {
     //寿衣
     public static final Item RATTAN_ARMOR = register("rattan_armor", new Equipment.RattanArmor());
     //-1马
-    public static final Item CHITU = register("chitu", new Equipment());
+    public static final Item CHITU = register("chitu", new Equipment.AttackHorse());
     //+1马
-    public static final Item DILU = register("dilu", new Equipment());
+    public static final Item DILU = register("dilu", new Equipment.DefendHorse());
 
     //摸牌
     public static final Item GAIN_CARD = register("gain_card", new GainCardItem());
@@ -121,8 +136,7 @@ public class ModItems {
     public static final Item LET_ME_CC = register("let_me_cc", new LetMeCCItem());
     //阳光开朗的笑容
     public static final Item SUNSHINE_SMILE = register("sunshine_smile", new SunshineSmile());
-    public static final Item YES = register("yes", new Item(new Item.Settings()));
-    public static final Item NO = register("no", new Item(new Item.Settings()));
+    public static final Item XUYOU_SPAWN_EGG = register("xuyou_spawn_egg", new SpawnEggItem(ModEntity.XUYOU, 0x52BDF7, 0x8D8B96, new Item.Settings()));
     @SuppressWarnings("unused")
     public static final Item GUDING_ITEM = register("guding", new Item(new Item.Settings()));
     @SuppressWarnings("unused")
@@ -160,12 +174,17 @@ public class ModItems {
                         entries.add(WUXIE);
                         entries.add(WUZHONG);
 
+                        entries.add(CIXIONG);
                         entries.add(FANGTIAN);
+                        entries.add(GUANSHI);
                         entries.add(GUDING_WEAPON);
                         entries.add(HANBING);
+                        entries.add(QILIN);
                         entries.add(QINGGANG);
                         entries.add(QINGLONG);
                         entries.add(ZHANGBA);
+                        entries.add(LIANNU);
+                        entries.add(ZHUQUE);
                         entries.add(BAGUA);
                         entries.add(BAIYIN);
                         entries.add(RENWANG);
@@ -203,6 +222,7 @@ public class ModItems {
                         entries.add(SkillCards.WUSHENG);
                         //吴
                         entries.add(SkillCards.BUQU);
+                        entries.add(SkillCards.FENYIN);
                         entries.add(SkillCards.GONGXIN);
                         entries.add(SkillCards.GUOSE);
                         entries.add(SkillCards.LIANYING);
@@ -215,6 +235,8 @@ public class ModItems {
                         entries.add(SkillCards.ZHIHENG);
                         entries.add(SkillCards.ZHIJIAN);
                         //群
+                        entries.add(SkillCards.JIJIU);
+                        entries.add(SkillCards.JIUCHI);
                         entries.add(SkillCards.JIZHAN);
                         entries.add(SkillCards.LEIJI);
                         entries.add(SkillCards.LUANJI);
@@ -227,6 +249,7 @@ public class ModItems {
                         entries.add(BBJI);
                         entries.add(LET_ME_CC);
                         entries.add(SUNSHINE_SMILE);
+                        entries.add(XUYOU_SPAWN_EGG);
                     }).build());
 
     //注册部分
@@ -236,14 +259,8 @@ public class ModItems {
         PlayerConnectCallback.EVENT.register(new PlayerEvents());
         PlayerDeathCallback.EVENT.register(new PlayerEvents());
         PlayerRespawnCallback.EVENT.register(new PlayerEvents());
-        CardCBs.USE_PRE.register(new CardEvents());
-        CardCBs.USE_POST.register(new CardEvents());
-        CardCBs.DISCARD.register(new CardEvents());
-        CardCBs.MOVE.register(new CardEvents());
         EndEntityTick.LIVING_EVENT.register(new EntityTickEvents());
         EndEntityTick.PLAYER_EVENT.register(new EntityTickEvents());
-        CardCBs.CAN_HURT_BY_CARD.register(new EntityHurtHandler());
-        CardCBs.HURT_BY_CARD.register(new EntityHurtHandler());
     }
 
     private static RegistryEntry<StatusEffect> register(String id, StatusEffect statusEffect) {
@@ -268,7 +285,8 @@ public class ModItems {
     public static final RegistryEntry<StatusEffect> COOLDOWN = register("cooldown", new CooldownEffect());
     public static final RegistryEntry<StatusEffect> COOLDOWN2 = register("cooldown2", new Cooldown2Effect());
     //无敌效果
-    public static final RegistryEntry<StatusEffect> INVULNERABLE = register("invulnerable", new InvulnerableEffect());
+    public static final RegistryEntry<StatusEffect> INVULNERABLE =
+            register("invulnerable", new CommonEffect(StatusEffectCategory.BENEFICIAL,0x35F5DF));
     //下落攻击效果
     public static final RegistryEntry<StatusEffect> FALLING_ATTACK = register("falling_attack", new FallingEffect());
     //翻面效果

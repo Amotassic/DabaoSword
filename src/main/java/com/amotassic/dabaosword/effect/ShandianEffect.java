@@ -7,7 +7,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
 
 import java.util.Objects;
 import java.util.Random;
@@ -28,13 +27,13 @@ public class ShandianEffect extends StatusEffect {
         return true;
     }
 
-    public static void summonLightning(LivingEntity entity, boolean cosmetic, boolean name) {
+    public static void summonLightning(LivingEntity entity, boolean cosmetic, boolean tag) {
         if (entity.getWorld() instanceof ServerWorld world) {
             LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(world);
             if (lightning != null) {
                 lightning.refreshPositionAfterTeleport(entity.getX(), entity.getY(), entity.getZ());
                 if (cosmetic) lightning.setCosmetic(true);
-                if (name) lightning.setCustomName(Text.of("a"));
+                if (tag) lightning.addCommandTag("a");
             }
             world.spawnEntity(lightning);
         }

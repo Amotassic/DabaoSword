@@ -1,12 +1,9 @@
 package com.amotassic.dabaosword.event;
 
 import com.amotassic.dabaosword.api.Skill;
-import com.amotassic.dabaosword.api.event.CardCBs;
 import com.amotassic.dabaosword.api.event.EntityHurtCallback;
 import com.amotassic.dabaosword.effect.ShandianEffect;
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.item.skillcard.SkillCards;
-import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -23,9 +20,11 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
+import static com.amotassic.dabaosword.api.event.CardEvents.cardUsePost;
+import static com.amotassic.dabaosword.api.event.CardEvents.hurtBy;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
-public class EntityHurtHandler implements EntityHurtCallback, CardCBs.CanHurtByCard, CardCBs.HurtByCard {
+public class EntityHurtHandler implements EntityHurtCallback {
 
     private static void trySave(LivingEntity entity, float amount) {
         for (int i = 0; i < 114; i++) {
@@ -69,10 +68,9 @@ public class EntityHurtHandler implements EntityHurtCallback, CardCBs.CanHurtByC
 
             trySave(entity, amount);
 
-            if (isNanman(source)) hurtBy(entity, source, ModItems.NANMAN);
-            if (isWanjian(source)) hurtBy(entity, source, ModItems.WANJIAN);
-            if (isHuogong(source)) hurtBy(entity, source, ModItems.FIRE_ATTACK);
-            if (isShandian(source)) hurtBy(entity, source, ModItems.SHANDIAN_ITEM);
+            if (isWanjian(source)) hurtBy(entity, ModItems.WANJIAN);
+            if (isHuogong(source)) hurtBy(entity, ModItems.FIRE_ATTACK);
+            if (isShandian(source)) hurtBy(entity, ModItems.SHANDIAN_ITEM);
 
             if (source.getAttacker() instanceof LivingEntity living) {
                 if (living.getCommandTags().contains("px")) entity.timeUntilRegen = 0;
@@ -86,8 +84,9 @@ public class EntityHurtHandler implements EntityHurtCallback, CardCBs.CanHurtByC
                         player.sendMessage(Text.translatable("dabaosword.draw.monster"),true);
                     }
                 }
-                if (entity instanceof PlayerEntity) {
-                    draw(player, 2);
+                if (entity instanceof PlayerEntity && player!= entity) {
+                    if (player.getHealth() < 20) player.heal(20 - player.getHealth());
+                    draw(player);
                     player.sendMessage(Text.translatable("dabaosword.draw.player"),true);
                 }
             }
@@ -106,36 +105,5 @@ public class EntityHurtHandler implements EntityHurtCallback, CardCBs.CanHurtByC
 
         }
         return ActionResult.PASS;
-    }
-
-    @Override
-    public boolean canHurtByCard(LivingEntity entity, DamageSource source, ItemStack card) {
-        if (isSha.test(card) && isBlackCard.test(card) && hasTrinket(ModItems.RENWANG, entity)) {
-            voice(entity, Sounds.RENWANG); return false;
-        }
-        if (card.isOf(ModItems.NANMAN)) {
-            if (hasTrinket(SkillCards.WEIMU, entity)) {voice(entity, Sounds.WEIMU); return false;}
-        }
-        return !canTriggerTengjia(entity, card);
-    }
-
-    private boolean canTriggerTengjia(LivingEntity entity, ItemStack card) {
-        if (card.isOf(ModItems.WANJIAN) || card.isOf(ModItems.NANMAN) || card.isOf(ModItems.SHA)) {
-            if (hasTrinket(ModItems.RATTAN_ARMOR, entity)) {
-                voice(entity, Sounds.TENGJIA1);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public void hurtByCard(LivingEntity entity, DamageSource source, ItemStack card) {
-        ItemStack jianxiong = trinketItem(SkillCards.JIANXIONG, entity);
-        if (!jianxiong.isEmpty() && getCD(jianxiong) == 0) {
-            voice(entity, jianxiong);
-            setCD(jianxiong, 15);
-            if (entity instanceof PlayerEntity player) give(player, card.copyWithCount(1));
-        }
     }
 }

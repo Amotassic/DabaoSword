@@ -12,10 +12,12 @@ import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 
+import static com.amotassic.dabaosword.api.event.CardEvents.cardDiscard;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class PlayerEvents implements PlayerConnectCallback, PlayerDeathCallback, PlayerRespawnCallback {
@@ -48,7 +50,13 @@ public class PlayerEvents implements PlayerConnectCallback, PlayerDeathCallback,
                 }
             }
 
-            if (hasItem(player, stack -> stack.isOf(ModItems.BBJI))) voice(player, Sounds.XUYOU);
+            if (hasItem(player, p(ModItems.BBJI))) voice(player, Sounds.XUYOU);
+
+            if (hasTrinket(SkillCards.TAOLUAN, player)) {
+                ItemStack stack = trinketItem(SkillCards.TAOLUAN, player);
+                NbtCompound nbt = getOrCreateNbt(stack);
+                nbt.remove("used"); setNbt(stack, nbt);
+            }
 
             if (hasTrinket(SkillCards.BUQU, player)) {
                 ItemStack stack = trinketItem(SkillCards.BUQU, player);
@@ -56,10 +64,7 @@ public class PlayerEvents implements PlayerConnectCallback, PlayerDeathCallback,
                 if (c > 1) setTag(stack, (c+1)/2);
             }
 
-            if (hasTrinket(SkillCards.LIANYING, player)) {
-                ItemStack stack = trinketItem(SkillCards.LIANYING, player);
-                if (stack != null) setCD(stack, 0);
-            }
+            if (hasTrinket(SkillCards.LIANYING, player)) setCD(trinketItem(SkillCards.LIANYING, player), 0);
         }
     }
 
@@ -72,6 +77,7 @@ public class PlayerEvents implements PlayerConnectCallback, PlayerDeathCallback,
                 give(player, new ItemStack(ModItems.SHA));
                 give(player, new ItemStack(ModItems.SHAN));
                 give(player, new ItemStack(ModItems.PEACH));
+                draw(player);
             }
 
         }

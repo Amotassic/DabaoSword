@@ -1,9 +1,9 @@
 package com.amotassic.dabaosword.event;
 
+import com.amotassic.dabaosword.api.ReachDefend;
 import com.amotassic.dabaosword.api.Skill;
 import com.amotassic.dabaosword.api.event.EndEntityTick;
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.Gamerule;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -30,6 +30,7 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
             if (world.getTime() % 2 == 0) {
                 entity.getCommandTags().remove("sha");
                 entity.getCommandTags().remove("juedou");
+                entity.getCommandTags().remove("nanman");
             }
 
             //若方天画戟被触发了，只要左键就可以造成群伤
@@ -63,7 +64,7 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
                     else if (countCards(player) < player.getMaxHealth() || !limit) {
                         int draw = 0;
                         for (var stack : allTrinkets(player)) {
-                            if (stack.getItem() instanceof Skill s) {
+                            if (stack.getItem() instanceof Skill s && canTrigger(stack, player)) {
                                 int i = s.onDrawPhase(player, stack);
                                 if (i <= -114) {draw = 0; break;}
                                 draw += i;
@@ -106,23 +107,17 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
             }
 
             //处理所有加触及距离和近战防御距离的效果
-            int level1 = 0; int longHand = 0; int level2 = 0;
+            int level1 = 0; int level2 = 0;
             ItemStack mainHand = player.getMainHandStack();
-            if (hasTrinket(SkillCards.BENXI, player)) longHand += getTag(trinketItem(SkillCards.BENXI, player));
-            if (mainHand.isOf(ModItems.DISCARD) || mainHand.isOf(ModItems.JUEDOU)) longHand += 114;
-            if (noTieji(player)) {
-                if (hasTrinket(SkillCards.LIEGONG, player) && !player.hasStatusEffect(ModItems.COOLDOWN)) longHand += 13;
-                if (hasTrinket(SkillCards.WUSHENG, player) && isSha.test(mainHand)) longHand += 13;
+            if (mainHand.isOf(ModItems.DISCARD) || mainHand.isOf(ModItems.JUEDOU)) level1 += 114;
+            for (var stack : allTrinkets(player)) {
+                if (stack.getItem() instanceof ReachDefend rd && canTrigger(stack, player)) {
+                    level1 += rd.getExtraReach(player, stack);
+                    level2 += rd.getDefend(player, stack);
+                }
             }
-            if (hasTrinket(ModItems.CHITU, player)) level1++;
-            if (hasTrinket(SkillCards.MASHU, player)) level1++;
-            //如果有马术或赤兔，则等级加上额外加成数，否则为额外加成数-1
-            level1 = level1 > 0 ? level1 + longHand : longHand - 1;
-            if (level1 >= 0) player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 2,level1,false,false,false));
-
-            if (hasTrinket(ModItems.DILU, player)) level2++;
-            if (hasTrinket(SkillCards.FEIYING, player)) level2++;
-            if (level2 > 0) player.addStatusEffect(new StatusEffectInstance(ModItems.DEFEND, 2,level2,false,false,false));
+            if (level1 > 0) player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 2,level1 - 1,false,false,false));
+            if (level2 > 0) player.addStatusEffect(new StatusEffectInstance(ModItems.DEFEND, 2,level2 - 1,false,false,false));
 
             //下落攻击触发：脚底下两格是空气，手里拿着有耐久度的物品左键即可触发
             BlockPos blockPos = player.getBlockPos().down(1); BlockPos blockPos2 = player.getBlockPos().down(2);
