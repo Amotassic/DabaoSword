@@ -8,9 +8,8 @@ import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.ui.PlayerInvScreenHandler;
 import com.amotassic.dabaosword.ui.SimpleMenuHandler;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import dev.emi.trinkets.api.TrinketComponent;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.emi.trinkets.api.TrinketsApi;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.entity.*;
@@ -25,6 +24,10 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootTable;
+import net.minecraft.loot.context.LootContextParameterSet;
+import net.minecraft.loot.context.LootContextParameters;
+import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.PacketByteBuf;
@@ -94,11 +97,7 @@ public class ModTools {
     }
 
     public static ItemStack trinketItem(Item item, LivingEntity entity) {
-        Optional<TrinketComponent> optionalComponent = TrinketsApi.getTrinketComponent(entity);
-        if (optionalComponent.isEmpty()) return ItemStack.EMPTY;
-
-        TrinketComponent component = optionalComponent.get();
-        return component.getEquipped(item).stream().map(Pair::getRight).findFirst().orElse(ItemStack.EMPTY);
+        return TrinketsApi.getTrinketComponent(entity).map(c -> c.getEquipped(item).stream().map(Pair::getRight).findFirst().orElse(ItemStack.EMPTY)).orElse(ItemStack.EMPTY);
     }
 
     /**获取该实体的所有饰品，输出为ItemStack列表*/
@@ -188,25 +187,6 @@ public class ModTools {
         return items;
     }
 
-    /**自定义战利品表解析*/
-    public static Identifier parseLootTable(Identifier lootTableId) {
-        Gson gson = new Gson();
-        InputStreamReader reader = new InputStreamReader(Objects.requireNonNull(ModTools.class.getResourceAsStream("/data/dabaosword/" + lootTableId.getPath())));
-        JsonObject o = gson.fromJson(reader, JsonObject.class);
-        float totalWeight = 0;
-        for (var element : o.getAsJsonArray("results")) {
-            totalWeight += element.getAsJsonObject().get("weight").getAsFloat();
-        }
-        float randomValue = new Random().nextFloat(totalWeight);
-        float currentWeight = 0;
-        for (JsonElement element : o.getAsJsonArray("results")) {
-            JsonObject result = element.getAsJsonObject();
-            currentWeight += result.get("weight").getAsFloat();
-            if (randomValue < currentWeight) return new Identifier(result.get("item").getAsString());
-        }
-        return new Identifier("minecraft:air");
-    }
-
     public static void draw(LivingEntity entity) {draw(entity, 1);}
     public static void draw(LivingEntity entity, int count) {
         for (int n = 0; n<count; n++) {
@@ -218,19 +198,25 @@ public class ModTools {
                     entity.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, -1, amplifier - 1));
                 } //如果有兵粮寸断效果就不摸牌，改为将debuff等级减一
             } else {
-                give(entity, newCard());
+                give(entity, newCard(entity));
                 voice(entity, SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP,1);
             }
         }
     }
 
-    public static ItemStack newCardNoSR() {
-        return new ItemStack(Registries.ITEM.get(parseLootTable(new Identifier("dabaosword", "loot_tables/draw.json"))));
+    public static ItemStack customLoot(LivingEntity entity, String path) {
+        LootTable lt = Objects.requireNonNull(entity.getWorld().getServer()).getLootManager().getLootTable(new Identifier("dabaosword", path));
+        LootContextParameterSet set = new LootContextParameterSet.Builder((ServerWorld) entity.getWorld()).add(LootContextParameters.ORIGIN, entity.getPos()).add(LootContextParameters.THIS_ENTITY, entity).build(LootContextTypes.GIFT);
+        var list = lt.generateLoot(set);
+        for (var stack : list) return stack;
+        return ItemStack.EMPTY;
     }
-    public static ItemStack newCard() {return initSuitsAndRanks(newCardNoSR());}
-    public static ItemStack newCard(Predicate<ItemStack> predicate) {
-        ItemStack stack = newCardNoSR();
-        while (!predicate.test(stack)) stack = newCardNoSR();
+
+    public static ItemStack newCardNoSR(LivingEntity entity) {return customLoot(entity, "draw");}
+    public static ItemStack newCard(LivingEntity entity) {return initSuitsAndRanks(newCardNoSR(entity));}
+    public static ItemStack newCard(LivingEntity entity, Predicate<ItemStack> predicate) {
+        ItemStack stack = newCardNoSR(entity);
+        while (!predicate.test(stack)) stack = newCardNoSR(entity);
         return initSuitsAndRanks(stack);
     }
 
@@ -449,6 +435,22 @@ public class ModTools {
             }
         }
         return null;
+    }
+
+    /**一个用于简便执行多条服务器指令的方法*/
+    public static void excuteServerCommand(Entity entity, String[] commands, boolean fromServer) {
+        if (entity.getWorld() instanceof ServerWorld world) {
+            var server = world.getServer();
+            var dispatcher = server.getCommandManager().getDispatcher();
+            var commandSource = fromServer ? server.getCommandSource() : entity.getCommandSource();
+            for (String command : commands) {
+                if (command.startsWith("/")) command = command.substring(1);
+                try {
+                    var results = dispatcher.parse(command, commandSource);
+                    dispatcher.execute(results);
+                } catch (CommandSyntaxException e) {throw new RuntimeException(e);}
+            }
+        }
     }
 
 }

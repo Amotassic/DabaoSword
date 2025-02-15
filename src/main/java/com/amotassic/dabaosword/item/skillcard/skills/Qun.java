@@ -3,7 +3,7 @@ package com.amotassic.dabaosword.item.skillcard.skills;
 import com.amotassic.dabaosword.api.Card;
 import com.amotassic.dabaosword.api.ICardEvent;
 import com.amotassic.dabaosword.api.ReachDefend;
-import com.amotassic.dabaosword.command.TriggerSkillCommand;
+import com.amotassic.dabaosword.command.DabaoSwordCommand;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.util.Sounds;
@@ -61,7 +61,7 @@ public class Qun {
         }
     }
 
-    public static class Jizhan extends SkillItem implements TriggerSkillCommand.CSkill {
+    public static class Jizhan extends SkillItem implements DabaoSwordCommand.CSkill {
         @Override
         public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext tooltipContext) {
             tooltip.add(Text.translatable("item.dabaosword.jizhan.tooltip1"));
@@ -75,7 +75,7 @@ public class Qun {
         @Override
         public int onDrawPhase(PlayerEntity player, ItemStack stack) {
             voice(player, stack);
-            ItemStack last = newCard();
+            ItemStack last = newCard(player);
             give(player, last); //先让玩家摸一张牌，保存到lastCard
             player.getWorld().getPlayers().forEach(p -> p.sendMessage(Text.translatable("jizhan.draw", player.getDisplayName(), stack.toHoverableText(), last.toHoverableText(), Objects.requireNonNull(getRank(last)).rank), false));
             NbtCompound tag = stack.getOrCreateNbt();
@@ -89,7 +89,7 @@ public class Qun {
         public void triggerSkill(LivingEntity entity, ItemStack stack, int value) {
             int last = stack.getOrCreateNbt().getInt("lastCardRank");
             if (last == -1 || !(entity instanceof PlayerEntity player)) return;
-            ItemStack next = newCard();
+            ItemStack next = newCard(player);
             give(player, next); //又让玩家摸一张牌后，比较两张牌的点数，如果玩家选对了，就把新的牌保存到lastCard，否则关闭菜单
             player.getWorld().getPlayers().forEach(p -> p.sendMessage(Text.translatable("jizhan.draw", player.getDisplayName(), stack.toHoverableText(), next.toHoverableText(), Objects.requireNonNull(getRank(next)).rank), false));
             //下一张牌与上一张牌点数比较，有3种情况：更大返回1，更小返回-1，相等返回0
@@ -191,8 +191,7 @@ public class Qun {
                 inventory.setStack(18, stack);
 
                 openSimpleMenu(user, user, inventory, Text.translatable("item.dabaosword.taoluan.screen"));
-            }
-            else {user.sendMessage(Text.translatable("item.dabaosword.taoluan.tip").formatted(Formatting.RED), true);}
+            } else user.sendMessage(Text.translatable("item.dabaosword.taoluan.tip").formatted(Formatting.RED), true);
         }
 
         @Override
@@ -227,7 +226,7 @@ public class Qun {
         }
 
         @Override
-        public boolean canHurtByCard(LivingEntity entity, ItemStack skill, ItemStack card, DamageSource source) {
+        public boolean canHurtByCard(LivingEntity entity, ItemStack skill, ItemStack card) {
             if (card.isOf(ModItems.NANMAN)) {voice(entity, skill); return false;}
             return true;
         }

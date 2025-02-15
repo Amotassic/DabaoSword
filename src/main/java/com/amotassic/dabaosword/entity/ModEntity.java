@@ -20,7 +20,7 @@ public class ModEntity {
     }
 
     public static void entitySpawn() {
-        BiomeModifications.addSpawn(BiomeSelectors.spawnsOneOf(EntityType.ZOMBIE), SpawnGroup.MONSTER, XUYOU, 5, 1, 1);
+        BiomeModifications.addSpawn(BiomeSelectors.spawnsOneOf(EntityType.ZOMBIE), SpawnGroup.MONSTER, XUYOU, 15, 1, 1);
         SpawnRestriction.register(XUYOU, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, HostileEntity::canSpawnInDark);
     }
 }

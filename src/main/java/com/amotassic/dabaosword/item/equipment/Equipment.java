@@ -267,7 +267,7 @@ public class Equipment extends TrinketItem implements Card, Skill {
         }
 
         @Override
-        public boolean canHurtByCard(LivingEntity entity, ItemStack skill, ItemStack card, DamageSource source) {
+        public boolean canHurtByCard(LivingEntity entity, ItemStack skill, ItemStack card) {
             if (isSha.test(card) && isBlackCard.test(card)) {voice(entity, skill); return false;}
             return true;
         }
@@ -307,7 +307,7 @@ public class Equipment extends TrinketItem implements Card, Skill {
         }
 
         @Override
-        public boolean canHurtByCard(LivingEntity entity, ItemStack skill, ItemStack card, DamageSource source) {
+        public boolean canHurtByCard(LivingEntity entity, ItemStack skill, ItemStack card) {
             if (card.isOf(ModItems.WANJIAN) || card.isOf(ModItems.NANMAN) || card.isOf(ModItems.SHA)) {
                 voice(entity, Sounds.TENGJIA1); return false;
             } return true;

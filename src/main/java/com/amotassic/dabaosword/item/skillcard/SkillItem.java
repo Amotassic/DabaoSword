@@ -9,13 +9,10 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
@@ -72,9 +69,8 @@ public class SkillItem extends TrinketItem implements Skill {
     }
 
     public static void changeSkill(PlayerEntity player) {
-        var selectedId = parseLootTable(new Identifier("dabaosword", "loot_tables/draw_skill.json"));
-        ItemStack stack = new ItemStack(Registries.ITEM.get(selectedId));
-        if (stack.getItem() != Items.AIR) voice(player, Sounds.GIFTBOX,3);
+        ItemStack stack = customLoot(player, "draw_skill");
+        if (!stack.isEmpty()) voice(player, Sounds.GIFTBOX,3);
         give(player, stack);
     }
 

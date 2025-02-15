@@ -1,6 +1,5 @@
 package com.amotassic.dabaosword.entity;
 
-import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -11,17 +10,15 @@ import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Random;
 
 import static com.amotassic.dabaosword.api.event.CardEvents.cardDiscard;
 import static com.amotassic.dabaosword.util.ModTools.*;
@@ -37,6 +34,7 @@ public class XuyouEntity extends HostileEntity implements RangedAttackMob {
     protected void initGoals() {
         this.goalSelector.add(0, new SwimGoal(this));
         this.goalSelector.add(1, new UseCardGoal(this));
+        this.goalSelector.add(2, new RevengeGoal(this));
         this.goalSelector.add(3, new MeleeAttackGoal(this, 1.0, false));
         this.goalSelector.add(3, new WanderAroundGoal(this, 1.0));
         this.targetSelector.add(2, new ActiveTargetGoal<>(this, PlayerEntity.class, true));
@@ -56,6 +54,20 @@ public class XuyouEntity extends HostileEntity implements RangedAttackMob {
     public @Nullable EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         initEquipment(world.getRandom(), difficulty);
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+    }
+
+    @Override
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putInt("bbcd", bbcd);
+        nbt.putInt("bbTimes", bbTimes);
+    }
+
+    @Override
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        bbcd = nbt.getInt("bbcd");
+        bbTimes = nbt.getInt("bbTimes");
     }
 
     @Override
@@ -81,15 +93,6 @@ public class XuyouEntity extends HostileEntity implements RangedAttackMob {
     protected SoundEvent getHurtSound(DamageSource source) {return source.getType().effects().getSound();}
 
     @Override
-    protected void onKilledBy(@Nullable LivingEntity entity) {
-        if (entity instanceof PlayerEntity) {
-            if (new Random().nextFloat() < 0.05) dropStack(new ItemStack(ModItems.BBJI));
-            if (new Random().nextFloat() < 0.1) dropStack(new ItemStack(ModItems.GIFTBOX));
-        }
-        super.onKilledBy(entity);
-    }
-
-    @Override
     public void onDeath(DamageSource damageSource) {
         for (var stack : allTrinkets(this)) {
             if(isCard(stack)) cardDiscard(this, stack, stack.getCount(), true);
@@ -101,7 +104,7 @@ public class XuyouEntity extends HostileEntity implements RangedAttackMob {
     public void attack(LivingEntity target, float pullProgress) {
         bbTimes++;
         target.timeUntilRegen = 0;
-        target.damage(getDamageSources().mobAttack(this), 2);
+        target.damage(getDamageSource(this, DamageTypes.GENERIC), 2);
         voice(this, Sounds.BBJI);
     }
 }

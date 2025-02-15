@@ -9,7 +9,12 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@SuppressWarnings("unused")
 public class SkillCards {
+    public static final List<Item> SKILLS = new ArrayList<>();
     //魏
     public static final Item DUANLIANG = register("duanliang", new Wei.Duanliang());
     public static final Item FANGZHU = register("fangzhu", new Wei.Fangzhu());
@@ -63,8 +68,10 @@ public class SkillCards {
 
     public static final Item FEIYING = register("feiying", new Qun.Feiying());
 
-    private static Item register(String name,Item item){
-        return Registry.register(Registries.ITEM, new Identifier("dabaosword", name), item);
+    public static Item register(String name, Item item) {
+        Item skill = Registry.register(Registries.ITEM, new Identifier("dabaosword", name), item);
+        SKILLS.add(skill);
+        return skill;
     }
 
     public static void register() {}

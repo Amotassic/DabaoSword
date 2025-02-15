@@ -27,5 +27,8 @@
       "root"
     ]
   ],
+  "rewards": {
+    "function": "dabaosword:root"
+  },
   "sends_telemetry_event": true
 }

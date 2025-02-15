@@ -121,13 +121,13 @@ public class ModifyDamage {
             if (AT.hasStatusEffect(ModItems.TOO_HAPPY)) return 1;
         }
 
-        if (isWanjian(source) && notHurtBy(entity, source, ModItems.WANJIAN)) return 1;
-        if (isHuogong(source) && notHurtBy(entity, source, ModItems.FIRE_ATTACK)) return 1;
-        if (isShandian(source) && notHurtBy(entity, source, ModItems.SHANDIAN_ITEM)) return 1;
+        if (isWanjian(source) && notHurtBy(entity, ModItems.WANJIAN)) return 1;
+        if (isHuogong(source) && notHurtBy(entity, ModItems.FIRE_ATTACK)) return 1;
+        if (isShandian(source) && notHurtBy(entity, ModItems.SHANDIAN_ITEM)) return 1;
         if (so instanceof LivingEntity SE && shouldSha(SE)) { //只要能触发杀，伤害就会被取消
             ItemStack sha = isSha.test(SE.getMainHandStack()) ? SE.getMainHandStack() : getItem(SE, isSha);
             SE.addCommandTag("sha");
-            if (canHurtByCard(entity, source, sha)) {
+            if (canHurtByCard(entity, sha)) {
                 ISha iSha = (ISha) sha.getItem();
                 if (iSha.sha(SE, entity, amount)) iSha.shaEffect(SE, entity, sha);
                 else { //如果杀被无效化了，就会尝试触发贯石斧的效果

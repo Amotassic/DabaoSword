@@ -1,7 +1,6 @@
 package com.amotassic.dabaosword.api;
 
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
 
 public interface ICardEvent {
@@ -30,7 +29,7 @@ public interface ICardEvent {
     default void onCardMove(LivingEntity from, ItemStack skill, LivingEntity to, ItemStack card, int count, boolean fromEquip, boolean toEquip) {}
 
     /**即将承受卡牌带来的伤害时，触发即将受伤者的技能*/
-    default boolean canHurtByCard(LivingEntity entity, ItemStack skill, ItemStack card, DamageSource source) {return true;}
+    default boolean canHurtByCard(LivingEntity entity, ItemStack skill, ItemStack card) {return true;}
 
     /**当受到卡牌带来的伤害时，触发受伤者的技能*/
     default void onHurtByCard(LivingEntity entity, ItemStack skill, ItemStack card) {}

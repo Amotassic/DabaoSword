@@ -50,7 +50,7 @@ public abstract class RavagerMixin extends RaiderEntity {
             for (LivingEntity entity : getWorld().getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(7.0), target)) {
                 user.addCommandTag("nanman");
                 DamageSource source = getDamageSources().mobAttack(user);
-                if (notHurtBy(entity, source, ModItems.NANMAN)) continue;
+                if (notHurtBy(entity, ModItems.NANMAN)) continue;
                 entity.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 2, 0, false, false));
                 if (entity.damage(source, 6)) hurtBy(entity, ModItems.NANMAN);
                 knockBack(entity);

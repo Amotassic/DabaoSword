@@ -13,12 +13,14 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameMode;
 
 import java.util.Objects;
 
@@ -57,6 +59,22 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
             int giveCard = world.getGameRules().getInt(Gamerule.GIVE_CARD_INTERVAL) * 20;
             int skill = world.getGameRules().getInt(Gamerule.CHANGE_SKILL_INTERVAL) * 20;
             boolean limit = world.getGameRules().getBoolean(Gamerule.ENABLE_CARDS_LIMIT);
+
+            if (time % 100 == 0) {
+                //若玩家不在任何一场对战中，且拥有身份标签，则移除。如果意外卡在旁观者模式，变回生存模式并杀死
+                if (!PVPGameEvents.getGameManager().isPlayerInGame(player)) {
+                    var tags = player.getCommandTags();
+                    if (tags.contains("dabaosword.zhong") || tags.contains("dabaosword.fan") || tags.contains("dabaosword.nei")) {
+                        player.getCommandTags().remove("dabaosword.zhong");
+                        player.getCommandTags().remove("dabaosword.fan");
+                        player.getCommandTags().remove("dabaosword.nei");
+                        if (player.isSpectator()) {
+                            ((ServerPlayerEntity) player).changeGameMode(GameMode.SURVIVAL);
+                            player.kill();
+                        }
+                    }
+                }
+            }
 
             if (time % giveCard == 0) { // 每分钟摸两张牌
                 if (!player.isCreative() && !player.isSpectator() && player.isAlive()) {

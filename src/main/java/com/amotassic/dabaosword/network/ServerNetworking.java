@@ -1,6 +1,8 @@
 package com.amotassic.dabaosword.network;
 
 import com.amotassic.dabaosword.api.CardPileInventory;
+import com.amotassic.dabaosword.command.InfoCommand;
+import com.amotassic.dabaosword.item.LetMeCCItem;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
@@ -92,6 +94,10 @@ public class ServerNetworking {
                 player.damage(pair.getLeft().getLeft(), pair.getLeft().getRight());
                 give(player, pair.getRight());
             }
+        }
+        if (i == 9) {
+            PlayerEntity target = LetMeCCItem.getClosestEntity(player, PlayerEntity.class, 100, p -> p!= player);
+            if (target != null) InfoCommand.openFullInv(player, target, false);
         }
     }
 }

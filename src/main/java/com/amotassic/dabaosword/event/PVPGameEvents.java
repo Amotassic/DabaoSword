@@ -1,0 +1,94 @@
+package com.amotassic.dabaosword.event;
+
+import com.amotassic.dabaosword.api.event.PVPGameTickCallback;
+import com.amotassic.dabaosword.pvpgame.Game;
+import com.amotassic.dabaosword.pvpgame.GameManager;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
+import net.minecraft.scoreboard.ScoreboardCriterion;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.HoverEvent;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import net.minecraft.world.World;
+
+import java.util.Set;
+
+public class PVPGameEvents implements ServerWorldEvents.Load, ServerTickEvents.StartWorldTick, PVPGameTickCallback {
+    private static GameManager gameManager;
+
+    public static GameManager getGameManager() {return gameManager;}
+
+    @Override
+    public void onWorldLoad(MinecraftServer server, ServerWorld world) {
+        //只需要保存在主世界的data目录下即可
+        if (world.getRegistryKey() == World.OVERWORLD) gameManager = world.getPersistentStateManager().getOrCreate(nbt -> GameManager.fromNbt(world, nbt), () -> new GameManager(world), "dabaosword_game");
+    }
+
+    @Override
+    public void onStartTick(ServerWorld world) {
+        //防止每个维度都加载一次，暂时不知道用什么更优雅的办法
+        if (world.getRegistryKey() == World.OVERWORLD) gameManager.tick();
+    }
+
+    @Override
+    public void onGameTick(Game game, ServerWorld world) {
+        int countDown = game.getCountDown();
+        int gameTime = game.getGameTime();
+        if (world.getTime() % 20 == 0) {
+            if (countDown > -1) System.out.println("倒计时：" + countDown / 20 + 1);
+            else System.out.println("游戏时间：" + gameTime / 20);
+        }
+
+        if (game.isWaiting()) countDownTip(game, countDown);
+        if (countDown == 0) onGameStart(game, world);
+
+        if (game.neiLives <= 0) { //内奸和另一个队伍已淘汰，谁活着谁就胜利
+            if (game.fanLives <= 0) game.win(Game.Identity.ZHONG);
+            if (game.zhongLives <= 0) game.win(Game.Identity.FAN);
+        } else {
+            if (game.fanLives <= 0) {
+                twoTeam(game, Game.Identity.ZHONG);
+                if (game.zhongLives <= 0) game.win(Game.Identity.NEI); //忠臣反贼都淘汰，内奸胜利（无人得分才可能会这样）
+            }
+            if (game.zhongLives <= 0) twoTeam(game, Game.Identity.FAN);
+        }
+    }
+
+    private void countDownTip(Game game, int countDown) {
+        game.forEachPlayer(player -> {
+            Set<Integer> times = Set.of(60, 40, 20);
+            if (countDown % 100 == 0 || times.contains(countDown)) {
+                Text quit = Text.translatable("dabaosword.refuse").formatted(Formatting.RED).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword refusegame")).withHoverEvent(HoverEvent.Action.SHOW_TEXT.buildHoverEvent(Text.translatable("dabaosword.refuse_hover"))));
+                player.sendMessage(Text.translatable("dabaosword.game.wait", countDown / 20).append(quit));
+            }
+        });
+    }
+
+    private void onGameStart(Game game, ServerWorld world) {
+        //添加死亡计分板
+        var scoreboard = world.getServer().getScoreboard();
+        var obj = scoreboard.getObjective("dabaosword.death");
+        var criterion = ScoreboardCriterion.DEATH_COUNT;
+        if (obj == null) obj = scoreboard.addObjective("dabaosword.death", criterion, Text.translatable("dabaosword.score.death"), criterion.getDefaultRenderType());
+        scoreboard.setObjectiveSlot(1, obj);
+
+        game.forEachPlayer(player -> {
+            player.sendMessage(Text.translatable("dabaosword.game.start").formatted(Formatting.GREEN));
+            var identity = game.getIdentity(player);
+            Formatting color = Game.getIdentityColor(identity);
+            Text o1 = Text.translatable(identity.tag); Text o2 = Text.translatable(identity.tag + ".tip");
+            player.sendMessage(Text.translatable("dabaosword.game.start.tip", o1, o2).formatted(color));
+        });
+    }
+
+    /**当反贼或忠臣被淘汰后，仅剩下内奸和另外一队，判定哪队胜利
+     * @param identity 除内奸外存活的队伍*/
+    private void twoTeam(Game game, Game.Identity identity) {
+        var nei = Game.Identity.NEI; if (identity == nei) return; //防呆设计
+        if (game.getScore(identity) > game.neiScore) game.win(identity);
+        if (game.getScore(identity) < game.neiScore) game.win(nei);
+    }
+}

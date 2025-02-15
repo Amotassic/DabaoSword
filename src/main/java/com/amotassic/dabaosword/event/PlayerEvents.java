@@ -1,39 +1,42 @@
 package com.amotassic.dabaosword.event;
 
 import com.amotassic.dabaosword.api.CardPileInventory;
-import com.amotassic.dabaosword.api.event.PlayerConnectCallback;
 import com.amotassic.dabaosword.api.event.PlayerDeathCallback;
 import com.amotassic.dabaosword.api.event.PlayerRespawnCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
-import com.amotassic.dabaosword.item.skillcard.SkillItem;
+import com.amotassic.dabaosword.pvpgame.Game;
 import com.amotassic.dabaosword.util.Gamerule;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.ClientConnection;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.world.GameMode;
 
 import static com.amotassic.dabaosword.api.event.CardEvents.cardDiscard;
+import static com.amotassic.dabaosword.event.PVPGameEvents.getGameManager;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
-public class PlayerEvents implements PlayerConnectCallback, PlayerDeathCallback, PlayerRespawnCallback {
-    @Override
-    public void onPlayerConnect(ClientConnection connection, ServerPlayerEntity player) {
-
-        if (!player.getCommandTags().contains("given_skill")) {
-            SkillItem.changeSkill(player);
-            player.addCommandTag("given_skill");
-        }
-
-    }
-
+public class PlayerEvents implements PlayerDeathCallback, PlayerRespawnCallback {
     @Override
     public void onDeath(ServerPlayerEntity player, DamageSource source) {
         if (player.getWorld() instanceof ServerWorld world) {
+
+            if (source.getAttacker() instanceof ServerPlayerEntity killer && killer != player) {
+                Game game = getGameManager().getGameByPlayer(killer);
+                if (game != null && game.isOn() && game.isPlayerInThisGame(player)) {
+                    var killerTeam = game.getIdentity(killer); var deadTeam = game.getIdentity(player);
+                    if (deadTeam != Game.Identity.NEI && killerTeam != deadTeam) game.increaseScore(killer);
+                }
+            }
+
+            //玩家死亡时，若处于对战中，减少该玩家所在队伍的剩余生命数
+            Game game = getGameManager().getGameByPlayer(player);
+            if (game != null && game.isOn()) game.decreaseLives(player);
+
             boolean card = world.getGameRules().getBoolean(Gamerule.CLEAR_CARDS_AFTER_DEATH);
             if (card) {
                 CardPileInventory inventory = new CardPileInventory(player); //移除牌堆背包的牌
@@ -71,6 +74,12 @@ public class PlayerEvents implements PlayerConnectCallback, PlayerDeathCallback,
     @Override
     public void onPlayerRespawn(ServerPlayerEntity oldPlayer, ServerPlayerEntity player) {
         if (player.getWorld() instanceof ServerWorld world) {
+            //玩家复活时，若其队伍剩余生命值为0，切换至旁观者模式
+            Game game = getGameManager().getGameByPlayer(player);
+            if (game != null) {
+                int restLives = game.getLives(game.getIdentity(player));
+                if (restLives == 0) player.changeGameMode(GameMode.SPECTATOR);
+            }
 
             boolean card = world.getGameRules().getBoolean(Gamerule.CLEAR_CARDS_AFTER_DEATH);
             if (card && hasTrinket(ModItems.CARD_PILE, player)) {

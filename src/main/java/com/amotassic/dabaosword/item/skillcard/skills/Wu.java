@@ -1,6 +1,7 @@
 package com.amotassic.dabaosword.item.skillcard.skills;
 
 import com.amotassic.dabaosword.api.ICardEvent;
+import com.amotassic.dabaosword.item.LetMeCCItem;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
@@ -8,8 +9,6 @@ import com.amotassic.dabaosword.util.Sounds;
 import dev.emi.trinkets.api.SlotReference;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -18,11 +17,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.List;
+import java.util.Random;
 
 import static com.amotassic.dabaosword.api.event.CardEvents.cardDiscard;
 import static com.amotassic.dabaosword.api.event.CardEvents.cardMove;
@@ -186,7 +185,7 @@ public class Wu {
         public boolean cancelDamage(LivingEntity target, DamageSource source, float amount) {
             if (source.getAttacker() instanceof LivingEntity attacker && target instanceof PlayerEntity player) {
                 if (hasTrinket(SkillCards.LIULI, player) && hasCard(player, isCard) && !player.hasStatusEffect(ModItems.INVULNERABLE)) {
-                    LivingEntity nearEntity = getLiuliEntity(player, attacker);
+                    LivingEntity nearEntity = LetMeCCItem.getClosestEntity(player, LivingEntity.class, 10, entity -> entity != player && entity != attacker);
                     if (nearEntity != null) {
                         player.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 15,0,false,false,false));
                         voice(player, Sounds.LIULI);
@@ -197,22 +196,6 @@ public class Wu {
                 }
             }
             return false;
-        }
-
-        private static @Nullable LivingEntity getLiuliEntity(Entity entity, LivingEntity attacker) {
-            if (entity.getWorld() instanceof ServerWorld world) {
-                Box box = new Box(entity.getBlockPos()).expand(10);
-                List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, box, entity1 -> entity1 != entity && entity1 != attacker);
-                if (!entities.isEmpty()) {
-                    Map<Float, LivingEntity> map = new HashMap<>();
-                    for (var e : entities) {
-                        map.put(e.distanceTo(entity), e);
-                    }
-                    float min = Collections.min(map.keySet());
-                    return map.values().stream().toList().get(map.keySet().stream().toList().indexOf(min));
-                }
-            }
-            return null;
         }
     }
 
@@ -227,20 +210,10 @@ public class Wu {
         public void preAttack(ItemStack stack, LivingEntity target, PlayerEntity player) {
             //破军：攻击命中盔甲槽有物品的生物后，会让其所有盔甲掉落，配合古锭刀特效使用，pvp神器
             if (!player.hasStatusEffect(ModItems.COOLDOWN)) {
-                ItemStack head = target.getEquippedStack(EquipmentSlot.HEAD);
-                ItemStack chest = target.getEquippedStack(EquipmentSlot.CHEST);
-                ItemStack legs = target.getEquippedStack(EquipmentSlot.LEGS);
-                ItemStack feet = target.getEquippedStack(EquipmentSlot.FEET);
-                if (target instanceof PlayerEntity player1) {
-                    if (!head.isEmpty()) {give(player1, head.copy()); head.setCount(0);}
-                    if (!chest.isEmpty()) {give(player1, chest.copy()); chest.setCount(0);}
-                    if (!legs.isEmpty()) {give(player1, legs.copy()); legs.setCount(0);}
-                    if (!feet.isEmpty()) {give(player1, feet.copy()); feet.setCount(0);}
-                } else {
-                    if (!head.isEmpty()) {target.dropStack(head.copy());head.setCount(0);}
-                    if (!chest.isEmpty()) {target.dropStack(chest.copy());chest.setCount(0);}
-                    if (!legs.isEmpty()) {target.dropStack(legs.copy());legs.setCount(0);}
-                    if (!feet.isEmpty()) {target.dropStack(feet.copy());feet.setCount(0);}
+                for (var armor : target.getArmorItems()) {
+                    if (armor.isEmpty()) continue;
+                    if (target instanceof PlayerEntity pl) {give(pl, armor.copy()); armor.setCount(0);}
+                    else {target.dropStack(armor.copy()); armor.setCount(0);}
                 }
                 voice(player, Sounds.POJUN);
                 int i = target instanceof PlayerEntity ? 200 : 40;

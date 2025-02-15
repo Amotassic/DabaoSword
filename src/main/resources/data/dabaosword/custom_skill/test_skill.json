@@ -1,0 +1,10 @@
+{
+  "tooltip": [
+    "item.dabaosword.test_skill1"
+  ],
+  "effects": {
+    "modify_damage": {
+
+    }
+  }
+}

@@ -9,7 +9,6 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.hit.EntityHitResult;
@@ -21,16 +20,15 @@ import static com.amotassic.dabaosword.util.ModTools.hasTrinket;
 import static com.amotassic.dabaosword.util.ModTools.isEquipped;
 
 public class ClientTickEnd {
-    private static final KeyBinding ACTIVE_SKILL = KeyBindingHelper
-            .registerKeyBinding(new KeyBinding("key.dabaosword.active_skill", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_J, "category.dabaosword.keybindings"));
-
-    private static final KeyBinding SELECT_CARD = KeyBindingHelper
-            .registerKeyBinding(new KeyBinding("key.dabaosword.select_card", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_K, "category.dabaosword.keybindings"));
+    private static final String category = "category.dabaosword.keybindings";
+    private static final KeyBinding ACTIVE_SKILL = keyBinding("active_skill", GLFW.GLFW_KEY_J);
+    private static final KeyBinding SELECT_CARD = keyBinding("select_card", GLFW.GLFW_KEY_K);
 
     public static void initialize() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             var user = MinecraftClient.getInstance().player;
             var result = MinecraftClient.getInstance().crosshairTarget;
+            var ctrl = MinecraftClient.getInstance().options.sprintKey;
             PacketByteBuf buf = PacketByteBufs.create();
             if (user != null) {
                 if (hasTrinket(SkillCards.SHENSU, user)) {
@@ -42,9 +40,9 @@ public class ClientTickEnd {
                 }
 
                 if (SELECT_CARD.wasPressed()) {
-                    if (user.isSneaking() && client.options.sprintKey.wasPressed()) buf.writeInt(3);
+                    if (user.isSneaking() && ctrl.wasPressed()) buf.writeInt(3);
                     else if (user.isSneaking()) buf.writeInt(1);
-                    else if (client.options.sprintKey.wasPressed()) buf.writeInt(2);
+                    else if (ctrl.wasPressed()) buf.writeInt(2);
                     else buf.writeInt(0);
                     ClientPlayNetworking.send(ServerNetworking.SELECT_CARD, buf);
                     return;
@@ -65,5 +63,9 @@ public class ClientTickEnd {
                 }
             }
         });
+    }
+
+    private static KeyBinding keyBinding(String name, int key) {
+        return KeyBindingHelper.registerKeyBinding(new KeyBinding("key.dabaosword." + name, key, category));
     }
 }

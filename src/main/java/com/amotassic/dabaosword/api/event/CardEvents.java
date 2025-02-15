@@ -10,7 +10,6 @@ import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -109,11 +108,11 @@ public class CardEvents {
         }
     }
 
-    public static boolean notHurtBy(LivingEntity e, DamageSource s, Item c) {return !canHurtByCard(e,s,new ItemStack(c));}
-    public static boolean canHurtByCard(LivingEntity entity, DamageSource source, ItemStack card) {
+    public static boolean notHurtBy(LivingEntity e, Item c) {return !canHurtByCard(e, new ItemStack(c));}
+    public static boolean canHurtByCard(LivingEntity entity, ItemStack card) {
         for (var skill : allTrinkets(entity)) {
             if (skill.getItem() instanceof ICardEvent e && canTrigger(skill, entity)) {
-                boolean canHurt = e.canHurtByCard(entity, skill, card, source);
+                boolean canHurt = e.canHurtByCard(entity, skill, card);
                 if (!canHurt) return false;
             }
         }
@@ -126,7 +125,6 @@ public class CardEvents {
             if (skill.getItem() instanceof ICardEvent e && canTrigger(skill, entity)) e.onHurtByCard(entity, skill, card);
         }
     }
-
 
     /**专为处理卡牌减少而写的方法，牌堆中的卡牌减少，需要保存nbt*/
     public static void cardDecrement(Pair<CardPileInventory, ItemStack> stack, int count) {
