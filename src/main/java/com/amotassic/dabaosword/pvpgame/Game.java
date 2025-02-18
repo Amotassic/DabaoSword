@@ -2,6 +2,7 @@ package com.amotassic.dabaosword.pvpgame;
 
 import com.amotassic.dabaosword.api.event.PVPGameTickCallback;
 import com.amotassic.dabaosword.event.PVPGameEvents;
+import com.amotassic.dabaosword.util.ModConfig;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -9,12 +10,16 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.GameMode;
 
 import java.util.*;
 import java.util.function.Consumer;
+
+import static com.amotassic.dabaosword.util.ModTools.title;
+import static com.amotassic.dabaosword.util.ModTools.voice;
 
 public class Game {
     private final ServerWorld world;
@@ -23,6 +28,7 @@ public class Game {
     private boolean active;
     private int countDown;
     private int gameTime;
+    private int timeOut;
     //列举各项数据
     public int zhongLives;
     public int fanLives;
@@ -36,8 +42,10 @@ public class Game {
         this.id = id;
         this.players.addAll(players);
         this.active = true;
-        this.countDown = 10 * 20;
+        int waitTime = ModConfig.WaitTime > 5 ? ModConfig.WaitTime : 5;
+        this.countDown = waitTime * 20;
         this.gameTime = 0;
+        this.timeOut = ModConfig.TimeOut;
         initData();
     }
 
@@ -51,6 +59,7 @@ public class Game {
         this.active = nbt.getBoolean("Active");
         this.countDown = nbt.getInt("CountDown");
         this.gameTime = nbt.getInt("GameTime");
+        this.timeOut = nbt.getInt("TimeOut");
         this.zhongLives = nbt.getInt("ZhongLives");
         this.fanLives = nbt.getInt("FanLives");
         this.neiLives = nbt.getInt("NeiLives");
@@ -76,7 +85,8 @@ public class Game {
             player.getCommandTags().remove("dabaosword.nei");
             player.addCommandTag(ids.remove(0));
         });
-        this.zhongLives = this.fanLives = this.neiLives = fanCount * 3;
+        this.zhongLives = this.fanLives = fanCount * 3;
+        this.neiLives = neiCount > 0 ? fanCount * 3 : 0;
         this.zhongScore = this.fanScore = this.neiScore = 0;
     }
 
@@ -88,6 +98,7 @@ public class Game {
         nbt.putBoolean("Active", this.active);
         nbt.putInt("CountDown", this.countDown);
         nbt.putInt("GameTime", this.gameTime);
+        nbt.putInt("TimeOut", this.timeOut);
         nbt.putInt("ZhongLives", this.zhongLives);
         nbt.putInt("FanLives", this.fanLives);
         nbt.putInt("NeiLives", this.neiLives);
@@ -105,6 +116,8 @@ public class Game {
     /**游戏被加载，不论是等待中还是已经开始*/
     public boolean isActive() {return active;}
 
+    public Set<UUID> getPlayers() {return players;}
+
     /**游戏处于准备阶段倒计时，此时玩家可以拒绝加入游戏*/
     public boolean isWaiting() {return countDown > 0;}
 
@@ -112,20 +125,35 @@ public class Game {
 
     public int getGameTime() {return gameTime;}
 
+    public int getTimeOut() {return timeOut;}
+
     /**游戏已经开始，且不处于准备阶段*/
     public boolean isOn() {return getGameTime() > 0;}
 
     public void refuseGame(PlayerEntity player) {
         if (!isWaiting()) return;
         discardGame();
-        forEachPlayer(p -> p.sendMessage(Text.translatable("dabaosword.game.refuse", player.getDisplayName()).formatted(Formatting.RED)));
+        forEachPlayer(p -> {
+            p.sendMessage(Text.translatable("dabaosword.game.refuse", player.getDisplayName()).formatted(Formatting.RED));
+            voice(p, SoundEvents.ITEM_SHIELD_BREAK);
+        });
     }
 
     public void win(Identity identity) {
         forEachPlayer(player -> {
-            player.sendMessage(Text.translatable("dabaosword.game.win", Text.translatable(identity.tag)).formatted(getIdentityColor(identity)));
+            if (getIdentity(player) == identity) title(player, Text.translatable("dabaosword.game.win").formatted(Formatting.GOLD));
+            player.sendMessage(Text.translatable("dabaosword.game.end", Text.translatable(identity.tag)).formatted(getIdentityColor(identity)));
         });
         discardGame();
+    }
+
+    public void timeOut() {
+        forEachPlayer(player -> player.sendMessage(Text.translatable("dabaosword.game.timeout").formatted(Formatting.RED)));
+        Integer max = findUniqueMax(zhongScore, fanScore, neiScore);
+        if (max == null) discardGame();
+        else if (zhongScore == max) win(Identity.ZHONG);
+        else if (fanScore == max) win(Identity.FAN);
+        else if (neiScore == max) win(Identity.NEI);
     }
 
     public void discardGame() {
@@ -148,10 +176,11 @@ public class Game {
         PVPGameTickCallback.EVENT.invoker().onGameTick(this, world);
         //倒计时为-1时，游戏开始计时
         if (this.countDown > -1) --this.countDown; else ++this.gameTime;
+        if (isOn() && getGameTime() % 20 == 0) --this.timeOut;
     }
 
     public void forEachPlayer(Consumer<ServerPlayerEntity> action) {
-        for (UUID uuid : this.players) {
+        for (UUID uuid : getPlayers()) {
             ServerPlayerEntity player = world.getServer().getPlayerManager().getPlayer(uuid);
             if (player == null) continue;
             action.accept(player);
@@ -201,6 +230,7 @@ public class Game {
     public void increaseScore(ServerPlayerEntity player) {
         Identity identity = getIdentity(player);
         setScore(identity, getScore(identity) + 1);
+        this.timeOut = ModConfig.TimeOut;
         forEachPlayer(p -> p.sendMessage(Text.translatable("dabaosword.score.add", player.getDisplayName())));
     }
 
@@ -209,6 +239,19 @@ public class Game {
         if (player.getCommandTags().contains(Identity.ZHONG.tag)) return Identity.ZHONG;
         if (player.getCommandTags().contains(Identity.FAN.tag)) return Identity.FAN;
         return Identity.NEI;
+    }
+
+    public static Integer findUniqueMax(int... numbers) {
+        if (numbers.length == 0) return null;
+        int max = numbers[0];
+        boolean isUnique = true;
+        for (int i = 1; i < numbers.length; i++) {
+            if (numbers[i] > max) {
+                max = numbers[i];
+                isUnique = true;
+            } else if (numbers[i] == max) {isUnique = false;}
+        }
+        return isUnique ? max : null;
     }
 
     public static Formatting getIdentityColor(Identity identity) {

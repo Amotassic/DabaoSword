@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.world.GameMode;
 
 import static com.amotassic.dabaosword.api.event.CardEvents.cardDiscard;
@@ -35,7 +36,12 @@ public class PlayerEvents implements PlayerDeathCallback, PlayerRespawnCallback 
 
             //玩家死亡时，若处于对战中，减少该玩家所在队伍的剩余生命数
             Game game = getGameManager().getGameByPlayer(player);
-            if (game != null && game.isOn()) game.decreaseLives(player);
+            if (game != null && game.isOn()) {
+                game.decreaseLives(player);
+                var identity = game.getIdentity(player);
+                int restLives = game.getLives(identity); //如果玩家所在阵营剩余生命值为0，公布玩家身份
+                if (restLives == 0) game.forEachPlayer(p -> p.sendMessage(Text.translatable("dabaosword.game.view_id.tip", player.getDisplayName(), Text.translatable(identity.tag)).formatted(Game.getIdentityColor(identity))));
+            }
 
             boolean card = world.getGameRules().getBoolean(Gamerule.CLEAR_CARDS_AFTER_DEATH);
             if (card) {

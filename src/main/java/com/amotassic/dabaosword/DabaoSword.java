@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword;
 
+import com.amotassic.dabaosword.api.config.Configuration;
 import com.amotassic.dabaosword.command.DabaoSwordCommand;
 import com.amotassic.dabaosword.command.InfoCommand;
 import com.amotassic.dabaosword.entity.ModEntity;
@@ -7,6 +8,7 @@ import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.network.ServerNetworking;
 import com.amotassic.dabaosword.util.Gamerule;
+import com.amotassic.dabaosword.util.ModConfig;
 import com.amotassic.dabaosword.util.Sounds;
 import com.amotassic.dabaosword.util.Tags;
 import net.fabricmc.api.ModInitializer;
@@ -23,6 +25,7 @@ public class DabaoSword implements ModInitializer {
     @Override
     public void onInitialize() {
         LOGGER.info("Ciallo～(∠·ω< )⌒★");
+        new Configuration(ModConfig.class, MOD_ID);
         ModItems.register();
         Sounds.sound();
         SkillCards.register();

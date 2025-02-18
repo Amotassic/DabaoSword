@@ -1,5 +1,7 @@
 package com.amotassic.dabaosword.pvpgame;
 
+import com.amotassic.dabaosword.event.PVPGameEvents;
+import com.amotassic.dabaosword.util.ModConfig;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
@@ -29,7 +31,7 @@ public class GameManager extends PersistentState {
 
     @Nullable
     public Game createGame(ServerPlayerEntity player) {
-        Box box = new Box(player.getBlockPos()).expand(20);
+        Box box = new Box(player.getBlockPos()).expand(ModConfig.SearchRadius);
         List<PlayerEntity> players = player.getWorld().getEntitiesByClass(PlayerEntity.class, box, p -> !p.isSpectator() && !isPlayerInGame(p));
         if (players.size() < 2) {
             player.sendMessage(Text.literal("Not enough players to start a game!").formatted(Formatting.RED));
@@ -39,6 +41,7 @@ public class GameManager extends PersistentState {
         for (PlayerEntity p : players) playerUuids.add(p.getUuid());
         Game game = new Game(nextId(), world, playerUuids);
         games.put(game.getGameId(), game);
+        PVPGameEvents.onGameCreate(player, game, playerUuids);
         markDirty();
         return game;
     }

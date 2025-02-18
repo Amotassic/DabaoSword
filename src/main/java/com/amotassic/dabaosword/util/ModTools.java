@@ -31,6 +31,8 @@ import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
+import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -451,6 +453,14 @@ public class ModTools {
                 } catch (CommandSyntaxException e) {throw new RuntimeException(e);}
             }
         }
+    }
+
+    public static void title(ServerPlayerEntity player, Text title) {
+        player.networkHandler.sendPacket(new TitleS2CPacket(title));
+    }
+
+    public static void subtitle(ServerPlayerEntity player, Text sub) {
+        player.networkHandler.sendPacket(new SubtitleS2CPacket(sub));
     }
 
 }

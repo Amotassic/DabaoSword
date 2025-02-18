@@ -7,7 +7,9 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
@@ -15,6 +17,9 @@ import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 
 import java.util.Set;
+import java.util.UUID;
+
+import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class PVPGameEvents implements ServerWorldEvents.Load, ServerTickEvents.StartWorldTick, PVPGameTickCallback {
     private static GameManager gameManager;
@@ -36,14 +41,10 @@ public class PVPGameEvents implements ServerWorldEvents.Load, ServerTickEvents.S
     @Override
     public void onGameTick(Game game, ServerWorld world) {
         int countDown = game.getCountDown();
-        int gameTime = game.getGameTime();
-        if (world.getTime() % 20 == 0) {
-            if (countDown > -1) System.out.println("倒计时：" + countDown / 20 + 1);
-            else System.out.println("游戏时间：" + gameTime / 20);
-        }
 
         if (game.isWaiting()) countDownTip(game, countDown);
         if (countDown == 0) onGameStart(game, world);
+        if (game.isOn()) handleTimeOut(game, game.getTimeOut());
 
         if (game.neiLives <= 0) { //内奸和另一个队伍已淘汰，谁活着谁就胜利
             if (game.fanLives <= 0) game.win(Game.Identity.ZHONG);
@@ -57,12 +58,21 @@ public class PVPGameEvents implements ServerWorldEvents.Load, ServerTickEvents.S
         }
     }
 
+    public static void onGameCreate(ServerPlayerEntity player, Game game, Set<UUID> players) {
+        game.forEachPlayer(p -> p.sendMessage(Text.translatable("dabaosword.game.create", player.getDisplayName(), players.size())));
+    }
+
     private void countDownTip(Game game, int countDown) {
         game.forEachPlayer(player -> {
-            Set<Integer> times = Set.of(60, 40, 20);
-            if (countDown % 100 == 0 || times.contains(countDown)) {
+            if (countDown % 100 == 0) {
                 Text quit = Text.translatable("dabaosword.refuse").formatted(Formatting.RED).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword refusegame")).withHoverEvent(HoverEvent.Action.SHOW_TEXT.buildHoverEvent(Text.translatable("dabaosword.refuse_hover"))));
                 player.sendMessage(Text.translatable("dabaosword.game.wait", countDown / 20).append(quit));
+                return;
+            }
+            Set<Integer> times = Set.of(60, 40, 20);
+            if (times.contains(countDown)) {
+                voice(player, SoundEvents.BLOCK_NOTE_BLOCK_BELL.value());
+                title(player, Text.literal(String.valueOf(countDown / 20)));
             }
         });
     }
@@ -76,12 +86,18 @@ public class PVPGameEvents implements ServerWorldEvents.Load, ServerTickEvents.S
         scoreboard.setObjectiveSlot(1, obj);
 
         game.forEachPlayer(player -> {
-            player.sendMessage(Text.translatable("dabaosword.game.start").formatted(Formatting.GREEN));
             var identity = game.getIdentity(player);
             Formatting color = Game.getIdentityColor(identity);
             Text o1 = Text.translatable(identity.tag); Text o2 = Text.translatable(identity.tag + ".tip");
-            player.sendMessage(Text.translatable("dabaosword.game.start.tip", o1, o2).formatted(color));
+            Text o3 = Text.translatable("dabaosword.game.start.tip", o1, o2).formatted(color);
+            title(player, Text.translatable("dabaosword.game.start").formatted(Formatting.GOLD));
+            subtitle(player, o3); player.sendMessage(o3);
         });
+    }
+
+    private void handleTimeOut(Game game, int timeOut) {
+        if (timeOut == 60 || timeOut == 30) game.forEachPlayer(player -> player.sendMessage(Text.translatable("dabaosword.game.timeout.warn", timeOut).formatted(Formatting.YELLOW)));
+        if (timeOut == 0) game.timeOut();
     }
 
     /**当反贼或忠臣被淘汰后，仅剩下内奸和另外一队，判定哪队胜利
