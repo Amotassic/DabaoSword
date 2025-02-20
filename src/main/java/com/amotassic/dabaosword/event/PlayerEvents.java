@@ -7,6 +7,7 @@ import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.pvpgame.Game;
 import com.amotassic.dabaosword.util.Gamerule;
+import com.amotassic.dabaosword.util.ModConfig;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerInventory;
@@ -14,17 +15,43 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.world.GameMode;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import static com.amotassic.dabaosword.api.event.CardEvents.cardDiscard;
 import static com.amotassic.dabaosword.event.PVPGameEvents.getGameManager;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class PlayerEvents implements PlayerDeathCallback, PlayerRespawnCallback {
+    private static final Map<UUID, KillStreakData> playerKillData = new HashMap<>();
+    private record KillStreakData(int streak, long lastKillTime) {}
+    private static SoundEvent getKillSound(int streak) {
+        return switch (streak) {
+            case 1, 2, 3, 4, 5, 6, 7 -> getSound("kill" + streak);
+            default -> getSound("diankuang");
+        };
+    }
+
     @Override
     public void onDeath(ServerPlayerEntity player, DamageSource source) {
         if (player.getWorld() instanceof ServerWorld world) {
+
+            if (ModConfig.KillStreak && source.getAttacker() instanceof ServerPlayerEntity killer) { //紫砂也算连上了
+                UUID id = killer.getUuid(); long time = world.getTime();
+
+                var data = playerKillData.getOrDefault(id, new KillStreakData(0, 0));
+                long timeDiff = time - data.lastKillTime();
+                int newStreak = (0 <= timeDiff && timeDiff <= 1200) ? data.streak() + 1 : 1;
+                data = new KillStreakData(newStreak, time);
+                playerKillData.put(id, data);
+
+                if (data.streak() >= 2) voice(killer, getKillSound(data.streak()));
+            }
 
             if (source.getAttacker() instanceof ServerPlayerEntity killer && killer != player) {
                 Game game = getGameManager().getGameByPlayer(killer);

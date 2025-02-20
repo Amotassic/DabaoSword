@@ -398,12 +398,10 @@
   "advancement.dabaosword.gift_box.title": "全力氪金，言贵者，斩！",
   "advancement.dabaosword.gift_box.tip": "把一组绿宝石扔给傻子村民",
 
-  "gamerule.fire_attack_breaks_block": "火攻破坏方块",
   "gamerule.card_pile_hungerless": "牌堆恢复饱食度",
   "gamerule.clear_cards_after_death": "死亡后清除所有卡牌",
   "gamerule.give_card_interval": "牌堆发牌时间间隔",
   "gamerule.change_skill_interval": "更换技能时间间隔",
-  "gamerule.enable_falling_attack": "启用下落攻击",
   "gamerule.enable_cards_limit": "启用牌堆发牌限制",
 
   "dabaosword.welcome": "欢迎游玩大宝刀！我们的mod正在蒸蒸日上哦！",

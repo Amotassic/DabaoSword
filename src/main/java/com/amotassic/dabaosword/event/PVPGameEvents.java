@@ -63,6 +63,7 @@ public class PVPGameEvents implements ServerWorldEvents.Load, ServerTickEvents.S
     }
 
     private void countDownTip(Game game, int countDown) {
+        if (countDown % 20 != 0) return;
         game.forEachPlayer(player -> {
             if (countDown % 100 == 0) {
                 Text quit = Text.translatable("dabaosword.refuse").formatted(Formatting.RED).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword refusegame")).withHoverEvent(HoverEvent.Action.SHOW_TEXT.buildHoverEvent(Text.translatable("dabaosword.refuse_hover"))));
@@ -96,6 +97,7 @@ public class PVPGameEvents implements ServerWorldEvents.Load, ServerTickEvents.S
     }
 
     private void handleTimeOut(Game game, int timeOut) {
+        if (game.getGameTime() % 20 != 0) return;
         if (timeOut == 60 || timeOut == 30) game.forEachPlayer(player -> player.sendMessage(Text.translatable("dabaosword.game.timeout.warn", timeOut).formatted(Formatting.YELLOW)));
         if (timeOut == 0) game.timeOut();
     }

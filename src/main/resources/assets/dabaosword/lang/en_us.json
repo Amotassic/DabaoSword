@@ -398,12 +398,10 @@
   "advancement.dabaosword.gift_box.title": "All Out for the Almighty Dollar!",
   "advancement.dabaosword.gift_box.tip": "Toss a stack of emeralds to a nitwit villager",
 
-  "gamerule.fire_attack_breaks_block": "Fire Attack Breaks Block",
   "gamerule.card_pile_hungerless": "Card Pile Hungerless",
   "gamerule.clear_cards_after_death": "Clear Cards After Death",
   "gamerule.give_card_interval": "Draw Card Interval",
   "gamerule.change_skill_interval": "Change Skill Interval",
-  "gamerule.enable_falling_attack": "Enable Falling Attack",
   "gamerule.enable_cards_limit": "Enable Cards Limit",
 
   "dabaosword.welcome": "欢迎游玩大宝刀！我们的mod正在蒸蒸日上哦！",

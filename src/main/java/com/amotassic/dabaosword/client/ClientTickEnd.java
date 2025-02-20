@@ -20,9 +20,8 @@ import static com.amotassic.dabaosword.util.ModTools.hasTrinket;
 import static com.amotassic.dabaosword.util.ModTools.isEquipped;
 
 public class ClientTickEnd {
-    private static final String category = "category.dabaosword.keybindings";
-    private static final KeyBinding ACTIVE_SKILL = keyBinding("active_skill", GLFW.GLFW_KEY_J);
-    private static final KeyBinding SELECT_CARD = keyBinding("select_card", GLFW.GLFW_KEY_K);
+    public static final KeyBinding ACTIVE_SKILL = keyBinding("active_skill", GLFW.GLFW_KEY_J);
+    public static final KeyBinding SELECT_CARD = keyBinding("select_card", GLFW.GLFW_KEY_K);
 
     public static void initialize() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
@@ -66,6 +65,7 @@ public class ClientTickEnd {
     }
 
     private static KeyBinding keyBinding(String name, int key) {
+        String category = "category.dabaosword.keybindings";
         return KeyBindingHelper.registerKeyBinding(new KeyBinding("key.dabaosword." + name, key, category));
     }
 }

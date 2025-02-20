@@ -68,7 +68,7 @@ public class GameManager extends PersistentState {
             }
             game.tick();
         }
-        if (world.getTime() % 100 == 0) System.out.println("GameManager tick: " + games.keySet());
+        //if (world.getTime() % 200 == 0) System.out.println("GameManager tick: " + games.keySet());
         if (world.getTime() % 200 == 0) markDirty();
     }
 

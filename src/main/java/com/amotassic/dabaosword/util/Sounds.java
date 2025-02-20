@@ -102,6 +102,10 @@ public class Sounds {
     public static final SoundEvent SHA_FIRE = register("fire_sha");
     public static final SoundEvent SHA_THUNDER = register("thunder_sha");
 
+    static {
+        register("diankuang"); register("wushuang"); register("kill1"); register("kill2"); register("kill3"); register("kill4"); register("kill5"); register("kill6"); register("kill7");
+    }
+
     public static void sound() {}
     public static SoundEvent register(String name){
         Identifier identifier = new Identifier("dabaosword",name);

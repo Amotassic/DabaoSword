@@ -156,6 +156,9 @@ public class ModTools {
         SoundEvent sound = Registries.SOUND_EVENT.get(Identifier.of("dabaosword", stack.getItem().toString()));
         if (sound != null) voice(entity, sound);
     }
+    public static SoundEvent getSound(String name) {
+        return Registries.SOUND_EVENT.get(Identifier.of("dabaosword", name));
+    }
 
     /**数玩家所有手牌的数量*/
     public static int countCards(LivingEntity entity) {return countCard(entity, isCard);}

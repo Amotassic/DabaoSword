@@ -5,6 +5,7 @@ import com.amotassic.dabaosword.api.Skill;
 import com.amotassic.dabaosword.api.event.EndEntityTick;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.Gamerule;
+import com.amotassic.dabaosword.util.ModConfig;
 import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -140,8 +141,7 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
 
             //下落攻击触发：脚底下两格是空气，手里拿着有耐久度的物品左键即可触发
             BlockPos blockPos = player.getBlockPos().down(1); BlockPos blockPos2 = player.getBlockPos().down(2);
-            boolean falling = world.getGameRules().getBoolean(Gamerule.ENABLE_FALLING_ATTACK);
-            if (falling && world.getBlockState(blockPos).getBlock() == Blocks.AIR && world.getBlockState(blockPos2).getBlock() == Blocks.AIR && player.getMainHandStack().getItem().isDamageable() && player.handSwingTicks == 1) {
+            if (ModConfig.FallingAttack && world.getBlockState(blockPos).getBlock() == Blocks.AIR && world.getBlockState(blockPos2).getBlock() == Blocks.AIR && player.getMainHandStack().getItem().isDamageable() && player.handSwingTicks == 1) {
                 player.addStatusEffect(new StatusEffectInstance(ModItems.FALLING_ATTACK, StatusEffectInstance.INFINITE,0,false,false,false));
             }
 
