@@ -3,7 +3,6 @@ package com.amotassic.dabaosword.item.skillcard.skills;
 import com.amotassic.dabaosword.api.ICardEvent;
 import com.amotassic.dabaosword.item.LetMeCCItem;
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.util.Sounds;
 import dev.emi.trinkets.api.SlotReference;
@@ -179,23 +178,22 @@ public class Wu {
         }
 
         @Override
-        public Priority getPriority(LivingEntity target, DamageSource source, float amount) {return Priority.NORMAL;}
-
-        @Override
-        public boolean cancelDamage(LivingEntity target, DamageSource source, float amount) {
-            if (source.getAttacker() instanceof LivingEntity attacker && target instanceof PlayerEntity player) {
-                if (hasTrinket(SkillCards.LIULI, player) && hasCard(player, isCard) && !player.hasStatusEffect(ModItems.INVULNERABLE)) {
-                    LivingEntity nearEntity = LetMeCCItem.getClosestEntity(player, LivingEntity.class, 10, entity -> entity != player && entity != attacker);
-                    if (nearEntity != null) {
-                        player.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 15,0,false,false,false));
-                        voice(player, Sounds.LIULI);
-                        cardDiscard(player, getCard(player, isCard).getRight(), 1, false);
-                        nearEntity.timeUntilRegen = 0; nearEntity.damage(source, amount);
-                        return true;
+        public CancelDamageData cancelDamage() {
+            return new CancelDamageData(Priority.NORMAL, (target, source, amount) -> {
+                if (source.getAttacker() instanceof LivingEntity attacker && target instanceof PlayerEntity player) {
+                    if (hasTrinket(this, player) && hasCard(player, isCard) && !player.hasStatusEffect(ModItems.INVULNERABLE)) {
+                        LivingEntity nearEntity = LetMeCCItem.getClosestEntity(player, LivingEntity.class, 10, entity -> entity != player && entity != attacker);
+                        if (nearEntity != null) {
+                            player.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 15,0,false,false,false));
+                            voice(player, Sounds.LIULI);
+                            cardDiscard(player, getCard(player, isCard), 1, false);
+                            nearEntity.timeUntilRegen = 0; nearEntity.damage(source, amount);
+                            return true;
+                        }
                     }
                 }
-            }
-            return false;
+                return false;
+            });
         }
     }
 

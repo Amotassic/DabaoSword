@@ -38,7 +38,11 @@ public class DabaoSwordCommand {
                                 .executes(c -> execute(c, ItemStackArgumentType.getItemStackArgument(c, "skill"), IntegerArgumentType.getInteger(c, "value")))
                         )
                 )
-                .then(literal("creategame").executes(DabaoSwordCommand::createGame))
+                .then(literal("creategame")
+                       .then(argument("type", IntegerArgumentType.integer())
+                               .executes(c -> createGame(c, IntegerArgumentType.getInteger(c, "type")))
+                       )
+                )
                 .then(literal("refusegame").executes(DabaoSwordCommand::refuseGame))
                 .then(literal("discardgame").requires(source -> source.hasPermissionLevel(2))
                         .executes(c -> discardGame(c, null))
@@ -65,9 +69,9 @@ public class DabaoSwordCommand {
         default void triggerSkill(LivingEntity entity, ItemStack stack, int value) {}
     }
 
-    private static int createGame(CommandContext<ServerCommandSource> ctx) throws CommandSyntaxException {
+    private static int createGame(CommandContext<ServerCommandSource> ctx, int type) throws CommandSyntaxException {
         ServerPlayerEntity player = ctx.getSource().getPlayerOrThrow();
-        Game game = getGameManager().createGame(player);
+        Game game = getGameManager().createGame(player, type);
         if (game == null) return 0;
         return 1;
     }
@@ -120,7 +124,10 @@ public class DabaoSwordCommand {
             case 2 -> {
                 MutableText text = Text.translatable("dabaosword.rule").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword 3"))).append(
 
-                Text.translatable("dabaosword.newgame1").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword creategame")).withHoverEvent(HoverEvent.Action.SHOW_TEXT.buildHoverEvent(Text.translatable("dabaosword.newgame1_hover")))));
+                Text.translatable("dabaosword.newgame0").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword creategame 0")).withHoverEvent(HoverEvent.Action.SHOW_TEXT.buildHoverEvent(Text.translatable("dabaosword.newgame0_hover"))))).append(
+
+                Text.translatable("dabaosword.newgame1").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword creategame 1")).withHoverEvent(HoverEvent.Action.SHOW_TEXT.buildHoverEvent(Text.translatable("dabaosword.newgame1_hover"))))
+                );
                 player.sendMessage(text);
             }
             case 3 -> {
@@ -134,9 +141,9 @@ public class DabaoSwordCommand {
         return 1;
     }
 
-    private static final MutableText info = Text.translatable("dabaosword.help.info").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/info ")).withHoverEvent(HoverEvent.Action.SHOW_TEXT.buildHoverEvent(Text.translatable("dabaosword.help.info_hover"))));
-    private static final MutableText newGame = Text.translatable("dabaosword.newgame").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword 2")).withHoverEvent(HoverEvent.Action.SHOW_TEXT.buildHoverEvent(Text.translatable("dabaosword.newgame_hover"))));
-    private static final MutableText viewId = Text.translatable("dabaosword.viewid").formatted(Formatting.LIGHT_PURPLE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/dabaosword viewidentity ")).withHoverEvent(HoverEvent.Action.SHOW_TEXT.buildHoverEvent(Text.translatable("dabaosword.viewid_hover"))));
-    private static final MutableText disGame = Text.translatable("dabaosword.disgame").formatted(Formatting.LIGHT_PURPLE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/dabaosword discardgame ")).withHoverEvent(HoverEvent.Action.SHOW_TEXT.buildHoverEvent(Text.translatable("dabaosword.disgame_hover"))));
+    private static final MutableText info = Text.translatable("dabaosword.help.info").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/info ")).withHoverEvent(HoverEvent.Action.SHOW_TEXT.buildHoverEvent(Text.translatable("dabaosword.help.info_hover")))),
+    newGame = Text.translatable("dabaosword.newgame").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword 2")).withHoverEvent(HoverEvent.Action.SHOW_TEXT.buildHoverEvent(Text.translatable("dabaosword.newgame_hover")))),
+    viewId = Text.translatable("dabaosword.viewid").formatted(Formatting.LIGHT_PURPLE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/dabaosword viewidentity ")).withHoverEvent(HoverEvent.Action.SHOW_TEXT.buildHoverEvent(Text.translatable("dabaosword.viewid_hover")))),
+    disGame = Text.translatable("dabaosword.disgame").formatted(Formatting.LIGHT_PURPLE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/dabaosword discardgame ")).withHoverEvent(HoverEvent.Action.SHOW_TEXT.buildHoverEvent(Text.translatable("dabaosword.disgame_hover"))));
     public static final MutableText menu = info.append(newGame).append(viewId).append(disGame);
 }

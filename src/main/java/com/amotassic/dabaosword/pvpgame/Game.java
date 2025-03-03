@@ -18,29 +18,26 @@ import net.minecraft.world.GameMode;
 import java.util.*;
 import java.util.function.Consumer;
 
-import static com.amotassic.dabaosword.util.ModTools.title;
-import static com.amotassic.dabaosword.util.ModTools.voice;
+import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class Game {
     private final ServerWorld world;
     private final int id;
     private final Set<UUID> players = new HashSet<>();
+    private final int type;
     private boolean active;
     private int countDown;
     private int gameTime;
     private int timeOut;
     //列举各项数据
-    public int zhongLives;
-    public int fanLives;
-    public int neiLives;
-    public int zhongScore;
-    public int fanScore;
-    public int neiScore;
+    public int zhongLives, fanLives, neiLives;
+    public int zhongScore, fanScore, neiScore;
 
-    public Game(int id, ServerWorld world, Set<UUID> players) {
+    public Game(int id, ServerWorld world, Set<UUID> players, int type) {
         this.world = world;
         this.id = id;
         this.players.addAll(players);
+        this.type = type;
         this.active = true;
         int waitTime = ModConfig.WaitTime > 5 ? ModConfig.WaitTime : 5;
         this.countDown = waitTime * 20;
@@ -56,6 +53,7 @@ public class Game {
         for (NbtElement nbtElement : nbtList) {
             this.players.add(NbtHelper.toUuid(nbtElement));
         }
+        this.type = nbt.getInt("Type");
         this.active = nbt.getBoolean("Active");
         this.countDown = nbt.getInt("CountDown");
         this.gameTime = nbt.getInt("GameTime");
@@ -72,7 +70,8 @@ public class Game {
         //根据人数随机分配身份
         int playerCount = this.players.size();
         int fanCount = playerCount / 2;
-        int neiCount = playerCount > 2 ? 1 : 0;
+        int neiCount = playerCount > 2 ? 1 : 0; //如果是无内奸模式，参与人数为偶数时，不设置内奸
+        if (this.type == 1 && playerCount % 2 == 0) neiCount = 0;
         int zhongCount = playerCount - fanCount - neiCount;
         List<String> ids = new ArrayList<>();
         for (int i = 0; i < zhongCount; i++) ids.add(Identity.ZHONG.tag);
@@ -95,6 +94,7 @@ public class Game {
         NbtList nbtList = new NbtList();
         for (UUID uuid : this.players) nbtList.add(NbtHelper.fromUuid(uuid));
         nbt.put("Players", nbtList);
+        nbt.putInt("Type", this.type);
         nbt.putBoolean("Active", this.active);
         nbt.putInt("CountDown", this.countDown);
         nbt.putInt("GameTime", this.gameTime);
@@ -141,7 +141,10 @@ public class Game {
 
     public void win(Identity identity) {
         forEachPlayer(player -> {
-            if (getIdentity(player) == identity) title(player, Text.translatable("dabaosword.game.win").formatted(Formatting.GOLD));
+            if (getIdentity(player) == identity) {
+                voice(player, getSound("win"));
+                title(player, Text.translatable("dabaosword.game.win").formatted(Formatting.GOLD));
+            }
             player.sendMessage(Text.translatable("dabaosword.game.end", Text.translatable(identity.tag)).formatted(getIdentityColor(identity)));
         });
         discardGame();

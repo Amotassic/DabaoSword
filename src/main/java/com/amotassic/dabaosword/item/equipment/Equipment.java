@@ -56,19 +56,16 @@ public class Equipment extends TrinketItem implements Card, Skill {
         }
 
         @Override
-        public Priority getPriority(LivingEntity target, DamageSource source, float amount) {return Priority.HIGH;}
-
-        @Override
-        public boolean cancelDamage(LivingEntity target, DamageSource source, float amount) {
-            if (source.getAttacker() instanceof LivingEntity) {
-                if (!target.hasStatusEffect(ModItems.COOLDOWN2)) {
-                    if (hasTrinket(ModItems.BAGUA, target) && new Random().nextFloat() < 0.5 && !source.isIn(DamageTypeTags.BYPASSES_ARMOR)) {
+        public CancelDamageData cancelDamage() {
+            return new CancelDamageData(Priority.HIGH, (target, source, amount) -> {
+                if (source.getAttacker() instanceof LivingEntity && !target.hasStatusEffect(ModItems.COOLDOWN2)) {
+                    if (hasTrinket(this, target) && new Random().nextFloat() < 0.5 && !source.isIn(DamageTypeTags.BYPASSES_ARMOR)) {
                         shan(target, true, source, amount);
                         return true;
                     }
                 }
-            }
-            return false;
+                return false;
+            });
         }
     }
 
@@ -314,40 +311,36 @@ public class Equipment extends TrinketItem implements Card, Skill {
         }
 
         @Override
-        public Priority getPriority(LivingEntity target, DamageSource source, float amount) {return Priority.HIGH;}
-
-        @Override
-        public boolean cancelDamage(LivingEntity target, DamageSource source, float amount) {
-            ItemStack stack = trinketItem(ModItems.RATTAN_ARMOR, target);
-            //弹射物对藤甲无效
-            if (source.isIn(DamageTypeTags.IS_PROJECTILE) && inrattan(target)) {
-                Entity projectile = source.getSource();
-                if (projectile instanceof ArrowEntity) { //即使处于CD中，箭也对藤甲无效
-                    projectile.discard();
-                    voice(target, Sounds.TENGJIA1);
-                    return true;
+        public CancelDamageData cancelDamage() {
+            return new CancelDamageData(Priority.HIGH, (target, source, amount) -> {
+                ItemStack stack = trinketItem(this, target);
+                //弹射物对藤甲无效
+                if (source.isIn(DamageTypeTags.IS_PROJECTILE) && inrattan(target)) {
+                    Entity projectile = source.getSource();
+                    if (projectile instanceof ArrowEntity) { //即使处于CD中，箭也对藤甲无效
+                        projectile.discard(); voice(target, Sounds.TENGJIA1);
+                        return true;
+                    }
+                    if (getCD(stack) == 0) {
+                        if (projectile != null) projectile.discard();
+                        target.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 10,0,false,false,false));
+                        setCD(stack, 5); voice(target, Sounds.TENGJIA1);
+                        return true;
+                    }
                 }
-                if (getCD(stack) == 0) {
-                    if (projectile != null) projectile.discard();
-                    setCD(stack, 5);
-                    target.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 10,0,false,false,false));
-                    voice(target, Sounds.TENGJIA1);
-                    return true;
+                //若攻击者主手没有物品，则无法击穿藤甲
+                if (source.getSource() instanceof LivingEntity s && inrattan(target) && s.getMainHandStack().isEmpty()) {
+                    if (getCD(stack) == 0) {
+                        target.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 10,0,false,false,false));
+                        setCD(stack, 5); voice(target, Sounds.TENGJIA1);
+                        return true;
+                    }
                 }
-            }
-            //若攻击者主手没有物品，则无法击穿藤甲
-            if (source.getSource() instanceof LivingEntity s && inrattan(target) && s.getMainHandStack().isEmpty()) {
-                if (getCD(stack) == 0) {
-                    setCD(stack, 5);
-                    target.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 10,0,false,false,false));
-                    voice(target, Sounds.TENGJIA1);
-                    return true;
-                }
-            }
-            return false;
+                return false;
+            });
         }
 
-        private static boolean inrattan(LivingEntity entity) {return hasTrinket(ModItems.RATTAN_ARMOR, entity);}
+        private boolean inrattan(LivingEntity entity) {return hasTrinket(this, entity);}
     }
 
     public static class ZhangbaWeapon extends Equipment {

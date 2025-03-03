@@ -30,7 +30,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
         for (int i = 0; i < 114; i++) {
             if (entity.isAlive()) return;
             if (hasCard(entity, canSaveDying)) {
-                ItemStack stack = getCard(entity, canSaveDying).getRight();
+                ItemStack stack = getCard(entity, canSaveDying);
                 cardUsePost(entity, stack, entity);
                 entity.setHealth(entity.getHealth() - amount + 5); amount -= 5;
             }

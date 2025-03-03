@@ -1,6 +1,5 @@
 package com.amotassic.dabaosword.network;
 
-import com.amotassic.dabaosword.api.CardPileInventory;
 import com.amotassic.dabaosword.command.InfoCommand;
 import com.amotassic.dabaosword.item.LetMeCCItem;
 import com.amotassic.dabaosword.item.ModItems;
@@ -82,7 +81,7 @@ public class ServerNetworking {
 
             @Override
             public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                return new PileScreenHandler(syncId, inv, new CardPileInventory(player));
+                return new PileScreenHandler(syncId, inv);
             }
         });
         if (i == 3) {

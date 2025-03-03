@@ -46,99 +46,100 @@ import java.util.Map;
 public class ModItems {
     public static final List<Item> CARDS = new ArrayList<>();
     //杀
-    public static final Item SHA = registerCard("sha", new Sha());
-    public static final Item FIRE_SHA = registerCard("fire_sha", new Sha.Fire());
-    public static final Item THUNDER_SHA = registerCard("thunder_sha", new Sha.Thunder());
+    public static final Item
+    SHA = registerCard("sha", new Sha()),
+    FIRE_SHA = registerCard("fire_sha", new Sha.Fire()),
+    THUNDER_SHA = registerCard("thunder_sha", new Sha.Thunder()),
     //闪
-    public static final Item SHAN = registerCard("shan", new ShanItem());
+    SHAN = registerCard("shan", new ShanItem()),
     //桃
-    public static final Item PEACH = registerCard("peach", new PeachItem());
+    PEACH = registerCard("peach", new PeachItem()),
     //酒
-    public static final Item JIU = registerCard("jiu", new JiuItem());
+    JIU = registerCard("jiu", new JiuItem()),
 
     //兵粮寸断
-    public static final Item BINGLIANG_ITEM = registerCard("bingliang",new BingliangItem());
+    BINGLIANG_ITEM = registerCard("bingliang",new BingliangItem()),
     //乐不思蜀
-    public static final Item TOO_HAPPY_ITEM = registerCard("too_happy", new TooHappyItem());
+    TOO_HAPPY_ITEM = registerCard("too_happy", new TooHappyItem()),
     //闪电
-    public static final Item SHANDIAN_ITEM = registerCard("shandian", new ShandianItem());
+    SHANDIAN_ITEM = registerCard("shandian", new ShandianItem()),
     //过河拆桥
-    public static final Item DISCARD = registerCard("discard", new DiscardItem());
+    DISCARD = registerCard("discard", new DiscardItem()),
     //火攻
-    public static final Item FIRE_ATTACK = registerCard("huogong", new FireAttackItem());
+    FIRE_ATTACK = registerCard("huogong", new FireAttackItem()),
     //借刀杀人
-    public static final Item JIEDAO = registerCard("jiedao", new JiedaoItem());
+    JIEDAO = registerCard("jiedao", new JiedaoItem()),
     //决斗
-    public static final Item JUEDOU = registerCard("juedou",new JuedouItem());
+    JUEDOU = registerCard("juedou",new JuedouItem()),
     //南蛮入侵
-    public static final Item NANMAN = registerCard("nanman", new NanmanItem());
+    NANMAN = registerCard("nanman", new NanmanItem()),
     //顺手牵羊
-    public static final Item STEAL = registerCard("steal", new StealItem());
+    STEAL = registerCard("steal", new StealItem()),
     //桃园结义
-    public static final Item TAOYUAN = registerCard("taoyuan", new TaoyuanItem());
+    TAOYUAN = registerCard("taoyuan", new TaoyuanItem()),
     //铁锁连环
-    public static final Item TIESUO = registerCard("tiesuo",new TiesuoItem());
+    TIESUO = registerCard("tiesuo",new TiesuoItem()),
     //万箭齐发
-    public static final Item WANJIAN = registerCard("wanjian", new WanjianItem());
+    WANJIAN = registerCard("wanjian", new WanjianItem()),
     //五谷丰登
-    public static final Item WUGU = registerCard("wugu", new WuguItem());
+    WUGU = registerCard("wugu", new WuguItem()),
     //无懈可击
-    public static final Item WUXIE = registerCard("wuxie", new CardItem());
+    WUXIE = registerCard("wuxie", new CardItem()),
     //无中生有
-    public static final Item WUZHONG = registerCard("wuzhong", new CardItem.Wuzhong());
+    WUZHONG = registerCard("wuzhong", new CardItem.Wuzhong()),
 
     //雌雄双股剑
-    public static final Item CIXIONG = registerCard("cixiong", new Equipment.CixiongWeapon());
+    CIXIONG = registerCard("cixiong", new Equipment.CixiongWeapon()),
     //方天画戟
-    public static final Item FANGTIAN = registerCard("fangtian", new Equipment.FangtianWeapon());
+    FANGTIAN = registerCard("fangtian", new Equipment.FangtianWeapon()),
     //贯石斧
-    public static final Item GUANSHI = registerCard("guanshi", new Equipment.GuanshiWeapon());
+    GUANSHI = registerCard("guanshi", new Equipment.GuanshiWeapon()),
     // 古锭刀
-    public static final Item GUDING_WEAPON = registerCard("guding_dao", new Equipment.GudingWeapon());
+    GUDING_WEAPON = registerCard("guding_dao", new Equipment.GudingWeapon()),
     //寒冰剑
-    public static final Item HANBING = registerCard("hanbing", new Equipment.HanbingWeapon());
+    HANBING = registerCard("hanbing", new Equipment.HanbingWeapon()),
     //麒麟弓
-    public static final Item QILIN = registerCard("qilin", new Equipment.QilinWeapon());
+    QILIN = registerCard("qilin", new Equipment.QilinWeapon()),
     //青釭剑
-    public static final Item QINGGANG = registerCard("qinggang", new Equipment.QinggangWeapon());
+    QINGGANG = registerCard("qinggang", new Equipment.QinggangWeapon()),
     //青龙偃月刀
-    public static final Item QINGLONG = registerCard("qinglong", new Equipment.QinglongWeapon());
+    QINGLONG = registerCard("qinglong", new Equipment.QinglongWeapon()),
     //丈八蛇矛
-    public static final Item ZHANGBA = registerCard("zhangba", new Equipment.ZhangbaWeapon());
+    ZHANGBA = registerCard("zhangba", new Equipment.ZhangbaWeapon()),
     //诸葛连弩
-    public static final Item LIANNU = registerCard("liannu", new Equipment.LiannuWeapon());
+    LIANNU = registerCard("liannu", new Equipment.LiannuWeapon()),
     //朱雀羽扇
-    public static final Item ZHUQUE = registerCard("zhuque", new Equipment.ZhuqueWeapon());
+    ZHUQUE = registerCard("zhuque", new Equipment.ZhuqueWeapon()),
     //八卦阵
-    public static final Item BAGUA = registerCard("bagua", new Equipment.BaguaArmor());
+    BAGUA = registerCard("bagua", new Equipment.BaguaArmor()),
     //白银狮子
-    public static final Item BAIYIN = registerCard("baiyin", new Equipment.BaiyinArmor());
+    BAIYIN = registerCard("baiyin", new Equipment.BaiyinArmor()),
     //仁王盾
-    public static final Item RENWANG = registerCard("renwang", new Equipment.RenwangArmor());
+    RENWANG = registerCard("renwang", new Equipment.RenwangArmor()),
     //寿衣
-    public static final Item RATTAN_ARMOR = registerCard("rattan_armor", new Equipment.RattanArmor());
+    RATTAN_ARMOR = registerCard("rattan_armor", new Equipment.RattanArmor()),
     //-1马
-    public static final Item CHITU = registerCard("chitu", new Equipment.AttackHorse());
+    CHITU = registerCard("chitu", new Equipment.AttackHorse()),
     //+1马
-    public static final Item DILU = registerCard("dilu", new Equipment.DefendHorse());
+    DILU = registerCard("dilu", new Equipment.DefendHorse()),
 
     //摸牌
-    public static final Item GAIN_CARD = register("gain_card", new GainCardItem());
+    GAIN_CARD = register("gain_card", new GainCardItem()),
     //牌堆
-    public static final Item CARD_PILE = register("card_pile", new CardPile());
+    CARD_PILE = register("card_pile", new CardPile()),
     //礼盒
-    public static final Item GIFTBOX = register("gift_box", new GiftBoxItem());
-    public static final Item GUDINGDAO = register("gudingdao", new GudingdaoItem());
-    public static final Item ARROW_RAIN = register("arrow_rain", new ArrowRainItem());
+    GIFTBOX = register("gift_box", new GiftBoxItem()),
+    GUDINGDAO = register("gudingdao", new GudingdaoItem()),
+    ARROW_RAIN = register("arrow_rain", new ArrowRainItem()),
     //BB机
-    public static final Item BBJI = register("bbji", new BBjiItem());
+    BBJI = register("bbji", new BBjiItem()),
     //让我康康
-    public static final Item LET_ME_CC = register("let_me_cc", new LetMeCCItem());
+    LET_ME_CC = register("let_me_cc", new LetMeCCItem()),
     //阳光开朗的笑容
-    public static final Item SUNSHINE_SMILE = register("sunshine_smile", new SunshineSmile());
-    public static final Item XUYOU_SPAWN_EGG = register("xuyou_spawn_egg", new SpawnEggItem(ModEntity.XUYOU, 0x52BDF7, 0x8D8B96, new Item.Settings()));
-    public static final Item GUDING_ITEM = register("guding", new Item(new Item.Settings()));
-    public static final Item INCOMPLETE_GUDINGDAO = register("incomplete_gdd", new Item(new Item.Settings().maxCount(1)));
+    SUNSHINE_SMILE = register("sunshine_smile", new SunshineSmile()),
+    XUYOU_SPAWN_EGG = register("xuyou_spawn_egg", new SpawnEggItem(ModEntity.XUYOU, 0x52BDF7, 0x8D8B96, new Item.Settings())),
+    GUDING_ITEM = register("guding", new Item(new Item.Settings())),
+    INCOMPLETE_GUDINGDAO = register("incomplete_gdd", new Item(new Item.Settings().maxCount(1)));
 
     private static Item register(String name, Item item) {
         return Registry.register(Registries.ITEM, new Identifier("dabaosword", name), item);
@@ -185,11 +186,11 @@ public class ModItems {
 
     private static void addToGroup(FabricItemGroupEntries entries) {
         //添加所有卡牌
-        for (Item item : CARDS) entries.add(item);
+        CARDS.forEach(entries::add);
         entries.add(GAIN_CARD);
         entries.add(CARD_PILE);
         //添加所有技能
-        for (Item item : SkillCards.SKILLS) entries.add(item);
+        SkillCards.SKILLS.forEach(entries::add);
 
         for (Item item : CUSTOM_SKILLS.values()) entries.add(item);
 
@@ -207,6 +208,7 @@ public class ModItems {
         ItemGroupEvents.modifyEntriesEvent(ZZRS).register(ModItems::addToGroup);
 
         ServerWorldEvents.LOAD.register(new PVPGameEvents());
+        ServerTickEvents.START_SERVER_TICK.register(new PVPGameEvents());
         ServerTickEvents.START_WORLD_TICK.register(new PVPGameEvents());
         PVPGameTickCallback.EVENT.register(new PVPGameEvents());
         AttackEntityCallback.EVENT.register(new AttackEntityHandler());
@@ -222,31 +224,30 @@ public class ModItems {
     }//状态效果注册
     //兵粮寸断效果
     public static final StatusEffect BINGLIANG = register("bingliang",
-            new CommonEffect(StatusEffectCategory.HARMFUL, 0x46F732).addAttributeModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE,"22653B89-116E-49DC-9B6B-9971489B5BE5",-4, EntityAttributeModifier.Operation.ADDITION));
+            new CommonEffect(StatusEffectCategory.HARMFUL, 0x46F732).addAttributeModifier(EntityAttributes.GENERIC_ATTACK_DAMAGE,"22653B89-116E-49DC-9B6B-9971489B5BE5",-4, EntityAttributeModifier.Operation.ADDITION)),
     //乐不思蜀效果
-    public static final StatusEffect TOO_HAPPY = register("too_happy",
-            new TooHappyEffect().addAttributeModifier(EntityAttributes.GENERIC_MOVEMENT_SPEED,"7107DE5E-7CE8-4030-940E-514C1F160890",-10, EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
+    TOO_HAPPY = register("too_happy", new TooHappyEffect().addAttributeModifier(EntityAttributes.GENERIC_MOVEMENT_SPEED,"7107DE5E-7CE8-4030-940E-514C1F160890",-10, EntityAttributeModifier.Operation.MULTIPLY_TOTAL)),
     //触及距离增加
-    public static final StatusEffect REACH = register("reach", new CommonEffect(StatusEffectCategory.BENEFICIAL, 0xFFFFFF)
+    REACH = register("reach", new CommonEffect(StatusEffectCategory.BENEFICIAL, 0xFFFFFF)
             .addAttributeModifier(ReachEntityAttributes.REACH,"2b3df518-6e44-3554-821b-232333bcef5b",1.0, EntityAttributeModifier.Operation.ADDITION)
-            .addAttributeModifier(ReachEntityAttributes.ATTACK_RANGE,"2b3df518-6e44-3554-821b-232333bcef5b",1.0, EntityAttributeModifier.Operation.ADDITION));
+            .addAttributeModifier(ReachEntityAttributes.ATTACK_RANGE,"2b3df518-6e44-3554-821b-232333bcef5b",1.0, EntityAttributeModifier.Operation.ADDITION)),
     //近战防御范围增加
-    public static final StatusEffect DEFEND = register("defend", new CommonEffect(StatusEffectCategory.BENEFICIAL, 0xFFFFFF));
-    public static final StatusEffect DEFENDED = register("defended",
-            new CommonEffect(StatusEffectCategory.HARMFUL, 0xFFFFFF).addAttributeModifier(ReachEntityAttributes.ATTACK_RANGE,"6656ba40-7a9c-a584-3c63-1e1e0e655446",-1.0, EntityAttributeModifier.Operation.ADDITION));
+    DEFEND = register("defend", new CommonEffect(StatusEffectCategory.BENEFICIAL, 0xFFFFFF)),
+    DEFENDED = register("defended",
+            new CommonEffect(StatusEffectCategory.HARMFUL, 0xFFFFFF).addAttributeModifier(ReachEntityAttributes.ATTACK_RANGE,"6656ba40-7a9c-a584-3c63-1e1e0e655446",-1.0, EntityAttributeModifier.Operation.ADDITION)),
     //冷却状态效果
-    public static final StatusEffect COOLDOWN = register("cooldown", new CooldownEffect());
-    public static final StatusEffect COOLDOWN2 = register("cooldown2", new Cooldown2Effect());
+    COOLDOWN = register("cooldown", new CooldownEffect()),
+    COOLDOWN2 = register("cooldown2", new Cooldown2Effect()),
     //无敌效果
-    public static final StatusEffect INVULNERABLE = register("invulnerable", new CommonEffect(StatusEffectCategory.BENEFICIAL,0x35F5DF));
+    INVULNERABLE = register("invulnerable", new CommonEffect(StatusEffectCategory.BENEFICIAL,0x35F5DF)),
     //下落攻击效果
-    public static final StatusEffect FALLING_ATTACK = register("falling_attack", new FallingEffect());
+    FALLING_ATTACK = register("falling_attack", new FallingEffect()),
     //翻面效果
-    public static final StatusEffect TURNOVER = register("turn_over", new TurnOverEffect());
+    TURNOVER = register("turn_over", new TurnOverEffect()),
     //铁骑效果
-    public static final StatusEffect TIEJI = register("tieji", new CommonEffect(StatusEffectCategory.HARMFUL, 0x07050F));
+    TIEJI = register("tieji", new CommonEffect(StatusEffectCategory.HARMFUL, 0x07050F)),
     //闪电效果
-    public static final StatusEffect SHANDIAN = register("shandian", new ShandianEffect());
+    SHANDIAN = register("shandian", new ShandianEffect());
 
     public static final ScreenHandlerType<SimpleMenuHandler> SIMPLE_MENU_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "simple_menu", new ExtendedScreenHandlerType<>(SimpleMenuHandler::new));
 

@@ -12,6 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Pair;
+import org.apache.commons.lang3.function.TriFunction;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,21 +68,25 @@ public class ModifyDamage {
         return new Pair<>(new Pair<>(m, a), r);
     }
 
-    private static List<List<ItemStack>> eventStacks(LivingEntity entity, DamageSource source, float value, LivingEntity trinketOwner) {
-        List<List<ItemStack>> stacks = new ArrayList<>(Arrays.asList(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>()));
+    private static List<List<TriFunction<LivingEntity, DamageSource, Float, Boolean>>> skills(LivingEntity owner) {
+        List<List<TriFunction<LivingEntity, DamageSource, Float, Boolean>>> skills = new ArrayList<>(Arrays.asList(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>()));
 
-        for (var stack : allTrinkets(trinketOwner)) {
-            Skill.Priority priority = null;
-            if (stack.getItem() instanceof Skill skill) priority = skill.getPriority(entity, source, value);
+        for (var stack : allTrinkets(owner)) {
+            Skill skill = null; Skill.CancelDamageData data = null; Skill.Priority priority = null;
+            if (stack.getItem() instanceof Skill) {
+                skill = (Skill) stack.getItem();
+                data = skill.cancelDamage();
+                if (data != null) priority = data.priority();
+            }
 
-            if (priority != null) stacks.get(priority.ordinal()).add(stack);
+            if (skill != null && priority != null) skills.get(priority.ordinal()).add(data.effect());
         }
-        return stacks;
+        return skills;
     }
 
-    private static boolean execute(LivingEntity entity, DamageSource source, float amount, List<List<ItemStack>> list, int index) {
-        for (var s : list.get(index)) {
-            if (s.getItem() instanceof Skill skill && skill.cancelDamage(entity, source, amount)) return true;
+    private static boolean execute(LivingEntity entity, DamageSource source, float amount, List<List<TriFunction<LivingEntity, DamageSource, Float, Boolean>>> list) {
+        for (var s : list.remove(0)) {
+            if (s.apply(entity, source, amount)) return true;
         }
         return false;
     }
@@ -91,17 +96,18 @@ public class ModifyDamage {
     public static int shouldCancel(LivingEntity entity, DamageSource source, float amount) {
         Entity so = source.getSource(); Entity at = source.getAttacker();
         //检查事件优先度，获取输出了优先度的stack
-        List<List<ItemStack>> list = eventStacks(entity, source, amount, entity);
-        List<List<ItemStack>> l1 = null; List<List<ItemStack>> l2 = null;
-        if (so instanceof LivingEntity SE) l1 = eventStacks(entity, source, amount, SE);
-        else if (at instanceof LivingEntity AT) l2 = eventStacks(entity, source, amount, AT);
+        var list = skills(entity);
+        List<List<TriFunction<LivingEntity, DamageSource, Float, Boolean>>> l1 = null;
+        List<List<TriFunction<LivingEntity, DamageSource, Float, Boolean>>> l2 = null;
+        if (so instanceof LivingEntity SE) l1 = skills(SE);
+        else if (at instanceof LivingEntity AT) l2 = skills(AT);
         //合并3个list中的所有优先度和stack
         for (int i = 0; i < 5; i++) {
             if (l1 != null) list.get(i).addAll(l1.get(i));
             if (l2 != null) list.get(i).addAll(l2.get(i));
         }
         //0.最高优先度执行，暂无用途
-        if (execute(entity, source, amount, list, 0)) return 1;
+        if (execute(entity, source, amount, list)) return 1;
         //无敌效果
         if (entity.hasStatusEffect(ModItems.INVULNERABLE) && !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) return 1;
 
@@ -144,13 +150,13 @@ public class ModifyDamage {
         }
 
         //1.高优先度执行：装备
-        if (execute(entity, source, amount, list, 1)) return 1;
+        if (execute(entity, source, amount, list)) return 1;
         //2.一般优先度执行：技能
-        if (execute(entity, source, amount, list, 2)) return 1;
+        if (execute(entity, source, amount, list)) return 1;
         //3.低优先度执行：卡牌 闪以及响应南蛮的杀
-        if (execute(entity, source, amount, list, 3)) return 1;
+        if (execute(entity, source, amount, list)) return 1;
         if (at != null && at.getCommandTags().contains("nanman")) {
-            var stack = getCard(entity, isSha).getRight();
+            var stack = getCard(entity, isSha);
             if (!stack.isEmpty()) {
                 voice(entity, stack);
                 cardUsePost(entity, stack, null);
@@ -168,7 +174,7 @@ public class ModifyDamage {
             }
         }
         //4.最低优先度执行：绝情
-        if (execute(entity, source, amount, list, 4)) return 1;
+        if (execute(entity, source, amount, list)) return 1;
         return 0;
     }
 

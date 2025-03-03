@@ -5,6 +5,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Pair;
+import org.apache.commons.lang3.function.TriFunction;
 
 public interface Skill {
     /**在攻击目标后，造成伤害前触发*/
@@ -36,14 +37,17 @@ public interface Skill {
 
     //========================================分割线========================================//
 
-    /**仅关系到{@link Skill#cancelDamage(LivingEntity, DamageSource, float)}的触发。如果不覆写这个方法输出优先级，则cancelDamage方法无效！*/
-    default Priority getPriority(LivingEntity target, DamageSource source, float amount) {return null;}
+    /**@see CancelDamageData*/
+    default CancelDamageData cancelDamage() {return null;}
 
-    /**必须同时覆写{@link Skill#getPriority(LivingEntity, DamageSource, float)}！否则此方法无效！
-     * <p>
-     * 取消伤害，在伤害结算之前触发，若输出为true，则伤害无效*/
-    default boolean cancelDamage(LivingEntity target, DamageSource source, float amount) {return false;}
-
+    /**取消伤害，在伤害结算之前触发。为了只用一个方法实现，我把取消伤害优先度和技能效果合并到一起了。
+     * @param priority 取消伤害的优先度，若为null则不触发取消伤害
+     * @param effect 取消伤害时触发的附加效果，若该方法返回true则会取消伤害。其中：
+     *               {@link LivingEntity} 为即将受到伤害的实体
+     *               {@link DamageSource} 为伤害来源
+     *               {@link Float} 为本次受伤的伤害值
+     */
+    record CancelDamageData(Priority priority, TriFunction<LivingEntity, DamageSource, Float, Boolean> effect) {}
     enum Priority {
         /**最高优先级，高于buff但低于原版的伤害免疫检查。但真的会用到吗？（划掉，已经用于帷幕了）*/
         HIGHEST,

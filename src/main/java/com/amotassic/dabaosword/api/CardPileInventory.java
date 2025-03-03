@@ -1,7 +1,6 @@
 package com.amotassic.dabaosword.api;
 
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.util.ModTools;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
@@ -11,14 +10,15 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.collection.DefaultedList;
 
+import static com.amotassic.dabaosword.util.ModTools.trinketItem;
+
 public class CardPileInventory implements Inventory {
     public DefaultedList<ItemStack> cards;
     public PlayerEntity player;
-    public ItemStack pile;
+    private static final Item pile = ModItems.CARD_PILE;
 
     public CardPileInventory(PlayerEntity player) {
         this.player = player;
-        this.pile = ModTools.trinketItem(ModItems.CARD_PILE, player);
         this.cards = DefaultedList.ofSize(36, ItemStack.EMPTY);
         readNbt();
     }
@@ -35,10 +35,8 @@ public class CardPileInventory implements Inventory {
     }
 
     public void readNbt() {
-        if (pile.getNbt() != null) {
-            NbtList list = (NbtList) pile.getNbt().get("Items");
-            if (list != null) readNbt(list);
-        }
+        NbtList list = trinketItem(pile, player).getOrCreateNbt().getList("Items", 10);
+        if (list != null) readNbt(list);
     }
 
     public void readNbt(NbtList nbtList) {
@@ -53,6 +51,7 @@ public class CardPileInventory implements Inventory {
     }
 
     public void writeNbtToStack() { //当涉及牌堆物品变化后，必须调用这个方法
+        if (player.getWorld().isClient()) return;
         NbtList nbtList = new NbtList();
         NbtCompound nbtCompound;
         for (int i = 0; i < size(); ++i) {
@@ -62,9 +61,10 @@ public class CardPileInventory implements Inventory {
             cards.get(i).writeNbt(nbtCompound);
             nbtList.add(nbtCompound);
         }
-        NbtCompound nbt = pile.getOrCreateNbt();
+        ItemStack stack = trinketItem(pile, player);
+        NbtCompound nbt = stack.getOrCreateNbt();
         nbt.put("Items", nbtList);
-        pile.setNbt(nbt);
+        stack.setNbt(nbt);
     }
 
     @Override
@@ -89,8 +89,8 @@ public class CardPileInventory implements Inventory {
     @Override
     public ItemStack getStack(int slot) {return cards.get(slot);}
 
-    public int getSlotWith(ItemStack stack) { //倒序检索
-        for (int i = size() - 1; i >= 0; i--) {
+    public int getSlotWith(ItemStack stack) { //倒序检索 3.3放弃了倒序检索，会出现bug
+        for (int i = 0; i < size(); i++) {
             ItemStack itemStack = getStack(i);
             if (itemStack.isEmpty()) continue;
             if (ItemStack.areEqual(itemStack, stack)) return i;
@@ -98,10 +98,12 @@ public class CardPileInventory implements Inventory {
         return -1;
     }
 
-    public void removeStack(ItemStack stack, int count) {
+    /**@return 若成功移除指定物品则返回true，否则为false*/
+    public boolean removeStack(ItemStack stack, int count) {
         int i = getSlotWith(stack);
-        if (i == -1) return;
+        if (i == -1) return false;
         removeStack(i, count);
+        return true;
     }
 
     @Override
@@ -174,7 +176,7 @@ public class CardPileInventory implements Inventory {
         ItemStack itemStack = getStack(slot);
         if (itemStack.isEmpty()) {
             itemStack = new ItemStack(item, 0);
-            if (stack.hasNbt()) itemStack.setNbt(stack.getNbt().copy());
+            if (stack.hasNbt()) itemStack.setNbt(stack.getOrCreateNbt().copy());
             setStack(slot, itemStack);
         }
         if ((j = i) > itemStack.getMaxCount() - itemStack.getCount()) {

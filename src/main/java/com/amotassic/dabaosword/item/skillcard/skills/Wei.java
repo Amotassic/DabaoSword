@@ -198,16 +198,15 @@ public class Wei {
         }
 
         @Override
-        public Priority getPriority(LivingEntity target, DamageSource source, float amount) {return Priority.LOWEST;}
-
-        @Override
-        public boolean cancelDamage(LivingEntity target, DamageSource source, float amount) {
-            if (source.getAttacker() instanceof LivingEntity attacker && hasTrinket(SkillCards.JUEQING, attacker)) {
-                target.damage(target.getDamageSources().genericKill(), Math.min(Math.max(7, target.getMaxHealth() / 3), amount));
-                voice(attacker, Sounds.JUEQING, 1);
-                return true;
-            }
-            return false;
+        public CancelDamageData cancelDamage() {
+            return new CancelDamageData(Priority.LOWEST, (entity, source, amount) -> {
+                if (source.getAttacker() instanceof LivingEntity attacker && hasTrinket(this, attacker)) {
+                    entity.damage(entity.getDamageSources().genericKill(), Math.min(Math.max(7, entity.getMaxHealth() / 3), amount));
+                    voice(attacker, Sounds.JUEQING, 1);
+                    return true;
+                }
+                return false;
+            });
         }
     }
 
@@ -302,7 +301,7 @@ public class Wei {
         public void onClickGUISlot(PlayerEntity player, ItemStack stack, PlayerEntity target, ItemStack selected, int slot) {
             if (selected.isEmpty()) return;
             if (!player.isCreative()) {
-                while (countCards(player) > 0) {cardDecrement(getCard(player, isCard), 64);}
+                while (countCards(player) > 0) {cardDecrement(player, getCard(player, isCard), 64);}
                 setCD(stack, 20);
             }
             give(player, selected);

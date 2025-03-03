@@ -685,6 +685,14 @@
       }
     ]
   },
+  "win": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:misc/win"
+      }
+    ]
+  },
   "kill1": {
     "sounds": [
       {

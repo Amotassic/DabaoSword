@@ -20,8 +20,6 @@ public class TiesuoHud implements HudRenderCallback {
     private int scaledHeight;
     private float tiesuoScale;
 
-    public TiesuoHud() {}
-
     @Override
     public void onHudRender(DrawContext drawContext, float tickDelta) {
         MinecraftClient client = MinecraftClient.getInstance();
@@ -30,7 +28,8 @@ public class TiesuoHud implements HudRenderCallback {
         float f = client.getLastFrameDuration();
         this.tiesuoScale = MathHelper.lerp(0.5f * f, this.tiesuoScale, 1.125f);
         if (client.options.getPerspective().isFirstPerson()) {
-            if (client.player != null && client.player.isUsingItem() && client.player.getActiveItem().isOf(ModItems.TIESUO) && client.player.getOffHandStack().getItem() == Items.KNOWLEDGE_BOOK) {
+            var player = client.player;
+            if (player != null && player.isUsingItem() && player.getActiveItem().isOf(ModItems.TIESUO) && player.getOffHandStack().getItem() == Items.KNOWLEDGE_BOOK) {
                 this.renderTiesuoOverlay(drawContext, this.tiesuoScale);
             }
         }

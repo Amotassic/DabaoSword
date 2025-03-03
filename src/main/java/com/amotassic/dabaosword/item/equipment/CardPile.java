@@ -1,9 +1,9 @@
 package com.amotassic.dabaosword.item.equipment;
 
-import com.amotassic.dabaosword.api.CardPileInventory;
 import com.amotassic.dabaosword.ui.PileScreenHandler;
-import com.amotassic.dabaosword.util.ModTools;
+import com.amotassic.dabaosword.util.Gamerule;
 import dev.emi.trinkets.api.SlotReference;
+import dev.emi.trinkets.api.TrinketItem;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,8 +18,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class CardPile extends Equipment {
-    @Override public Type getType() {return null;}
+import static com.amotassic.dabaosword.util.ModTools.getCardPack;
+import static com.amotassic.dabaosword.util.ModTools.isCard;
+
+public class CardPile extends TrinketItem {
+    public CardPile() {super(new Settings().maxCount(1));}
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
@@ -45,11 +48,27 @@ public class CardPile extends Equipment {
     @Override
     public void tick(ItemStack pile, SlotReference slot, LivingEntity entity) {
         if (entity.getWorld() instanceof ServerWorld world && entity instanceof PlayerEntity player) {
-            if (player.currentScreenHandler.getClass() != PileScreenHandler.class && world.getTime() % 20 == 0) {
-                CardPileInventory cards = new CardPileInventory(player);
+            long time = world.getTime();
+            int skill = world.getGameRules().getInt(Gamerule.CHANGE_SKILL_INTERVAL) * 20;
+
+            if (world.getGameRules().getBoolean(Gamerule.CARD_PILE_HUNGERLESS)) player.getHungerManager().setFoodLevel(20);
+
+            if (skill >= 0) {
+                if (skill == 0) player.addCommandTag("change_skill");
+                else if (time % skill == 0) { //每5分钟可以切换技能
+                    player.addCommandTag("change_skill");
+                    if (skill >= 600) {
+                        player.sendMessage(Text.translatable("dabaosword.change_skill").formatted(Formatting.BOLD));
+                        player.sendMessage(Text.translatable("dabaosword.change_skill2"));
+                    }
+                }
+            }
+
+            if (player.currentScreenHandler.getClass() != PileScreenHandler.class && time % 20 == 0) {
+                var cards = getCardPack(player);
                 for (int i = 9; i < 36; i++) {
                     ItemStack item = player.getInventory().main.get(i);
-                    if (ModTools.isCard(item) && cards.isNotFull()) {
+                    if (isCard(item) && cards.isNotFull()) {
                         cards.insertStack(item.copy());
                         item.setCount(0);
                     }
@@ -57,7 +76,4 @@ public class CardPile extends Equipment {
             }
         }
     }
-
-    @Override
-    public int onDrawPhase(PlayerEntity player, ItemStack stack) {return 2;}
 }

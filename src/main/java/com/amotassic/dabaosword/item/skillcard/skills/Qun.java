@@ -10,7 +10,6 @@ import com.amotassic.dabaosword.util.Sounds;
 import dev.emi.trinkets.api.SlotReference;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
@@ -119,11 +118,8 @@ public class Qun {
         }
 
         @Override
-        public Priority getPriority(LivingEntity target, DamageSource source, float amount) {return Priority.NORMAL;}
-
-        @Override
-        public boolean cancelDamage(LivingEntity target, DamageSource source, float amount) {
-            return source.isOf(DamageTypes.LIGHTNING_BOLT) && source.getAttacker() == null;
+        public CancelDamageData cancelDamage() {
+            return new CancelDamageData(Priority.NORMAL, (e, source, f) -> source.isOf(DamageTypes.LIGHTNING_BOLT) && source.getAttacker() == null);
         }
     }
 

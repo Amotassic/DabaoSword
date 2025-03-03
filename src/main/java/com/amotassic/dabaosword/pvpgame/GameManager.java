@@ -30,7 +30,7 @@ public class GameManager extends PersistentState {
     public int getGameCount() {return games.size();}
 
     @Nullable
-    public Game createGame(ServerPlayerEntity player) {
+    public Game createGame(ServerPlayerEntity player, int type) {
         Box box = new Box(player.getBlockPos()).expand(ModConfig.SearchRadius);
         List<PlayerEntity> players = player.getWorld().getEntitiesByClass(PlayerEntity.class, box, p -> !p.isSpectator() && !isPlayerInGame(p));
         if (players.size() < 2) {
@@ -39,7 +39,7 @@ public class GameManager extends PersistentState {
         }
         Set<UUID> playerUuids = new HashSet<>();
         for (PlayerEntity p : players) playerUuids.add(p.getUuid());
-        Game game = new Game(nextId(), world, playerUuids);
+        Game game = new Game(nextId(), world, playerUuids, type);
         games.put(game.getGameId(), game);
         PVPGameEvents.onGameCreate(player, game, playerUuids);
         markDirty();

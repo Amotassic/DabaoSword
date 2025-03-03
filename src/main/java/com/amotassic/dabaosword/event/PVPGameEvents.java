@@ -1,6 +1,8 @@
 package com.amotassic.dabaosword.event;
 
+import com.amotassic.dabaosword.api.CardPileInventory;
 import com.amotassic.dabaosword.api.event.PVPGameTickCallback;
+import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.pvpgame.Game;
 import com.amotassic.dabaosword.pvpgame.GameManager;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -16,12 +18,11 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
 
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
 
-public class PVPGameEvents implements ServerWorldEvents.Load, ServerTickEvents.StartWorldTick, PVPGameTickCallback {
+public class PVPGameEvents implements ServerWorldEvents.Load, ServerTickEvents.StartTick, ServerTickEvents.StartWorldTick, PVPGameTickCallback {
     private static GameManager gameManager;
 
     public static GameManager getGameManager() {return gameManager;}
@@ -93,6 +94,7 @@ public class PVPGameEvents implements ServerWorldEvents.Load, ServerTickEvents.S
             Text o3 = Text.translatable("dabaosword.game.start.tip", o1, o2).formatted(color);
             title(player, Text.translatable("dabaosword.game.start").formatted(Formatting.GOLD));
             subtitle(player, o3); player.sendMessage(o3);
+            voice(player, SoundEvents.EVENT_RAID_HORN.value(), 32);
         });
     }
 
@@ -108,5 +110,16 @@ public class PVPGameEvents implements ServerWorldEvents.Load, ServerTickEvents.S
         var nei = Game.Identity.NEI; if (identity == nei) return; //防呆设计
         if (game.getScore(identity) > game.neiScore) game.win(identity);
         if (game.getScore(identity) < game.neiScore) game.win(nei);
+    }
+
+    public static final Map<ServerPlayerEntity, CardPileInventory> PLAYER_CARD_PACKS = new HashMap<>();
+
+    @Override
+    public void onStartTick(MinecraftServer server) {
+        List<ServerPlayerEntity> playerList = server.getPlayerManager().getPlayerList();
+        for (var player : playerList) {
+            if (!PLAYER_CARD_PACKS.containsKey(player) && hasTrinket(ModItems.CARD_PILE, player)) PLAYER_CARD_PACKS.put(player, new CardPileInventory(player));
+        }
+        PLAYER_CARD_PACKS.keySet().removeIf(player -> player == null || player.isRemoved() || !hasTrinket(ModItems.CARD_PILE, player));
     }
 }

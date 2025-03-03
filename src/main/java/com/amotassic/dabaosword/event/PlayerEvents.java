@@ -1,6 +1,5 @@
 package com.amotassic.dabaosword.event;
 
-import com.amotassic.dabaosword.api.CardPileInventory;
 import com.amotassic.dabaosword.api.event.PlayerDeathCallback;
 import com.amotassic.dabaosword.api.event.PlayerRespawnCallback;
 import com.amotassic.dabaosword.item.ModItems;
@@ -9,7 +8,9 @@ import com.amotassic.dabaosword.pvpgame.Game;
 import com.amotassic.dabaosword.util.Gamerule;
 import com.amotassic.dabaosword.util.ModConfig;
 import com.amotassic.dabaosword.util.Sounds;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -40,8 +41,10 @@ public class PlayerEvents implements PlayerDeathCallback, PlayerRespawnCallback 
     @Override
     public void onDeath(ServerPlayerEntity player, DamageSource source) {
         if (player.getWorld() instanceof ServerWorld world) {
+            Entity attacker = source.getAttacker();
+            if (!(attacker instanceof PlayerEntity)) attacker = player.getPrimeAdversary();
 
-            if (ModConfig.KillStreak && source.getAttacker() instanceof ServerPlayerEntity killer) { //紫砂也算连上了
+            if (ModConfig.KillStreak && attacker instanceof ServerPlayerEntity killer) { //紫砂也算连上了
                 UUID id = killer.getUuid(); long time = world.getTime();
 
                 var data = playerKillData.getOrDefault(id, new KillStreakData(0, 0));
@@ -53,7 +56,7 @@ public class PlayerEvents implements PlayerDeathCallback, PlayerRespawnCallback 
                 if (data.streak() >= 2) voice(killer, getKillSound(data.streak()));
             }
 
-            if (source.getAttacker() instanceof ServerPlayerEntity killer && killer != player) {
+            if (attacker instanceof ServerPlayerEntity killer && killer != player) {
                 Game game = getGameManager().getGameByPlayer(killer);
                 if (game != null && game.isOn() && game.isPlayerInThisGame(player)) {
                     var killerTeam = game.getIdentity(killer); var deadTeam = game.getIdentity(player);
@@ -72,7 +75,7 @@ public class PlayerEvents implements PlayerDeathCallback, PlayerRespawnCallback 
 
             boolean card = world.getGameRules().getBoolean(Gamerule.CLEAR_CARDS_AFTER_DEATH);
             if (card) {
-                CardPileInventory inventory = new CardPileInventory(player); //移除牌堆背包的牌
+                var inventory = getCardPack(player); //移除牌堆背包的牌
                 for (var stack : inventory.cards) {cardDiscard(player, stack, stack.getCount(), false);}
 
                 PlayerInventory inv = player.getInventory();
