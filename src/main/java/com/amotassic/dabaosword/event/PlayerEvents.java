@@ -59,6 +59,9 @@ public class PlayerEvents implements PlayerDeathCallback, PlayerRespawnCallback 
             if (attacker instanceof ServerPlayerEntity killer && killer != player) {
                 Game game = getGameManager().getGameByPlayer(killer);
                 if (game != null && game.isOn() && game.isPlayerInThisGame(player)) {
+                    var primaryData = game.getPrimaryData();
+                    if (ModConfig.KillStreak && game.zhongLives + game.fanLives + game.neiLives == primaryData.get(Game.ZHONGLIVES) + primaryData.get(Game.FANLIVES) + primaryData.get(Game.NEILIVES)) voice(killer, getKillSound(1));
+
                     var killerTeam = game.getIdentity(killer); var deadTeam = game.getIdentity(player);
                     if (deadTeam != Game.Identity.NEI && killerTeam != deadTeam) game.increaseScore(killer);
                 }
@@ -69,8 +72,11 @@ public class PlayerEvents implements PlayerDeathCallback, PlayerRespawnCallback 
             if (game != null && game.isOn()) {
                 game.decreaseLives(player);
                 var identity = game.getIdentity(player);
-                int restLives = game.getLives(identity); //如果玩家所在阵营剩余生命值为0，公布玩家身份
-                if (restLives == 0) game.forEachPlayer(p -> p.sendMessage(Text.translatable("dabaosword.game.view_id.tip", player.getDisplayName(), Text.translatable(identity.tag)).formatted(Game.getIdentityColor(identity))));
+                int re = game.getRespawnChances(identity);
+                if (re <= 0) { //如果玩家所在阵营剩余复活次数为0，公布玩家身份
+                    player.changeGameMode(GameMode.SPECTATOR);
+                    game.forEachPlayer(p -> p.sendMessage(Text.translatable("dabaosword.game.view_id.tip", player.getDisplayName(), Text.translatable(identity.tag)).formatted(Game.getIdentityColor(identity))));
+                }
             }
 
             boolean card = world.getGameRules().getBoolean(Gamerule.CLEAR_CARDS_AFTER_DEATH);
@@ -110,12 +116,6 @@ public class PlayerEvents implements PlayerDeathCallback, PlayerRespawnCallback 
     @Override
     public void onPlayerRespawn(ServerPlayerEntity oldPlayer, ServerPlayerEntity player) {
         if (player.getWorld() instanceof ServerWorld world) {
-            //玩家复活时，若其队伍剩余生命值为0，切换至旁观者模式
-            Game game = getGameManager().getGameByPlayer(player);
-            if (game != null) {
-                int restLives = game.getLives(game.getIdentity(player));
-                if (restLives == 0) player.changeGameMode(GameMode.SPECTATOR);
-            }
 
             boolean card = world.getGameRules().getBoolean(Gamerule.CLEAR_CARDS_AFTER_DEATH);
             if (card && hasTrinket(ModItems.CARD_PILE, player)) {

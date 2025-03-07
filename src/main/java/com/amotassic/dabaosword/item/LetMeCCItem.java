@@ -36,7 +36,7 @@ public class LetMeCCItem extends Item {
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         if (!user.getWorld().isClient && hand == Hand.MAIN_HAND) {
-            voice(user, Sounds.LET_ME_CC);
+            voice(user, Sounds.LET_ME_CC, 1);
             openFullInv(user, entity, true);
             return ActionResult.SUCCESS;
         }
@@ -49,12 +49,12 @@ public class LetMeCCItem extends Item {
             if (!user.isSneaking()) {
                 LivingEntity closest = getClosestEntity(user, LivingEntity.class, 10, entity -> entity != user);
                 if (closest != null) {
-                    voice(user, Sounds.LET_ME_CC);
+                    voice(user, Sounds.LET_ME_CC, 1);
                     openFullInv(user, closest, true);
                     return TypedActionResult.success(user.getStackInHand(hand));
                 }
             } else {
-                voice(user, Sounds.LET_ME_CC);
+                voice(user, Sounds.LET_ME_CC, 1);
                 openFullInv(user, user, true);
                 return TypedActionResult.success(user.getStackInHand(hand));
             }

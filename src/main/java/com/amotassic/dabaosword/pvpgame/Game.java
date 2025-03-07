@@ -32,6 +32,8 @@ public class Game {
     //列举各项数据
     public int zhongLives, fanLives, neiLives;
     public int zhongScore, fanScore, neiScore;
+    private Map<String, Integer> primaryDataCache;
+    public static final String FANCOUNT = "fanCount", NEICOUNT = "neiCount", ZHONGCOUNT = "zhongCount", ZHONGLIVES = "zhongLives", FANLIVES = "fanLives", NEILIVES = "neiLives";
 
     public Game(int id, ServerWorld world, Set<UUID> players, int type) {
         this.world = world;
@@ -66,17 +68,31 @@ public class Game {
         this.neiScore = nbt.getInt("NeiScore");
     }
 
-    private void initData() {
-        //根据人数随机分配身份
-        int playerCount = this.players.size();
+    public Map<String, Integer> getPrimaryData() {
+        if (primaryDataCache != null) return primaryDataCache;
+
+        Map<String, Integer> data = new HashMap<>();
+        int playerCount = getPlayers().size();
         int fanCount = playerCount / 2;
         int neiCount = playerCount > 2 ? 1 : 0; //如果是无内奸模式，参与人数为偶数时，不设置内奸
         if (this.type == 1 && playerCount % 2 == 0) neiCount = 0;
         int zhongCount = playerCount - fanCount - neiCount;
+        int zhongLives, fanLives, neiLives;
+        zhongLives = fanLives = fanCount * 3;
+        neiLives = neiCount > 0 ? fanCount * 3 : 0;
+        data.put(FANCOUNT, fanCount); data.put(NEICOUNT, neiCount); data.put(ZHONGCOUNT, zhongCount);
+        data.put(ZHONGLIVES, zhongLives); data.put(FANLIVES, fanLives); data.put(NEILIVES, neiLives);
+        primaryDataCache = data;
+        return data;
+    }
+
+    private void initData() {
+        //根据人数随机分配身份
+        var primaryData = getPrimaryData();
         List<String> ids = new ArrayList<>();
-        for (int i = 0; i < zhongCount; i++) ids.add(Identity.ZHONG.tag);
-        for (int i = 0; i < fanCount; i++) ids.add(Identity.FAN.tag);
-        for (int i = 0; i < neiCount; i++) ids.add(Identity.NEI.tag);
+        for (int i = 0; i < primaryData.get(ZHONGCOUNT); i++) ids.add(Identity.ZHONG.tag);
+        for (int i = 0; i < primaryData.get(FANCOUNT); i++) ids.add(Identity.FAN.tag);
+        for (int i = 0; i < primaryData.get(NEICOUNT); i++) ids.add(Identity.NEI.tag);
         Collections.shuffle(ids); // 随机打乱列表中的元素
         forEachPlayer(player -> { //确保移除所有的身份标签再添加新的身份标签
             player.getCommandTags().remove("dabaosword.zhong");
@@ -84,8 +100,9 @@ public class Game {
             player.getCommandTags().remove("dabaosword.nei");
             player.addCommandTag(ids.remove(0));
         });
-        this.zhongLives = this.fanLives = fanCount * 3;
-        this.neiLives = neiCount > 0 ? fanCount * 3 : 0;
+        this.zhongLives = primaryData.get(ZHONGLIVES);
+        this.fanLives = primaryData.get(FANLIVES);
+        this.neiLives = primaryData.get(NEILIVES);
         this.zhongScore = this.fanScore = this.neiScore = 0;
     }
 
@@ -188,6 +205,15 @@ public class Game {
             if (player == null) continue;
             action.accept(player);
         }
+    }
+
+    public int getRespawnChances(Identity identity) {
+        var data = getPrimaryData();
+        return switch (identity) {
+            case ZHONG -> zhongLives - data.get(ZHONGCOUNT) + 1;
+            case FAN -> fanLives - data.get(FANCOUNT) + 1;
+            case NEI -> neiLives - data.get(NEICOUNT) + 1;
+        };
     }
 
     public int getLives(Identity identity) {

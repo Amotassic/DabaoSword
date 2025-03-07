@@ -11,8 +11,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,16 +31,6 @@ public class CardPile extends TrinketItem {
         tooltip.add(Text.translatable("item.dabaosword.card_pile.tip3", Text.keybind("key.sneak"), Text.keybind("key.dabaosword.select_card")).formatted(Formatting.BOLD));
         tooltip.add(Text.translatable("item.dabaosword.card_pile.tip4", Text.keybind("key.sprint"), Text.keybind("key.dabaosword.select_card")).formatted(Formatting.BOLD));
         tooltip.add(Text.translatable("item.dabaosword.card_pile.tip5", Text.keybind("key.sprint"), Text.keybind("key.sneak"), Text.keybind("key.dabaosword.select_card")).formatted(Formatting.BOLD));
-    }
-
-    @Override
-    public boolean canUnequip(ItemStack stack, SlotReference slot, LivingEntity entity) {return true;}
-
-    @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        ItemStack stack = user.getStackInHand(hand);
-        if (equipItem(user, stack)) return TypedActionResult.success(stack, world.isClient());
-        return TypedActionResult.pass(stack);
     }
 
     @Override

@@ -74,7 +74,7 @@ public class Qun {
         @Override
         public int onDrawPhase(PlayerEntity player, ItemStack stack) {
             voice(player, stack);
-            ItemStack last = newCard(player);
+            ItemStack last = newCard();
             give(player, last); //先让玩家摸一张牌，保存到lastCard
             player.getWorld().getPlayers().forEach(p -> p.sendMessage(Text.translatable("jizhan.draw", player.getDisplayName(), stack.toHoverableText(), last.toHoverableText(), Objects.requireNonNull(getRank(last)).rank), false));
             NbtCompound tag = stack.getOrCreateNbt();
@@ -88,7 +88,7 @@ public class Qun {
         public void triggerSkill(LivingEntity entity, ItemStack stack, int value) {
             int last = stack.getOrCreateNbt().getInt("lastCardRank");
             if (last == -1 || !(entity instanceof PlayerEntity player)) return;
-            ItemStack next = newCard(player);
+            ItemStack next = newCard();
             give(player, next); //又让玩家摸一张牌后，比较两张牌的点数，如果玩家选对了，就把新的牌保存到lastCard，否则关闭菜单
             player.getWorld().getPlayers().forEach(p -> p.sendMessage(Text.translatable("jizhan.draw", player.getDisplayName(), stack.toHoverableText(), next.toHoverableText(), Objects.requireNonNull(getRank(next)).rank), false));
             //下一张牌与上一张牌点数比较，有3种情况：更大返回1，更小返回-1，相等返回0

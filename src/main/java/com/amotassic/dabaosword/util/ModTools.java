@@ -130,7 +130,7 @@ public class ModTools {
     }
 
     public static CardPileInventory getCardPack(PlayerEntity player) {
-        return PVPGameEvents.PLAYER_CARD_PACKS.computeIfAbsent((ServerPlayerEntity) player, CardPileInventory::new);
+        return PVPGameEvents.PLAYER_CARD_PACKS.getOrDefault((ServerPlayerEntity) player, new CardPileInventory(player));
     }
 
     /**判断牌堆和背包中是否有符合条件的卡牌*/
@@ -215,7 +215,7 @@ public class ModTools {
                     entity.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, -1, amplifier - 1));
                 } //如果有兵粮寸断效果就不摸牌，改为将debuff等级减一
             } else {
-                give(entity, newCard(entity));
+                give(entity, newCard());
                 voice(entity, SoundEvents.ENTITY_EXPERIENCE_ORB_PICKUP,1);
             }
         }
@@ -229,16 +229,16 @@ public class ModTools {
         return ItemStack.EMPTY;
     }
 
-    public static ItemStack newCardNoSR(LivingEntity entity) {return customLoot(entity, "draw");}
-    public static ItemStack newCard(LivingEntity entity) {return initSuitsAndRanks(newCardNoSR(entity));}
-    public static ItemStack newCard(LivingEntity entity, Predicate<ItemStack> predicate) {
-        ItemStack stack = newCardNoSR(entity);
-        while (!predicate.test(stack)) stack = newCardNoSR(entity);
-        return initSuitsAndRanks(stack);
+    public static ItemStack newCard() {
+        return ALL_CARDS.get(new Random().nextInt(ALL_CARDS.size())).copy();
+    }
+    public static ItemStack newCard(Predicate<ItemStack> predicate) {
+        List<ItemStack> list = ALL_CARDS.stream().filter(predicate).toList();
+        if (list.isEmpty()) return ItemStack.EMPTY;
+        return list.get(new Random().nextInt(list.size())).copy();
     }
 
     public static void give(LivingEntity entity, ItemStack stack) {
-        initSuitsAndRanks(stack);
         if (entity instanceof PlayerEntity player) {
             ItemEntity item = player.dropItem(stack, false);
             if (item == null) return;
@@ -251,39 +251,34 @@ public class ModTools {
         else if (entity.getOffHandStack().isEmpty()) entity.setStackInHand(Hand.OFF_HAND, stack);
     }
 
-    public static Pair<String, String> getDefaultOrRandomSuitAndRank(ItemStack stack) {
-        //在json文件中为了方便读写，花色用了Suits.name()，点数用了Ranks.rank
-        Pair<String, String> random = new Pair<>(Card.Suits.get("0").name(), Card.Ranks.get("0").rank);
-        //在1.21之前的版本中，物品的toString()方法返回的是物品的path
-        //在1.21版本中，物品的toString()方法返回的是物品的namespace:path
-        String srPath = stack.getItem().toString() + ".json";
-        Gson gson = new Gson();
-        InputStream stream = ModTools.class.getResourceAsStream("/data/dabaosword/default_suit_and_rank/" + srPath);
-        if (stream == null) return random;
+    private static final List<ItemStack> ALL_CARDS = new ArrayList<>();
 
-        InputStreamReader reader = new InputStreamReader(stream);
-        JsonObject json = gson.fromJson(reader, JsonObject.class);
-        int size = json.getAsJsonArray("suits_and_ranks").size();
-        //随机获取一组花色和点数
-        JsonObject obj = json.getAsJsonArray("suits_and_ranks").get(new Random().nextInt(size)).getAsJsonObject();
-        if (obj.has("suit") && obj.has("rank")) {
-            return new Pair<>(obj.get("suit").getAsString(), obj.get("rank").getAsString());
-        } else return random;
-    }
+    public static void initAllCards() {
+        for (Item item : ModItems.CARDS) {
+            String path = Registries.ITEM.getId(item).getPath() + ".json";
+            Gson gson = new Gson();
+            InputStream stream = ModTools.class.getResourceAsStream("/data/dabaosword/default_suit_and_rank/" + path);
+            if (stream == null) continue;
 
-    public static ItemStack initSuitsAndRanks(ItemStack stack) {
-        if (isCard(stack)) {
-            NbtCompound nbt = stack.getOrCreateNbt();
-            if (nbt.contains("Card")) return stack;
-            NbtList list = new NbtList();
-            NbtCompound compound = new NbtCompound();
-            var suitAndRank = getDefaultOrRandomSuitAndRank(stack);
-            compound.putString("Suit", Card.Suits.valueOf(suitAndRank.getLeft()).suit);
-            compound.putString("Rank", suitAndRank.getRight());
-            list.add(compound);
-            nbt.put("Card", list);
-            stack.setNbt(nbt);
-        } return stack;
+            InputStreamReader reader = new InputStreamReader(stream);
+            JsonObject json = gson.fromJson(reader, JsonObject.class);
+            var srs = json.get("suits_and_ranks").getAsJsonArray();
+            for (int j = 0; j < srs.size(); j++) {
+                JsonObject sr = srs.get(j).getAsJsonObject();
+                String suit = sr.get("suit").getAsString();
+                String rank = sr.get("rank").getAsString();
+
+                ItemStack stack = new ItemStack(item);
+                var nbt = new NbtCompound(); var list = new NbtList(); var compound = new NbtCompound();
+                compound.putString("Suit", Card.Suits.valueOf(suit).suit);
+                compound.putString("Rank", rank);
+                list.add(compound);
+                nbt.put("Card", list);
+                stack.setNbt(nbt);
+                ALL_CARDS.add(stack);
+            }
+        }
+        System.out.println("Loaded " + ALL_CARDS.size() + " cards");
     }
 
     public static Pair<Card.Suits, Card.Ranks> getSuitAndRank(ItemStack stack) {

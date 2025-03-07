@@ -27,6 +27,7 @@ public class PileScreenHandler extends ScreenHandler {
     public PileScreenHandler(int syncId, PlayerInventory inv) {
         super(ModItems.PILE_SCREEN_HANDLER, syncId);
         this.inventory = new CardPileInventory(inv.player);
+        if (inv.player instanceof ServerPlayerEntity sp) PVPGameEvents.PLAYER_CARD_PACKS.put(sp, inventory);
         inventory.onOpen(inv.player);
         int j, k;
         for (j = 0; j < 4; ++j) {
@@ -48,7 +49,6 @@ public class PileScreenHandler extends ScreenHandler {
     public void onClosed(PlayerEntity player) {
         super.onClosed(player);
         this.inventory.onClose(player);
-        if (player instanceof ServerPlayerEntity sp) PVPGameEvents.PLAYER_CARD_PACKS.put(sp, inventory);
     }
 
     @Override
