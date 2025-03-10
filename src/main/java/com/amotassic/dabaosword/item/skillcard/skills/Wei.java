@@ -44,7 +44,7 @@ public class Wei {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            viewAs(entity, stack, 5, isBlackCard.and(isArmoury.negate()), new ItemStack(ModItems.BINGLIANG_ITEM));
+            viewAs(entity, stack, 5, isBlackCard.and(isArmoury.negate()), ModItems.BINGLIANG_ITEM);
             super.tick(stack, slot, entity);
         }
     }
@@ -319,7 +319,7 @@ public class Wei {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            viewAs(entity, stack, 5, isBlackCard, new ItemStack(ModItems.SHAN));
+            viewAs(entity, stack, 5, isBlackCard, ModItems.SHAN);
             super.tick(stack, slot, entity);
         }
     }

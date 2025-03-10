@@ -25,6 +25,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
@@ -50,9 +51,8 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
     public static class BaguaArmor extends Equipment {
         @Override
-        public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-            super.appendTooltip(stack, world, tooltip, context);
-            tooltip.add(Text.translatable("item.dabaosword.bagua.tooltip").formatted(Formatting.AQUA));
+        public void addTip(ItemStack stack, List<Text> tooltip) {
+            tooltip.add(getTip().formatted(Formatting.AQUA));
         }
 
         @Override
@@ -71,9 +71,8 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
     public static class BaiyinArmor extends Equipment {
         @Override
-        public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-            super.appendTooltip(stack, world, tooltip, context);
-            tooltip.add(Text.translatable("item.dabaosword.baiyin.tooltip").formatted(Formatting.AQUA));
+        public void addTip(ItemStack stack, List<Text> tooltip) {
+            tooltip.add(getTip().formatted(Formatting.AQUA));
         }
 
         @Override
@@ -88,10 +87,9 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
     public static class CixiongWeapon extends Equipment implements ICardEvent {
         @Override
-        public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-            super.appendTooltip(stack, world, tooltip, context);
-            tooltip.add(Text.translatable("item.dabaosword.cixiong.tooltip1"));
-            tooltip.add(Text.translatable("item.dabaosword.cixiong.tooltip2").formatted(Formatting.AQUA));
+        public void addTip(ItemStack stack, List<Text> tooltip) {
+            tooltip.add(getTip("1"));
+            tooltip.add(getTip("2").formatted(Formatting.AQUA));
         }
 
         @Override
@@ -104,10 +102,9 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
     public static class FangtianWeapon extends Equipment {
         @Override
-        public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-            super.appendTooltip(stack, world, tooltip, context);
-            tooltip.add(Text.translatable("item.dabaosword.fangtian.tooltip1"));
-            tooltip.add(Text.translatable("item.dabaosword.fangtian.tooltip2").formatted(Formatting.AQUA));
+        public void addTip(ItemStack stack, List<Text> tooltip) {
+            tooltip.add(getTip("1"));
+            tooltip.add(getTip("2").formatted(Formatting.AQUA));
         }
 
         @Override
@@ -124,17 +121,15 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
     public static class GuanshiWeapon extends Equipment {
         @Override
-        public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-            super.appendTooltip(stack, world, tooltip, context);
-            tooltip.add(Text.translatable("item.dabaosword.guanshi.tooltip1"));
-            tooltip.add(Text.translatable("item.dabaosword.guanshi.tooltip2").formatted(Formatting.AQUA));
+        public void addTip(ItemStack stack, List<Text> tooltip) {
+            tooltip.add(getTip("1"));
+            tooltip.add(getTip("2").formatted(Formatting.AQUA));
         }
     }
 
     public static class GudingWeapon extends Equipment {
         @Override
-        public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-            super.appendTooltip(stack, world, tooltip, context);
+        public void addTip(ItemStack stack, List<Text> tooltip) {
             tooltip.add(Text.translatable("item.dabaosword.gudingdao.tooltip").formatted(Formatting.GREEN));
             tooltip.add(Text.translatable("item.dabaosword.gudingdao.tooltip2").formatted(Formatting.AQUA));
         }
@@ -155,9 +150,8 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
     public static class HanbingWeapon extends Equipment {
         @Override
-        public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-            super.appendTooltip(stack, world, tooltip, context);
-            tooltip.add(Text.translatable("item.dabaosword.hanbing.tooltip").formatted(Formatting.AQUA));
+        public void addTip(ItemStack stack, List<Text> tooltip) {
+            tooltip.add(getTip().formatted(Formatting.AQUA));
         }
 
         @Override
@@ -170,10 +164,9 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
     public static class LiannuWeapon extends Equipment {
         @Override
-        public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-            super.appendTooltip(stack, world, tooltip, context);
-            tooltip.add(Text.translatable("item.dabaosword.liannu.tooltip1"));
-            tooltip.add(Text.translatable("item.dabaosword.liannu.tooltip2").formatted(Formatting.AQUA));
+        public void addTip(ItemStack stack, List<Text> tooltip) {
+            tooltip.add(getTip("1"));
+            tooltip.add(getTip("2").formatted(Formatting.AQUA));
         }
 
         @Override
@@ -192,11 +185,10 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
     public static class QilinWeapon extends Equipment implements ReachDefend {
         @Override
-        public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-            super.appendTooltip(stack, world, tooltip, context);
-            tooltip.add(Text.translatable("item.dabaosword.qilin.tooltip1"));
-            tooltip.add(Text.translatable("item.dabaosword.qilin.tooltip2").formatted(Formatting.AQUA));
-            tooltip.add(Text.translatable("item.dabaosword.qilin.tooltip3").formatted(Formatting.AQUA));
+        public void addTip(ItemStack stack, List<Text> tooltip) {
+            tooltip.add(getTip("1"));
+            tooltip.add(getTip("2").formatted(Formatting.AQUA));
+            tooltip.add(getTip("3").formatted(Formatting.AQUA));
         }
 
         @Override
@@ -222,10 +214,9 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
     public static class QinggangWeapon extends Equipment {
         @Override
-        public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-            super.appendTooltip(stack, world, tooltip, context);
-            tooltip.add(Text.translatable("item.dabaosword.qinggang.tooltip1"));
-            tooltip.add(Text.translatable("item.dabaosword.qinggang.tooltip2").formatted(Formatting.AQUA));
+        public void addTip(ItemStack stack, List<Text> tooltip) {
+            tooltip.add(getTip("1"));
+            tooltip.add(getTip("2").formatted(Formatting.AQUA));
         }
 
         @Override
@@ -239,10 +230,9 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
     public static class QinglongWeapon extends Equipment {
         @Override
-        public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-            super.appendTooltip(stack, world, tooltip, context);
-            tooltip.add(Text.translatable("item.dabaosword.qinglong.tooltip1"));
-            tooltip.add(Text.translatable("item.dabaosword.qinglong.tooltip2").formatted(Formatting.AQUA));
+        public void addTip(ItemStack stack, List<Text> tooltip) {
+            tooltip.add(getTip("1"));
+            tooltip.add(getTip("2").formatted(Formatting.AQUA));
         }
 
         @Override
@@ -257,10 +247,9 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
     public static class RenwangArmor extends Equipment implements ICardEvent {
         @Override
-        public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-            super.appendTooltip(stack, world, tooltip, context);
-            tooltip.add(Text.translatable("item.dabaosword.renwang.tooltip1"));
-            tooltip.add(Text.translatable("item.dabaosword.renwang.tooltip2").formatted(Formatting.AQUA));
+        public void addTip(ItemStack stack, List<Text> tooltip) {
+            tooltip.add(getTip("1"));
+            tooltip.add(getTip("2").formatted(Formatting.AQUA));
         }
 
         @Override
@@ -272,10 +261,7 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
     public static class RattanArmor extends Equipment implements ICardEvent {
         @Override
-        public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-            super.appendTooltip(stack, world, tooltip, context);
-            tooltip.add(Text.translatable("item.dabaosword.rattanarmor.tooltip"));
-        }
+        public void addTip(ItemStack stack, List<Text> tooltip) {tooltip.add(getTip());}
 
         //实现渡江不沉的效果，代码来自https://github.com/focamacho/RingsOfAscension/中的水上行走戒指
         @Override
@@ -345,10 +331,9 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
     public static class ZhangbaWeapon extends Equipment {
         @Override
-        public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-            super.appendTooltip(stack, world, tooltip, context);
-            tooltip.add(Text.translatable("item.dabaosword.zhangba.tooltip1"));
-            tooltip.add(Text.translatable("item.dabaosword.zhangba.tooltip2").formatted(Formatting.AQUA));
+        public void addTip(ItemStack stack, List<Text> tooltip) {
+            tooltip.add(getTip("1"));
+            tooltip.add(getTip("2").formatted(Formatting.AQUA));
         }
 
         @Override
@@ -362,7 +347,7 @@ public class Equipment extends TrinketItem implements Card, Skill {
                     if (one) {
                         nbt.remove("has_one");
                         setCD(stack, 5);
-                        give(player, new ItemStack(ModItems.SHA));
+                        give(player, newCard(ModItems.SHA));
                         voice(player, Sounds.ZHANGBA);
                     } else {nbt.putBoolean("has_one", true);}
                     stack.setNbt(nbt);
@@ -374,10 +359,9 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
     public static class ZhuqueWeapon extends Equipment {
         @Override
-        public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-            super.appendTooltip(stack, world, tooltip, context);
-            tooltip.add(Text.translatable("item.dabaosword.zhuque.tooltip1"));
-            tooltip.add(Text.translatable("item.dabaosword.zhuque.tooltip2").formatted(Formatting.AQUA));
+        public void addTip(ItemStack stack, List<Text> tooltip) {
+            tooltip.add(getTip("1"));
+            tooltip.add(getTip("2").formatted(Formatting.AQUA));
         }
 
         @Override
@@ -389,10 +373,7 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
     public static class AttackHorse extends Equipment implements ReachDefend {
         @Override
-        public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-            super.appendTooltip(stack, world, tooltip, context);
-            tooltip.add(Text.translatable("item.dabaosword.chitu.tooltip"));
-        }
+        public void addTip(ItemStack stack, List<Text> tooltip) {tooltip.add(getTip());}
 
         @Override
         public int getExtraReach(PlayerEntity player, ItemStack stack) {return 1;}
@@ -400,10 +381,7 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
     public static class DefendHorse extends Equipment implements ReachDefend {
         @Override
-        public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-            super.appendTooltip(stack, world, tooltip, context);
-            tooltip.add(Text.translatable("item.dabaosword.dilu.tooltip"));
-        }
+        public void addTip(ItemStack stack, List<Text> tooltip) {tooltip.add(getTip());}
 
         @Override
         public int getDefend(PlayerEntity player, ItemStack stack) {return 1;}
@@ -411,12 +389,18 @@ public class Equipment extends TrinketItem implements Card, Skill {
 
     @Override
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-        CardItem.addSRTip(stack, tooltip);
+        CardItem.addSRTip(stack, tooltip); addTip(stack, tooltip);
 
         if(Screen.hasShiftDown()) {
             tooltip.add(Text.translatable("equipment.tip1").formatted(Formatting.BOLD));
             tooltip.add(Text.translatable("equipment.tip2").formatted(Formatting.BOLD));
         } else tooltip.add(Text.translatable("dabaosword.shift_tip", Text.keybind("key.sneak")));
+    }
+    public void addTip(ItemStack stack, List<Text> tooltip) {}
+
+    public MutableText getTip() {return getTip("");}
+    public MutableText getTip(String suffix) {
+        return Text.translatable(getTranslationKey() + ".tooltip" + suffix);
     }
 
     @Override

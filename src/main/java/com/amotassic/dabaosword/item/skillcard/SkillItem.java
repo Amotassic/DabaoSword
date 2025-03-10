@@ -86,6 +86,9 @@ public class SkillItem extends TrinketItem implements Skill {
             }
         }
     }
+    public static void viewAs(LivingEntity entity, ItemStack skill, int CD, Predicate<ItemStack> predicate, Item result) {
+        viewAs(entity, skill, CD, predicate, newCard(result));
+    }
 
     public static class ActiveSkill extends SkillItem {}
 

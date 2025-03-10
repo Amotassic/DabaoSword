@@ -260,7 +260,7 @@ public class Game {
         Identity identity = getIdentity(player);
         setScore(identity, getScore(identity) + 1);
         this.timeOut = ModConfig.TimeOut;
-        forEachPlayer(p -> p.sendMessage(Text.translatable("dabaosword.score.add", player.getDisplayName())));
+        forEachPlayer(p -> p.sendMessage(Text.translatable("dabaosword.score.add", player.getDisplayName()).formatted(Formatting.BOLD)));
     }
 
     /**确保玩家在该对局中才可以调用本方法*/

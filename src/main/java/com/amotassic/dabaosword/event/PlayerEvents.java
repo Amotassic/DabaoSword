@@ -18,6 +18,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.world.GameMode;
 
 import java.util.HashMap;
@@ -75,7 +76,7 @@ public class PlayerEvents implements PlayerDeathCallback, PlayerRespawnCallback 
                 int re = game.getRespawnChances(identity);
                 if (re <= 0) { //如果玩家所在阵营剩余复活次数为0，公布玩家身份
                     player.changeGameMode(GameMode.SPECTATOR);
-                    game.forEachPlayer(p -> p.sendMessage(Text.translatable("dabaosword.game.view_id.tip", player.getDisplayName(), Text.translatable(identity.tag)).formatted(Game.getIdentityColor(identity))));
+                    game.forEachPlayer(p -> p.sendMessage(Text.translatable("dabaosword.game.view_id.tip", player.getDisplayName(), Text.translatable(identity.tag)).formatted(Game.getIdentityColor(identity), Formatting.BOLD)));
                 }
             }
 
@@ -119,9 +120,9 @@ public class PlayerEvents implements PlayerDeathCallback, PlayerRespawnCallback 
 
             boolean card = world.getGameRules().getBoolean(Gamerule.CLEAR_CARDS_AFTER_DEATH);
             if (card && hasTrinket(ModItems.CARD_PILE, player)) {
-                give(player, new ItemStack(ModItems.SHA));
-                give(player, new ItemStack(ModItems.SHAN));
-                give(player, new ItemStack(ModItems.PEACH));
+                give(player, newCard(ModItems.SHA));
+                give(player, newCard(ModItems.SHAN));
+                give(player, newCard(ModItems.PEACH));
                 draw(player);
             }
 

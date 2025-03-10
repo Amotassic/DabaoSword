@@ -67,7 +67,7 @@ public class Shu {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            viewAs(entity, stack, 15, isRedCard, new ItemStack(ModItems.FIRE_ATTACK));
+            viewAs(entity, stack, 15, isRedCard, ModItems.FIRE_ATTACK);
             super.tick(stack, slot, entity);
         }
     }
@@ -94,7 +94,7 @@ public class Shu {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            viewAs(entity, stack, 10, isBlackCard, new ItemStack(ModItems.WUXIE));
+            viewAs(entity, stack, 10, isBlackCard, ModItems.WUXIE);
             super.tick(stack, slot, entity);
         }
     }
@@ -163,10 +163,10 @@ public class Shu {
                 ItemStack stack1 = player.getOffHandStack(); ItemStack copy = stack1.copy();
                 if (world.getTime() % 20 == 0 && isBasic.test(stack1)) {
                     stack1.decrement(1);
-                    if (isSha.test(copy)) give(player, new ItemStack(ModItems.SHAN));
-                    if (copy.isOf(ModItems.SHAN)) give(player, new ItemStack(ModItems.SHA));
-                    if (copy.isOf(ModItems.PEACH)) give(player, new ItemStack(ModItems.JIU));
-                    if (copy.isOf(ModItems.JIU)) give(player, new ItemStack(ModItems.PEACH));
+                    if (isSha.test(copy)) give(player, newCard(ModItems.SHAN));
+                    if (copy.isOf(ModItems.SHAN)) give(player, newCard(p(ModItems.SHA).and(isRedCard)));
+                    if (copy.isOf(ModItems.PEACH)) give(player, newCard(ModItems.JIU));
+                    if (copy.isOf(ModItems.JIU)) give(player, newCard(ModItems.PEACH));
                     voice(player, Sounds.LONGDAN);
                 }
             }
@@ -236,7 +236,7 @@ public class Shu {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            viewAs(entity, stack, 5, isRedCard, new ItemStack(ModItems.SHA));
+            viewAs(entity, stack, 5, isRedCard, newCard(p(ModItems.SHA).and(isRedCard)));
             super.tick(stack, slot, entity);
         }
     }

@@ -56,10 +56,10 @@ public abstract class MobEntityMixin extends LivingEntity {
     @Unique
     private void initCards() {
         if (getMainHandStack().isEmpty()) {
-            setStackInHand(Hand.MAIN_HAND, newCard(p(getMainCard())).copyWithCount((int) (3 * Math.random()) + 1));
+            setStackInHand(Hand.MAIN_HAND, newCard(getMainCard()).copyWithCount((int) (3 * Math.random()) + 1));
         }
         if (getOffHandStack().isEmpty()) {
-            setStackInHand(Hand.OFF_HAND, newCard(p(getOffCard())).copyWithCount((int) (2 * Math.random()) + 1));
+            setStackInHand(Hand.OFF_HAND, newCard(getOffCard()).copyWithCount((int) (2 * Math.random()) + 1));
         }
     }
 

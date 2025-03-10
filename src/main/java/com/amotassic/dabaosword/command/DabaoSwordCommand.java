@@ -33,33 +33,33 @@ public class DabaoSwordCommand {
                         .executes(c -> help(c.getSource(), IntegerArgumentType.getInteger(c, "page")))
                 )
                 .then(argument("skill", ItemStackArgumentType.itemStack(access))
-                        .executes(c -> execute(c, ItemStackArgumentType.getItemStackArgument(c, "skill"), 0))
+                        .executes(c -> execute(c.getSource(), ItemStackArgumentType.getItemStackArgument(c, "skill"), 0))
                         .then(argument("value", IntegerArgumentType.integer())
-                                .executes(c -> execute(c, ItemStackArgumentType.getItemStackArgument(c, "skill"), IntegerArgumentType.getInteger(c, "value")))
+                                .executes(c -> execute(c.getSource(), ItemStackArgumentType.getItemStackArgument(c, "skill"), IntegerArgumentType.getInteger(c, "value")))
                         )
                 )
                 .then(literal("creategame")
-                       .then(argument("type", IntegerArgumentType.integer())
-                               .executes(c -> createGame(c, IntegerArgumentType.getInteger(c, "type")))
-                       )
+                        .then(argument("type", IntegerArgumentType.integer())
+                                .executes(c -> createGame(c.getSource(), IntegerArgumentType.getInteger(c, "type")))
+                        )
                 )
                 .then(literal("refusegame").executes(DabaoSwordCommand::refuseGame))
                 .then(literal("discardgame").requires(source -> source.hasPermissionLevel(2))
-                        .executes(c -> discardGame(c, null))
+                        .executes(c -> discardGame(c.getSource(), null))
                         .then(argument("player", EntityArgumentType.player())
-                               .executes(c -> discardGame(c, EntityArgumentType.getPlayer(c, "player")))
-                       )
+                                .executes(c -> discardGame(c.getSource(), EntityArgumentType.getPlayer(c, "player")))
+                        )
                 )
-               .then(literal("viewidentity").requires(source -> source.hasPermissionLevel(2))
-                       .then(argument("target", EntityArgumentType.player())
-                              .executes(c -> viewIdentity(c, EntityArgumentType.getPlayer(c, "target")))
-                       )
-               )
+                .then(literal("viewidentity")
+                        .then(argument("target", EntityArgumentType.player())
+                                .executes(c -> viewIdentity(c.getSource(), EntityArgumentType.getPlayer(c, "target")))
+                        )
+                )
         );
     }
 
-    private static int execute(CommandContext<ServerCommandSource> ctx, ItemStackArgument stack, int value) {
-        LivingEntity entity = (LivingEntity) ctx.getSource().getEntity();
+    private static int execute(ServerCommandSource ctx, ItemStackArgument stack, int value) {
+        LivingEntity entity = (LivingEntity) ctx.getEntity();
         ItemStack skill = trinketItem(stack.getItem(), entity);
         if (skill.getItem() instanceof CSkill s) s.triggerSkill(entity, skill, value);
         return 1;
@@ -69,8 +69,8 @@ public class DabaoSwordCommand {
         default void triggerSkill(LivingEntity entity, ItemStack stack, int value) {}
     }
 
-    private static int createGame(CommandContext<ServerCommandSource> ctx, int type) throws CommandSyntaxException {
-        ServerPlayerEntity player = ctx.getSource().getPlayerOrThrow();
+    private static int createGame(ServerCommandSource ctx, int type) throws CommandSyntaxException {
+        ServerPlayerEntity player = ctx.getPlayerOrThrow();
         Game game = getGameManager().createGame(player, type);
         if (game == null) return 0;
         return 1;
@@ -85,28 +85,41 @@ public class DabaoSwordCommand {
         return 1;
     }
 
-    private static int discardGame(CommandContext<ServerCommandSource> ctx, ServerPlayerEntity player) throws CommandSyntaxException {
-        if (player == null) player = ctx.getSource().getPlayerOrThrow();
+    private static int discardGame(ServerCommandSource ctx, ServerPlayerEntity player) throws CommandSyntaxException {
+        if (player == null) player = ctx.getPlayerOrThrow();
         Game game = getGameManager().getGameByPlayer(player);
         if (game == null) {
-            ServerPlayerEntity finalPlayer = player;
-            ctx.getSource().sendFeedback(() -> Text.translatable("dabaosword.game.not_found", finalPlayer.getDisplayName()).formatted(Formatting.RED), false);
+            ctx.sendMessage(Text.translatable("dabaosword.game.not_found", player.getDisplayName()).formatted(Formatting.RED));
             return 0;
         }
         game.discardGame();
-        ctx.getSource().sendFeedback(() -> Text.literal("Game discarded!"), false);
+        ctx.sendFeedback(() -> Text.literal("Game discarded!"), false);
         return 1;
     }
 
-    private static int viewIdentity(CommandContext<ServerCommandSource> ctx, ServerPlayerEntity player) {
-        Game game = getGameManager().getGameByPlayer(player);
+    private static int viewIdentity(ServerCommandSource source, ServerPlayerEntity target) throws CommandSyntaxException {
+        var player = source.getPlayerOrThrow();
+        Game game = getGameManager().getGameByPlayer(target);
         if (game == null) {
-            ctx.getSource().sendFeedback(() -> Text.translatable("dabaosword.game.not_found", player.getDisplayName()).formatted(Formatting.RED), false);
+            source.sendMessage(Text.translatable("dabaosword.game.not_found", target.getDisplayName()).formatted(Formatting.RED));
             return 0;
         }
-        Game.Identity identity = game.getIdentity(player);
-        ctx.getSource().sendFeedback(() -> Text.translatable("dabaosword.game.view_id.tip", player.getDisplayName(), Text.translatable(identity.tag)).formatted(Game.getIdentityColor(identity)), false);
-        return 1;
+        Game.Identity id = game.getIdentity(target);
+        if (player == target) {
+            feedbackIdentity(source, target, id);
+            return 1;
+        } else {
+            if (player.hasPermissionLevel(2)) {
+                feedbackIdentity(source, target, id);
+                return 1;
+            } else {
+                source.sendMessage(Text.translatable("dabaosword.game.view_id.fail").formatted(Formatting.RED));
+                return 0;
+            }
+        }
+    }
+    private static void feedbackIdentity(ServerCommandSource source, ServerPlayerEntity target, Game.Identity id) {
+        source.sendFeedback(() -> Text.translatable("dabaosword.game.view_id.tip", target.getDisplayName(), Text.translatable(id.tag)).formatted(Game.getIdentityColor(id), Formatting.BOLD), false);
     }
 
     private static int help(ServerCommandSource source, int page) throws CommandSyntaxException {
@@ -143,7 +156,7 @@ public class DabaoSwordCommand {
 
     private static final MutableText info = Text.translatable("dabaosword.help.info").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/info ")).withHoverEvent(HoverEvent.Action.SHOW_TEXT.buildHoverEvent(Text.translatable("dabaosword.help.info_hover")))),
     newGame = Text.translatable("dabaosword.newgame").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword 2")).withHoverEvent(HoverEvent.Action.SHOW_TEXT.buildHoverEvent(Text.translatable("dabaosword.newgame_hover")))),
-    viewId = Text.translatable("dabaosword.viewid").formatted(Formatting.LIGHT_PURPLE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/dabaosword viewidentity ")).withHoverEvent(HoverEvent.Action.SHOW_TEXT.buildHoverEvent(Text.translatable("dabaosword.viewid_hover")))),
+    viewId = Text.translatable("dabaosword.viewid").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/dabaosword viewidentity @s")).withHoverEvent(HoverEvent.Action.SHOW_TEXT.buildHoverEvent(Text.translatable("dabaosword.viewid_hover")))),
     disGame = Text.translatable("dabaosword.disgame").formatted(Formatting.LIGHT_PURPLE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/dabaosword discardgame ")).withHoverEvent(HoverEvent.Action.SHOW_TEXT.buildHoverEvent(Text.translatable("dabaosword.disgame_hover"))));
     public static final MutableText menu = info.append(newGame).append(viewId).append(disGame);
 }

@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.effect;
 
+import com.amotassic.dabaosword.item.ModItems;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
@@ -19,7 +20,7 @@ public class Cooldown2Effect extends StatusEffect {
     @Override
     public void applyUpdateEffect(LivingEntity entity, int amplifier) {
         if (entity.getWorld() instanceof ServerWorld world) {
-            int restTime = Objects.requireNonNull(entity.getStatusEffect(this)).getDuration();
+            int restTime = Objects.requireNonNull(entity.getStatusEffect(ModItems.COOLDOWN2)).getDuration();
             //一级效果被用于万箭齐发
             if (amplifier == 1 && restTime % 5 == 0) arrowRain(entity, 3, 25);
 

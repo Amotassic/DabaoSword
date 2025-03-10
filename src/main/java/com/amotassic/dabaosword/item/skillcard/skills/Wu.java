@@ -113,7 +113,7 @@ public class Wu {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            viewAs(entity, stack, 15, isDiamondCard, new ItemStack(ModItems.TOO_HAPPY_ITEM));
+            viewAs(entity, stack, 15, isDiamondCard, ModItems.TOO_HAPPY_ITEM);
             super.tick(stack, slot, entity);
         }
     }
@@ -229,7 +229,7 @@ public class Wu {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            viewAs(entity, stack, 5, isBlackCard, new ItemStack(ModItems.DISCARD));
+            viewAs(entity, stack, 5, isBlackCard, ModItems.DISCARD);
             super.tick(stack, slot, entity);
         }
     }

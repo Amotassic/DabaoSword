@@ -41,7 +41,7 @@ public class Qun {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            viewAs(entity, stack, 10, isRedCard, new ItemStack(ModItems.PEACH));
+            viewAs(entity, stack, 10, isRedCard, ModItems.PEACH);
             super.tick(stack, slot, entity);
         }
     }
@@ -55,7 +55,7 @@ public class Qun {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            viewAs(entity, stack, 10, isSpadeCard, new ItemStack(ModItems.JIU));
+            viewAs(entity, stack, 10, isSpadeCard, ModItems.JIU);
             super.tick(stack, slot, entity);
         }
     }
@@ -149,7 +149,7 @@ public class Qun {
                         stack.setNbt(nbt);
                         setCD(stack, 15);
                         off.decrement(1);
-                        give(player, new ItemStack(ModItems.WANJIAN));
+                        give(player, newCard(ModItems.WANJIAN));
                         voice(player, Sounds.LUANJI);
                         return;
                     }

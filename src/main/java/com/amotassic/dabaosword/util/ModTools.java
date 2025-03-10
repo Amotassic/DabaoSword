@@ -232,6 +232,7 @@ public class ModTools {
     public static ItemStack newCard() {
         return ALL_CARDS.get(new Random().nextInt(ALL_CARDS.size())).copy();
     }
+    public static ItemStack newCard(Item item) {return newCard(p(item));}
     public static ItemStack newCard(Predicate<ItemStack> predicate) {
         List<ItemStack> list = ALL_CARDS.stream().filter(predicate).toList();
         if (list.isEmpty()) return ItemStack.EMPTY;

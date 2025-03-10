@@ -14,6 +14,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
@@ -60,7 +61,10 @@ public class PVPGameEvents implements ServerWorldEvents.Load, ServerTickEvents.S
     }
 
     public static void onGameCreate(ServerPlayerEntity player, Game game, Set<UUID> players) {
-        game.forEachPlayer(p -> p.sendMessage(Text.translatable("dabaosword.game.create", player.getDisplayName(), players.size())));
+        MutableText text = Text.translatable("dabaosword.game.create", player.getDisplayName(), players.size());
+        if (game.getPrimaryData().get("neiCount") == 0) text = text.append(Text.translatable("dabaosword.game.no_turn_coat"));
+        MutableText finalText = text;
+        game.forEachPlayer(p -> p.sendMessage(finalText));
     }
 
     private void countDownTip(Game game, int countDown) {
