@@ -1,0 +1,21 @@
+package com.amotassic.dabaosword.util;
+
+import net.minecraft.entity.damage.DamageType;
+import net.minecraft.item.Item;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
+import net.minecraft.util.Identifier;
+
+public class Tags {
+
+    public static final TagKey<Item> LOCK_SKILL = of("lock_skill");
+    public static final TagKey<Item> TRIGGER_WUXIE = of("trigger_wuxie");
+
+    private static TagKey<Item> of(String id) {
+        return TagKey.of(RegistryKeys.ITEM, Identifier.of("dabaosword", id));
+    }
+
+    public static final TagKey<DamageType> TRIGGER_TIESUO = TagKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of("dabaosword", "trigger_tiesuo"));
+
+    public static void Tag() {}
+}

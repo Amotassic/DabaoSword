@@ -1,0 +1,14 @@
+{
+  "entities": [
+    "player",
+    "dabaosword:xuyou"
+  ],
+  "slots": [
+    "chest/armor",
+    "hand/weapon",
+    "head/skills",
+    "legs/attack",
+    "legs/defend",
+    "offhand/card_pile"
+  ]
+}

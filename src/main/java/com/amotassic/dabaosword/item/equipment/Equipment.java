@@ -1,0 +1,556 @@
+package com.amotassic.dabaosword.item.equipment;
+
+import com.amotassic.dabaosword.api.Card;
+import com.amotassic.dabaosword.api.ICardEvent;
+import com.amotassic.dabaosword.api.ReachDefend;
+import com.amotassic.dabaosword.api.Skill;
+import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.item.card.CardItem;
+import com.amotassic.dabaosword.item.skillcard.SkillCards;
+import com.amotassic.dabaosword.util.Sounds;
+import io.wispforest.accessories.api.AccessoriesCapability;
+import io.wispforest.accessories.api.AccessoryItem;
+import io.wispforest.accessories.api.AccessoryRegistry;
+import io.wispforest.accessories.api.slot.SlotReference;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ArrowEntity;
+import net.minecraft.fluid.Fluids;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.tag.DamageTypeTags;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Hand;
+import net.minecraft.util.Pair;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import static com.amotassic.dabaosword.api.event.CardEvents.cardDiscard;
+import static com.amotassic.dabaosword.api.event.CardEvents.cardUsePre;
+import static com.amotassic.dabaosword.util.ModTools.*;
+import static com.amotassic.dabaosword.util.ModifyDamage.shan;
+
+public class Equipment extends AccessoryItem implements Card, Skill {
+    public Equipment(Settings properties) {super(properties);}
+
+    @Override public Type getType() {return Type.EQUIPMENT;}
+
+    public static class BaguaArmor extends Equipment {
+        public BaguaArmor(Settings properties) {super(properties);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+            super.appendTooltip(stack, context, tooltip, type);
+            tooltip.add(Text.translatable("item.dabaosword.bagua.tooltip").formatted(Formatting.AQUA));
+        }
+
+        @Override
+        public Priority getPriority(LivingEntity target, DamageSource source, float amount) {return Priority.HIGH;}
+
+        @Override
+        public boolean cancelDamage(LivingEntity target, DamageSource source, float amount) {
+            if (source.getAttacker() instanceof LivingEntity) {
+                if (!target.hasStatusEffect(ModItems.COOLDOWN2)) {
+                    if (hasTrinket(ModItems.BAGUA, target) && new Random().nextFloat() < 0.5 && !source.isIn(DamageTypeTags.BYPASSES_ARMOR)) {
+                        shan(target, true, source, amount);
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+    }
+
+    public static class BaiyinArmor extends Equipment {
+        public BaiyinArmor(Settings properties) {super(properties);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+            super.appendTooltip(stack, context, tooltip, type);
+            tooltip.add(Text.translatable("item.dabaosword.baiyin.tooltip").formatted(Formatting.AQUA));
+        }
+
+        @Override
+        public Pair<Float, Float> modifyDamage(LivingEntity target, DamageSource source, float amount) {
+            if (!source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY) && source.getAttacker() instanceof LivingEntity && hasTrinket(ModItems.BAIYIN, target)) {
+                voice(target, Sounds.BAIYIN);
+                return new Pair<>(-0.4f, 0f);
+            }
+            return null;
+        }
+    }
+
+    public static class CixiongWeapon extends Equipment implements ICardEvent {
+        public CixiongWeapon(Settings properties) {super(properties);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+            super.appendTooltip(stack, context, tooltip, type);
+            tooltip.add(Text.translatable("item.dabaosword.cixiong.tooltip1"));
+            tooltip.add(Text.translatable("item.dabaosword.cixiong.tooltip2").formatted(Formatting.AQUA));
+        }
+
+        @Override
+        public void postCardUse(LivingEntity user, ItemStack card, LivingEntity target, ItemStack skill) {
+            if (isSha.test(card) && target != null && new Random().nextFloat() < 0.5) {
+                draw(user); voice(user, skill);
+            }
+        }
+    }
+
+    public static class FangtianWeapon extends Equipment {
+        public FangtianWeapon(Settings properties) {super(properties);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+            super.appendTooltip(stack, context, tooltip, type);
+            tooltip.add(Text.translatable("item.dabaosword.fangtian.tooltip1"));
+            tooltip.add(Text.translatable("item.dabaosword.fangtian.tooltip2").formatted(Formatting.AQUA));
+        }
+
+        @Override
+        public void preAttack(ItemStack stack, LivingEntity target, PlayerEntity player) {
+            //方天画戟：打中生物后触发特效，给予CD和持续时间
+            int cd = getCD(stack);
+            if (cd == 0) {
+                setCD(stack, 20);
+                voice(player, Sounds.FANGTIAN);
+                player.sendMessage(Text.translatable("dabaosword.fangtian").formatted(Formatting.RED), true);
+            }
+        }
+    }
+
+    public static class GuanshiWeapon extends Equipment {
+        public GuanshiWeapon(Settings properties) {super(properties);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+            super.appendTooltip(stack, context, tooltip, type);
+            tooltip.add(Text.translatable("item.dabaosword.guanshi.tooltip1"));
+            tooltip.add(Text.translatable("item.dabaosword.guanshi.tooltip2").formatted(Formatting.AQUA));
+        }
+    }
+
+    public static class GudingWeapon extends Equipment {
+        public GudingWeapon(Settings properties) {super(properties);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+            super.appendTooltip(stack, context, tooltip, type);
+            tooltip.add(Text.translatable("item.dabaosword.gudingdao.tooltip").formatted(Formatting.GREEN));
+            tooltip.add(Text.translatable("item.dabaosword.gudingdao.tooltip2").formatted(Formatting.AQUA));
+        }
+
+        @Override
+        public Pair<Float, Float> modifyDamage(LivingEntity target, DamageSource source, float amount) {
+            if (source.getSource() instanceof LivingEntity attacker && hasTrinket(ModItems.GUDING_WEAPON, attacker)) {
+                int i = 0;
+                for (var s : target.getArmorItems()) {if (s.isEmpty()) i++;}
+                if (i == 4) {
+                    voice(attacker, Sounds.GUDING);
+                    return new Pair<>(0f, 5f);
+                }
+            }
+            return null;
+        }
+    }
+
+    public static class HanbingWeapon extends Equipment {
+        public HanbingWeapon(Settings properties) {super(properties);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+            super.appendTooltip(stack, context, tooltip, type);
+            tooltip.add(Text.translatable("item.dabaosword.hanbing.tooltip").formatted(Formatting.AQUA));
+        }
+
+        @Override
+        public void postAttack(ItemStack stack, LivingEntity entity, LivingEntity attacker, float amount) {
+            voice(attacker, Sounds.HANBING);
+            entity.timeUntilRegen = 0;
+            entity.setFrozenTicks(500);
+        }
+    }
+
+    public static class LiannuWeapon extends Equipment {
+        public LiannuWeapon(Settings properties) {super(properties);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+            super.appendTooltip(stack, context, tooltip, type);
+            tooltip.add(Text.translatable("item.dabaosword.liannu.tooltip1"));
+            tooltip.add(Text.translatable("item.dabaosword.liannu.tooltip2").formatted(Formatting.AQUA));
+        }
+
+        @Override
+        public void preAttack(ItemStack stack, LivingEntity target, PlayerEntity attacker) {
+            int i = 2;
+            if (hasTrinket(ModItems.CHITU, attacker)) i++;
+            if (hasTrinket(SkillCards.MASHU, attacker)) i++;
+            if (hasTrinket(ModItems.DILU, target)) i--;
+            if (hasTrinket(SkillCards.FEIYING, target)) i--;
+            if (attacker.distanceTo(target) <= i) {
+                attacker.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, 3, 255,false, false, false));
+                voice(attacker, stack);
+            }
+        }
+    }
+
+    public static class QilinWeapon extends Equipment implements ReachDefend {
+        public QilinWeapon(Settings properties) {super(properties);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+            super.appendTooltip(stack, context, tooltip, type);
+            tooltip.add(Text.translatable("item.dabaosword.qilin.tooltip1"));
+            tooltip.add(Text.translatable("item.dabaosword.qilin.tooltip2").formatted(Formatting.AQUA));
+            tooltip.add(Text.translatable("item.dabaosword.qilin.tooltip3").formatted(Formatting.AQUA));
+        }
+
+        @Override
+        public int getExtraReach(PlayerEntity player, ItemStack stack) {return 1;}
+
+        @Override
+        public void postDamage(ItemStack stack, LivingEntity target, LivingEntity attacker, float amount) {
+            if (getCD(stack) != 0) return;
+            ItemStack chitu = trinketItem(ModItems.CHITU, target);
+            ItemStack dilu = trinketItem(ModItems.DILU, target);
+            List<ItemStack> horse = new ArrayList<>();
+            if (!chitu.isEmpty()) horse.add(chitu); if (!dilu.isEmpty()) horse.add(dilu);
+            if (horse.isEmpty()) return;
+            ItemStack selected = horse.get(new Random().nextInt(horse.size()));
+            Text message = Text.translatable("dabaosword.discard", attacker.getDisplayName(), target.getDisplayName(), selected.toHoverableText());
+            if (attacker instanceof PlayerEntity player) player.sendMessage(message, false);
+            if (target instanceof PlayerEntity player) player.sendMessage(message, false);
+            cardDiscard(target, selected, 1, true);
+            voice(attacker, stack);
+            setCD(stack, 30);
+        }
+    }
+
+    public static class QinggangWeapon extends Equipment {
+        public QinggangWeapon(Settings properties) {super(properties);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+            super.appendTooltip(stack, context, tooltip, type);
+            tooltip.add(Text.translatable("item.dabaosword.qinggang.tooltip1"));
+            tooltip.add(Text.translatable("item.dabaosword.qinggang.tooltip2").formatted(Formatting.AQUA));
+        }
+
+        @Override
+        public void preAttack(ItemStack stack, LivingEntity target, PlayerEntity player) {
+            //青釭剑额外伤害
+            float extraDamage = Math.min(20, 0.2f * target.getMaxHealth());
+            target.damage(world(player), player.getDamageSources().genericKill(), extraDamage); target.timeUntilRegen = 0;
+            voice(player, Sounds.QINGGANG);
+        }
+    }
+
+    public static class QinglongWeapon extends Equipment {
+        public QinglongWeapon(Settings properties) {super(properties);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+            super.appendTooltip(stack, context, tooltip, type);
+            tooltip.add(Text.translatable("item.dabaosword.qinglong.tooltip1"));
+            tooltip.add(Text.translatable("item.dabaosword.qinglong.tooltip2").formatted(Formatting.AQUA));
+        }
+
+        @Override
+        public void preAttack(ItemStack stack, LivingEntity target, PlayerEntity player) {
+            voice(player, Sounds.QINGLONG);
+            player.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE,10,0,false,false,false));
+            player.teleport(target.getX(), target.getY(), target.getZ(), false);
+            Vec3d momentum = player.getRotationVector().multiply(2);
+            target.velocityModified = true; target.setVelocity(momentum.getX(),0 ,momentum.getZ());
+        }
+    }
+
+    public static class RenwangArmor extends Equipment implements ICardEvent {
+        public RenwangArmor(Settings properties) {super(properties);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+            super.appendTooltip(stack, context, tooltip, type);
+            tooltip.add(Text.translatable("item.dabaosword.renwang.tooltip1"));
+            tooltip.add(Text.translatable("item.dabaosword.renwang.tooltip2").formatted(Formatting.AQUA));
+        }
+
+        @Override
+        public boolean canHurtByCard(LivingEntity entity, ItemStack skill, ItemStack card) {
+            if (isSha.test(card) && isBlackCard.test(card)) {voice(entity, skill); return false;}
+            return true;
+        }
+    }
+
+    public static class RattanArmor extends Equipment implements ICardEvent {
+        public RattanArmor(Settings properties) {super(properties);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+            super.appendTooltip(stack, context, tooltip, type);
+            tooltip.add(Text.translatable("item.dabaosword.rattanarmor.tooltip"));
+        }
+
+        //实现渡江不沉的效果，代码来自https://github.com/focamacho/RingsOfAscension/中的水上行走戒指
+        @Override
+        public void tick(ItemStack stack, SlotReference reference) {
+            super.tick(stack, reference);
+            var entity = reference.entity();
+            if(entity.isSneaking()) return;
+            BlockPos pos = entity.getBlockPos();
+            boolean water = entity.getWorld().getFluidState(new BlockPos(pos.getX(),
+                    (int) (entity.getBoundingBox().getMin(Direction.Axis.Y)), pos.getZ())).isOf(Fluids.WATER);
+            if (water) {
+                Vec3d motion = entity.getVelocity();
+                entity.setVelocity(motion.x, 0.0D, motion.z);
+                entity.fallDistance = 0;
+                entity.setOnGround(true);
+            }
+        }
+
+        @Override
+        public Pair<Float, Float> modifyDamage(LivingEntity target, DamageSource source, float amount) {
+            //穿藤甲时，若承受火焰伤害，则 战火燃尽，嘤熊胆！（伤害大于5就只加5）
+            if (source.isIn(DamageTypeTags.IS_FIRE) && hasTrinket(ModItems.RATTAN_ARMOR, target)) {
+                voice(target, Sounds.TENGJIA2);
+                return new Pair<>(0f, Math.min(amount, 5f));
+            }
+            return null;
+        }
+
+        @Override
+        public boolean canHurtByCard(LivingEntity entity, ItemStack skill, ItemStack card) {
+            if (card.isOf(ModItems.WANJIAN) || card.isOf(ModItems.NANMAN) || card.isOf(ModItems.SHA)) {
+                voice(entity, Sounds.TENGJIA1); return false;
+            } return true;
+        }
+
+        @Override
+        public Priority getPriority(LivingEntity target, DamageSource source, float amount) {return Priority.HIGH;}
+
+        @Override
+        public boolean cancelDamage(LivingEntity target, DamageSource source, float amount) {
+            ItemStack stack = trinketItem(ModItems.RATTAN_ARMOR, target);
+            //弹射物对藤甲无效
+            if (source.isIn(DamageTypeTags.IS_PROJECTILE) && inrattan(target)) {
+                Entity projectile = source.getSource();
+                if (projectile instanceof ArrowEntity) { //即使处于CD中，箭也对藤甲无效
+                    projectile.discard();
+                    voice(target, Sounds.TENGJIA1);
+                    return true;
+                }
+                if (getCD(stack) == 0) {
+                    if (projectile != null) projectile.discard();
+                    setCD(stack, 5);
+                    target.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 10,0,false,false,false));
+                    voice(target, Sounds.TENGJIA1);
+                    return true;
+                }
+            }
+            //若攻击者主手没有物品，则无法击穿藤甲
+            if (source.getSource() instanceof LivingEntity s && inrattan(target) && s.getMainHandStack().isEmpty()) {
+                if (getCD(stack) == 0) {
+                    setCD(stack, 5);
+                    target.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 10,0,false,false,false));
+                    voice(target, Sounds.TENGJIA1);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private static boolean inrattan(LivingEntity entity) {return hasTrinket(ModItems.RATTAN_ARMOR, entity);}
+    }
+
+    public static class ZhangbaWeapon extends Equipment {
+        public ZhangbaWeapon(Settings properties) {super(properties);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+            super.appendTooltip(stack, context, tooltip, type);
+            tooltip.add(Text.translatable("item.dabaosword.zhangba.tooltip1"));
+            tooltip.add(Text.translatable("item.dabaosword.zhangba.tooltip2").formatted(Formatting.AQUA));
+        }
+
+        @Override
+        public void tick(ItemStack stack, SlotReference reference) {
+            super.tick(stack, reference);
+            if (reference.entity() instanceof PlayerEntity player && !player.getWorld().isClient && getCD(stack) == 0) {
+                ItemStack off = player.getOffHandStack();
+                NbtCompound nbt = getOrCreateNbt(stack);
+                boolean one = nbt.contains("has_one");
+                if (isCard(off)) {
+                    if (one) {
+                        nbt.remove("has_one");
+                        setCD(stack, 5);
+                        give(player, new ItemStack(ModItems.SHA));
+                        voice(player, Sounds.ZHANGBA);
+                    } else {nbt.putBoolean("has_one", true);}
+                    setNbt(stack, nbt);
+                    off.decrement(1);
+                }
+            }
+        }
+    }
+
+    public static class ZhuqueWeapon extends Equipment {
+        public ZhuqueWeapon(Settings properties) {super(properties);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+            super.appendTooltip(stack, context, tooltip, type);
+            tooltip.add(Text.translatable("item.dabaosword.zhuque.tooltip1"));
+            tooltip.add(Text.translatable("item.dabaosword.zhuque.tooltip2").formatted(Formatting.AQUA));
+        }
+
+        @Override
+        public void postDamage(ItemStack stack, LivingEntity target, LivingEntity attacker, float amount) {
+            voice(attacker, stack);
+            target.setOnFireFor(4);
+        }
+    }
+
+    public static class AttackHorse extends Equipment implements ReachDefend {
+        public AttackHorse(Settings properties) {super(properties);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+            super.appendTooltip(stack, context, tooltip, type);
+            tooltip.add(Text.translatable("item.dabaosword.chitu.tooltip"));
+        }
+
+        @Override
+        public int getExtraReach(PlayerEntity player, ItemStack stack) {return 1;}
+    }
+
+    public static class DefendHorse extends Equipment implements ReachDefend {
+        public DefendHorse(Settings properties) {super(properties);}
+
+        @Override
+        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+            super.appendTooltip(stack, context, tooltip, type);
+            tooltip.add(Text.translatable("item.dabaosword.dilu.tooltip"));
+        }
+
+        @Override
+        public int getDefend(PlayerEntity player, ItemStack stack) {return 1;}
+    }
+
+    @Override
+    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+        CardItem.addSRTip(stack, tooltip);
+
+        if(Screen.hasShiftDown()) {
+            tooltip.add(Text.translatable("equipment.tip1").formatted(Formatting.BOLD));
+            tooltip.add(Text.translatable("equipment.tip2").formatted(Formatting.BOLD));
+        } else tooltip.add(Text.translatable("dabaosword.shift_tip", Text.keybind("key.sneak")));
+
+    }
+
+    @Override
+    public void tick(ItemStack stack, SlotReference reference) {
+        if (reference.entity().getWorld() instanceof ServerWorld world) {
+            int cd = getCD(stack); //世界时间除以20取余为0时，技能内置CD减一秒
+            if (cd > 0 && world.getTime() % 20 == 0) setCD(stack, cd - 1);
+        }
+    }
+
+    @Override
+    public void onEquipFromUse(ItemStack stack, SlotReference reference) {
+        LivingEntity entity = reference.entity();
+        if (entity.getWorld() instanceof ServerWorld world) {
+            world.getPlayers().forEach(player -> player.sendMessage(
+                    Text.translatable("dabaosword.entity.equip", entity.getDisplayName(), stack.toHoverableText())
+            ));
+        }
+        super.onEquipFromUse(stack, reference);
+    }
+
+    @Override
+    public boolean canEquipFromUse(ItemStack stack) {return false;}
+
+    @Override
+    public boolean canUnequip(ItemStack stack, SlotReference reference) {
+        if (reference.entity() instanceof PlayerEntity player && !player.isCreative()) return false;
+        return super.canUnequip(stack, reference);
+    }
+
+    @Override
+    public ActionResult use(World world, PlayerEntity player, Hand hand) {
+        if (!world.isClient && hand == Hand.MAIN_HAND) {
+            if (cardUsePre(player, player.getMainHandStack(), player)) return ActionResult.SUCCESS_SERVER;
+        }
+        return super.use(world, player, hand);
+    }
+
+    @Override
+    public void cardUse(LivingEntity user, ItemStack stack, LivingEntity target) {
+        useOrReplaceEquip(user, stack);
+    }
+
+    public static void useOrReplaceEquip(LivingEntity user, ItemStack stack) {
+        var capability = AccessoriesCapability.get(user);
+        if (capability == null) return;
+        var accessory = AccessoryRegistry.getAccessoryOrDefault(stack);
+
+        var equipReference = capability.canEquipAccessory(stack, true);
+
+        if (equipReference != null) {
+            accessory.onEquipFromUse(stack, equipReference.left());
+
+            var newHandStack = stack.copy();
+
+            var opStack = equipReference.second().equipStack(newHandStack);
+            opStack.ifPresent(s -> cardDiscard(user, s, s.getCount(), true));
+        }
+    }
+
+    /*public static boolean replaceEquip(PlayerEntity player, ItemStack stack) {
+        var slots = replaceSlot(player, stack);
+        if (!slots.isEmpty()) {
+            SlotReference ref = slots.get(new Random().nextInt(slots.size()));
+            ItemStack preStack = ref.inventory().getStack(ref.index());
+            cardDiscard(player, preStack, preStack.getCount(), true);
+            ref.inventory().setStack(ref.index(), stack.copy());
+            cardUsePost(player, stack, player);
+            return true;
+        }
+        return false;
+    }
+    //旧版的随机替换同类槽位装备的逻辑，以防万一暂且保留
+    private static List<SlotReference> replaceSlot(PlayerEntity player, ItemStack stack) {
+        List<SlotReference> slots = new ArrayList<>();
+        var optional = TrinketsApi.getTrinketComponent(player);
+        if (optional.isPresent()) {
+            TrinketComponent comp = optional.get();
+            for (var group : comp.getInventory().values()) {
+                for (TrinketInventory inv : group.values()) {
+                    for (int i = 0; i < inv.size(); i++) {
+                        //如果对应装备栏的物品与待装备的物品有完全相同的标签，则记录该槽位
+                        if (!inv.getStack(i).isEmpty() && inv.getStack(i).streamTags().toList().equals(stack.streamTags().toList())) {
+                            slots.add(new SlotReference(inv, i));
+                        }
+                    }
+                }
+            }
+        }
+        return slots;
+    }*/
+}
