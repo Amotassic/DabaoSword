@@ -1,21 +1,21 @@
 package com.amotassic.dabaosword.item;
 
-import com.amotassic.dabaosword.util.Sounds;
+import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
-import net.minecraft.util.*;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Hand;
+import net.minecraft.util.Rarity;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Random;
-
-import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class GiftBoxItem extends Item {
     public GiftBoxItem() {super(new Item.Settings().rarity(Rarity.UNCOMMON));}
@@ -47,10 +47,7 @@ public class GiftBoxItem extends Item {
 
     private TypedActionResult<ItemStack> giftBox(@NotNull PlayerEntity player, float chance) {
         if (new Random().nextFloat() < chance) {
-            var selectedId = parseLootTable(Identifier.of("dabaosword", "loot_tables/draw_skill.json"));
-            ItemStack stack = new ItemStack(Registries.ITEM.get(selectedId));
-            if (stack.getItem() != Items.AIR) voice(player, Sounds.GIFTBOX,3);
-            give(player, stack);
+            SkillItem.changeSkill(player);
             if (!player.isCreative()) player.getMainHandStack().decrement(1);
             return TypedActionResult.success(player.getMainHandStack());
         }

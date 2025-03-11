@@ -3,7 +3,7 @@ package com.amotassic.dabaosword.item.skillcard.skills;
 import com.amotassic.dabaosword.api.Card;
 import com.amotassic.dabaosword.api.ICardEvent;
 import com.amotassic.dabaosword.api.ReachDefend;
-import com.amotassic.dabaosword.command.TriggerSkillCommand;
+import com.amotassic.dabaosword.command.DabaoSwordCommand;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.util.Sounds;
@@ -41,7 +41,7 @@ public class Qun {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            viewAs(entity, stack, 10, isRedCard, new ItemStack(ModItems.PEACH));
+            viewAs(entity, stack, 10, isRedCard, ModItems.PEACH);
             super.tick(stack, slot, entity);
         }
     }
@@ -55,12 +55,12 @@ public class Qun {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            viewAs(entity, stack, 10, isSpadeCard, new ItemStack(ModItems.JIU));
+            viewAs(entity, stack, 10, isSpadeCard, ModItems.JIU);
             super.tick(stack, slot, entity);
         }
     }
 
-    public static class Jizhan extends SkillItem implements TriggerSkillCommand.CSkill {
+    public static class Jizhan extends SkillItem implements DabaoSwordCommand.CSkill {
         @Override
         public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
             tooltip.add(Text.translatable("item.dabaosword.jizhan.tooltip1"));
@@ -152,7 +152,7 @@ public class Qun {
                         setNbt(stack, nbt);
                         setCD(stack, 15);
                         off.decrement(1);
-                        give(player, new ItemStack(ModItems.WANJIAN));
+                        give(player, newCard(ModItems.WANJIAN));
                         voice(player, Sounds.LUANJI);
                         return;
                     }

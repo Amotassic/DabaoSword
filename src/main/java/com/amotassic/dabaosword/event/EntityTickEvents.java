@@ -5,6 +5,7 @@ import com.amotassic.dabaosword.api.Skill;
 import com.amotassic.dabaosword.api.event.EndEntityTick;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.Gamerule;
+import com.amotassic.dabaosword.util.ModConfig;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -12,12 +13,13 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.GameMode;
 
 import java.util.Objects;
 
@@ -31,6 +33,8 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
                 entity.getCommandTags().remove("sha");
                 entity.getCommandTags().remove("juedou");
                 entity.getCommandTags().remove("nanman");
+                entity.getCommandTags().remove("benxi");
+                entity.getCommandTags().remove("xingshang");
             }
 
             //若方天画戟被触发了，只要左键就可以造成群伤
@@ -54,15 +58,30 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
         if (player.getWorld() instanceof ServerWorld world) {
             var time = world.getTime();
             int giveCard = world.getGameRules().getInt(Gamerule.GIVE_CARD_INTERVAL) * 20;
-            int skill = world.getGameRules().getInt(Gamerule.CHANGE_SKILL_INTERVAL) * 20;
             boolean limit = world.getGameRules().getBoolean(Gamerule.ENABLE_CARDS_LIMIT);
+
+            if (time % 100 == 0) {
+                //若玩家不在任何一场对战中，且拥有身份标签，则移除。如果意外卡在旁观者模式，变回生存模式并杀死
+                if (!PVPGameEvents.getGameManager().isPlayerInGame(player)) {
+                    var tags = player.getCommandTags();
+                    if (tags.contains("dabaosword.zhong") || tags.contains("dabaosword.fan") || tags.contains("dabaosword.nei")) {
+                        player.getCommandTags().remove("dabaosword.zhong");
+                        player.getCommandTags().remove("dabaosword.fan");
+                        player.getCommandTags().remove("dabaosword.nei");
+                        if (player.isSpectator()) {
+                            ((ServerPlayerEntity) player).changeGameMode(GameMode.SURVIVAL);
+                            player.kill();
+                        }
+                    }
+                }
+            }
 
             if (time % giveCard == 0) { // 每分钟摸两张牌
                 if (!player.isCreative() && !player.isSpectator() && player.isAlive()) {
                     player.sendMessage(Text.translatable("dabaosword.draw"),true);
                     if (player.hasStatusEffect(ModItems.BINGLIANG)) player.removeStatusEffect(ModItems.BINGLIANG);
                     else if (countCards(player) < player.getMaxHealth() || !limit) {
-                        int draw = 0;
+                        int draw = hasTrinket(ModItems.CARD_PILE, player) ? 2 : 0;
                         for (var stack : allTrinkets(player)) {
                             if (stack.getItem() instanceof Skill s && canTrigger(stack, player)) {
                                 int i = s.onDrawPhase(player, stack);
@@ -73,26 +92,6 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
                         if (draw > 0) draw(player, draw);
                     }
                 }
-            }
-
-            if (skill >= 0) {
-                if (skill == 0) player.addCommandTag("change_skill");
-                else if (time % skill == 0) { //每5分钟可以切换技能
-                    player.addCommandTag("change_skill");
-                    if (skill >= 600 && hasTrinket(ModItems.CARD_PILE, player)) {
-                        player.sendMessage(Text.translatable("dabaosword.change_skill").formatted(Formatting.BOLD));
-                        player.sendMessage(Text.translatable("dabaosword.change_skill2"));
-                    }
-                }
-            }
-
-            if (time % 2 == 0) {
-                player.getCommandTags().remove("benxi");
-                player.getCommandTags().remove("xingshang");
-
-                //牌堆恢复饱食度
-                boolean food = world.getGameRules().getBoolean(Gamerule.CARD_PILE_HUNGERLESS);
-                if (hasTrinket(ModItems.CARD_PILE, player) && food) player.getHungerManager().setFoodLevel(20);
             }
 
             Box box = new Box(player.getBlockPos()).expand(20); // 检测范围，根据需要修改
@@ -121,8 +120,7 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
 
             //下落攻击触发：脚底下两格是空气，手里拿着有耐久度的物品左键即可触发
             BlockPos blockPos = player.getBlockPos().down(1); BlockPos blockPos2 = player.getBlockPos().down(2);
-            boolean falling = world.getGameRules().getBoolean(Gamerule.ENABLE_FALLING_ATTACK);
-            if (falling && world.getBlockState(blockPos).getBlock() == Blocks.AIR && world.getBlockState(blockPos2).getBlock() == Blocks.AIR && player.getMainHandStack().isDamageable() && player.handSwingTicks == 1) {
+            if (ModConfig.FallingAttack && world.getBlockState(blockPos).getBlock() == Blocks.AIR && world.getBlockState(blockPos2).getBlock() == Blocks.AIR && player.getMainHandStack().isDamageable() && player.handSwingTicks == 1) {
                 player.addStatusEffect(new StatusEffectInstance(ModItems.FALLING_ATTACK, StatusEffectInstance.INFINITE,0,false,false,false));
             }
 

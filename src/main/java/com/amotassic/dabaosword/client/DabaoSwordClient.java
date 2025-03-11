@@ -1,6 +1,7 @@
 package com.amotassic.dabaosword.client;
 
 import com.amotassic.dabaosword.api.Card;
+import com.amotassic.dabaosword.api.event.KeyInputCallback;
 import com.amotassic.dabaosword.entity.ModEntity;
 import com.amotassic.dabaosword.entity.client.ModModelLayers;
 import com.amotassic.dabaosword.entity.client.XuyouModel;
@@ -35,6 +36,7 @@ public class DabaoSwordClient implements ClientModInitializer {
         registerPredicates();
         EntityModelLayerRegistry.registerModelLayer(ModModelLayers.XUYOU, XuyouModel::getTexturedModelData);
         EntityRendererRegistry.register(ModEntity.XUYOU, XuyouRenderer::new);
+        KeyInputCallback.KEY_INPUT.register(new KeyInputHandler());
     }
 
     private void registerPredicates() {

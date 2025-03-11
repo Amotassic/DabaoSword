@@ -24,7 +24,7 @@ public class ArrowRainItem extends Item {
 
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        tooltip.add(Text.translatable("item.dabaosword.arrowrain.tooltip"));
+        tooltip.add(Text.translatable("item.dabaosword.wanjian.tooltip"));
     }
 
     //一次射五发

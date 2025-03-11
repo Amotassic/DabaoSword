@@ -668,5 +668,85 @@
       }
     ],
     "subtitle": "sounds.dabaosword.sha_thunder"
+  },
+  "diankuang": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:misc/diankuang"
+      }
+    ]
+  },
+  "wushuang": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:misc/wushuang"
+      }
+    ]
+  },
+  "win": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:misc/win"
+      }
+    ]
+  },
+  "kill1": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:misc/kill1"
+      }
+    ]
+  },
+  "kill2": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:misc/kill2"
+      }
+    ]
+  },
+  "kill3": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:misc/kill3"
+      }
+    ]
+  },
+  "kill4": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:misc/kill4"
+      }
+    ]
+  },
+  "kill5": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:misc/kill5"
+      }
+    ]
+  },
+  "kill6": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:misc/kill6"
+      }
+    ]
+  },
+  "kill7": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:misc/kill7"
+      }
+    ]
   }
 }

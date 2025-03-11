@@ -19,6 +19,7 @@
   "client": [
     "client.DrawContextMixin",
     "client.GameRendererMixin",
+    "client.KeyboardMixin",
     "client.LivingEntityRendererMixin",
     "client.ModelLoaderMixin"
   ],

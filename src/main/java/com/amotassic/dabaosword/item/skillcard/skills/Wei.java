@@ -41,7 +41,7 @@ public class Wei {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            viewAs(entity, stack, 5, isBlackCard.and(isArmoury.negate()), new ItemStack(ModItems.BINGLIANG_ITEM));
+            viewAs(entity, stack, 5, isBlackCard.and(isArmoury.negate()), ModItems.BINGLIANG_ITEM);
             super.tick(stack, slot, entity);
         }
     }
@@ -293,7 +293,7 @@ public class Wei {
         public void onClickGUISlot(PlayerEntity player, ItemStack stack, PlayerEntity target, ItemStack selected, int slot) {
             if (selected.isEmpty()) return;
             if (!player.isCreative()) {
-                while (countCards(player) > 0) {cardDecrement(getCard(player, isCard), 64);}
+                while (countCards(player) > 0) {cardDecrement(player, getCard(player, isCard), 64);}
                 setCD(stack, 20);
             }
             give(player, selected);
@@ -311,7 +311,7 @@ public class Wei {
 
         @Override
         public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            viewAs(entity, stack, 5, isBlackCard, new ItemStack(ModItems.SHAN));
+            viewAs(entity, stack, 5, isBlackCard, ModItems.SHAN);
             super.tick(stack, slot, entity);
         }
     }

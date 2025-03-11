@@ -23,15 +23,9 @@ public class Sha extends CardItem implements ISha {
         super.appendTooltip(stack, context, tooltip, type);
         tooltip.add(Text.translatable("item.dabaosword.sha.tip").formatted(Formatting.BOLD));
 
-        if (stack.isOf(ModItems.SHA)) {
-            tooltip.add(Text.translatable("item.dabaosword.sha.tooltip"));
-        }
-        if (stack.isOf(ModItems.FIRE_SHA)) {
-            tooltip.add(Text.translatable("item.dabaosword.fire_sha.tooltip").formatted(Formatting.RED));
-        }
-        if (stack.isOf(ModItems.THUNDER_SHA)) {
-            tooltip.add(Text.translatable("item.dabaosword.thunder_sha.tooltip").formatted(Formatting.BLUE));
-        }
+        if (stack.isOf(ModItems.SHA)) tooltip.add(getTip());
+        if (stack.isOf(ModItems.FIRE_SHA)) tooltip.add(getTip().formatted(Formatting.RED));
+        if (stack.isOf(ModItems.THUNDER_SHA)) tooltip.add(getTip().formatted(Formatting.BLUE));
     }
 
     @Override
