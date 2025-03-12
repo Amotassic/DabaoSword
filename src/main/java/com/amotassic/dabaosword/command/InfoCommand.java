@@ -89,14 +89,10 @@ public class InfoCommand {
             inventory.setStack(61, new ItemStack(ModItems.BBJI));
             if (target instanceof PlayerEntity player) {
                 DefaultedList<ItemStack> inv = player.getInventory().main;
-                for (var stack : inv) {
-                    inventory.setStack(inv.indexOf(stack), stack);
-                }
+                for (var stack : inv) inventory.setStack(inv.indexOf(stack), stack);
             } else if (target instanceof VillagerEntity villager) {
                 DefaultedList<ItemStack> inv = villager.getInventory().stacks;
-                for (var stack : inv) {
-                    inventory.setStack(inv.indexOf(stack), stack);
-                }
+                for (var stack : inv) inventory.setStack(inv.indexOf(stack), stack);
             } else inventory.setStack(0, target.getMainHandStack());
         }
 
@@ -111,12 +107,8 @@ public class InfoCommand {
         if (component.isPresent()) { //饰品栏
             List<Pair<SlotReference, ItemStack>> trinkets = component.get().getEquipped(stack -> true);
             List<ItemStack> stacks = new ArrayList<>();
-            for (var trinket : trinkets) {
-                stacks.add(trinket.getRight());
-            }
-            for (var stack : stacks) {
-                inventory.setStack(stacks.indexOf(stack) + 41, stack);
-            }
+            for (var trinket : trinkets) stacks.add(trinket.getRight());
+            for (var stack : stacks) inventory.setStack(stacks.indexOf(stack) + 41, stack);
         }
         return inventory;
     }

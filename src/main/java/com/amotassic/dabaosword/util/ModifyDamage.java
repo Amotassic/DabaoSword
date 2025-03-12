@@ -33,14 +33,13 @@ public class ModifyDamage {
         List<Pair<Pair<Float, Float>, List<Float>>> pairList = new ArrayList<>();
         pairList.add(calculateDMG(entity, source, value, entity));
         if (source.getSource() instanceof LivingEntity SE) {
-            if (!SE.getCommandTags().contains("sha")) { //防止杀的效果再次触发近战加伤
-                pairList.add(calculateDMG(entity, source, value, SE));
+            pairList.add(calculateDMG(entity, source, value, SE));
 
-                //插入一个武器版古锭刀的结算
-                int i = 0; //i == 4则说明受击者的盔甲栏没有任何物品
-                for (var s : entity.getArmorItems()) {if (s.isEmpty()) i++;}
-                if (i == 4 && SE.getMainHandStack().isOf(ModItems.GUDINGDAO)) multiply += 1;
-            } //这里的这个else很重要！防止两个条件同时满足时会触发双重结算
+            //插入一个武器版古锭刀的结算
+            int i = 0; //i == 4则说明受击者的盔甲栏没有任何物品
+            for (var s : entity.getArmorItems()) {if (s.isEmpty()) i++;}
+            if (i == 4 && SE.getMainHandStack().isOf(ModItems.GUDINGDAO)) multiply += 1;
+            //这里的这个else很重要！防止两个条件同时满足时会触发双重结算
         } else if (source.getAttacker() instanceof LivingEntity AT) pairList.add(calculateDMG(entity, source, value, AT));
         for (var p : pairList) {
             multiply += p.getLeft().getLeft();

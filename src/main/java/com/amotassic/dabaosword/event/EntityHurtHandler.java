@@ -74,6 +74,10 @@ public class EntityHurtHandler implements EntityHurtCallback {
 
             if (source.getAttacker() instanceof LivingEntity living) {
                 if (living.getCommandTags().contains("px")) entity.timeUntilRegen = 0;
+
+                if (living instanceof PlayerEntity && entity instanceof PlayerEntity && amount >= 15) {
+                    voice(living, getSound("wushuang"));
+                }
             }
 
             //监听事件：若玩家杀死敌对生物，有概率摸牌，若杀死玩家，摸两张牌
