@@ -18,7 +18,7 @@ public class JuedouItem extends CardItem {
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         if (!user.getWorld().isClient && hand == Hand.MAIN_HAND && entity.isAlive()) {
-            if (cardUsePre(user, user.getMainHandStack(), entity)) return ActionResult.SUCCESS;
+            if (cardUsePre(user, user.getMainHandStack(), entity)) return ActionResult.SUCCESS_SERVER;
         }
         return ActionResult.PASS;
     }
@@ -36,7 +36,7 @@ public class JuedouItem extends CardItem {
                 juedou(target, player);
                 player.sendMessage(Text.translatable("dabaosword.juedou1"), false);
                 //如果目标的杀比使用者的杀多，反击使用者，则目标减少一张杀
-                if (targetSha != 0) cardUsePost(target, getCard(target, isSha).getRight(), player);
+                if (targetSha != 0) cardUsePost(target, getCard(target, isSha), player);
             }
         } else juedou(user, entity);
     }

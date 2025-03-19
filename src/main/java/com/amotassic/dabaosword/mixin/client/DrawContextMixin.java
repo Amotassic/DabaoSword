@@ -1,17 +1,13 @@
 package com.amotassic.dabaosword.mixin.client;
 
 import com.amotassic.dabaosword.api.Card;
-import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.ModTools;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,9 +15,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import java.util.function.Function;
 
@@ -44,18 +38,6 @@ public abstract class DrawContextMixin {
             drawTexturedQuad(RenderLayer::getGuiTextured, suit, x, x + 5, y, y + 5, 0, 1, 0, 1, -1);
             drawTexturedQuad(RenderLayer::getGuiTextured, rank, x + 5, x + 11, y, y + 5, 0, 1, 0, 1, -1);
             this.matrices.translate(0.0f, 0.0f, -200.0f);
-        }
-    }
-
-    @ModifyArgs(method = "drawItem(Lnet/minecraft/entity/LivingEntity;Lnet/minecraft/world/World;Lnet/minecraft/item/ItemStack;IIII)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/item/ItemRenderer;renderItem(Lnet/minecraft/item/ItemStack;Lnet/minecraft/item/ModelTransformationMode;ZLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;IILnet/minecraft/client/render/model/BakedModel;)V"))
-    private void drawItem(Args args) {
-        ItemStack stack = args.get(0);
-        if (ModTools.isCard(stack) || stack.isOf(ModItems.GAIN_CARD)) {
-            String path = "card/" + stack.getItem().toString().split(":")[1];
-            if (stack.isOf(ModItems.TIESUO) && client.player != null && client.player.getOffHandStack().isOf(Items.KNOWLEDGE_BOOK)) path = "nahida";
-            ModelIdentifier modelId = ModelIdentifier.ofInventoryVariant(Identifier.of("dabaosword", path));
-            BakedModel model = ((ItemModelAccessor) client.getItemRenderer()).getModels().getModel(modelId.id());
-            args.set(7, model);
         }
     }
 

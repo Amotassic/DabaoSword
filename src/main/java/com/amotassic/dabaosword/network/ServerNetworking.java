@@ -1,6 +1,7 @@
 package com.amotassic.dabaosword.network;
 
-import com.amotassic.dabaosword.api.CardPileInventory;
+import com.amotassic.dabaosword.command.InfoCommand;
+import com.amotassic.dabaosword.item.LetMeCCItem;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
@@ -57,9 +58,9 @@ public class ServerNetworking {
             }
         });
 
-        ServerPlayNetworking.registerGlobalReceiver(QuickSwapPayload.ID, (p, c) -> {
+        ServerPlayNetworking.registerGlobalReceiver(QuickSwapPayload.ID, (pl, c) -> {
             PlayerEntity player = c.player();
-            int i = p.id();
+            int i = pl.id();
             if (i == 0) openInv(player, player, Text.translatable("key.dabaosword.select_card"), new ItemStack(ModItems.WANJIAN), true, false, false, 2);
             if (i == 1) openInv(player, player, Text.translatable("key.dabaosword.select_card"), new ItemStack(ModItems.SUNSHINE_SMILE), true, false, false, 3);
             if (i == 2 && hasTrinket(ModItems.CARD_PILE, player)) player.openHandledScreen(new ExtendedScreenHandlerFactory<>() {
@@ -71,7 +72,7 @@ public class ServerNetworking {
 
                 @Override
                 public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                    return new PileScreenHandler(syncId, inv, new CardPileInventory(player));
+                    return new PileScreenHandler(syncId, inv);
                 }
             });
             if (i == 3) {
@@ -85,6 +86,10 @@ public class ServerNetworking {
                     player.damage(world(player), pair.getLeft().getLeft(), pair.getLeft().getRight());
                     give(player, pair.getRight());
                 }
+            }
+            if (i == 9) {
+                PlayerEntity target = LetMeCCItem.getClosestEntity(player, PlayerEntity.class, 100, p -> p!= player);
+                if (target != null) InfoCommand.openFullInv(player, target, false);
             }
         });
     }

@@ -19,7 +19,7 @@ public class JiedaoItem extends CardItem {
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         if (!user.getWorld().isClient && hand == Hand.MAIN_HAND && !entity.getMainHandStack().isEmpty()) {
-            if (cardUsePre(user, user.getMainHandStack(), entity)) return ActionResult.SUCCESS;
+            if (cardUsePre(user, user.getMainHandStack(), entity)) return ActionResult.SUCCESS_SERVER;
         }
         return ActionResult.PASS;
     }

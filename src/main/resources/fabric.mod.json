@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "dabaosword",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "name": "DabaoSword",
   "description": "\\u542c\\u8bf4\\u4f60\\u60f3\\u72af\\u5927\\u5434\\u7586\\u571f\\uff1f",
   "authors": ["Amotassic"],
@@ -19,6 +19,9 @@
     ],
     "client": [
       "com.amotassic.dabaosword.client.DabaoSwordClient"
+    ],
+    "fabric-datagen": [
+      "com.amotassic.dabaosword.datagen.DataGeneration"
     ]
   },
   "mixins": [
@@ -27,7 +30,12 @@
   "depends": {
     "fabricloader": ">=0.16.9",
     "fabric": "*",
-    "minecraft": ">=1.21-",
-    "accessories": ">=1.2-"
-  }
+    "minecraft": ">=1.21.4-",
+    "trinkets": ">=3.11.0"
+  },
+  "jars": [
+    {
+      "file": "META-INF/jars/trinkets-3.11.0.jar"
+    }
+  ]
 }

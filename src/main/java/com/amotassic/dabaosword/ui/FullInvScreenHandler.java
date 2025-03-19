@@ -1,9 +1,8 @@
 package com.amotassic.dabaosword.ui;
 
 import com.amotassic.dabaosword.item.ModItems;
-import com.mojang.datafixers.util.Pair;
-import io.wispforest.accessories.api.AccessoriesCapability;
-import io.wispforest.accessories.api.AccessoriesContainer;
+import dev.emi.trinkets.api.TrinketInventory;
+import dev.emi.trinkets.api.TrinketsApi;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.VillagerEntity;
@@ -15,6 +14,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,15 +91,18 @@ public class FullInvScreenHandler extends ScreenHandler {
             if (i == 40) to.setStackInHand(Hand.OFF_HAND, stack);
             if (i >= 41) {
                 var pair = findSlot(to, i - 41);
-                if (pair != null) pair.getFirst().getAccessories().setStack(pair.getSecond(), stack);
+                if (pair != null) pair.getLeft().setStack(pair.getRight(), stack);
             }
         }
     }
 
-    public static Pair<AccessoriesContainer, Integer> findSlot(LivingEntity entity, int index) {
-        List<Pair<AccessoriesContainer, Integer>> slots = new ArrayList<>();
-        AccessoriesCapability.getOptionally(entity).ifPresent(a -> a.getContainers().values().forEach(c -> c.getAccessories().forEach(p -> slots.add(new Pair<>(c, p.getFirst())))));
-        for (var slot : slots) {if (slots.indexOf(slot) == index) return slot;}
+    public static net.minecraft.util.Pair<TrinketInventory, Integer> findSlot(LivingEntity entity, int index) {
+        //将饰品栏的每一格添加到一个List中，若index与List中的饰品格的序列号相同，则输出该饰品格
+        List<net.minecraft.util.Pair<TrinketInventory, Integer>> pairs = new ArrayList<>();
+        TrinketsApi.getTrinketComponent(entity).ifPresent(component -> component.getInventory().values().forEach(group -> group.values().forEach(inv -> {
+            for (int i = 0; i < inv.size(); i++) pairs.add(new Pair<>(inv, i));
+        })));
+        for (var pair : pairs) {if (pairs.indexOf(pair) == index) return pair;}
         return null;
     }
 

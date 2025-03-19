@@ -29,7 +29,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
         for (int i = 0; i < 114; i++) {
             if (entity.isAlive()) return;
             if (hasCard(entity, canSaveDying)) {
-                ItemStack stack = getCard(entity, canSaveDying).getRight();
+                ItemStack stack = getCard(entity, canSaveDying);
                 cardUsePost(entity, stack, entity);
                 entity.setHealth(entity.getHealth() - amount + 5); amount -= 5;
             }
@@ -72,6 +72,10 @@ public class EntityHurtHandler implements EntityHurtCallback {
 
         if (source.getAttacker() instanceof LivingEntity living) {
             if (living.getCommandTags().contains("px")) entity.timeUntilRegen = 0;
+
+            if (living instanceof PlayerEntity && entity instanceof PlayerEntity && amount >= 15) {
+                voice(living, getSound("wushuang"));
+            }
         }
 
         //监听事件：若玩家杀死敌对生物，有概率摸牌，若杀死玩家，摸两张牌

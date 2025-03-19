@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.8-SNAPSHOT'
+    id 'fabric-loom' version '1.9-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -10,14 +10,11 @@ base {
     archivesName = project.archives_base_name
 }
 
-loom {
-    splitEnvironmentSourceSets()
-
-    mods {
-        "dabaosword" {
-            sourceSet sourceSets.main
-            sourceSet sourceSets.client
-        }
+fabricApi {
+    configureDataGeneration {
+        client = true
+        createSourceSet = true
+        modId = "dabaosword"
     }
 }
 
@@ -29,10 +26,8 @@ repositories {
     // for more information about repositories.
 
     //trinkets
-    maven {
-        name = "TerraformersMC"
-        url = "https://maven.terraformersmc.com/"
-    }
+    maven { url = "https://maven.terraformersmc.com" }
+    maven { url = "https://maven.architectury.dev" }
     maven {
         name = "Ladysnake Libs"
         url = 'https://maven.ladysnake.org/releases'
@@ -50,11 +45,10 @@ dependencies {
     //trinkets
     //modImplementation "dev.emi:trinkets:3.11.0"
 
-    modApi implementation("org.ladysnake.cardinal-components-api:cardinal-components-base:${project.cca_version}")
-    modApi implementation("org.ladysnake.cardinal-components-api:cardinal-components-entity:${project.cca_version}")
+    modImplementation("org.ladysnake.cardinal-components-api:cardinal-components-base:${project.cca_version}")
+    modImplementation("org.ladysnake.cardinal-components-api:cardinal-components-entity:${project.cca_version}")
 
     implementation files(project.rootDir.toString() + '/libs/trinkets-3.11.0-dev.jar')
-    //embed files(project.rootDir.toString() + '/libs/trinkets-3.11.0-dev.jar')
 }
 
 processResources {
@@ -94,6 +88,10 @@ java {
 }
 
 jar {
+    from('libs/trinkets-3.11.0.jar') { // 指定要添加的文件路径
+        into('META-INF/jars') // 指定要添加到的目录
+        exclude 'META-INF' // 排除不必要的META-INF文件
+    }
     from("LICENSE") {
         rename { "${it}_${project.archivesBaseName}" }
     }

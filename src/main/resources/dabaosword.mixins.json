@@ -19,9 +19,8 @@
   "client": [
     "client.DrawContextMixin",
     "client.GameRendererMixin",
-    "client.ItemModelAccessor",
-    "client.LivingEntityRendererMixin",
-    "client.ModelLoaderMixin"
+    "client.KeyboardMixin",
+    "client.LivingEntityRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -5,7 +5,7 @@ import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.util.Sounds;
-import io.wispforest.accessories.api.slot.SlotReference;
+import dev.emi.trinkets.api.SlotReference;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -42,9 +42,9 @@ public class Wei {
         }
 
         @Override
-        public void tick(ItemStack stack, SlotReference reference) {
-            viewAs(reference.entity(), stack, 5, isBlackCard.and(isArmoury.negate()), new ItemStack(ModItems.BINGLIANG_ITEM));
-            super.tick(stack, reference);
+        public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
+            viewAs(entity, stack, 5, isBlackCard.and(isArmoury.negate()), ModItems.BINGLIANG_ITEM);
+            super.tick(stack, slot, entity);
         }
     }
 
@@ -118,14 +118,12 @@ public class Wei {
         }
 
         @Override
-        public void onUnequip(ItemStack stack, SlotReference reference) {
-            var entity = reference.entity();
+        public void onUnequip(ItemStack stack, SlotReference slot, LivingEntity entity) {
             if (!entity.getWorld().isClient) gainMaxHp(entity, 0);
         }
 
         @Override
-        public void tick(ItemStack stack, SlotReference slot) {
-            var entity = slot.entity();
+        public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
             if (!entity.getWorld().isClient) {
                 int extraHP = getTag(stack);
 
@@ -140,7 +138,7 @@ public class Wei {
                     }
                 }
             }
-            super.tick(stack, slot);
+            super.tick(stack, slot, entity);
         }
 
         @Override
@@ -255,14 +253,12 @@ public class Wei {
         }
 
         @Override
-        public void tick(ItemStack stack, SlotReference slot) {
-            var entity = slot.entity();
+        public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
             if (!entity.getWorld().isClient) gainStrength(entity, getEmptyArmorSlot(entity) + 1);
         }
 
         @Override
-        public void onUnequip(ItemStack stack, SlotReference slot) {
-            var entity = slot.entity();
+        public void onUnequip(ItemStack stack, SlotReference slot, LivingEntity entity) {
             if (!entity.getWorld().isClient) gainStrength(entity,0);
         }
 
@@ -315,7 +311,7 @@ public class Wei {
         public void onClickGUISlot(PlayerEntity player, ItemStack stack, PlayerEntity target, ItemStack selected, int slot) {
             if (selected.isEmpty()) return;
             if (!player.isCreative()) {
-                while (countCards(player) > 0) {cardDecrement(getCard(player, isCard), 64);}
+                while (countCards(player) > 0) {cardDecrement(player, getCard(player, isCard), 64);}
                 setCD(stack, 20);
             }
             give(player, selected);
@@ -334,9 +330,9 @@ public class Wei {
         }
 
         @Override
-        public void tick(ItemStack stack, SlotReference slot) {
-            viewAs(slot.entity(), stack, 5, isBlackCard, new ItemStack(ModItems.SHAN));
-            super.tick(stack, slot);
+        public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
+            viewAs(entity, stack, 5, isBlackCard, ModItems.SHAN);
+            super.tick(stack, slot, entity);
         }
     }
 
@@ -450,16 +446,15 @@ public class Wei {
         }
 
         @Override
-        public void tick(ItemStack stack, SlotReference slot) {
-            if (slot.entity() instanceof PlayerEntity player && !player.getWorld().isClient && noTieji(player)) {
+        public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
+            if (!entity.getWorld().isClient && entity instanceof PlayerEntity player && noTieji(player)) {
                 double d = Math.min(getEmptySlots(player), 20d) / 40; //当空余20格时，获得最大加成0.5
                 gainSpeed(player, Math.max(0, d));
             }
         }
 
         @Override
-        public void onUnequip(ItemStack stack, SlotReference slot) {
-            var entity = slot.entity();
+        public void onUnequip(ItemStack stack, SlotReference slot, LivingEntity entity) {
             if (!entity.getWorld().isClient) gainSpeed(entity,0);
         }
 

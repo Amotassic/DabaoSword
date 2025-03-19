@@ -1,13 +1,13 @@
 package com.amotassic.dabaosword.item.skillcard.skills;
 
 import com.amotassic.dabaosword.api.ICardEvent;
+import com.amotassic.dabaosword.item.LetMeCCItem;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.util.Sounds;
-import io.wispforest.accessories.api.slot.SlotReference;
+import dev.emi.trinkets.api.SlotReference;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -17,10 +17,9 @@ import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.math.Box;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.List;
+import java.util.Random;
 
 import static com.amotassic.dabaosword.api.event.CardEvents.cardDiscard;
 import static com.amotassic.dabaosword.api.event.CardEvents.cardMove;
@@ -120,9 +119,9 @@ public class Wu {
         }
 
         @Override
-        public void tick(ItemStack stack, SlotReference slot) {
-            viewAs(slot.entity(), stack, 15, isDiamondCard, new ItemStack(ModItems.TOO_HAPPY_ITEM));
-            super.tick(stack, slot);
+        public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
+            viewAs(entity, stack, 15, isDiamondCard, ModItems.TOO_HAPPY_ITEM);
+            super.tick(stack, slot, entity);
         }
     }
 
@@ -156,8 +155,7 @@ public class Wu {
         }
 
         @Override
-        public void tick(ItemStack stack, SlotReference slot) {
-            var entity = slot.entity();
+        public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
             if (entity.getWorld() instanceof ServerWorld world) {
                 int cd = getCD(stack);
                 if (world.getTime() % 20 == 0 && cd == 1) { //确保一秒内只触发一次
@@ -165,7 +163,7 @@ public class Wu {
                     voice(entity, stack);
                 }
             }
-            super.tick(stack, slot);
+            super.tick(stack, slot, entity);
         }
 
         @Override
@@ -199,33 +197,17 @@ public class Wu {
         public boolean cancelDamage(LivingEntity target, DamageSource source, float amount) {
             if (source.getAttacker() instanceof LivingEntity attacker && target instanceof PlayerEntity player) {
                 if (hasTrinket(SkillCards.LIULI, player) && hasCard(player, isCard) && !player.hasStatusEffect(ModItems.INVULNERABLE)) {
-                    LivingEntity nearEntity = getLiuliEntity(player, attacker);
+                    LivingEntity nearEntity = LetMeCCItem.getClosestEntity(player, LivingEntity.class, 10, entity -> entity != player && entity != attacker);
                     if (nearEntity != null) {
                         player.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 15,0,false,false,false));
                         voice(player, Sounds.LIULI);
-                        cardDiscard(player, getCard(player, isCard).getRight(), 1, false);
+                        cardDiscard(player, getCard(player, isCard), 1, false);
                         nearEntity.timeUntilRegen = 0; nearEntity.damage(world(target), source, amount);
                         return true;
                     }
                 }
             }
             return false;
-        }
-
-        private static @Nullable LivingEntity getLiuliEntity(Entity entity, LivingEntity attacker) {
-            if (entity.getWorld() instanceof ServerWorld world) {
-                Box box = new Box(entity.getBlockPos()).expand(10);
-                List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, box, entity1 -> entity1 != entity && entity1 != attacker);
-                if (!entities.isEmpty()) {
-                    Map<Float, LivingEntity> map = new HashMap<>();
-                    for (var e : entities) {
-                        map.put(e.distanceTo(entity), e);
-                    }
-                    float min = Collections.min(map.keySet());
-                    return map.values().stream().toList().get(map.keySet().stream().toList().indexOf(min));
-                }
-            }
-            return null;
         }
     }
 
@@ -264,9 +246,9 @@ public class Wu {
         }
 
         @Override
-        public void tick(ItemStack stack, SlotReference slot) {
-            viewAs(slot.entity(), stack, 5, isBlackCard, new ItemStack(ModItems.DISCARD));
-            super.tick(stack, slot);
+        public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
+            viewAs(entity, stack, 5, isBlackCard, ModItems.DISCARD);
+            super.tick(stack, slot, entity);
         }
     }
 
@@ -316,12 +298,12 @@ public class Wu {
         }
 
         @Override
-        public void tick(ItemStack stack, SlotReference slot) {
-            if (slot.entity().getWorld() instanceof ServerWorld world) {
+        public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
+            if (entity.getWorld() instanceof ServerWorld world) {
                 int z = getTag(stack);
                 if (z < 10 && world.getTime() % 100 == 0) setTag(stack, z + 1);
             }
-            super.tick(stack, slot);
+            super.tick(stack, slot, entity);
         }
 
         @Override

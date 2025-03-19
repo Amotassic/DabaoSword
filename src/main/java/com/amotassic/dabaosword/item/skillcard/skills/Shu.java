@@ -6,7 +6,7 @@ import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.util.Sounds;
-import io.wispforest.accessories.api.slot.SlotReference;
+import dev.emi.trinkets.api.SlotReference;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -71,9 +71,9 @@ public class Shu {
         }
 
         @Override
-        public void tick(ItemStack stack, SlotReference reference) {
-            viewAs(reference.entity(), stack, 15, isRedCard, new ItemStack(ModItems.FIRE_ATTACK));
-            super.tick(stack, reference);
+        public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
+            viewAs(entity, stack, 15, isRedCard, ModItems.FIRE_ATTACK);
+            super.tick(stack, slot, entity);
         }
     }
 
@@ -102,9 +102,9 @@ public class Shu {
         }
 
         @Override
-        public void tick(ItemStack stack, SlotReference reference) {
-            viewAs(reference.entity(), stack, 10, isBlackCard, new ItemStack(ModItems.WUXIE));
-            super.tick(stack, reference);
+        public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
+            viewAs(entity, stack, 10, isBlackCard, ModItems.WUXIE);
+            super.tick(stack, slot, entity);
         }
     }
 
@@ -173,20 +173,19 @@ public class Shu {
         }
 
         @Override
-        public void tick(ItemStack stack, SlotReference reference) {
-            var entity = reference.entity();
+        public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
             if (entity.getWorld() instanceof ServerWorld world && entity instanceof PlayerEntity player && noTieji(entity)) {
                 ItemStack stack1 = player.getOffHandStack(); ItemStack copy = stack1.copy();
                 if (world.getTime() % 20 == 0 && isBasic.test(stack1)) {
                     stack1.decrement(1);
-                    if (isSha.test(copy)) give(player, new ItemStack(ModItems.SHAN));
-                    if (copy.isOf(ModItems.SHAN)) give(player, new ItemStack(ModItems.SHA));
-                    if (copy.isOf(ModItems.PEACH)) give(player, new ItemStack(ModItems.JIU));
-                    if (copy.isOf(ModItems.JIU)) give(player, new ItemStack(ModItems.PEACH));
+                    if (isSha.test(copy)) give(player, newCard(ModItems.SHAN));
+                    if (copy.isOf(ModItems.SHAN)) give(player, newCard(p(ModItems.SHA).and(isRedCard)));
+                    if (copy.isOf(ModItems.PEACH)) give(player, newCard(ModItems.JIU));
+                    if (copy.isOf(ModItems.JIU)) give(player, newCard(ModItems.PEACH));
                     voice(player, Sounds.LONGDAN);
                 }
             }
-            super.tick(stack, reference);
+            super.tick(stack, slot, entity);
         }
     }
 
@@ -257,9 +256,9 @@ public class Shu {
         }
 
         @Override
-        public void tick(ItemStack stack, SlotReference reference) {
-            viewAs(reference.entity(), stack, 5, isRedCard, new ItemStack(ModItems.SHA));
-            super.tick(stack, reference);
+        public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
+            viewAs(entity, stack, 5, isRedCard, newCard(p(ModItems.SHA).and(isRedCard)));
+            super.tick(stack, slot, entity);
         }
     }
 }

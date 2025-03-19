@@ -2,32 +2,30 @@ package com.amotassic.dabaosword.item.skillcard;
 
 import com.amotassic.dabaosword.api.Skill;
 import com.amotassic.dabaosword.util.Sounds;
-import io.wispforest.accessories.api.AccessoryItem;
-import io.wispforest.accessories.api.slot.SlotReference;
+import dev.emi.trinkets.api.SlotReference;
+import dev.emi.trinkets.api.TrinketItem;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.Registries;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 import java.util.function.Predicate;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
 
-public class SkillItem extends AccessoryItem implements Skill {
+public class SkillItem extends TrinketItem implements Skill {
     public SkillItem(Settings settings) {super(settings);}
 
     @Override
-    public void onEquip(ItemStack stack, SlotReference reference) {
-        LivingEntity entity = reference.entity();
+    public void onEquip(ItemStack stack, SlotReference slot, LivingEntity entity) {
         if (entity.getWorld() instanceof ServerWorld world && !equipped(stack)) {
             world.getPlayers().forEach(player -> player.sendMessage(
                     Text.translatable("dabaosword.entity.equip", entity.getDisplayName(), stack.toHoverableText())
@@ -64,8 +62,7 @@ public class SkillItem extends AccessoryItem implements Skill {
     }
 
     @Override
-    public void tick(ItemStack stack, SlotReference reference) {
-        LivingEntity entity = reference.entity();
+    public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
         if (entity.getWorld() instanceof ServerWorld world) {
             int cd = getCD(stack); //世界时间除以20取余为0时，技能内置CD减一秒
             if (cd > 0 && world.getTime() % 20 == 0) setCD(stack, cd - 1);
@@ -73,8 +70,7 @@ public class SkillItem extends AccessoryItem implements Skill {
     }
 
     public static void changeSkill(PlayerEntity player) {
-        var selectedId = parseLootTable(Identifier.of("dabaosword", "loot_tables/draw_skill.json"));
-        ItemStack stack = new ItemStack(Registries.ITEM.get(selectedId));
+        ItemStack stack = customLoot(player, "draw_skill");
         if (stack.getItem() != Items.AIR) voice(player, Sounds.GIFTBOX,3);
         give(player, stack);
     }
@@ -90,6 +86,9 @@ public class SkillItem extends AccessoryItem implements Skill {
                 voice(entity, skill);
             }
         }
+    }
+    public static void viewAs(LivingEntity entity, ItemStack skill, int CD, Predicate<ItemStack> predicate, Item result) {
+        viewAs(entity, skill, CD, predicate, newCard(result));
     }
 
     public static class ActiveSkill extends SkillItem {

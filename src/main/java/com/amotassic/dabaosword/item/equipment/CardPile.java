@@ -1,25 +1,24 @@
 package com.amotassic.dabaosword.item.equipment;
 
-import com.amotassic.dabaosword.api.CardPileInventory;
 import com.amotassic.dabaosword.ui.PileScreenHandler;
+import com.amotassic.dabaosword.util.Gamerule;
 import com.amotassic.dabaosword.util.ModTools;
-import io.wispforest.accessories.api.slot.SlotReference;
+import dev.emi.trinkets.api.SlotReference;
+import dev.emi.trinkets.api.TrinketItem;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.world.World;
 
 import java.util.List;
 
-public class CardPile extends Equipment {
-    public CardPile(Settings properties) {super(properties);}
+import static com.amotassic.dabaosword.util.ModTools.getCardPack;
 
-    @Override public Type getType() {return null;}
+public class CardPile extends TrinketItem {
+    public CardPile(Settings properties) {super(properties);}
 
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
@@ -33,16 +32,26 @@ public class CardPile extends Equipment {
     }
 
     @Override
-    public boolean canUnequip(ItemStack stack, SlotReference reference) {return true;}
+    public void tick(ItemStack pile, SlotReference slot, LivingEntity entity) {
+        if (entity.getWorld() instanceof ServerWorld world && entity instanceof PlayerEntity player) {
+            long time = world.getTime();
+            int skill = world.getGameRules().getInt(Gamerule.CHANGE_SKILL_INTERVAL) * 20;
 
-    @Override
-    public ActionResult use(World world, PlayerEntity user, Hand hand) {return ActionResult.PASS;}
+            if (world.getGameRules().getBoolean(Gamerule.CARD_PILE_HUNGERLESS)) player.getHungerManager().setFoodLevel(20);
 
-    @Override
-    public void tick(ItemStack stack, SlotReference reference) {
-        if (reference.entity() instanceof PlayerEntity player && player.getWorld() instanceof ServerWorld world) {
-            if (player.currentScreenHandler.getClass() != PileScreenHandler.class && world.getTime() % 20 == 0) {
-                CardPileInventory cards = new CardPileInventory(player);
+            if (skill >= 0) {
+                if (skill == 0) player.addCommandTag("change_skill");
+                else if (time % skill == 0) { //每5分钟可以切换技能
+                    player.addCommandTag("change_skill");
+                    if (skill >= 600) {
+                        player.sendMessage(Text.translatable("dabaosword.change_skill").formatted(Formatting.BOLD), false);
+                        player.sendMessage(Text.translatable("dabaosword.change_skill2"), false);
+                    }
+                }
+            }
+
+            if (player.currentScreenHandler.getClass() != PileScreenHandler.class && time % 20 == 0) {
+                var cards = getCardPack(player);
                 for (int i = 9; i < 36; i++) {
                     ItemStack item = player.getInventory().main.get(i);
                     if (ModTools.isCard(item) && cards.isNotFull()) {
@@ -53,7 +62,4 @@ public class CardPile extends Equipment {
             }
         }
     }
-
-    @Override
-    public int onDrawPhase(PlayerEntity player, ItemStack stack) {return 2;}
 }

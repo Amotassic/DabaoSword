@@ -1,6 +1,6 @@
 package com.amotassic.dabaosword.mixin;
 
-import com.amotassic.dabaosword.util.Gamerule;
+import com.amotassic.dabaosword.util.ModConfig;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.AbstractFireballEntity;
 import net.minecraft.entity.projectile.FireballEntity;
@@ -17,9 +17,8 @@ public abstract class FireballEntityMixin extends AbstractFireballEntity {
 
     @ModifyArgs(method = "onCollision", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;createExplosion(Lnet/minecraft/entity/Entity;DDDFZLnet/minecraft/world/World$ExplosionSourceType;)V"))
     public void onCollision(Args args) {
-        if (getWorld() instanceof ServerWorld world) {
-            boolean bl = !world.getGameRules().getBoolean(Gamerule.FIRE_ATTACK_BREAKS_BLOCK);
-            if (bl && getCommandTags().contains("a")) {
+        if (getWorld() instanceof ServerWorld) {
+            if (!ModConfig.FireAttackBreaksBlock && getCommandTags().contains("a")) {
                 args.set(5, false);
                 args.set(6, World.ExplosionSourceType.NONE);
             }

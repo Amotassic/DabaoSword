@@ -8,10 +8,8 @@ import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.card.CardItem;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.Sounds;
-import io.wispforest.accessories.api.AccessoriesCapability;
-import io.wispforest.accessories.api.AccessoryItem;
-import io.wispforest.accessories.api.AccessoryRegistry;
-import io.wispforest.accessories.api.slot.SlotReference;
+import dev.emi.trinkets.TrinketSlot;
+import dev.emi.trinkets.api.*;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -26,6 +24,7 @@ import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
@@ -36,16 +35,16 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import static com.amotassic.dabaosword.api.event.CardEvents.cardDiscard;
 import static com.amotassic.dabaosword.api.event.CardEvents.cardUsePre;
+import static com.amotassic.dabaosword.item.skillcard.SkillItem.equipped;
+import static com.amotassic.dabaosword.item.skillcard.SkillItem.setEquipped;
 import static com.amotassic.dabaosword.util.ModTools.*;
 import static com.amotassic.dabaosword.util.ModifyDamage.shan;
 
-public class Equipment extends AccessoryItem implements Card, Skill {
+public class Equipment extends TrinketItem implements Card, Skill {
     public Equipment(Settings properties) {super(properties);}
 
     @Override public Type getType() {return Type.EQUIPMENT;}
@@ -53,10 +52,8 @@ public class Equipment extends AccessoryItem implements Card, Skill {
     public static class BaguaArmor extends Equipment {
         public BaguaArmor(Settings properties) {super(properties);}
 
-        @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            super.appendTooltip(stack, context, tooltip, type);
-            tooltip.add(Text.translatable("item.dabaosword.bagua.tooltip").formatted(Formatting.AQUA));
+        public void addTip(ItemStack stack, List<Text> tooltip) {
+            tooltip.add(getTip().formatted(Formatting.AQUA));
         }
 
         @Override
@@ -79,10 +76,8 @@ public class Equipment extends AccessoryItem implements Card, Skill {
     public static class BaiyinArmor extends Equipment {
         public BaiyinArmor(Settings properties) {super(properties);}
 
-        @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            super.appendTooltip(stack, context, tooltip, type);
-            tooltip.add(Text.translatable("item.dabaosword.baiyin.tooltip").formatted(Formatting.AQUA));
+        public void addTip(ItemStack stack, List<Text> tooltip) {
+            tooltip.add(getTip().formatted(Formatting.AQUA));
         }
 
         @Override
@@ -98,11 +93,9 @@ public class Equipment extends AccessoryItem implements Card, Skill {
     public static class CixiongWeapon extends Equipment implements ICardEvent {
         public CixiongWeapon(Settings properties) {super(properties);}
 
-        @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            super.appendTooltip(stack, context, tooltip, type);
-            tooltip.add(Text.translatable("item.dabaosword.cixiong.tooltip1"));
-            tooltip.add(Text.translatable("item.dabaosword.cixiong.tooltip2").formatted(Formatting.AQUA));
+        public void addTip(ItemStack stack, List<Text> tooltip) {
+            tooltip.add(getTip("1"));
+            tooltip.add(getTip("2").formatted(Formatting.AQUA));
         }
 
         @Override
@@ -116,11 +109,9 @@ public class Equipment extends AccessoryItem implements Card, Skill {
     public static class FangtianWeapon extends Equipment {
         public FangtianWeapon(Settings properties) {super(properties);}
 
-        @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            super.appendTooltip(stack, context, tooltip, type);
-            tooltip.add(Text.translatable("item.dabaosword.fangtian.tooltip1"));
-            tooltip.add(Text.translatable("item.dabaosword.fangtian.tooltip2").formatted(Formatting.AQUA));
+        public void addTip(ItemStack stack, List<Text> tooltip) {
+            tooltip.add(getTip("1"));
+            tooltip.add(getTip("2").formatted(Formatting.AQUA));
         }
 
         @Override
@@ -138,20 +129,16 @@ public class Equipment extends AccessoryItem implements Card, Skill {
     public static class GuanshiWeapon extends Equipment {
         public GuanshiWeapon(Settings properties) {super(properties);}
 
-        @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            super.appendTooltip(stack, context, tooltip, type);
-            tooltip.add(Text.translatable("item.dabaosword.guanshi.tooltip1"));
-            tooltip.add(Text.translatable("item.dabaosword.guanshi.tooltip2").formatted(Formatting.AQUA));
+        public void addTip(ItemStack stack, List<Text> tooltip) {
+            tooltip.add(getTip("1"));
+            tooltip.add(getTip("2").formatted(Formatting.AQUA));
         }
     }
 
     public static class GudingWeapon extends Equipment {
         public GudingWeapon(Settings properties) {super(properties);}
 
-        @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            super.appendTooltip(stack, context, tooltip, type);
+        public void addTip(ItemStack stack, List<Text> tooltip) {
             tooltip.add(Text.translatable("item.dabaosword.gudingdao.tooltip").formatted(Formatting.GREEN));
             tooltip.add(Text.translatable("item.dabaosword.gudingdao.tooltip2").formatted(Formatting.AQUA));
         }
@@ -173,10 +160,8 @@ public class Equipment extends AccessoryItem implements Card, Skill {
     public static class HanbingWeapon extends Equipment {
         public HanbingWeapon(Settings properties) {super(properties);}
 
-        @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            super.appendTooltip(stack, context, tooltip, type);
-            tooltip.add(Text.translatable("item.dabaosword.hanbing.tooltip").formatted(Formatting.AQUA));
+        public void addTip(ItemStack stack, List<Text> tooltip) {
+            tooltip.add(getTip().formatted(Formatting.AQUA));
         }
 
         @Override
@@ -190,11 +175,9 @@ public class Equipment extends AccessoryItem implements Card, Skill {
     public static class LiannuWeapon extends Equipment {
         public LiannuWeapon(Settings properties) {super(properties);}
 
-        @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            super.appendTooltip(stack, context, tooltip, type);
-            tooltip.add(Text.translatable("item.dabaosword.liannu.tooltip1"));
-            tooltip.add(Text.translatable("item.dabaosword.liannu.tooltip2").formatted(Formatting.AQUA));
+        public void addTip(ItemStack stack, List<Text> tooltip) {
+            tooltip.add(getTip("1"));
+            tooltip.add(getTip("2").formatted(Formatting.AQUA));
         }
 
         @Override
@@ -214,12 +197,10 @@ public class Equipment extends AccessoryItem implements Card, Skill {
     public static class QilinWeapon extends Equipment implements ReachDefend {
         public QilinWeapon(Settings properties) {super(properties);}
 
-        @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            super.appendTooltip(stack, context, tooltip, type);
-            tooltip.add(Text.translatable("item.dabaosword.qilin.tooltip1"));
-            tooltip.add(Text.translatable("item.dabaosword.qilin.tooltip2").formatted(Formatting.AQUA));
-            tooltip.add(Text.translatable("item.dabaosword.qilin.tooltip3").formatted(Formatting.AQUA));
+        public void addTip(ItemStack stack, List<Text> tooltip) {
+            tooltip.add(getTip("1"));
+            tooltip.add(getTip("2").formatted(Formatting.AQUA));
+            tooltip.add(getTip("3").formatted(Formatting.AQUA));
         }
 
         @Override
@@ -246,11 +227,9 @@ public class Equipment extends AccessoryItem implements Card, Skill {
     public static class QinggangWeapon extends Equipment {
         public QinggangWeapon(Settings properties) {super(properties);}
 
-        @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            super.appendTooltip(stack, context, tooltip, type);
-            tooltip.add(Text.translatable("item.dabaosword.qinggang.tooltip1"));
-            tooltip.add(Text.translatable("item.dabaosword.qinggang.tooltip2").formatted(Formatting.AQUA));
+        public void addTip(ItemStack stack, List<Text> tooltip) {
+            tooltip.add(getTip("1"));
+            tooltip.add(getTip("2").formatted(Formatting.AQUA));
         }
 
         @Override
@@ -265,11 +244,9 @@ public class Equipment extends AccessoryItem implements Card, Skill {
     public static class QinglongWeapon extends Equipment {
         public QinglongWeapon(Settings properties) {super(properties);}
 
-        @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            super.appendTooltip(stack, context, tooltip, type);
-            tooltip.add(Text.translatable("item.dabaosword.qinglong.tooltip1"));
-            tooltip.add(Text.translatable("item.dabaosword.qinglong.tooltip2").formatted(Formatting.AQUA));
+        public void addTip(ItemStack stack, List<Text> tooltip) {
+            tooltip.add(getTip("1"));
+            tooltip.add(getTip("2").formatted(Formatting.AQUA));
         }
 
         @Override
@@ -285,11 +262,9 @@ public class Equipment extends AccessoryItem implements Card, Skill {
     public static class RenwangArmor extends Equipment implements ICardEvent {
         public RenwangArmor(Settings properties) {super(properties);}
 
-        @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            super.appendTooltip(stack, context, tooltip, type);
-            tooltip.add(Text.translatable("item.dabaosword.renwang.tooltip1"));
-            tooltip.add(Text.translatable("item.dabaosword.renwang.tooltip2").formatted(Formatting.AQUA));
+        public void addTip(ItemStack stack, List<Text> tooltip) {
+            tooltip.add(getTip("1"));
+            tooltip.add(getTip("2").formatted(Formatting.AQUA));
         }
 
         @Override
@@ -302,22 +277,17 @@ public class Equipment extends AccessoryItem implements Card, Skill {
     public static class RattanArmor extends Equipment implements ICardEvent {
         public RattanArmor(Settings properties) {super(properties);}
 
-        @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            super.appendTooltip(stack, context, tooltip, type);
-            tooltip.add(Text.translatable("item.dabaosword.rattanarmor.tooltip"));
-        }
+        public void addTip(ItemStack stack, List<Text> tooltip) {tooltip.add(getTip());}
 
         //实现渡江不沉的效果，代码来自https://github.com/focamacho/RingsOfAscension/中的水上行走戒指
         @Override
-        public void tick(ItemStack stack, SlotReference reference) {
-            super.tick(stack, reference);
-            var entity = reference.entity();
+        public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
+            super.tick(stack, slot, entity);
             if(entity.isSneaking()) return;
             BlockPos pos = entity.getBlockPos();
             boolean water = entity.getWorld().getFluidState(new BlockPos(pos.getX(),
                     (int) (entity.getBoundingBox().getMin(Direction.Axis.Y)), pos.getZ())).isOf(Fluids.WATER);
-            if (water) {
+            if(water) {
                 Vec3d motion = entity.getVelocity();
                 entity.setVelocity(motion.x, 0.0D, motion.z);
                 entity.fallDistance = 0;
@@ -376,23 +346,21 @@ public class Equipment extends AccessoryItem implements Card, Skill {
             return false;
         }
 
-        private static boolean inrattan(LivingEntity entity) {return hasTrinket(ModItems.RATTAN_ARMOR, entity);}
+        private boolean inrattan(LivingEntity entity) {return hasTrinket(this, entity);}
     }
 
     public static class ZhangbaWeapon extends Equipment {
         public ZhangbaWeapon(Settings properties) {super(properties);}
 
-        @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            super.appendTooltip(stack, context, tooltip, type);
-            tooltip.add(Text.translatable("item.dabaosword.zhangba.tooltip1"));
-            tooltip.add(Text.translatable("item.dabaosword.zhangba.tooltip2").formatted(Formatting.AQUA));
+        public void addTip(ItemStack stack, List<Text> tooltip) {
+            tooltip.add(getTip("1"));
+            tooltip.add(getTip("2").formatted(Formatting.AQUA));
         }
 
         @Override
-        public void tick(ItemStack stack, SlotReference reference) {
-            super.tick(stack, reference);
-            if (reference.entity() instanceof PlayerEntity player && !player.getWorld().isClient && getCD(stack) == 0) {
+        public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
+            super.tick(stack, slot, entity);
+            if (!entity.getWorld().isClient && entity instanceof PlayerEntity player && getCD(stack) == 0) {
                 ItemStack off = player.getOffHandStack();
                 NbtCompound nbt = getOrCreateNbt(stack);
                 boolean one = nbt.contains("has_one");
@@ -400,7 +368,7 @@ public class Equipment extends AccessoryItem implements Card, Skill {
                     if (one) {
                         nbt.remove("has_one");
                         setCD(stack, 5);
-                        give(player, new ItemStack(ModItems.SHA));
+                        give(player, newCard(ModItems.SHA));
                         voice(player, Sounds.ZHANGBA);
                     } else {nbt.putBoolean("has_one", true);}
                     setNbt(stack, nbt);
@@ -413,11 +381,9 @@ public class Equipment extends AccessoryItem implements Card, Skill {
     public static class ZhuqueWeapon extends Equipment {
         public ZhuqueWeapon(Settings properties) {super(properties);}
 
-        @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            super.appendTooltip(stack, context, tooltip, type);
-            tooltip.add(Text.translatable("item.dabaosword.zhuque.tooltip1"));
-            tooltip.add(Text.translatable("item.dabaosword.zhuque.tooltip2").formatted(Formatting.AQUA));
+        public void addTip(ItemStack stack, List<Text> tooltip) {
+            tooltip.add(getTip("1"));
+            tooltip.add(getTip("2").formatted(Formatting.AQUA));
         }
 
         @Override
@@ -430,11 +396,7 @@ public class Equipment extends AccessoryItem implements Card, Skill {
     public static class AttackHorse extends Equipment implements ReachDefend {
         public AttackHorse(Settings properties) {super(properties);}
 
-        @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            super.appendTooltip(stack, context, tooltip, type);
-            tooltip.add(Text.translatable("item.dabaosword.chitu.tooltip"));
-        }
+        public void addTip(ItemStack stack, List<Text> tooltip) {tooltip.add(getTip());}
 
         @Override
         public int getExtraReach(PlayerEntity player, ItemStack stack) {return 1;}
@@ -443,11 +405,7 @@ public class Equipment extends AccessoryItem implements Card, Skill {
     public static class DefendHorse extends Equipment implements ReachDefend {
         public DefendHorse(Settings properties) {super(properties);}
 
-        @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            super.appendTooltip(stack, context, tooltip, type);
-            tooltip.add(Text.translatable("item.dabaosword.dilu.tooltip"));
-        }
+        public void addTip(ItemStack stack, List<Text> tooltip) {tooltip.add(getTip());}
 
         @Override
         public int getDefend(PlayerEntity player, ItemStack stack) {return 1;}
@@ -455,7 +413,7 @@ public class Equipment extends AccessoryItem implements Card, Skill {
 
     @Override
     public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        CardItem.addSRTip(stack, tooltip);
+        CardItem.addSRTip(stack, tooltip); addTip(stack, tooltip);
 
         if(Screen.hasShiftDown()) {
             tooltip.add(Text.translatable("equipment.tip1").formatted(Formatting.BOLD));
@@ -463,33 +421,41 @@ public class Equipment extends AccessoryItem implements Card, Skill {
         } else tooltip.add(Text.translatable("dabaosword.shift_tip", Text.keybind("key.sneak")));
 
     }
+    public void addTip(ItemStack stack, List<Text> tooltip) {}
+
+    public MutableText getTip() {return getTip("");}
+    public MutableText getTip(String suffix) {
+        return Text.translatable(getTranslationKey() + ".tooltip" + suffix);
+    }
 
     @Override
-    public void tick(ItemStack stack, SlotReference reference) {
-        if (reference.entity().getWorld() instanceof ServerWorld world) {
+    public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
+        if (entity.getWorld() instanceof ServerWorld world) {
             int cd = getCD(stack); //世界时间除以20取余为0时，技能内置CD减一秒
             if (cd > 0 && world.getTime() % 20 == 0) setCD(stack, cd - 1);
         }
     }
 
     @Override
-    public void onEquipFromUse(ItemStack stack, SlotReference reference) {
-        LivingEntity entity = reference.entity();
-        if (entity.getWorld() instanceof ServerWorld world) {
+    public void onEquip(ItemStack stack, SlotReference slot, LivingEntity entity) {
+        if (entity.getWorld() instanceof ServerWorld world && !equipped(stack)) {
             world.getPlayers().forEach(player -> player.sendMessage(
                     Text.translatable("dabaosword.entity.equip", entity.getDisplayName(), stack.toHoverableText())
             ));
+            setEquipped(stack, true);
         }
-        super.onEquipFromUse(stack, reference);
     }
 
     @Override
-    public boolean canEquipFromUse(ItemStack stack) {return false;}
+    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
+        if (!world.isClient && equipped(stack)) setEquipped(stack, false);
+        CardItem.addModel(stack, world);
+    }
 
     @Override
-    public boolean canUnequip(ItemStack stack, SlotReference reference) {
-        if (reference.entity() instanceof PlayerEntity player && !player.isCreative()) return false;
-        return super.canUnequip(stack, reference);
+    public boolean canUnequip(ItemStack stack, SlotReference slot, LivingEntity entity) {
+        if (entity instanceof PlayerEntity player && !player.isCreative()) return false;
+        return super.canUnequip(stack, slot, entity);
     }
 
     @Override
@@ -506,51 +472,33 @@ public class Equipment extends AccessoryItem implements Card, Skill {
     }
 
     public static void useOrReplaceEquip(LivingEntity user, ItemStack stack) {
-        var capability = AccessoriesCapability.get(user);
-        if (capability == null) return;
-        var accessory = AccessoryRegistry.getAccessoryOrDefault(stack);
-
-        var equipReference = capability.canEquipAccessory(stack, true);
-
-        if (equipReference != null) {
-            accessory.onEquipFromUse(stack, equipReference.left());
-
-            var newHandStack = stack.copy();
-
-            var opStack = equipReference.second().equipStack(newHandStack);
-            opStack.ifPresent(s -> cardDiscard(user, s, s.getCount(), true));
-        }
-    }
-
-    /*public static boolean replaceEquip(PlayerEntity player, ItemStack stack) {
-        var slots = replaceSlot(player, stack);
-        if (!slots.isEmpty()) {
-            SlotReference ref = slots.get(new Random().nextInt(slots.size()));
-            ItemStack preStack = ref.inventory().getStack(ref.index());
-            cardDiscard(player, preStack, preStack.getCount(), true);
-            ref.inventory().setStack(ref.index(), stack.copy());
-            cardUsePost(player, stack, player);
-            return true;
-        }
-        return false;
-    }
-    //旧版的随机替换同类槽位装备的逻辑，以防万一暂且保留
-    private static List<SlotReference> replaceSlot(PlayerEntity player, ItemStack stack) {
-        List<SlotReference> slots = new ArrayList<>();
-        var optional = TrinketsApi.getTrinketComponent(player);
+        Optional<TrinketComponent> optional = TrinketsApi.getTrinketComponent(user);
         if (optional.isPresent()) {
             TrinketComponent comp = optional.get();
-            for (var group : comp.getInventory().values()) {
+            SlotReference firstSlot = null;
+
+            for (Map<String, TrinketInventory> group : comp.getInventory().values()) {
                 for (TrinketInventory inv : group.values()) {
                     for (int i = 0; i < inv.size(); i++) {
-                        //如果对应装备栏的物品与待装备的物品有完全相同的标签，则记录该槽位
-                        if (!inv.getStack(i).isEmpty() && inv.getStack(i).streamTags().toList().equals(stack.streamTags().toList())) {
-                            slots.add(new SlotReference(inv, i));
+                        ItemStack s = inv.getStack(i);
+                        SlotReference ref = new SlotReference(inv, i);
+                        if (TrinketSlot.canInsert(stack, ref, user)) {
+                            if (s.isEmpty()) { //如果这个槽位没有物品，则直接放入
+                                inv.setStack(i, stack.copy());
+                                return;
+                            } else if (firstSlot == null) firstSlot = ref;
+                            //记录第一个有物品的槽位（也就是说，只能替换同类槽位的第一个物品）
                         }
                     }
                 }
             }
+
+            if (firstSlot != null) { //替换原有装备
+                ItemStack preStack = firstSlot.inventory().getStack(firstSlot.index());
+                cardDiscard(user, preStack, preStack.getCount(), true);
+                firstSlot.inventory().setStack(firstSlot.index(), stack.copy());
+            }
         }
-        return slots;
-    }*/
+    }
+
 }

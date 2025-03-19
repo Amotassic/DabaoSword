@@ -25,7 +25,7 @@ public class PeachItem extends CardItem {
     //潜行时对生物右键，给其他生物回血
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         if (!user.getWorld().isClient && entity.getHealth() < entity.getMaxHealth() && user.isSneaking() && hand == Hand.MAIN_HAND) {
-            if (cardUsePre(user, user.getMainHandStack(), entity)) return ActionResult.SUCCESS;
+            if (cardUsePre(user, user.getMainHandStack(), entity)) return ActionResult.SUCCESS_SERVER;
         }
         return ActionResult.PASS;
     }

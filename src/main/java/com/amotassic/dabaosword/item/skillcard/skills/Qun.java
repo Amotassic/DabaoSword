@@ -7,7 +7,7 @@ import com.amotassic.dabaosword.command.DabaoSwordCommand;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.util.Sounds;
-import io.wispforest.accessories.api.slot.SlotReference;
+import dev.emi.trinkets.api.SlotReference;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageTypes;
@@ -42,9 +42,9 @@ public class Qun {
         }
 
         @Override
-        public void tick(ItemStack stack, SlotReference reference) {
-            viewAs(reference.entity(), stack, 10, isRedCard, new ItemStack(ModItems.PEACH));
-            super.tick(stack, reference);
+        public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
+            viewAs(entity, stack, 10, isRedCard, ModItems.PEACH);
+            super.tick(stack, slot, entity);
         }
     }
 
@@ -58,9 +58,9 @@ public class Qun {
         }
 
         @Override
-        public void tick(ItemStack stack, SlotReference reference) {
-            viewAs(reference.entity(), stack, 10, isSpadeCard, new ItemStack(ModItems.JIU));
-            super.tick(stack, reference);
+        public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
+            viewAs(entity, stack, 10, isSpadeCard, ModItems.JIU);
+            super.tick(stack, slot, entity);
         }
     }
 
@@ -145,14 +145,14 @@ public class Qun {
         }
 
         @Override
-        public void tick(ItemStack stack, SlotReference reference) {
-            super.tick(stack, reference);
-            if (reference.entity() instanceof PlayerEntity player && !player.getWorld().isClient && noTieji(player) && getCD(stack) == 0) {
+        public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
+            super.tick(stack, slot, entity);
+            if (!entity.getWorld().isClient && entity instanceof PlayerEntity player && noTieji(player) && getCD(stack) == 0) {
                 ItemStack off = player.getOffHandStack();
                 NbtCompound nbt = getOrCreateNbt(stack);
                 Card.Suits firstSuit = null;
                 if (nbt.contains("suit")) firstSuit = Card.Suits.get(nbt.getString("suit"));
-                if (player.getWorld().getTime() % 100 == 0 && firstSuit != null) {
+                if (entity.getWorld().getTime() % 100 == 0 && firstSuit != null) {
                     player.sendMessage(Text.translatable("item.dabaosword.luanji.suit", stack.getName(), firstSuit.suit), true);
                 }
                 Card.Suits suit = getSuit(off);
@@ -162,7 +162,7 @@ public class Qun {
                         setNbt(stack, nbt);
                         setCD(stack, 15);
                         off.decrement(1);
-                        give(player, new ItemStack(ModItems.WANJIAN));
+                        give(player, newCard(ModItems.WANJIAN));
                         voice(player, Sounds.LUANJI);
                         return;
                     }

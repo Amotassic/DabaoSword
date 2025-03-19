@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import static com.amotassic.dabaosword.command.InfoCommand.openFullInv;
 import static com.amotassic.dabaosword.util.ModTools.voice;
@@ -34,7 +35,7 @@ public class LetMeCCItem extends Item {
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         if (!user.getWorld().isClient && hand == Hand.MAIN_HAND) {
-            voice(user, Sounds.LET_ME_CC);
+            voice(user, Sounds.LET_ME_CC, 1);
             openFullInv(user, entity, true);
             return ActionResult.SUCCESS;
         }
@@ -45,14 +46,14 @@ public class LetMeCCItem extends Item {
     public ActionResult use(World world, PlayerEntity user, Hand hand) {
         if (!world.isClient && hand == Hand.MAIN_HAND) {
             if (!user.isSneaking()) {
-                LivingEntity closest = getClosestEntity(user, 10);
+                LivingEntity closest = getClosestEntity(user, LivingEntity.class, 10, entity -> entity != user);
                 if (closest != null) {
-                    voice(user, Sounds.LET_ME_CC);
+                    voice(user, Sounds.LET_ME_CC, 1);
                     openFullInv(user, closest, true);
                     return ActionResult.SUCCESS_SERVER;
                 }
             } else {
-                voice(user, Sounds.LET_ME_CC);
+                voice(user, Sounds.LET_ME_CC, 1);
                 openFullInv(user, user, true);
                 return ActionResult.SUCCESS_SERVER;
             }
@@ -60,12 +61,12 @@ public class LetMeCCItem extends Item {
         return super.use(world, user, hand);
     }
 
-    public static @Nullable LivingEntity getClosestEntity(Entity entity, double boxLength) {
+    public static @Nullable <T extends Entity> T getClosestEntity(Entity entity, Class<T> clazz, double boxLength, Predicate<T> predicate) {
         if (entity.getWorld() instanceof ServerWorld world) {
             Box box = new Box(entity.getBlockPos()).expand(boxLength);
-            List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, box, entity1 -> entity1 != entity);
+            List<T> entities = world.getEntitiesByClass(clazz, box, predicate);
             if (!entities.isEmpty()) {
-                Map<Float, LivingEntity> map = new HashMap<>();
+                Map<Float, T> map = new HashMap<>();
                 for (var e : entities) {
                     map.put(e.distanceTo(entity), e);
                 }

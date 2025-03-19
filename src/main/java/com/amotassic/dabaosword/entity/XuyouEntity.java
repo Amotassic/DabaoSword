@@ -1,6 +1,5 @@
 package com.amotassic.dabaosword.entity;
 
-import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -14,15 +13,12 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Random;
 
 import static com.amotassic.dabaosword.api.event.CardEvents.cardDiscard;
 import static com.amotassic.dabaosword.util.ModTools.*;
@@ -96,15 +92,6 @@ public class XuyouEntity extends HostileEntity implements RangedAttackMob {
 
     @Override
     protected SoundEvent getHurtSound(DamageSource source) {return source.getType().effects().getSound();}
-
-    @Override
-    protected void onKilledBy(@Nullable LivingEntity entity) {
-        if (entity instanceof PlayerEntity) {
-            if (new Random().nextFloat() < 0.05) dropStack(world(entity), new ItemStack(ModItems.BBJI));
-            if (new Random().nextFloat() < 0.1) dropStack(world(entity), new ItemStack(ModItems.GIFTBOX));
-        }
-        super.onKilledBy(entity);
-    }
 
     @Override
     public void onDeath(DamageSource damageSource) {

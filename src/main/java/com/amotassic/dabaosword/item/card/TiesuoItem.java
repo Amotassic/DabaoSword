@@ -23,7 +23,7 @@ public class TiesuoItem extends CardItem {
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         if (!user.getWorld().isClient && !entity.isGlowing() && !user.getOffHandStack().isOf(Items.KNOWLEDGE_BOOK) && hand == Hand.MAIN_HAND) {
-            if (cardUsePre(user, user.getMainHandStack(), entity)) return ActionResult.SUCCESS;
+            if (cardUsePre(user, user.getMainHandStack(), entity)) return ActionResult.SUCCESS_SERVER;
         }
         return ActionResult.PASS;
     }
@@ -56,6 +56,9 @@ public class TiesuoItem extends CardItem {
             }
         }
     }
+
+    @Override
+    public int getMaxUseTime(ItemStack stack, LivingEntity user) {return 12000;}
 
     @Override
     public boolean onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
