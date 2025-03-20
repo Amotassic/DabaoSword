@@ -10,7 +10,7 @@ import net.minecraft.util.math.BlockPos;
 
 import java.util.Objects;
 
-import static com.amotassic.dabaosword.item.equipment.ArrowRainItem.arrowRain;
+import static com.amotassic.dabaosword.item.tool.ArrowRainItem.*;
 
 public class Cooldown2Effect extends StatusEffect {
     public Cooldown2Effect() {super(StatusEffectCategory.NEUTRAL, 0xFFFFFF);}
@@ -26,6 +26,22 @@ public class Cooldown2Effect extends StatusEffect {
 
             if (amplifier == 3 && restTime % 2 == 0) { //雷击的效果
                 EntityType.LIGHTNING_BOLT.spawn(world, new BlockPos((int) entity.getX(), (int) entity.getY(), (int) entity.getZ()),null);
+            }
+
+            if (amplifier == 4) {
+                arrowAround(entity, 3, 36, 10, 3);
+                arrowAround(entity, 3, 36, 8, 4);
+                arrowAround(entity, 3, 36, 6, 5);
+                arrowAround(entity, 3, 36, 4, 6);
+                arrowAround(entity, 3, 36, 2, 7);
+            }
+
+            if (amplifier == 5 && restTime % 4 == 0) {
+                tridentStorm(entity, 3, 36, 10, 3);
+                tridentStorm(entity, 3, 36, 8, 4);
+                tridentStorm(entity, 3, 36, 6, 5);
+                tridentStorm(entity, 3, 36, 4, 6);
+                tridentStorm(entity, 3, 36, 2, 7);
             }
         }
         super.applyUpdateEffect(entity, amplifier);

@@ -9,19 +9,18 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
-import static com.amotassic.dabaosword.api.event.CardEvents.cardUsePre;
-
-public class WanjianItem extends CardItem {
+public class WanjianItem extends CardItem.Armoury {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         if (!world.isClient && hand == Hand.MAIN_HAND) {
-            if (cardUsePre(user, user.getMainHandStack(), null)) return TypedActionResult.success(user.getMainHandStack());
+            onUse(user, user.getMainHandStack(), user);
+            return TypedActionResult.success(user.getMainHandStack());
         }
         return super.use(world, user, hand);
     }
 
     @Override
-    public void cardUse(LivingEntity user, ItemStack stack, LivingEntity target) {
+    public void effect(LivingEntity user, ItemStack card, LivingEntity target) {
         user.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 15,1,false,false,false));
     }
 }

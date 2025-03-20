@@ -1,4 +1,4 @@
-package com.amotassic.dabaosword.item.equipment;
+package com.amotassic.dabaosword.item.tool;
 
 import com.amotassic.dabaosword.ui.PileScreenHandler;
 import com.amotassic.dabaosword.util.Gamerule;

@@ -10,36 +10,36 @@ import net.minecraft.util.Hand;
 import java.util.List;
 import java.util.Random;
 
-import static com.amotassic.dabaosword.api.event.CardEvents.*;
+import static com.amotassic.dabaosword.api.CardEvents.cardMove;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
-public class StealItem extends CardItem {
+public class StealItem extends CardItem.Armoury {
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         if (!user.getWorld().isClient && hand == Hand.MAIN_HAND && canSteal(entity)) {
-            if (cardUsePre(user, user.getMainHandStack(), entity)) return ActionResult.SUCCESS;
+            onUse(user, user.getMainHandStack(), entity);
+            return ActionResult.SUCCESS;
         }
         return ActionResult.PASS;
     }
 
     @Override
-    public void cardUse(LivingEntity user, ItemStack stack, LivingEntity entity) {
+    public void effect(LivingEntity user, ItemStack card, LivingEntity entity) {
         if (user instanceof PlayerEntity player) {
             if (entity instanceof PlayerEntity target) {
-                openInv(player, target, Text.translatable("dabaosword.steal.title"), stack, false, true, true, 1);
+                openInv(player, target, Text.translatable("dabaosword.steal.title"), card, false, true, true, 1);
             } else {
                 List<ItemStack> stacks = getItems(entity, isCard, true, false, true, false);
                 if (!stacks.isEmpty()) {
                     ItemStack chosen = stacks.get(new Random().nextInt(stacks.size()));
-                    cardMove(entity, player, chosen, 1, isEquipped(entity, s -> s.equals(chosen)), false);
-                    cardUsePost(player, stack, entity);
+                    var exData = d().cards(chosen, 1, isEquipped(entity, s -> s.equals(chosen)));
+                    cardMove(entity, exData, player);
                 }
             }
-        } else cardUsePost(user, stack, entity);
+        }
     }
 
-    @Override
-    public boolean notImmediatelyEffective() {return true;}
+    @Override public boolean askForWuxie() {return true;}
 
     private boolean canSteal(LivingEntity entity) {
         int count = countAllCards(entity);

@@ -13,7 +13,8 @@
     "PlayerEntityMixin",
     "PlayerManagerMixin",
     "RavagerMixin",
-    "ServerPlayerEntityMixin"
+    "ServerPlayerEntityMixin",
+    "TridentMixin"
   ],
   "client": [
     "client.DrawContextMixin",

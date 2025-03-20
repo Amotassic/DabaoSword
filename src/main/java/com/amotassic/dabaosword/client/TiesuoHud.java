@@ -29,7 +29,7 @@ public class TiesuoHud implements HudRenderCallback {
         this.tiesuoScale = MathHelper.lerp(0.5f * f, this.tiesuoScale, 1.125f);
         if (client.options.getPerspective().isFirstPerson()) {
             var player = client.player;
-            if (player != null && player.isUsingItem() && player.getActiveItem().isOf(ModItems.TIESUO) && player.getOffHandStack().getItem() == Items.KNOWLEDGE_BOOK) {
+            if (player != null && player.isUsingItem() && player.getActiveItem().isOf(ModItems.TIESUO) && player.getOffHandStack().isOf(Items.KNOWLEDGE_BOOK)) {
                 this.renderTiesuoOverlay(drawContext, this.tiesuoScale);
             }
         }

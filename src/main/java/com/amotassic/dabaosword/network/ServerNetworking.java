@@ -1,14 +1,14 @@
 package com.amotassic.dabaosword.network;
 
 import com.amotassic.dabaosword.command.InfoCommand;
-import com.amotassic.dabaosword.item.LetMeCCItem;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
-import com.amotassic.dabaosword.item.skillcard.SkillItem;
+import com.amotassic.dabaosword.item.tool.LetMeCCItem;
 import com.amotassic.dabaosword.ui.PileScreenHandler;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -24,7 +24,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 import java.util.Objects;
-import java.util.UUID;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
 
@@ -40,22 +39,15 @@ public class ServerNetworking {
     }
 
     private static void receiveActiveSkillPacket(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-        UUID uuid = buf.readUuid(); PlayerEntity target = server.getPlayerManager().getPlayer(uuid);
+        int id = buf.readInt(); LivingEntity entity = (LivingEntity) player.getWorld().getEntityById(id);
         server.execute(() -> {
             if (player.hasStatusEffect(ModItems.TIEJI)) {
                 player.sendMessage(Text.translatable("effect.tieji.tip").formatted(Formatting.RED), true);
                 return;
             }
-            for(var stack : allTrinkets(player)) {
-                if(stack.getItem() instanceof SkillItem.ActiveSkillWithTarget skill && target != player) {
-                    skill.activeSkill(player, stack, target);
-                    return;
-                }
-                if(stack.getItem() instanceof SkillItem.ActiveSkill skill && target == player) {
-                    skill.activeSkill(player, stack, player);
-                    return;
-                }
-            }
+
+            for (var skill : getSkillsMayUse(player)) if (player != entity && skill.activeSkill(player, skill, entity)) return;
+            for (var skill : getSkillsMayUse(player)) if (skill.activeSkill(player, skill)) return;
         });
     }
 
@@ -70,8 +62,10 @@ public class ServerNetworking {
 
     private static void selectCardPacket(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
         int i = buf.readInt();
-        if (i == 0) openInv(player, player, Text.translatable("key.dabaosword.select_card"), new ItemStack(ModItems.WANJIAN), true, false, false, 2);
-        if (i == 1) openInv(player, player, Text.translatable("key.dabaosword.select_card"), new ItemStack(ModItems.SUNSHINE_SMILE), true, false, false, 3);
+        var cards = new ItemStack(ModItems.WANJIAN); var items = new ItemStack(ModItems.SUNSHINE_SMILE);
+        boolean bl = getCardPack(player).isEmpty(); //如果牌堆没有牌，会直接显示物品栏的牌，所以要判断一下
+        if (i == 0) openInv(player, player, Text.translatable("key.dabaosword.select_card"), bl ? items : cards, true, false, false, 2);
+        if (i == 1) openInv(player, player, Text.translatable("key.dabaosword.select_card"), items, true, false, false, 3);
         if (i == 2 && hasTrinket(ModItems.CARD_PILE, player)) player.openHandledScreen(new ExtendedScreenHandlerFactory() {
             @Override
             public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {}

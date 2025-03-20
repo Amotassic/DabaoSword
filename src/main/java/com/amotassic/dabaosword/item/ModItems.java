@@ -1,16 +1,20 @@
 package com.amotassic.dabaosword.item;
 
 import com.amotassic.dabaosword.api.event.*;
+import com.amotassic.dabaosword.api.skill.ISkill;
 import com.amotassic.dabaosword.effect.*;
 import com.amotassic.dabaosword.entity.ModEntity;
 import com.amotassic.dabaosword.event.*;
 import com.amotassic.dabaosword.item.card.*;
-import com.amotassic.dabaosword.item.equipment.*;
+import com.amotassic.dabaosword.item.card.equipment.Armor;
+import com.amotassic.dabaosword.item.card.equipment.Mount;
+import com.amotassic.dabaosword.item.card.equipment.Weapon;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
+import com.amotassic.dabaosword.item.skillcard.SkillItem;
+import com.amotassic.dabaosword.item.tool.*;
 import com.amotassic.dabaosword.ui.FullInvScreenHandler;
 import com.amotassic.dabaosword.ui.PileScreenHandler;
 import com.amotassic.dabaosword.ui.PlayerInvScreenHandler;
-import com.amotassic.dabaosword.ui.SimpleMenuHandler;
 import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
@@ -44,9 +48,9 @@ import java.util.Map;
 
 @SuppressWarnings("unused")
 public class ModItems {
-    public static final List<Item> CARDS = new ArrayList<>();
+    public static final List<CardItem> CARDS = new ArrayList<>();
     //杀
-    public static final Item
+    public static final CardItem
     SHA = registerCard("sha", new Sha()),
     FIRE_SHA = registerCard("fire_sha", new Sha.Fire()),
     THUNDER_SHA = registerCard("thunder_sha", new Sha.Thunder()),
@@ -84,45 +88,46 @@ public class ModItems {
     //五谷丰登
     WUGU = registerCard("wugu", new WuguItem()),
     //无懈可击
-    WUXIE = registerCard("wuxie", new CardItem()),
+    WUXIE = registerCard("wuxie", new CardItem.Armoury()),
     //无中生有
-    WUZHONG = registerCard("wuzhong", new CardItem.Wuzhong()),
+    WUZHONG = registerCard("wuzhong", new WuzhongItem()),
 
     //雌雄双股剑
-    CIXIONG = registerCard("cixiong", new Equipment.CixiongWeapon()),
+    CIXIONG = registerCard("cixiong", new Weapon.Cixiong()),
     //方天画戟
-    FANGTIAN = registerCard("fangtian", new Equipment.FangtianWeapon()),
+    FANGTIAN = registerCard("fangtian", new Weapon.Fangtian()),
     //贯石斧
-    GUANSHI = registerCard("guanshi", new Equipment.GuanshiWeapon()),
+    GUANSHI = registerCard("guanshi", new Weapon.Guanshi()),
     // 古锭刀
-    GUDING_WEAPON = registerCard("guding_dao", new Equipment.GudingWeapon()),
+    GUDING_WEAPON = registerCard("guding_dao", new Weapon.Guding()),
     //寒冰剑
-    HANBING = registerCard("hanbing", new Equipment.HanbingWeapon()),
+    HANBING = registerCard("hanbing", new Weapon.Hanbing()),
     //麒麟弓
-    QILIN = registerCard("qilin", new Equipment.QilinWeapon()),
+    QILIN = registerCard("qilin", new Weapon.Qilin()),
     //青釭剑
-    QINGGANG = registerCard("qinggang", new Equipment.QinggangWeapon()),
+    QINGGANG = registerCard("qinggang", new Weapon.Qinggang()),
     //青龙偃月刀
-    QINGLONG = registerCard("qinglong", new Equipment.QinglongWeapon()),
+    QINGLONG = registerCard("qinglong", new Weapon.Qinglong()),
     //丈八蛇矛
-    ZHANGBA = registerCard("zhangba", new Equipment.ZhangbaWeapon()),
+    ZHANGBA = registerCard("zhangba", new Weapon.Zhangba()),
     //诸葛连弩
-    LIANNU = registerCard("liannu", new Equipment.LiannuWeapon()),
+    LIANNU = registerCard("liannu", new Weapon.Liannu()),
     //朱雀羽扇
-    ZHUQUE = registerCard("zhuque", new Equipment.ZhuqueWeapon()),
+    ZHUQUE = registerCard("zhuque", new Weapon.Zhuque()),
     //八卦阵
-    BAGUA = registerCard("bagua", new Equipment.BaguaArmor()),
+    BAGUA = registerCard("bagua", new Armor.Bagua()),
     //白银狮子
-    BAIYIN = registerCard("baiyin", new Equipment.BaiyinArmor()),
+    BAIYIN = registerCard("baiyin", new Armor.Baiyin()),
     //仁王盾
-    RENWANG = registerCard("renwang", new Equipment.RenwangArmor()),
+    RENWANG = registerCard("renwang", new Armor.Renwang()),
     //寿衣
-    RATTAN_ARMOR = registerCard("rattan_armor", new Equipment.RattanArmor()),
+    RATTAN_ARMOR = registerCard("rattan_armor", new Armor.Rattan()),
     //-1马
-    CHITU = registerCard("chitu", new Equipment.AttackHorse()),
+    CHITU = registerCard("chitu", new Mount.Attack()),
     //+1马
-    DILU = registerCard("dilu", new Equipment.DefendHorse()),
+    DILU = registerCard("dilu", new Mount.Defend());
 
+    public static final Item
     //摸牌
     GAIN_CARD = register("gain_card", new GainCardItem()),
     //牌堆
@@ -140,13 +145,16 @@ public class ModItems {
     XUYOU_SPAWN_EGG = register("xuyou_spawn_egg", new SpawnEggItem(ModEntity.XUYOU, 0x52BDF7, 0x8D8B96, new Item.Settings())),
     GUDING_ITEM = register("guding", new Item(new Item.Settings())),
     INCOMPLETE_GUDINGDAO = register("incomplete_gdd", new Item(new Item.Settings().maxCount(1)));
+    public static final CardItem EMPTY_CARD = register("empty_card", new CardItem.Empty());
+    public static final SkillItem EMPTY_SKILL = register("empty_skill", new SkillItem());
 
-    private static Item register(String name, Item item) {
+    private static <T extends Item> T register(String name, T item) {
         return Registry.register(Registries.ITEM, new Identifier("dabaosword", name), item);
     }
     /**将注册的卡牌添加到卡牌列表中，便于自动将物品添加到物品组*/
-    public static Item registerCard(String name, Item item) {
-        Item card = register(name, item);
+    public static CardItem registerCard(String name, CardItem item) {
+        CardItem card = register(name, item);
+        if (card instanceof ISkill) SkillCards.addSkillEffect(card);
         CARDS.add(card);
         return card;
     }
@@ -248,8 +256,6 @@ public class ModItems {
     TIEJI = register("tieji", new CommonEffect(StatusEffectCategory.HARMFUL, 0x07050F)),
     //闪电效果
     SHANDIAN = register("shandian", new ShandianEffect());
-
-    public static final ScreenHandlerType<SimpleMenuHandler> SIMPLE_MENU_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "simple_menu", new ExtendedScreenHandlerType<>(SimpleMenuHandler::new));
 
     public static final ScreenHandlerType<PlayerInvScreenHandler> PLAYER_INV_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "player_inv", new ExtendedScreenHandlerType<>(PlayerInvScreenHandler::new));
 

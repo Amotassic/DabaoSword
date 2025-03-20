@@ -1,7 +1,5 @@
 package com.amotassic.dabaosword.event;
 
-import com.amotassic.dabaosword.api.ReachDefend;
-import com.amotassic.dabaosword.api.Skill;
 import com.amotassic.dabaosword.api.event.EndEntityTick;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.Gamerule;
@@ -35,15 +33,25 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
                 entity.getCommandTags().remove("juedou");
                 entity.getCommandTags().remove("nanman");
                 entity.getCommandTags().remove("benxi");
-                entity.getCommandTags().remove("xingshang");
             }
+
+            //处理所有加触及距离和近战防御距离的效果
+            int level1 = 0; int level2 = 0;
+            ItemStack mainHand = entity.getMainHandStack();
+            if (mainHand.isOf(ModItems.DISCARD) || mainHand.isOf(ModItems.JUEDOU)) level1 += 114;
+            for (var skill : getSkillsMayUse(entity)) {
+                level1 += skill.item.getExtraReach(entity, skill);
+                level2 += skill.item.getDefend(entity, skill);
+            }
+            if (level1 > 0) entity.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 2,level1 - 1,false,false,false));
+            if (level2 > 0) entity.addStatusEffect(new StatusEffectInstance(ModItems.DEFEND, 2,level2 - 1,false,false,false));
 
             //若方天画戟被触发了，只要左键就可以造成群伤
             PlayerEntity closestPlayer = world.getClosestPlayer(entity, 5);
             if (closestPlayer != null && hasTrinket(ModItems.FANGTIAN, closestPlayer) && entity.isAlive()) {
                 ItemStack stack = trinketItem(ModItems.FANGTIAN, closestPlayer);
                 int time = 0;
-                if (stack != null) time = getCD(stack);
+                if (!stack.isEmpty()) time = s(stack).getCD();
                 if (time > 15 && closestPlayer.handSwingTicks == 1) {
                     //给玩家本人一个极短的无敌效果，以防止被误伤
                     closestPlayer.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE,2,0,false,false,false));
@@ -83,12 +91,10 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
                     if (player.hasStatusEffect(ModItems.BINGLIANG)) player.removeStatusEffect(ModItems.BINGLIANG);
                     else if (countCards(player) < player.getMaxHealth() || !limit) {
                         int draw = hasTrinket(ModItems.CARD_PILE, player) ? 2 : 0;
-                        for (var stack : allTrinkets(player)) {
-                            if (stack.getItem() instanceof Skill s && canTrigger(stack, player)) {
-                                int i = s.onDrawPhase(player, stack);
-                                if (i <= -114) {draw = 0; break;}
-                                draw += i;
-                            }
+                        for (var skill : getSkillsMayUse(player)) {
+                            int i = skill.item.onDrawPhase(player, skill);
+                            if (i <= -114) {draw = 0; break;}
+                            draw += i;
                         }
                         if (draw > 0) draw(player, draw);
                     }
@@ -105,19 +111,6 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
                     player.addStatusEffect(new StatusEffectInstance(ModItems.DEFENDED, 1, defended,false,false,true));
                 }
             }
-
-            //处理所有加触及距离和近战防御距离的效果
-            int level1 = 0; int level2 = 0;
-            ItemStack mainHand = player.getMainHandStack();
-            if (mainHand.isOf(ModItems.DISCARD) || mainHand.isOf(ModItems.JUEDOU)) level1 += 114;
-            for (var stack : allTrinkets(player)) {
-                if (stack.getItem() instanceof ReachDefend rd && canTrigger(stack, player)) {
-                    level1 += rd.getExtraReach(player, stack);
-                    level2 += rd.getDefend(player, stack);
-                }
-            }
-            if (level1 > 0) player.addStatusEffect(new StatusEffectInstance(ModItems.REACH, 2,level1 - 1,false,false,false));
-            if (level2 > 0) player.addStatusEffect(new StatusEffectInstance(ModItems.DEFEND, 2,level2 - 1,false,false,false));
 
             //下落攻击触发：脚底下两格是空气，手里拿着有耐久度的物品左键即可触发
             BlockPos blockPos = player.getBlockPos().down(1); BlockPos blockPos2 = player.getBlockPos().down(2);

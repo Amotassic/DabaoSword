@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.command;
 
+import com.amotassic.dabaosword.api.skill.Skill;
 import com.amotassic.dabaosword.pvpgame.Game;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -20,6 +21,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import static com.amotassic.dabaosword.event.PVPGameEvents.getGameManager;
+import static com.amotassic.dabaosword.util.ModTools.s;
 import static com.amotassic.dabaosword.util.ModTools.trinketItem;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
@@ -61,12 +63,12 @@ public class DabaoSwordCommand {
     private static int execute(ServerCommandSource ctx, ItemStackArgument stack, int value) {
         LivingEntity entity = (LivingEntity) ctx.getEntity();
         ItemStack skill = trinketItem(stack.getItem(), entity);
-        if (skill.getItem() instanceof CSkill s) s.triggerSkill(entity, skill, value);
+        if (skill.getItem() instanceof CSkill s) s.triggerSkill(entity, s(skill), value);
         return 1;
     }
 
     public interface CSkill {
-        default void triggerSkill(LivingEntity entity, ItemStack stack, int value) {}
+        default void triggerSkill(LivingEntity entity, Skill skill, int value) {}
     }
 
     private static int createGame(ServerCommandSource ctx, int type) throws CommandSyntaxException {

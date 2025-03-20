@@ -1,4 +1,4 @@
-package com.amotassic.dabaosword.item.equipment;
+package com.amotassic.dabaosword.item.tool;
 
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EquipmentSlot;

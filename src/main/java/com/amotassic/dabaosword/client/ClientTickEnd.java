@@ -1,23 +1,19 @@
 package com.amotassic.dabaosword.client;
 
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
-import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.network.ServerNetworking;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
 import org.lwjgl.glfw.GLFW;
 
-import static com.amotassic.dabaosword.util.ModTools.hasTrinket;
-import static com.amotassic.dabaosword.util.ModTools.isEquipped;
+import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class ClientTickEnd {
     public static final KeyBinding ACTIVE_SKILL = keyBinding("active_skill", GLFW.GLFW_KEY_J);
@@ -25,9 +21,8 @@ public class ClientTickEnd {
 
     public static void initialize() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            var user = MinecraftClient.getInstance().player;
-            var result = MinecraftClient.getInstance().crosshairTarget;
-            var ctrl = MinecraftClient.getInstance().options.sprintKey;
+            var user = client.player;
+            var ctrl = client.options.sprintKey;
             PacketByteBuf buf = PacketByteBufs.create();
             if (user != null) {
                 if (hasTrinket(SkillCards.SHENSU, user)) {
@@ -47,17 +42,13 @@ public class ClientTickEnd {
                     return;
                 }
 
-                if (result != null && result.getType() == HitResult.Type.ENTITY) {
-                    if (((EntityHitResult) result).getEntity() instanceof PlayerEntity player) {
-                        if (ACTIVE_SKILL.wasPressed() && isEquipped(user, s -> s.getItem() instanceof SkillItem.ActiveSkillWithTarget)) {
-                            buf.writeUuid(player.getUuid());
-                            ClientPlayNetworking.send(ServerNetworking.ACTIVE_SKILL, buf);
-                            return;
-                        }
-                    }
-                }
-                if (ACTIVE_SKILL.wasPressed() && isEquipped(user, s -> s.getItem() instanceof SkillItem.ActiveSkill)) {
-                    buf.writeUuid(user.getUuid());
+                var result = client.crosshairTarget; LivingEntity target;
+                if (result instanceof EntityHitResult eResult && eResult.getEntity() instanceof LivingEntity entity) {
+                    target = entity;
+                } else target = user;
+
+                if (ACTIVE_SKILL.wasPressed() && isEquipped(user, s -> s(s).isActiveSkill())) {
+                    buf.writeInt(target.getId());
                     ClientPlayNetworking.send(ServerNetworking.ACTIVE_SKILL, buf);
                 }
             }

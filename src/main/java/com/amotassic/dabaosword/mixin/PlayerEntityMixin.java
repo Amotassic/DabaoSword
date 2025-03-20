@@ -6,7 +6,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.ActionResult;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,11 +22,8 @@ public abstract class PlayerEntityMixin extends LivingEntity {
         EndEntityTick.PLAYER_EVENT.invoker().endPlayerTick((PlayerEntity) (Object) this);
     }
 
-    @Inject(at = @At("TAIL"), method = "applyDamage", cancellable = true)
+    @Inject(at = @At("TAIL"), method = "applyDamage")
     private void onEntityHurt(final DamageSource source, final float amount, CallbackInfo ci) {
-        ActionResult result = EntityHurtCallback.EVENT.invoker().hurtEntity((PlayerEntity) (Object) this, source, amount);
-        if (result == ActionResult.FAIL) {
-            ci.cancel();
-        }
+        EntityHurtCallback.EVENT.invoker().hurtEntity((PlayerEntity) (Object) this, source, amount);
     }
 }

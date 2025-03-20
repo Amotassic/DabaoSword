@@ -1,6 +1,6 @@
 package com.amotassic.dabaosword.mixin.client;
 
-import com.amotassic.dabaosword.api.Card;
+import com.amotassic.dabaosword.item.card.CardItem;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.registry.Registries;
@@ -20,7 +20,7 @@ public abstract class ModelLoaderMixin {
     public void init(CallbackInfo ci) {
         addModel(new ModelIdentifier(new Identifier("dabaosword", "nahida"), "inventory"));
         addModel(new ModelIdentifier(new Identifier("dabaosword:card/gain_card"), "inventory"));
-        var itemList = Registries.ITEM.stream().filter(item -> item instanceof Card).toList();
+        var itemList = Registries.ITEM.stream().filter(item -> item instanceof CardItem).toList();
         for (var item : itemList) {
             String path = "card/" + item.toString();
             Identifier modelId = new Identifier("dabaosword", path);

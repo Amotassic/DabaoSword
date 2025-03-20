@@ -20,7 +20,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import static com.amotassic.dabaosword.api.event.CardEvents.cardDiscard;
+import static com.amotassic.dabaosword.api.CardEvents.cardDiscard;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class XuyouEntity extends HostileEntity implements RangedAttackMob {
@@ -94,10 +94,13 @@ public class XuyouEntity extends HostileEntity implements RangedAttackMob {
 
     @Override
     public void onDeath(DamageSource damageSource) {
-        for (var stack : allTrinkets(this)) {
-            if(isCard(stack)) cardDiscard(this, stack, stack.getCount(), true);
-        }
         super.onDeath(damageSource);
+        if (getWorld().isClient) return;
+        var data = d();
+        for (var stack : allTrinkets(this)) {
+            if(isCard(stack)) data.cards(stack, stack.getCount(), true);
+        }
+        cardDiscard(this, data);
     }
 
     @Override

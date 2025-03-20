@@ -1,4 +1,4 @@
-package com.amotassic.dabaosword.item.equipment;
+package com.amotassic.dabaosword.item.tool;
 
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.client.item.TooltipContext;
