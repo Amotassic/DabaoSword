@@ -1,22 +1,20 @@
 package com.amotassic.dabaosword.event;
 
+import com.amotassic.dabaosword.api.CardEvents;
 import com.amotassic.dabaosword.api.event.PlayerDeathCallback;
 import com.amotassic.dabaosword.api.event.PlayerRespawnCallback;
+import com.amotassic.dabaosword.api.skill.ExData;
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.pvpgame.Game;
 import com.amotassic.dabaosword.util.Gamerule;
 import com.amotassic.dabaosword.util.ModConfig;
-import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.GameMode;
@@ -25,17 +23,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.amotassic.dabaosword.api.event.CardEvents.cardDiscard;
 import static com.amotassic.dabaosword.event.PVPGameEvents.getGameManager;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class PlayerEvents implements PlayerDeathCallback, PlayerRespawnCallback {
     private static final Map<UUID, KillStreakData> playerKillData = new HashMap<>();
     private record KillStreakData(int streak, long lastKillTime) {}
-    private static SoundEvent getKillSound(int streak) {
+    private static String getKillSound(int streak) {
         return switch (streak) {
-            case 1, 2, 3, 4, 5, 6, 7 -> getSound("kill" + streak);
-            default -> getSound("diankuang");
+            case 1, 2, 3, 4, 5, 6, 7 -> "kill" + streak;
+            default -> "diankuang";
         };
     }
 
@@ -80,38 +77,30 @@ public class PlayerEvents implements PlayerDeathCallback, PlayerRespawnCallback 
                 }
             }
 
-            boolean card = world.getGameRules().getBoolean(Gamerule.CLEAR_CARDS_AFTER_DEATH);
-            if (card) {
-                var inventory = getCardPack(player); //移除牌堆背包的牌
-                for (var stack : inventory.cards) {cardDiscard(player, stack, stack.getCount(), false);}
-
-                PlayerInventory inv = player.getInventory();
-                for (int i = 0; i < inv.size(); ++i) { //移除玩家物品栏的牌
-                    ItemStack stack = inv.getStack(i);
-                    if (isCard(stack)) cardDiscard(player, stack, stack.getCount(), false);
-                }
-
-                for(var stack : allTrinkets(player)) { //移除玩家装备区的牌
-                    if(isCard(stack)) cardDiscard(player, stack, stack.getCount(), true);
-                }
+            if (world.getGameRules().getBoolean(Gamerule.CLEAR_CARDS_AFTER_DEATH)) {
+                var data = cardsToDrop(player);
+                CardEvents.cardDiscard(player, data);
             }
 
-            if (hasItem(player, p(ModItems.BBJI))) voice(player, Sounds.XUYOU);
-
-            if (hasTrinket(SkillCards.TAOLUAN, player)) {
-                ItemStack stack = trinketItem(SkillCards.TAOLUAN, player);
-                NbtCompound nbt = getOrCreateNbt(stack);
-                nbt.remove("used"); setNbt(stack, nbt);
-            }
-
-            if (hasTrinket(SkillCards.BUQU, player)) {
-                ItemStack stack = trinketItem(SkillCards.BUQU, player);
-                int c = getTag(stack);
-                if (c > 1) setTag(stack, (c+1)/2);
-            }
-
-            if (hasTrinket(SkillCards.LIANYING, player)) setCD(trinketItem(SkillCards.LIANYING, player), 0);
+            if (hasItem(player, p(ModItems.BBJI))) voice(player, "xuyou");
         }
+    }
+
+    public static ExData cardsToDrop(PlayerEntity player) {
+        var data = d();
+        var inventory = getCardPack(player);
+        for (var stack : inventory.cards) data.cards(stack, stack.getCount());
+
+        PlayerInventory inv = player.getInventory();
+        for (int i = 0; i < inv.size(); ++i) {
+            ItemStack stack = inv.getStack(i);
+            if (isCard(stack)) data.cards(stack, stack.getCount());
+        }
+
+        for (var stack : allTrinkets(player)) {
+            if(isCard(stack)) data.cards(stack, stack.getCount(), true);
+        }
+        return data;
     }
 
     @Override

@@ -1,25 +1,28 @@
 package com.amotassic.dabaosword.item.skillcard.skills;
 
-import com.amotassic.dabaosword.api.ICardEvent;
+import com.amotassic.dabaosword.api.skill.*;
+import com.amotassic.dabaosword.event.PlayerEvents;
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
-import com.amotassic.dabaosword.util.Sounds;
+import com.amotassic.dabaosword.ui.PlayerInvScreenHandler;
 import dev.emi.trinkets.api.SlotReference;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
-import net.minecraft.util.*;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 import java.util.Arrays;
@@ -27,8 +30,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
-import static com.amotassic.dabaosword.api.event.CardEvents.*;
+import static com.amotassic.dabaosword.api.CardEvents.*;
 import static com.amotassic.dabaosword.util.ModTools.*;
+import static net.minecraft.util.Formatting.BLUE;
 
 public class Wei {
 
@@ -36,15 +40,14 @@ public class Wei {
         public Duanliang(Settings settings) {super(settings);}
 
         @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+        public void addTip(Skill skill, List<Text> tooltip) {
             tooltip.add(Text.literal("CD: 5s"));
-            tooltip.add(Text.translatable("item.dabaosword.duanliang.tooltip").formatted(Formatting.BLUE));
+            tooltip.add(getTip(BLUE));
         }
 
         @Override
-        public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            viewAs(entity, stack, 5, isBlackCard.and(isArmoury.negate()), ModItems.BINGLIANG_ITEM);
-            super.tick(stack, slot, entity);
+        public void tickSkill(Skill skill, LivingEntity entity) {
+            viewAs(entity, skill, 5, isBlackCard.and(isArmoury.negate()), ModItems.BINGLIANG_ITEM);
         }
     }
 
@@ -52,70 +55,76 @@ public class Wei {
         public Fangzhu(Settings settings) {super(settings);}
 
         @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            tooltip.add(Text.translatable("item.dabaosword.fangzhu.tooltip").formatted(Formatting.BLUE));
-        }
+        public void addTip(Skill skill, List<Text> tooltip) {tooltip.add(getTip(BLUE));}
 
-        @Override
-        public void onHurt(ItemStack stack, LivingEntity entity, DamageSource source, float amount) {
-            if (source.getAttacker() instanceof LivingEntity attacker && entity != attacker) {
+        @SkillInfo(trigger = Trigger.ON_HURT, relation = Relation.SELF)
+        public int onHurt(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
+            var source = data.source; var amount = data.amount;
+            if (source.getAttacker() instanceof LivingEntity attacker && user != attacker) {
                 int i = attacker instanceof PlayerEntity ? (int) (20 * amount + 60) : 300;
                 attacker.addStatusEffect(new StatusEffectInstance(ModItems.TURNOVER, i));
-                voice(entity, Sounds.FANGZHU);
+                voice(user, this);
             }
+            return 0;
         }
     }
 
     public static class Ganglie extends SkillItem {
         public Ganglie(Settings settings) {super(settings);}
-
         @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            tooltip.add(Text.translatable("item.dabaosword.ganglie.tooltip1").formatted(Formatting.BLUE));
-            tooltip.add(Text.translatable("item.dabaosword.ganglie.tooltip2").formatted(Formatting.BLUE));
+        public void addTip(Skill skill, List<Text> tooltip) {
+            tooltip.add(getTip("1", BLUE));
+            tooltip.add(getTip("2", BLUE));
         }
 
-        @Override
-        public void onHurt(ItemStack stack, LivingEntity entity, DamageSource source, float amount) {
-            if (source.getAttacker() instanceof LivingEntity attacker && entity != attacker) {
-                voice(entity, Sounds.GANGLIE);
-                for (int i = 0; i < amount; i += 5) {//造成伤害
-                    if (new Random().nextFloat() < 0.5) {
-                        entity.addCommandTag("sha");//以此造成伤害不自动触发杀
+        @SkillInfo(trigger = Trigger.ON_HURT, relation = Relation.SELF)
+        public int onHurt(LivingEntity user, LivingEntity entity, Skill skill, ExData data) {
+            var source = data.source; var amount = data.amount;
+            if (source.getAttacker() instanceof LivingEntity attacker && user != attacker) {
+                voice(user, this);
+                for (int i = 0; i < amount; i += 5) {
+                    if (new Random().nextFloat() < 0.5) { //造成伤害
+                        user.addCommandTag("sha"); //以此造成伤害不自动触发杀
                         float f = i + 5 < amount ? 5 : amount - i;
                         attacker.timeUntilRegen = 0; attacker.damage(world(entity), entity.getDamageSources().mobAttack(entity), f);
-                    } else {//弃牌
+                    } else { //弃牌
                         if (attacker instanceof PlayerEntity target) { //如果来源是玩家则弃牌
                             List<ItemStack> candidate = getItems(target, isCard, true, false, true, true);
                             if (!candidate.isEmpty()) {
                                 ItemStack chosen = candidate.get(new Random().nextInt(candidate.size()));
-                                Text message = Text.translatable("dabaosword.discard", entity.getDisplayName(), target.getDisplayName(), chosen.toHoverableText());
-                                if (entity instanceof PlayerEntity player) player.sendMessage(message, false);
+                                Text message = Text.translatable("dabaosword.discard", user.getDisplayName(), target.getDisplayName(), chosen.toHoverableText());
+                                if (user instanceof PlayerEntity player) player.sendMessage(message, false);
                                 target.sendMessage(message, false);
-                                cardDiscard(target, chosen, 1, isEquipped(entity, s -> s.equals(chosen)));
+                                var cData = d().cards(chosen, 1, isEquipped(attacker, s -> s.equals(chosen)));
+                                cardDiscard(target, cData);
                             }
                         } else { //如果来源不是玩家则随机弃置它的主副手物品和装备
                             List<ItemStack> candidate = getItems(attacker, s -> !s.isEmpty(), true, false, true, false);
-                            if(!candidate.isEmpty()) {
+                            if (!candidate.isEmpty()) {
                                 ItemStack chosen = candidate.get(new Random().nextInt(candidate.size()));
-                                if (isCard(chosen)) cardDiscard(entity, chosen, 1, isEquipped(entity, s -> s.equals(chosen)));
+                                if (isCard(chosen)) {
+                                    var cData = d().cards(chosen, 1, isEquipped(attacker, s -> s.equals(chosen)));
+                                    cardDiscard(attacker, cData);
+                                }
                                 else chosen.decrement(1);
                             }
                         }
                     }
                 }
             }
+            return 0;
         }
     }
 
     public static class Gongao extends SkillItem {
         public Gongao(Settings settings) {super(settings);}
-
         @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            tooltip.add(Text.translatable("item.dabaosword.gongao.tooltip1").formatted(Formatting.BLUE));
-            tooltip.add(Text.translatable("item.dabaosword.gongao.tooltip2").formatted(Formatting.BLUE));
+        public void addTip(Skill skill, List<Text> tooltip) {
+            tooltip.add(getTip("1", BLUE));
+            tooltip.add(getTip("2", BLUE));
         }
+
+        @Override public boolean lockOn() {return true;}
 
         @Override
         public void onUnequip(ItemStack stack, SlotReference slot, LivingEntity entity) {
@@ -123,40 +132,37 @@ public class Wei {
         }
 
         @Override
-        public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (!entity.getWorld().isClient) {
-                int extraHP = getTag(stack);
+        public void tickSkill(Skill skill, LivingEntity entity) {
+            if (entity.getWorld().isClient) return;
+            int extraHP = skill.getTag();
+            gainMaxHp(entity, extraHP);
 
-                gainMaxHp(entity, extraHP);
-                if (entity.getWorld().getTime() % 600 == 0) { // 每30s触发扣体力上限
-                    if (entity instanceof PlayerEntity player) {
-                        if (extraHP >= 5 && !player.isCreative() && !player.isSpectator()) {
-                            draw(player, 2);
-                            setTag(stack, extraHP - 5);
-                            voice(player, Sounds.WEIZHONG);
-                        }
+            if (entity.getWorld().getTime() % 600 == 0) { // 每30s触发扣体力上限
+                if (entity instanceof PlayerEntity player) {
+                    if (extraHP >= 5 && !player.isCreative() && !player.isSpectator()) {
+                        draw(player, 2);
+                        skill.setTag(extraHP - 5);
+                        voice(player, "weizhong");
                     }
                 }
             }
-            super.tick(stack, slot, entity);
         }
 
-        @Override
-        public void postDamage(ItemStack stack, LivingEntity target, LivingEntity player, float amount) {
-            if (target.isDead()) {
-                if (target instanceof HostileEntity) {
-                    int extraHP = getTag(stack);
-                    setTag(stack, extraHP +1);
-                    player.heal(1);
-                    voice(player, Sounds.GONGAO);
-                }
-                if (target instanceof PlayerEntity) {
-                    int extraHP = getTag(stack);
-                    setTag(stack, extraHP + 5);
-                    player.heal(5);
-                    voice(player, Sounds.GONGAO);
-                }
+        @SkillInfo(trigger = Trigger.ON_DEATH, relation = Relation.KILLER)
+        public int onKill(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
+            int extraHP = skill.getTag();
+            if (target instanceof HostileEntity) {
+                extraHP += 1;
+                user.heal(1);
+                voice(user, this);
             }
+            if (target instanceof PlayerEntity) {
+                extraHP += 5;
+                user.heal(5);
+                voice(user, this);
+            }
+            skill.setTag(extraHP);
+            return 0;
         }
 
         private void gainMaxHp(LivingEntity entity, int value) {
@@ -165,95 +171,85 @@ public class Wei {
         }
     }
 
-    public static class Jianxiong extends SkillItem implements ICardEvent {
+    public static class Jianxiong extends SkillItem {
         public Jianxiong(Settings settings) {super(settings);}
 
         @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+        public void addTip(Skill skill, List<Text> tooltip) {
             tooltip.add(Text.literal("CD: 15s"));
-            tooltip.add(Text.translatable("item.dabaosword.jianxiong.tooltip1").formatted(Formatting.BLUE));
-            tooltip.add(Text.translatable("item.dabaosword.jianxiong.tooltip2").formatted(Formatting.BLUE));
+            tooltip.add(getTip("1", BLUE));
+            tooltip.add(getTip("2", BLUE));
         }
 
-        @Override
-        public void onHurt(ItemStack stack, LivingEntity entity, DamageSource source, float amount) {
-            if (source.getAttacker() instanceof Entity && !entity.hasStatusEffect(ModItems.COOLDOWN)) {
-                voice(entity, stack);
-                draw(entity);
-                entity.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 15,0,false,false,true));
+        @SkillInfo(trigger = Trigger.ON_HURT, relation = Relation.SELF)
+        public int onHurt(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
+            var source = data.source;
+            if (source.getAttacker() instanceof Entity && !user.hasStatusEffect(ModItems.COOLDOWN)) {
+                voice(user, this);
+                draw(user);
+                user.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 15,0,false,false,true));
             }
+            return 0;
         }
 
-        @Override
-        public void onHurtByCard(LivingEntity entity, ItemStack skill, ItemStack card) {
-            if (getCD(skill) == 0) {
-                voice(entity, skill);
-                setCD(skill, 15);
-                give(entity, card.copyWithCount(1));
+        @SkillInfo(trigger = Trigger.HURT_BY_CARD, relation = Relation.SELF)
+        public int hurtByCard(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
+            if (skill.getCD() == 0) {
+                voice(user, this);
+                skill.setCD(15);
+                give(user, data.getCard().toStack().copyWithCount(1));
             }
+            return 0;
         }
     }
 
     public static class Jueqing extends SkillItem {
         public Jueqing(Settings settings) {super(settings);}
-
         @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            tooltip.add(Text.translatable("item.dabaosword.jueqing.tooltip1").formatted(Formatting.BLUE));
-            tooltip.add(Text.translatable("item.dabaosword.jueqing.tooltip2").formatted(Formatting.BLUE));
+        public void addTip(Skill skill, List<Text> tooltip) {
+            tooltip.add(getTip("1", BLUE));
+            tooltip.add(getTip("2", BLUE));
         }
 
-        @Override
-        public Priority getPriority(LivingEntity target, DamageSource source, float amount) {return Priority.LOWEST;}
+        @Override public boolean lockOn() {return true;}
 
-        @Override
-        public boolean cancelDamage(LivingEntity target, DamageSource source, float amount) {
-            if (source.getAttacker() instanceof LivingEntity attacker && hasTrinket(SkillCards.JUEQING, attacker)) {
-                target.damage(world(target), target.getDamageSources().genericKill(), Math.min(Math.max(7, target.getMaxHealth() / 3), amount));
-                voice(attacker, Sounds.JUEQING, 1);
-                return true;
-            }
-            return false;
+        @SkillInfo(trigger = Trigger.CANCEL_DAMAGE_LOWEST, relation = Relation.ATTACKER_SELF)
+        public int onHit(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
+            var amount = data.amount;
+            target.damage(world(target), target.getDamageSources().genericKill(), Math.min(Math.max(7, target.getMaxHealth() / 3), amount));
+            voice(user, this, 1);
+            return 1;
         }
     }
 
-    public static class Luoshen extends SkillItem.ActiveSkill {
+    public static class Luoshen extends SkillItem {
         public Luoshen(Settings settings) {super(settings);}
 
         @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            int cd = getCD(stack);
-            tooltip.add(Text.literal(cd == 0 ? "CD: 30s" : "CD: 30s   left: "+ cd +"s"));
-            tooltip.add(Text.translatable("item.dabaosword.luoshen.tooltip").formatted(Formatting.BLUE));
-        }
+        public void addTip(Skill skill, List<Text> tooltip) {tooltip.add(getTip(BLUE));}
 
         @Override
-        public void activeSkill(PlayerEntity user, ItemStack stack, PlayerEntity target) {
-            int cd = getCD(stack);
-            if (cd > 0) user.sendMessage(Text.translatable("dabaosword.cooldown").formatted(Formatting.RED), true);
-            else {
-                voice(user, Sounds.LUOSHEN);
-                if (new Random().nextFloat() < 0.5) {
-                    draw(user);
-                    user.sendMessage(Text.translatable("item.dabaosword.luoshen.win").formatted(Formatting.GREEN), true);
-                } else {
-                    setCD(stack, 30);
-                    user.sendMessage(Text.translatable("item.dabaosword.luoshen.lose").formatted(Formatting.RED), true);
-                }
+        public int onDrawPhase(PlayerEntity player, Skill skill) {
+            voice(player, this);
+            while (true) {
+                var card = newCard();
+                player.getWorld().getPlayers().forEach(p -> p.sendMessage(Text.translatable("item.dabaosword.luoshen.result", player.getDisplayName(), card.toHoverableText()), false));
+                if (isBlackCard.test(card)) give(player, card);
+                else break;
             }
+            return 0;
         }
     }
 
     public static class Luoyi extends SkillItem {
         public Luoyi(Settings settings) {super(settings);}
+        @Override
+        public void addTip(Skill skill, List<Text> tooltip) {tooltip.add(getTip(BLUE));}
+
+        @Override public boolean lockOn() {return true;}
 
         @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            tooltip.add(Text.translatable("item.dabaosword.luoyi.tooltip").formatted(Formatting.BLUE));
-        }
-
-        @Override
-        public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
+        public void tickSkill(Skill skill, LivingEntity entity) {
             if (!entity.getWorld().isClient) gainStrength(entity, getEmptyArmorSlot(entity) + 1);
         }
 
@@ -264,7 +260,7 @@ public class Wei {
 
         @Override
         public ActionResult use(World world, PlayerEntity user, Hand hand) {
-            if (!world.isClient && !user.isSneaking()) voice(user, Sounds.LUOYI);
+            if (!world.isClient && !user.isSneaking()) voice(user, this);
             return super.use(world, user, hand);
         }
 
@@ -280,139 +276,136 @@ public class Wei {
         }
     }
 
-    public static class Qice extends SkillItem.ActiveSkill {
+    public static class Qice extends SkillItem {
         public Qice(Settings settings) {super(settings);}
-
         @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            int cd = getCD(stack);
+        public void addTip(Skill skill, List<Text> tooltip) {
+            int cd = skill.getCD();
             tooltip.add(Text.literal(cd == 0 ? "CD: 20s" : "CD: 20s   left: "+ cd +"s"));
-            tooltip.add(Text.translatable("item.dabaosword.qice.tooltip").formatted(Formatting.BLUE));
+            tooltip.add(getTip(BLUE));
+        }
+
+        @Override public boolean isActiveSkill() {return true;}
+
+        @Override
+        public boolean activeSkill(PlayerEntity user, Skill skill) {
+            if (skill.getCD() == 0) {
+                if (countCards(user) > 0) {
+
+                    Item[] items = {ModItems.BINGLIANG_ITEM, ModItems.TOO_HAPPY_ITEM, ModItems.DISCARD, ModItems.FIRE_ATTACK, ModItems.JIEDAO, ModItems.JUEDOU, ModItems.NANMAN, ModItems.STEAL, ModItems.TAOYUAN, ModItems.TIESUO, ModItems.WANJIAN, ModItems.WUXIE, ModItems.WUGU, ModItems.WUZHONG};
+                    Inventory inventory = new SimpleInventory(60);
+                    for (var item : items) inventory.setStack(Arrays.stream(items).toList().indexOf(item) + 18, new ItemStack(item));
+                    inventory.setStack(55, skill.stack);
+
+                    openMenu(user, user, inventory, Text.translatable("item.dabaosword.qice.screen"));
+                    return true;
+                } else user.sendMessage(Text.translatable("item.dabaosword.qice.tip").formatted(Formatting.RED), true);
+            } else user.sendMessage(Text.translatable("dabaosword.cooldown").formatted(Formatting.RED), true);
+            return false;
         }
 
         @Override
-        public void activeSkill(PlayerEntity user, ItemStack stack, PlayerEntity target) {
-            int cd = getCD(stack);
-            if (countCards(user) > 0) {
-                if (cd == 0) {
-
-                    ItemStack[] stacks = {new ItemStack(ModItems.BINGLIANG_ITEM), new ItemStack(ModItems.TOO_HAPPY_ITEM), new ItemStack(ModItems.DISCARD), new ItemStack(ModItems.FIRE_ATTACK), new ItemStack(ModItems.JIEDAO), new ItemStack(ModItems.JUEDOU), new ItemStack(ModItems.NANMAN), new ItemStack(ModItems.STEAL), new ItemStack(ModItems.TAOYUAN), new ItemStack(ModItems.TIESUO), new ItemStack(ModItems.WANJIAN), new ItemStack(ModItems.WUXIE), new ItemStack(ModItems.WUZHONG)};
-                    Inventory inventory = new SimpleInventory(20);
-                    for (var stack1 : stacks) inventory.setStack(Arrays.stream(stacks).toList().indexOf(stack1), stack1);
-                    inventory.setStack(18, stack);
-
-                    openSimpleMenu(user, user, inventory, Text.translatable("item.dabaosword.qice.screen"));
-                }
-                else {user.sendMessage(Text.translatable("dabaosword.cooldown").formatted(Formatting.RED), true);}
-            } else {user.sendMessage(Text.translatable("item.dabaosword.qice.tip").formatted(Formatting.RED), true);}
-        }
-
-        @Override
-        public void onClickGUISlot(PlayerEntity player, ItemStack stack, PlayerEntity target, ItemStack selected, int slot) {
-            if (selected.isEmpty()) return;
+        public void onSlotClick(PlayerInvScreenHandler handler, PlayerEntity player, Skill skill, PlayerEntity target, int slot, int button, SlotActionType action) {
+            var selected = handler.getStack(slot);
             if (!player.isCreative()) {
                 while (countCards(player) > 0) {cardDecrement(player, getCard(player, isCard), 64);}
-                setCD(stack, 20);
+                skill.setCD(20);
             }
             give(player, selected);
-            voice(player, Sounds.QICE);
+            voice(player, this);
             closeGUI(player);
         }
     }
 
     public static class Qingguo extends SkillItem {
         public Qingguo(Settings settings) {super(settings);}
-
         @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+        public void addTip(Skill skill, List<Text> tooltip) {
             tooltip.add(Text.literal("CD: 5s"));
-            tooltip.add(Text.translatable("item.dabaosword.qingguo.tooltip").formatted(Formatting.BLUE));
+            tooltip.add(getTip(BLUE));
         }
 
         @Override
-        public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            viewAs(entity, stack, 5, isBlackCard, ModItems.SHAN);
-            super.tick(stack, slot, entity);
+        public void tickSkill(Skill skill, LivingEntity entity) {
+            viewAs(entity, skill, 5, isBlackCard, ModItems.SHAN);
         }
     }
 
     public static class Quanji extends SkillItem {
         public Quanji(Settings settings) {super(settings);}
-
         @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            int quan = getTag(stack);
-            tooltip.add(Text.of("权："+quan));
-            tooltip.add(Text.translatable("item.dabaosword.quanji.tooltip1").formatted(Formatting.BLUE));
-            tooltip.add(Text.translatable("item.dabaosword.quanji.tooltip2").formatted(Formatting.BLUE));
+        public void addTip(Skill skill, List<Text> tooltip) {
+            tooltip.add(Text.of("权：" + skill.getTag()));
+            tooltip.add(getTip("1", BLUE));
+            tooltip.add(getTip("2", BLUE));
         }
 
         @Override
         public ActionResult use(World world, PlayerEntity user, Hand hand) {
-            if (!world.isClient && !user.isSneaking()) voice(user, Sounds.ZILI);
+            if (!world.isClient && !user.isSneaking()) voice(user, "zili");
             return super.use(world, user, hand);
         }
 
-        @Override
-        public void onHurt(ItemStack stack, LivingEntity entity, DamageSource source, float amount) {
-            if (source.getAttacker() instanceof LivingEntity) {
-                int quan = getTag(stack);
-                setTag(stack, quan + 1);
-                voice(entity, Sounds.QUANJI);
+        @SkillInfo(trigger = Trigger.ON_HURT, relation = Relation.SELF)
+        public int onHurt(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
+            if (data.source.getAttacker() instanceof LivingEntity) {
+                skill.setTag(skill.getTag() + 1);
+                voice(user, this);
             }
+            return 0;
         }
 
-        @Override
-        public Pair<Float, Float> modifyDamage(LivingEntity entity, DamageSource source, float amount) {
-            if (source.getSource() instanceof LivingEntity s && hasTrinket(SkillCards.QUANJI, s)) {
-                ItemStack stack = trinketItem(SkillCards.QUANJI, s);
-                int quan = getTag(stack);
-                if (quan > 0) {
-                    if (quan > 4) draw(entity, 2);
-                    setTag(stack, quan/2);
-                    voice(s, Sounds.PAIYI);
-                    return new Pair<>(0f, (float) quan);
-                }
+        @SkillInfo(trigger = Trigger.MODIFY_DAMAGE, relation = Relation.DIRECT_ATTACKER)
+        public int onHit(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
+            var adds = data.adds;
+            int quan = skill.getTag();
+            if (quan > 0) {
+                if (quan > 4) draw(target);
+                skill.setTag(quan/2);
+                voice(user, "paiyi");
+                adds.add((float) quan);
             }
-            return null;
+            return 0;
         }
     }
 
     public static class Shanzhuan extends SkillItem {
         public Shanzhuan(Settings settings) {super(settings);}
-
         @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+        public void addTip(Skill skill, List<Text> tooltip) {
             tooltip.add(Text.literal("CD: 8s"));
-            tooltip.add(Text.translatable("item.dabaosword.shanzhuan.tooltip1").formatted(Formatting.BLUE));
-            tooltip.add(Text.translatable("item.dabaosword.shanzhuan.tooltip2").formatted(Formatting.BLUE));
+            tooltip.add(getTip("1", BLUE));
+            tooltip.add(getTip("2", BLUE));
         }
 
         //擅专：我言既出，谁敢不从！
-        @Override
-        public void postDamage(ItemStack stack, LivingEntity entity, LivingEntity attacker, float amount) {
-            if (attacker instanceof PlayerEntity player && !player.hasStatusEffect(ModItems.COOLDOWN)) {
+        @SkillInfo(trigger = Trigger.ON_HURT, relation = Relation.ATTACKER)
+        public int onHit(LivingEntity user, LivingEntity entity, Skill skill, ExData data) {
+            if (user instanceof PlayerEntity player && !user.hasStatusEffect(ModItems.COOLDOWN)) {
                 if (entity instanceof PlayerEntity target) {
-                    if (countAllCards(target) > 0) openInv(player, target, Text.translatable("dabaosword.discard.title", stack.getName()), stack, false, true, false, 1);
+                    if (countAllCards(target) > 0) openInv(player, target, Text.translatable("dabaosword.discard.title", skill.toHoverableText()), skill.stack, false, true, false, 1);
                 } else {
-                    voice(player, Sounds.SHANZHUAN);
+                    voice(user, this);
                     if (new Random().nextFloat() < 0.5) {
-                        entity.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, StatusEffectInstance.INFINITE,1));
-                    } else {entity.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 5));}
-                    player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 5,0,false,false,true));
+                        entity.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, -1,1));
+                    } else entity.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 5));
+                    user.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 5,0,false,false,true));
                 }
             }
+            return 0;
         }
 
         @Override
-        public void onClickGUISlot(PlayerEntity player, ItemStack stack, PlayerEntity target, ItemStack selected, int slotIndex) {
-            voice(player, Sounds.SHANZHUAN);
+        public void onSlotClick(PlayerInvScreenHandler handler, PlayerEntity player, Skill skill, PlayerEntity target, int slot, int button, SlotActionType action) {
+            var selected = handler.getStack(slot);
+            voice(player, this);
             if (isRedCard.test(selected)) target.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * 5));
             else target.addStatusEffect(new StatusEffectInstance(ModItems.BINGLIANG, -1,1));
             Text message = Text.translatable("dabaosword.discard", player.getDisplayName(), target.getDisplayName(), selected.toHoverableText());
             player.sendMessage(message, false);
             target.sendMessage(message, false);
-            cardDiscard(target, selected, 1, slotIndex < 4);
+            var data = d().cards(selected, 1, slot < 4);
+            cardDiscard(target, data);
             player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 12,0,false,false,true));
             closeGUI(player);
         }
@@ -420,34 +413,32 @@ public class Wei {
 
     public static class Shensu extends SkillItem {
         public Shensu(Settings settings) {super(settings);}
-
         @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            tooltip.add(Text.translatable("item.dabaosword.shensu.tooltip1").formatted(Formatting.BLUE));
-            tooltip.add(Text.translatable("item.dabaosword.shensu.tooltip2").formatted(Formatting.BLUE));
+        public void addTip(Skill skill, List<Text> tooltip) {
+            tooltip.add(getTip("1", BLUE));
+            tooltip.add(getTip("2", BLUE));
         }
 
-        @Override
-        public Pair<Float, Float> modifyDamage(LivingEntity target, DamageSource source, float amount) {
-            if (source.getSource() instanceof LivingEntity attacker) {
-                if (hasTrinket(SkillCards.SHENSU, attacker) && !attacker.hasStatusEffect(ModItems.COOLDOWN)) {
-                    float walkSpeed = 4.317f;
-                    float speed = getOrCreateNbt(trinketItem(SkillCards.SHENSU, attacker)).getFloat("speed");
-                    if (speed > walkSpeed) {
-                        float m = (speed - walkSpeed) / walkSpeed / 2;
-                        attacker.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, (int) (5 * 20 * m),0,false,false,true));
-                        if (attacker instanceof PlayerEntity player) player.sendMessage(Text.translatable("shensu.info", speed, m), false);
-                        voice(attacker, Sounds.SHENSU);
-                        return new Pair<>(m, 0f);
-                    }
+        @SkillInfo(trigger = Trigger.MODIFY_DAMAGE, relation = Relation.DIRECT_ATTACKER)
+        public int onHit(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
+            var muls = data.muls;
+            if (!user.hasStatusEffect(ModItems.COOLDOWN)) {
+                float walkSpeed = 4.317f;
+                float speed = skill.getNbt().getFloat("speed");
+                if (speed > walkSpeed) {
+                    float m = (speed - walkSpeed) / walkSpeed / 2;
+                    user.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, (int) (5 * 20 * m),0,false,false,true));
+                    if (user instanceof PlayerEntity player) player.sendMessage(Text.translatable("shensu.info", speed, m), true);
+                    voice(user, this);
+                    muls.add(m);
                 }
             }
-            return null;
+            return 0;
         }
 
         @Override
-        public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (!entity.getWorld().isClient && entity instanceof PlayerEntity player && noTieji(player)) {
+        public void tickSkill(Skill skill, LivingEntity entity) {
+            if (!entity.getWorld().isClient && entity instanceof PlayerEntity player) {
                 double d = Math.min(getEmptySlots(player), 20d) / 40; //当空余20格时，获得最大加成0.5
                 gainSpeed(player, Math.max(0, d));
             }
@@ -470,50 +461,66 @@ public class Wei {
         }
     }
 
-    public static class Xingshang extends SkillItem {
-        public Xingshang(Settings settings) {super(settings);}
-
-        @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            tooltip.add(Text.translatable("item.dabaosword.xingshang.tooltip").formatted(Formatting.BLUE));
-        }
-    }
-
-    public static class Yiji extends SkillItem.ActiveSkillWithTarget {
+    public static class Yiji extends SkillItem {
         public Yiji(Settings settings) {super(settings);}
 
         @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+        public void addTip(Skill skill, List<Text> tooltip) {
             tooltip.add(Text.literal("CD: 20s"));
-            tooltip.add(Text.translatable("item.dabaosword.yiji.tooltip").formatted(Formatting.BLUE));
-            tooltip.add(Text.translatable("item.dabaosword.yiji.tooltip2").formatted(Formatting.BLUE));
+            tooltip.add(getTip(BLUE));
+            tooltip.add(getTip("2", BLUE));
         }
 
-        @Override
-        public void onHurt(ItemStack stack, LivingEntity entity, DamageSource source, float amount) {
-            if (entity instanceof PlayerEntity player && !player.hasStatusEffect(ModItems.COOLDOWN) && player.getHealth() <= 12) {
-                draw(player, 2);
-                player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 20, 0, false, false, true));
-                setTag(stack, 2);
-                voice(player, Sounds.YIJI);
+        @Override public boolean isActiveSkill() {return true;}
+
+        @SkillInfo(trigger = Trigger.ON_HURT, relation = Relation.SELF)
+        public int onHurt(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
+            if (!user.hasStatusEffect(ModItems.COOLDOWN) && user.getHealth() <= 15) {
+                draw(user, 2);
+                user.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 20, 0, false, false, true));
+                skill.setTag(2);
+                voice(user, this);
             }
+            return 0;
         }
 
         @Override
-        public void activeSkill(PlayerEntity user, ItemStack stack, PlayerEntity target) {
-            int i = getTag(stack);
-            if (i > 0 ) openInv(user, target, Text.translatable("give_card.title", stack.getName()), stack, true, false, false, 2);
+        public boolean activeSkill(PlayerEntity user, Skill skill, LivingEntity entity) {
+            if (entity instanceof PlayerEntity target) {
+                int i = skill.getTag();
+                if (i <= 0) return false;
+                skill.setMaxSelect(i);
+                openInv(user, target, Text.translatable("give_card.title", skill.toHoverableText()), skill.stack, true, false, false, 2);
+                return true;
+            }
+            return false;
         }
 
         @Override
-        public void onClickGUISlot(PlayerEntity player, ItemStack stack, PlayerEntity target, ItemStack selected, int slotIndex) {
-            int i = getTag(stack);
-            Text message = Text.translatable("give_card.tip", player.getDisplayName(), stack.toHoverableText(), target.getDisplayName(), selected.toHoverableText());
+        public void onGuiClose(PlayerInvScreenHandler handler, PlayerEntity player, Skill skill, PlayerEntity target) {
+            int count = handler.getSelectedCount();
+            if (count == 0) return;
+            voice(player, this);
+            Text message = Text.translatable("give_card.tip", player.getDisplayName(), skill.toHoverableText(), target.getDisplayName(), count);
             target.sendMessage(message, false);
             player.sendMessage(message, false);
-            cardMove(player, target, selected, 1, false, false);
-            setTag(stack, i - 1);
-            if (i - 1 == 0) closeGUI(player);
+            skill.setTag(skill.getTag() - count);
+            cardMove(player, handler.toExData(), target);
+        }
+    }
+
+    public static class Xingshang extends SkillItem {
+        public Xingshang(Settings settings) {super(settings);}
+        @Override
+        public void addTip(Skill skill, List<Text> tooltip) {tooltip.add(getTip(BLUE));}
+
+        @SkillInfo(trigger = Trigger.ON_DEATH, relation = Relation.NOT_SELF)
+        public int playerDie(LivingEntity user, LivingEntity entity, Skill skill, ExData data) {
+            if (entity instanceof PlayerEntity target && user.distanceTo(target) <= 30) {
+                voice(user, this);
+                cardMove(target, PlayerEvents.cardsToDrop(target), user);
+            }
+            return 0;
         }
     }
 }

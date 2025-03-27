@@ -9,23 +9,20 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 
-import static com.amotassic.dabaosword.api.event.CardEvents.cardUsePre;
-
-public class JiuItem extends CardItem {
+public class JiuItem extends CardItem.Basic {
     public JiuItem(Settings settings) {super(settings);}
-
-    @Override public Type getType() {return Type.BASIC;}
 
     @Override
     public ActionResult use(World world, PlayerEntity user, Hand hand) {
         if (!user.hasStatusEffect(StatusEffects.STRENGTH) && !world.isClient && hand == Hand.MAIN_HAND) {
-            if (cardUsePre(user, user.getMainHandStack(), null)) return ActionResult.SUCCESS_SERVER;
+            onUse(user, user.getMainHandStack(), user);
+            return ActionResult.SUCCESS_SERVER;
         }
         return super.use(world, user, hand);
     }
 
     @Override
-    public void cardUse(LivingEntity user, ItemStack stack, LivingEntity target) {
-        user.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 20 * 10, 0));
+    public void effect(LivingEntity user, ItemStack card, LivingEntity target) {
+        target.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 20 * 10, 0));
     }
 }

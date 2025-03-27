@@ -14,7 +14,7 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
 
-import static com.amotassic.dabaosword.api.event.CardEvents.cardDiscard;
+import static com.amotassic.dabaosword.api.CardEvents.cardDiscard;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class PileScreenHandler extends ScreenHandler {
@@ -81,7 +81,7 @@ public class PileScreenHandler extends ScreenHandler {
             int dropped = nbt.getInt("DroppedCards");
             ItemStack stack = getSlot(slotIndex).getStack();
             if (isCard(stack)) { //按下delete键后丢弃卡片，当丢弃3张卡片后，摸一张牌
-                cardDiscard(player, stack, 1, false);
+                cardDiscard(player, d().cards(stack, 1));
                 if (dropped == 2) {
                     nbt.remove("DroppedCards");
                     draw(player);

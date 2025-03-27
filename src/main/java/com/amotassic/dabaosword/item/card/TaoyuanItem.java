@@ -1,6 +1,5 @@
 package com.amotassic.dabaosword.item.card;
 
-import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -9,25 +8,27 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 
-import static com.amotassic.dabaosword.api.event.CardEvents.cardUsePre;
+import java.util.HashSet;
+import java.util.Set;
+
 import static com.amotassic.dabaosword.util.ModTools.voice;
 
-public class TaoyuanItem extends CardItem {
+public class TaoyuanItem extends CardItem.Armoury {
     public TaoyuanItem(Settings settings) {super(settings);}
 
     @Override
     public ActionResult use(World world, PlayerEntity user, Hand hand) {
-        if (!world.isClient && hand == Hand.MAIN_HAND) {
-            if (cardUsePre(user, user.getMainHandStack(), user)) return ActionResult.SUCCESS_SERVER;
+        if (world instanceof ServerWorld sw && hand == Hand.MAIN_HAND) {
+            Set<LivingEntity> targets = new HashSet<>(sw.getPlayers());
+            onUse(user, user.getMainHandStack(), targets.toArray(new LivingEntity[0]));
+            return ActionResult.SUCCESS_SERVER;
         }
         return super.use(world, user, hand);
     }
 
     @Override
-    public void cardUse(LivingEntity user, ItemStack stack, LivingEntity target) {
-        ((ServerWorld) user.getWorld()).getPlayers().forEach(player -> {
-            player.heal(5.0F);
-            if (player != user) voice(player, Sounds.TAOYUAN);
-        });
+    public void effect(LivingEntity user, ItemStack card, LivingEntity target) {
+        target.heal(5.0F);
+        if (target != user) voice(target, this);
     }
 }

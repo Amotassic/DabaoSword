@@ -8,35 +8,38 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 
-import static com.amotassic.dabaosword.api.event.CardEvents.cardMove;
-import static com.amotassic.dabaosword.api.event.CardEvents.cardUsePre;
-import static com.amotassic.dabaosword.util.ModTools.give;
-import static com.amotassic.dabaosword.util.ModTools.isCard;
+import static com.amotassic.dabaosword.api.CardEvents.cardMove;
+import static com.amotassic.dabaosword.util.ModTools.*;
 
-public class JiedaoItem extends CardItem {
+public class JiedaoItem extends CardItem.Armoury {
     public JiedaoItem(Settings settings) {super(settings);}
 
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         if (!user.getWorld().isClient && hand == Hand.MAIN_HAND && !entity.getMainHandStack().isEmpty()) {
-            if (cardUsePre(user, user.getMainHandStack(), entity)) return ActionResult.SUCCESS_SERVER;
+            onUse(user, user.getMainHandStack(), entity);
+            return ActionResult.SUCCESS_SERVER;
         }
         return ActionResult.PASS;
     }
 
     @Override
-    public void cardUse(LivingEntity user, ItemStack stack, LivingEntity entity) {
-        ItemStack stack1 = entity.getMainHandStack();
+    public void effect(LivingEntity user, ItemStack card, LivingEntity entity) {
+        ItemStack main = entity.getMainHandStack();
         if (user instanceof PlayerEntity player) {
-            if (isCard(stack1)) cardMove(entity, player, stack1, stack1.getCount(), false, false);
-            else {
-                give(player, stack1.copy());
-                stack1.setCount(0);
+            if (isCard(main)) {
+                var exData = d().cards(main, 1);
+                cardMove(entity, exData, player);
+            } else {
+                give(player, main.copy());
+                main.setCount(0);
             }
         } else {
-            user.setStackInHand(Hand.MAIN_HAND, stack1.copy());
+            user.setStackInHand(Hand.MAIN_HAND, main.copy());
             if (user instanceof MobEntity mob) mob.updateDropChances(EquipmentSlot.MAINHAND);
-            stack1.setCount(0);
+            main.setCount(0);
         }
     }
+
+    @Override public boolean askForWuxie() {return true;}
 }

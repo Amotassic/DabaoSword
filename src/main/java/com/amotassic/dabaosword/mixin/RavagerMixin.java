@@ -1,11 +1,8 @@
 package com.amotassic.dabaosword.mixin;
 
-import com.amotassic.dabaosword.item.ModItems;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.RavagerEntity;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.world.World;
@@ -16,11 +13,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Objects;
-import java.util.function.Predicate;
-
-import static com.amotassic.dabaosword.api.event.CardEvents.hurtBy;
-import static com.amotassic.dabaosword.api.event.CardEvents.notHurtBy;
-import static com.amotassic.dabaosword.util.ModTools.world;
 
 @Mixin(RavagerEntity.class)
 public abstract class RavagerMixin extends RaiderEntity {
@@ -45,17 +37,9 @@ public abstract class RavagerMixin extends RaiderEntity {
     private void roar(CallbackInfo ci) {
         if (isAlive() && hasCustomName() && getCommandTags().contains("b")) {
             int id = Integer.parseInt(Objects.requireNonNull(getCustomName()).getString());
-            LivingEntity user = (LivingEntity) getWorld().getEntityById(id);
-            if (user == null) return;
-            Predicate<LivingEntity> target = e -> e.isAlive() && id != e.getId();
-            for (LivingEntity entity : getWorld().getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(7.0), target)) {
-                user.addCommandTag("nanman");
-                DamageSource source = getDamageSources().mobAttack(user);
-                if (notHurtBy(entity, ModItems.NANMAN)) continue;
-                entity.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 2, 0, false, false));
-                if (entity.damage(world(user), source, 6)) hurtBy(entity, ModItems.NANMAN);
-                knockBack(entity);
-            }
+            LivingEntity living = (LivingEntity) getWorld().getEntityById(id);
+            if (living == null) {ci.cancel(); return;}
+            knockBack(living);
             ci.cancel();
         }
     }

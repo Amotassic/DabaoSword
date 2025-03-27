@@ -159,7 +159,7 @@ public class Game {
     public void win(Identity identity) {
         forEachPlayer(player -> {
             if (getIdentity(player) == identity) {
-                voice(player, getSound("win"));
+                voice(player, "win");
                 title(player, Text.translatable("dabaosword.game.win").formatted(Formatting.GOLD));
             }
             player.sendMessage(Text.translatable("dabaosword.game.end", Text.translatable(identity.tag)).formatted(getIdentityColor(identity)));

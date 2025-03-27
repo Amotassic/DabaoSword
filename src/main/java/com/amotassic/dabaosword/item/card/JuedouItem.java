@@ -9,44 +9,47 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 
-import static com.amotassic.dabaosword.api.event.CardEvents.*;
+import static com.amotassic.dabaosword.api.CardEvents.hurtByCard;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
-public class JuedouItem extends CardItem {
+public class JuedouItem extends CardItem.Armoury {
     public JuedouItem(Settings settings) {super(settings);}
 
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         if (!user.getWorld().isClient && hand == Hand.MAIN_HAND && entity.isAlive()) {
-            if (cardUsePre(user, user.getMainHandStack(), entity)) return ActionResult.SUCCESS_SERVER;
+            onUse(user, user.getMainHandStack(), entity);
+            return ActionResult.SUCCESS_SERVER;
         }
         return ActionResult.PASS;
     }
 
     @Override
-    public void cardUse(LivingEntity user, ItemStack stack, LivingEntity entity) {
+    public void effect(LivingEntity user, ItemStack card, LivingEntity entity) {
         user.addCommandTag("juedou"); entity.addCommandTag("juedou"); //防止决斗触发杀
         if (user instanceof PlayerEntity player && entity instanceof PlayerEntity target) {
             int playerSha = countCard(player, isSha);
             int targetSha = countCard(target, isSha);
             if (playerSha >= targetSha) {
-                juedou(player, target);
+                juedou(player, card, target);
                 target.sendMessage(Text.translatable("dabaosword.juedou2", player.getDisplayName()), false);
             } else {
-                juedou(target, player);
+                juedou(target, card, player);
                 player.sendMessage(Text.translatable("dabaosword.juedou1"), false);
                 //如果目标的杀比使用者的杀多，反击使用者，则目标减少一张杀
-                if (targetSha != 0) cardUsePost(target, getCard(target, isSha), player);
+                if (targetSha != 0) {
+                    ItemStack sha = getCard(target, isSha);
+                    onUse(target, sha, true, true);
+                }
             }
-        } else juedou(user, entity);
+        } else juedou(user, card, entity);
     }
 
-    private void juedou(LivingEntity attacker, LivingEntity target) {
-        ItemStack juedou = new ItemStack(this);
+    private void juedou(LivingEntity attacker, ItemStack card, LivingEntity target) {
         DamageSource source = damageSource(attacker, DamageTypes.GENERIC_KILL);
-        if (canHurtByCard(target, juedou)) {
-            target.timeUntilRegen = 0;
-            if (target.damage(world(attacker), source, 5f)) hurtByCard(target, juedou);
-        }
+        target.timeUntilRegen = 0;
+        if (target.damage(world(attacker), source, 5f)) hurtByCard(target, card);
     }
+
+    @Override public boolean askForWuxie() {return true;}
 }

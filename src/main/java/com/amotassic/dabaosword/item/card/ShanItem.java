@@ -10,25 +10,22 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-import static com.amotassic.dabaosword.api.event.CardEvents.cardUsePre;
-
-public class ShanItem extends CardItem {
+public class ShanItem extends CardItem.Basic {
     public ShanItem(Settings settings) {super(settings);}
-
-    @Override public Type getType() {return Type.BASIC;}
 
     //使用后，向前冲刺一段距离，无敌0.5秒，冷却时间1秒
     @Override
     public ActionResult use(World world, PlayerEntity user, Hand hand) {
         //判断是否有独立冷却buff，若冷却中则无法生效
         if (!world.isClient && !user.hasStatusEffect(ModItems.COOLDOWN2) && hand == Hand.MAIN_HAND) {
-            if (cardUsePre(user, user.getMainHandStack(), null)) return ActionResult.SUCCESS_SERVER;
+            onUse(user, user.getMainHandStack(), user);
+            return ActionResult.SUCCESS_SERVER;
         }
         return super.use(world, user, hand);
     }
 
     @Override
-    public void cardUse(LivingEntity user, ItemStack stack, LivingEntity target) {
+    public void effect(LivingEntity user, ItemStack card, LivingEntity target) {
         Vec3d momentum = user.getRotationVector().multiply(3);
         user.velocityModified = true; user.addVelocity(momentum.getX(),0 ,momentum.getZ());
         user.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 20,0,false,false,false));

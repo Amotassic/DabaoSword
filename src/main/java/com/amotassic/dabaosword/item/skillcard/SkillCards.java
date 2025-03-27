@@ -1,21 +1,32 @@
 package com.amotassic.dabaosword.item.skillcard;
 
+import com.amotassic.dabaosword.api.skill.ISkill;
+import com.amotassic.dabaosword.api.skill.Relation;
+import com.amotassic.dabaosword.api.skill.SkillExecutor;
+import com.amotassic.dabaosword.api.skill.SkillInfo;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.skills.Qun;
 import com.amotassic.dabaosword.item.skillcard.skills.Shu;
 import com.amotassic.dabaosword.item.skillcard.skills.Wei;
 import com.amotassic.dabaosword.item.skillcard.skills.Wu;
 import net.minecraft.item.Item;
+import net.minecraft.registry.Registries;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 @SuppressWarnings("unused")
 public class SkillCards {
-    public static final List<Item> SKILLS = new ArrayList<>();
+    public static final Map<Item, List<SkillExecutor>> SKILL_MAP = new HashMap<>();
+    public static final List<SkillItem> SKILLS = new ArrayList<>();
     //魏
-    public static final Item
+    public static final SkillItem
     DUANLIANG = register("duanliang", Wei.Duanliang::new),
     FANGZHU = register("fangzhu", Wei.Fangzhu::new),
     XINGSHANG = register("xingshang", Wei.Xingshang::new),
@@ -44,6 +55,7 @@ public class SkillCards {
     WUSHENG = register("wusheng", Shu.Wusheng::new),
     //吴
     BUQU = register("buqu", Wu.Buqu::new),
+    FANJIAN = register("fanjian", Wu.Fanjian::new),
     FENYIN = register("fenyin", Wu.Fenyin::new),
     GONGXIN = register("gongxin", Wu.Gongxin::new),
     GUOSE = register("guose", Wu.Guose::new),
@@ -68,12 +80,34 @@ public class SkillCards {
 
     FEIYING = register("feiying", Qun.Feiying::new);
 
-    public static Item register(String name, Function<Item.Settings, Item> factory) {
-        Item skill = ModItems.register(name, factory, 1);
+    public static <T extends SkillItem> T register(String name, Function<Item.Settings, T> factory) {
+        T skill = ModItems.register(name, factory, 1);
         SKILLS.add(skill);
         return skill;
     }
 
-    public static void register() {}
+    private static void addSkillEffect(Item skill) {
+        List<SkillExecutor> effectDatas = new ArrayList<>();
+        Class<?> skillClass = skill.getClass();
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
+        for (Method method : skillClass.getDeclaredMethods()) {
+            if (method.isAnnotationPresent(SkillInfo.class)) {
+                SkillInfo info = method.getAnnotation(SkillInfo.class);
+                MethodHandle handle;
+                try {
+                    handle = lookup.unreflect(method).bindTo(skill);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+                SkillExecutor effectData = new SkillExecutor(info.trigger(), Relation.getPredicate(info.relation()), handle);
+                effectDatas.add(effectData);
+            }
+        }
+        SKILL_MAP.put(skill, effectDatas);
+    }
+
+    public static void register() {
+        Registries.ITEM.stream().filter(i -> i instanceof ISkill).forEach(SkillCards::addSkillEffect);
+    }
 
 }

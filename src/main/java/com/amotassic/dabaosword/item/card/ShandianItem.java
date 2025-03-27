@@ -1,7 +1,6 @@
 package com.amotassic.dabaosword.item.card;
 
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
@@ -12,35 +11,37 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 
-import static com.amotassic.dabaosword.api.event.CardEvents.cardUsePre;
+import java.util.HashSet;
+import java.util.Set;
+
 import static com.amotassic.dabaosword.util.ModTools.excuteServerCommand;
 import static com.amotassic.dabaosword.util.ModTools.voice;
 
-public class ShandianItem extends CardItem {
+public class ShandianItem extends CardItem.Armoury {
     public ShandianItem(Settings settings) {super(settings);}
 
     @Override
     public ActionResult use(World world, PlayerEntity user, Hand hand) {
-        if (!world.isClient && hand == Hand.MAIN_HAND) {
-            if (cardUsePre(user, user.getMainHandStack(), user)) return ActionResult.SUCCESS_SERVER;
+        if (world instanceof ServerWorld sw && hand == Hand.MAIN_HAND) {
+            String[] command = {"weather thunder 15s"};
+            excuteServerCommand(user, command, true);
+            //world.setWeather(0, 15, true, true);
+
+            Set<LivingEntity> targets = new HashSet<>(sw.getPlayers());
+            Box box = new Box(user.getBlockPos()).expand(10);
+            targets.addAll(world.getEntitiesByClass(LivingEntity.class, box, LivingEntity::isAlive));
+            onUse(user, user.getMainHandStack(), targets.toArray(new LivingEntity[0]));
+
+            return ActionResult.SUCCESS_SERVER;
         }
         return super.use(world, user, hand);
     }
 
     @Override
-    public void cardUse(LivingEntity user, ItemStack stack, LivingEntity target) {
-        if (user.getWorld() instanceof ServerWorld world) {
-            String[] command = {"weather thunder 15s"};
-            excuteServerCommand(user, command, true);
-            //world.setWeather(0, 15, true, true);
-            world.getPlayers().forEach(player -> {
-                player.addStatusEffect(new StatusEffectInstance(ModItems.SHANDIAN, 299));
-                if (player != user) voice(player, Sounds.SHANDIAN);
-            });
-            Box box = new Box(user.getBlockPos()).expand(10);
-            for (LivingEntity near : world.getEntitiesByClass(LivingEntity.class, box, e -> !(e instanceof PlayerEntity))) {
-                near.addStatusEffect(new StatusEffectInstance(ModItems.SHANDIAN, 299));
-            }
-        }
+    public void effect(LivingEntity user, ItemStack card, LivingEntity target) {
+        if (target != user) voice(target, this);
+        target.addStatusEffect(new StatusEffectInstance(ModItems.SHANDIAN, 299));
     }
+
+    @Override public boolean askForWuxie() {return true;}
 }

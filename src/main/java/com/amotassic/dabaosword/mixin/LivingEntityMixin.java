@@ -18,7 +18,6 @@ import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -44,7 +43,7 @@ public abstract class LivingEntityMixin extends Entity {
     @Inject(method = "damage", at = @At("HEAD"))
     private void damageMixin(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         //恭喜你发现了彩蛋！副手拿着幽匿催发体，然后尽情享受弹射物带来的快乐吧！
-        if (source.isIn(DamageTypeTags.IS_PROJECTILE) && source.getAttacker() instanceof LivingEntity attacker && attacker.getOffHandStack().getItem() == Items.SCULK_CATALYST) {
+        if (source.isIn(DamageTypeTags.IS_PROJECTILE) && source.getAttacker() instanceof LivingEntity attacker && attacker.getOffHandStack().isOf(Items.SCULK_CATALYST)) {
             Vec3d vec3d = attacker.getPos().add(0.0, 1.5f, 0.0);
             Vec3d vec3d2 = this.getEyePos().subtract(vec3d);
             Vec3d vec3d3 = vec3d2.normalize();
@@ -77,10 +76,9 @@ public abstract class LivingEntityMixin extends Entity {
         return ModifyDamage.modify(living, source, amount);
     }
 
-    @Inject(at = @At("TAIL"), method = "applyDamage", cancellable = true)
+    @Inject(at = @At("TAIL"), method = "applyDamage")
     private void onEntityHurt(ServerWorld world, DamageSource source, float amount, CallbackInfo ci) {
-        ActionResult result = EntityHurtCallback.EVENT.invoker().hurtEntity(living, source, amount);
-        if (result == ActionResult.FAIL) ci.cancel();
+        EntityHurtCallback.EVENT.invoker().hurtEntity(living, source, amount);
     }
 
     //翻面的生物无法发起攻击
