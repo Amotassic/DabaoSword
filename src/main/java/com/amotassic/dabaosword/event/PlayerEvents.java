@@ -8,7 +8,6 @@ import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.pvpgame.Game;
 import com.amotassic.dabaosword.util.Gamerule;
 import com.amotassic.dabaosword.util.ModConfig;
-import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -16,7 +15,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.GameMode;
@@ -31,10 +29,10 @@ import static com.amotassic.dabaosword.util.ModTools.*;
 public class PlayerEvents implements PlayerDeathCallback, PlayerRespawnCallback {
     private static final Map<UUID, KillStreakData> playerKillData = new HashMap<>();
     private record KillStreakData(int streak, long lastKillTime) {}
-    private static SoundEvent getKillSound(int streak) {
+    private static String getKillSound(int streak) {
         return switch (streak) {
-            case 1, 2, 3, 4, 5, 6, 7 -> getSound("kill" + streak);
-            default -> getSound("diankuang");
+            case 1, 2, 3, 4, 5, 6, 7 -> "kill" + streak;
+            default -> "diankuang";
         };
     }
 
@@ -84,7 +82,7 @@ public class PlayerEvents implements PlayerDeathCallback, PlayerRespawnCallback 
                 CardEvents.cardDiscard(player, data);
             }
 
-            if (hasItem(player, p(ModItems.BBJI))) voice(player, Sounds.XUYOU);
+            if (hasItem(player, p(ModItems.BBJI))) voice(player, "xuyou");
         }
     }
 

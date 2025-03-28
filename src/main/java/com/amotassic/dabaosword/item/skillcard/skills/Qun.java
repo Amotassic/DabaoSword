@@ -7,7 +7,6 @@ import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.card.CardItem;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.ui.PlayerInvScreenHandler;
-import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -62,8 +61,8 @@ public class Qun {
         }
 
         private final MutableText JIZHAN_TEXT = Text.translatable("jizhan.text",
-                Text.translatable("rank.higher").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword dabaosword:jizhan 1"))),
-                Text.translatable("rank.lower").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword dabaosword:jizhan -1"))));
+                Text.translatable("rank.higher").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword @s dabaosword:jizhan @s 1"))),
+                Text.translatable("rank.lower").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword @s dabaosword:jizhan @s -1"))));
 
         @Override
         public int onDrawPhase(PlayerEntity player, Skill skill) {
@@ -79,7 +78,7 @@ public class Qun {
         }
 
         @Override
-        public void triggerSkill(LivingEntity entity, Skill skill, int value) {
+        public void triggerSkill(LivingEntity entity, Skill skill, LivingEntity target, int value) {
             int last = skill.getNbt().getInt("lastCardRank");
             if (last == -1 || !(entity instanceof PlayerEntity player)) return;
             ItemStack next = newCard();
@@ -144,11 +143,11 @@ public class Qun {
                         skill.setCD(15);
                         off.decrement(1);
                         give(player, newCard(ModItems.WANJIAN));
-                        voice(player, Sounds.LUANJI);
+                        voice(player, this);
                         return;
                     }
                     if (firstSuit == null) { //如果没有记录花色，就移除一张牌，记录该花色
-                        nbt.putString("Suit", suit.suit);
+                        nbt.putString("Suit", suit.name());
                         skill.setNbt(nbt);
                         off.decrement(1);
                     }
@@ -217,9 +216,9 @@ public class Qun {
         @SkillInfo(trigger = Trigger.DROP_TARGET, relation = Relation.ANY)
         public int weimu(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
             //这里的user才是卡牌的目标，即技能的发动者
-            var targets = data.targets; var card = data.getCard();
-            if (targets.contains(user) && isBlackCard.and(isArmoury).test(card.toStack())) {
-                while (targets.contains(user)) targets.remove(user);
+            var card = data.getCard();
+            if (data.targets.contains(user) && isBlackCard.and(isArmoury).test(card.toStack())) {
+                data.removeTarget(user);
                 voice(user, this);
             }
             return 0;

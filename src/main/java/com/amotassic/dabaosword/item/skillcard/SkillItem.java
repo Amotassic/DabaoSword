@@ -3,7 +3,6 @@ package com.amotassic.dabaosword.item.skillcard;
 import com.amotassic.dabaosword.api.skill.ISkill;
 import com.amotassic.dabaosword.api.skill.Skill;
 import com.amotassic.dabaosword.item.card.CardItem;
-import com.amotassic.dabaosword.util.Sounds;
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketItem;
 import dev.emi.trinkets.api.TrinketsApi;
@@ -13,6 +12,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
+import net.minecraft.text.ClickEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -66,7 +67,7 @@ public class SkillItem extends Item implements ISkill {
 
     public static void changeSkill(PlayerEntity player) {
         ItemStack stack = customLoot(player, "draw_skill");
-        if (!stack.isEmpty()) voice(player, Sounds.GIFTBOX,3);
+        if (!stack.isEmpty()) voice(player, "giftbox",3);
         give(player, stack);
     }
 
@@ -82,5 +83,9 @@ public class SkillItem extends Item implements ISkill {
             give(entity, c(copy, result).toStack());
             voice(entity, skill.stack);
         }
+    }
+
+    public Text activeSkillText(PlayerEntity user, Skill skill) {
+        return Text.translatable("active_skill.select_target").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/dabaosword " + user.getName().getString() + " " + Registries.ITEM.getId(skill.stack.getItem()) + " ")));
     }
 }

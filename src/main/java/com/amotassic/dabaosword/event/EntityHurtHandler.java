@@ -67,7 +67,6 @@ public class EntityHurtHandler implements EntityHurtCallback {
 
             trySave(entity, amount);
 
-            if (isWanjian(source)) hurtBy(entity, ModItems.WANJIAN);
             if (isHuogong(source)) hurtBy(entity, ModItems.FIRE_ATTACK);
             if (isShandian(source)) hurtBy(entity, ModItems.SHANDIAN_ITEM);
 
@@ -75,7 +74,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
                 if (living.getCommandTags().contains("px")) entity.timeUntilRegen = 0;
 
                 if (living instanceof PlayerEntity && entity instanceof PlayerEntity && amount >= 15) {
-                    voice(living, getSound("wushuang"));
+                    voice(living, "wushuang");
                 }
             }
 

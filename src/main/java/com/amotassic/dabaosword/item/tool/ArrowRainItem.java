@@ -81,7 +81,7 @@ public class ArrowRainItem extends Item {
     private static void summonArrowToEntity(LivingEntity target, double x, double y, double z, float speed) {
         ServerWorld world = (ServerWorld) target.getWorld();
         ArrowEntity arrow = new ArrowEntity(world, x, y, z);
-        arrow.addCommandTag("a");
+        arrow.addCommandTag("cosmetic");
         // 计算箭的速度向量
         double dx = target.getX() - x;
         double dy = target.getY() + target.getEyeHeight(target.getPose()) - y;

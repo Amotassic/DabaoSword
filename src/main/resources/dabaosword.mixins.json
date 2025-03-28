@@ -5,6 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "ArrowEntiytMixin",
+    "CraftingMixin",
     "EntityMixin",
     "FireballEntityMixin",
     "ItemEntityMixin",

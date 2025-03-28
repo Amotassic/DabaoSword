@@ -1,7 +1,6 @@
 package com.amotassic.dabaosword.effect;
 
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -17,7 +16,7 @@ public class FallingEffect extends StatusEffect {
 
     @Override
     public void onApplied(LivingEntity entity, AttributeContainer attributes, int amplifier) {
-        voice(entity, Sounds.FALL1,9);
+        voice(entity, "falling_attack1",9);
     }
 
     @Override
@@ -34,7 +33,7 @@ public class FallingEffect extends StatusEffect {
                 for (LivingEntity nearbyEntity : world.getEntitiesByClass(LivingEntity.class, box, LivingEntity -> LivingEntity != entity)) {
                     nearbyEntity.damage(entity.getDamageSources().mobAttack(entity), i);
                 }
-                voice(entity, Sounds.FALL2,9);
+                voice(entity, "falling_attack2",9);
                 entity.removeStatusEffect(ModItems.FALLING_ATTACK);
             }
         }

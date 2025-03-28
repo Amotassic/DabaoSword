@@ -13,7 +13,6 @@ import net.minecraft.util.Formatting;
 
 import java.util.List;
 
-import static com.amotassic.dabaosword.api.CardEvents.canHurtByCard;
 import static com.amotassic.dabaosword.api.CardEvents.hurtByCard;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
@@ -48,16 +47,14 @@ public class Sha extends CardItem.Basic {
             //当有玩家成为卡牌目标后，触发玩家的技能
             owners.forEach(player -> getResult(Trigger.BECOME_TARGET, player, entity, cardData));
 
-            if (canHurtByCard(entity, card.toStack())) {
-                Sha sha = (Sha) card.toStack().getItem();
-                if (sha.sha(user, entity, amount)) sha.effect(user, card.toStack(), entity);
-                else { //如果杀被无效化了，就会尝试触发贯石斧的效果
-                    var guanshi = s(trinketItem(ModItems.GUANSHI, user));
-                    if (!guanshi.isEmpty() && guanshi.getCD() == 0 && entity.hasStatusEffect(ModItems.INVULNERABLE)) {
-                        guanshi.setCD(10); voice(user, guanshi.stack);
-                        entity.removeStatusEffect(ModItems.INVULNERABLE);
-                        if (sha.sha(user, entity, amount)) sha.effect(user, card.toStack(), entity);
-                    }
+            Sha sha = (Sha) card.toStack().getItem();
+            if (sha.sha(user, entity, amount)) sha.effect(user, card.toStack(), entity);
+            else { //如果杀被无效化了，就会尝试触发贯石斧的效果
+                var guanshi = s(trinketItem(ModItems.GUANSHI, user));
+                if (!guanshi.isEmpty() && guanshi.getCD() == 0 && entity.hasStatusEffect(ModItems.INVULNERABLE)) {
+                    guanshi.setCD(10); voice(user, guanshi.stack);
+                    entity.removeStatusEffect(ModItems.INVULNERABLE);
+                    if (sha.sha(user, entity, amount)) sha.effect(user, card.toStack(), entity);
                 }
             }
         }

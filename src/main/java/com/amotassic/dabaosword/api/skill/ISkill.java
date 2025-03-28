@@ -105,7 +105,4 @@ public interface ISkill extends Trinket {
      * @return 摸牌阶段多摸牌的数量，返回负值就减少摸牌数，若返回值小于等于-114，直接取消摸牌。*/
     default int onDrawPhase(PlayerEntity player, Skill skill) {return 0;}
 
-    /**即将承受卡牌带来的伤害时，触发即将受伤者的技能*/
-    default boolean canHurtByCard(LivingEntity entity, Skill skill, ItemStack card) {return true;}
-
 }

@@ -39,6 +39,12 @@ public class ExData {
         return this;
     }
 
+    /**从已有目标中彻底移除该实体*/
+    public void removeTarget(LivingEntity entity) {
+        if (targets == null) return;
+        while (targets.contains(entity)) targets.remove(entity);
+    }
+
     public ExData withDamage(DamageSource source, Float amount) {
         this.source = source;
         this.amount = amount;

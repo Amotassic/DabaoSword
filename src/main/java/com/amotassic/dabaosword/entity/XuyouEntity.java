@@ -1,6 +1,5 @@
 package com.amotassic.dabaosword.entity;
 
-import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -87,7 +86,7 @@ public class XuyouEntity extends HostileEntity implements RangedAttackMob {
     }
 
     @Override
-    protected SoundEvent getDeathSound() {return Sounds.XUYOU;}
+    protected SoundEvent getDeathSound() {return getSound("dabaosword", "xuyou");}
 
     @Override
     protected SoundEvent getHurtSound(DamageSource source) {return source.getType().effects().getSound();}
@@ -108,6 +107,6 @@ public class XuyouEntity extends HostileEntity implements RangedAttackMob {
         bbTimes++;
         target.timeUntilRegen = 0;
         target.damage(getDamageSource(this, DamageTypes.GENERIC), 2);
-        voice(this, Sounds.BBJI);
+        voice(this, "bbji");
     }
 }

@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.item.skillcard;
 
+import com.amotassic.dabaosword.api.skill.ISkill;
 import com.amotassic.dabaosword.api.skill.Relation;
 import com.amotassic.dabaosword.api.skill.SkillExecutor;
 import com.amotassic.dabaosword.api.skill.SkillInfo;
@@ -54,6 +55,7 @@ public class SkillCards {
     WUSHENG = register("wusheng", new Shu.Wusheng()),
     //吴
     BUQU = register("buqu", new Wu.Buqu()),
+    FANJIAN = register("fanjian", new Wu.Fanjian()),
     FENYIN = register("fenyin", new Wu.Fenyin()),
     GONGXIN = register("gongxin", new Wu.Gongxin()),
     GUOSE = register("guose", new Wu.Guose()),
@@ -81,12 +83,11 @@ public class SkillCards {
     /**注册技能物品，同时注册技能的全局监听效果*/
     public static <T extends SkillItem> T register(String name, T item) {
         T skill = Registry.register(Registries.ITEM, new Identifier("dabaosword", name), item);
-        addSkillEffect(skill);
         SKILLS.add(skill);
         return skill;
     }
 
-    public static void addSkillEffect(Item skill) {
+    private static void addSkillEffect(Item skill) {
         List<SkillExecutor> effectDatas = new ArrayList<>();
         Class<?> skillClass = skill.getClass();
         MethodHandles.Lookup lookup = MethodHandles.lookup();
@@ -106,5 +107,7 @@ public class SkillCards {
         SKILL_MAP.put(skill, effectDatas);
     }
 
-    public static void register() {}
+    public static void register() {
+        Registries.ITEM.stream().filter(i -> i instanceof ISkill).forEach(SkillCards::addSkillEffect);
+    }
 }

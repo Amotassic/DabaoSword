@@ -5,6 +5,12 @@
     ],
     "subtitle": "sounds.dabaosword.nahida"
   },
+  "fanjian": {
+    "sounds": [
+      "dabaosword:skill/fanjian1", "dabaosword:skill/fanjian2"
+    ],
+    "subtitle": "sounds.dabaosword.fanjian"
+  },
   "fenyin": {
     "sounds": [
       "dabaosword:skill/fenyin1", "dabaosword:skill/fenyin2"
@@ -59,7 +65,7 @@
     ],
     "subtitle": "sounds.dabaosword.shensu"
   },
-  "letmecc": {
+  "let_me_cc": {
     "sounds": [
       {
         "type": "file",
@@ -121,6 +127,12 @@
       "dabaosword:skill/buqu1","dabaosword:skill/buqu2"
     ],
     "subtitle": "sounds.dabaosword.buqu"
+  },
+  "zhoutai": {
+    "sounds": [
+      "dabaosword:skill/zhoutai"
+    ],
+    "subtitle": "sounds.dabaosword.zhoutai"
   },
   "tieji": {
     "sounds": [
@@ -390,7 +402,7 @@
       }
     ]
   },
-  "guding": {
+  "guding_dao": {
     "sounds": [
       {
         "type": "file",
@@ -446,7 +458,7 @@
       }
     ]
   },
-  "tengjia1": {
+  "rattan_armor": {
     "sounds": [
       {
         "type": "file",
@@ -454,7 +466,7 @@
       }
     ]
   },
-  "tengjia2": {
+  "rattan_armor2": {
     "sounds": [
       {
         "type": "file",

@@ -3,7 +3,6 @@ package com.amotassic.dabaosword.item.card.equipment;
 import com.amotassic.dabaosword.api.skill.*;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.ModifyDamage;
-import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -33,6 +32,7 @@ public class Armor extends Equipment {
             DamageSource source = data.source;
             if (source.getAttacker() instanceof LivingEntity && !user.hasStatusEffect(ModItems.COOLDOWN2)) {
                 if (new Random().nextFloat() < 0.5 && !source.isIn(DamageTypeTags.BYPASSES_ARMOR)) {
+                    voice(user, this);
                     ItemStack shan = new ItemStack(ModItems.SHAN);
                     onUse(user, shan, true, false);
                     ModifyDamage.shan(user, true, source, data.amount);
@@ -64,10 +64,12 @@ public class Armor extends Equipment {
             tooltip.add(getTip("2", AQUA));
         }
 
-        @Override
-        public boolean canHurtByCard(LivingEntity entity, Skill skill, ItemStack card) {
-            if (isSha.test(card) && isBlackCard.test(card)) {voice(entity, this); return false;}
-            return true;
+        @SkillInfo(trigger = Trigger.DROP_TARGET, relation = Relation.ANY)
+        public int fangheisha(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
+            if (data.targets.contains(user) && isSha.and(isBlackCard).test(data.getCard().toStack())) {
+                voice(user, this); data.removeTarget(user);
+            }
+            return 0;
         }
     }
 
@@ -95,17 +97,20 @@ public class Armor extends Equipment {
             var source = data.source; var adds = data.adds; var amount = data.amount;
             //穿藤甲时，若承受火焰伤害，则 战火燃尽，嘤熊胆！（伤害大于5就只加5）
             if (source.isIn(DamageTypeTags.IS_FIRE)) {
-                voice(target, Sounds.TENGJIA2);
+                voice(target, "rattan_armor2");
                 adds.add(Math.min(amount, 5f));
             }
             return 0;
         }
 
-        @Override
-        public boolean canHurtByCard(LivingEntity entity, Skill skill, ItemStack card) {
-            if (card.isOf(ModItems.WANJIAN) || card.isOf(ModItems.NANMAN) || card.isOf(ModItems.SHA)) {
-                voice(entity, Sounds.TENGJIA1); return false;
-            } return true;
+        @SkillInfo(trigger = Trigger.DROP_TARGET, relation = Relation.ANY)
+        public int goodEffect(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
+            var card = data.getCard().toStack();
+            boolean bl = card.isOf(ModItems.WANJIAN) || card.isOf(ModItems.NANMAN) || card.isOf(ModItems.SHA);
+            if (data.targets.contains(user) && bl) {
+                voice(user, this); data.removeTarget(user);
+            }
+            return 0;
         }
 
         @SkillInfo(trigger = Trigger.CANCEL_DAMAGE_HIGH, relation = Relation.SELF)
@@ -115,13 +120,13 @@ public class Armor extends Equipment {
             if (source.isIn(DamageTypeTags.IS_PROJECTILE)) {
                 Entity projectile = source.getSource();
                 if (projectile instanceof ArrowEntity) { //即使处于CD中，箭也对藤甲无效
-                    projectile.discard(); voice(target, Sounds.TENGJIA1);
+                    projectile.discard(); voice(target, this);
                     return 1;
                 }
                 if (skill.getCD() == 0) {
                     if (projectile != null) projectile.discard();
                     target.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 10,0,false,false,false));
-                    skill.setCD(5); voice(target, Sounds.TENGJIA1);
+                    skill.setCD(5); voice(target, this);
                     return 1;
                 }
             }
@@ -129,7 +134,7 @@ public class Armor extends Equipment {
             if (source.getSource() instanceof LivingEntity s && s.getMainHandStack().isEmpty()) {
                 if (skill.getCD() == 0) {
                     target.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 10,0,false,false,false));
-                    skill.setCD(5); voice(target, Sounds.TENGJIA1);
+                    skill.setCD(5); voice(target, this);
                     return 1;
                 }
             }

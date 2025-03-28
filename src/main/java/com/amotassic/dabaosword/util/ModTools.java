@@ -26,7 +26,6 @@ import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
@@ -56,7 +55,9 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.Box;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -91,9 +92,6 @@ public class ModTools {
     isSpadeCard = s -> c(s).suit == Suit.Spade,
     isRedCard = isDiamondCard.or(isHeartCard),
     isBlackCard = isClubCard.or(isSpadeCard);
-    public static boolean isWanjian(DamageSource source) {
-        return source.getSource() instanceof ArrowEntity arrow && arrow.getCommandTags().contains("a");
-    }
     public static boolean isHuogong(DamageSource source) {
         return source.getSource() instanceof FireballEntity fireball && fireball.getCommandTags().contains("a");
     }
@@ -157,14 +155,16 @@ public class ModTools {
         }
     }
     public static void voice(LivingEntity entity, Item item, float... volume) {
-        SoundEvent sound = Registries.SOUND_EVENT.get(Identifier.of("dabaosword", item.toString()));
-        if (sound != null) voice(entity, sound, volume);
+        voice(entity, item.toString(), volume);
     }
     public static void voice(LivingEntity entity, ItemStack stack, float... volume) {
         voice(entity, stack.getItem(), volume);
     }
-    public static SoundEvent getSound(String name) {
-        return Registries.SOUND_EVENT.get(Identifier.of("dabaosword", name));
+    public static void voice(LivingEntity entity, String name, float... volume) {
+        voice(entity, getSound("dabaosword", name), volume);
+    }
+    public static SoundEvent getSound(String namespace, String path) {
+        return RegistryEntry.of(SoundEvent.of(new Identifier(namespace, path))).value();
     }
 
     /**数玩家所有手牌的数量*/
@@ -275,6 +275,23 @@ public class ModTools {
             }
         }
         System.out.println("Loaded " + ALL_CARDS.size() + " cards");
+    }
+
+    /**查找最近的一个符合条件的实体，不包括第一个参数实体本身*/
+    public static @Nullable <T extends Entity> T getClosestEntity(Entity entity, Class<T> clazz, double boxLength, Predicate<T> predicate) {
+        if (entity.getWorld() instanceof ServerWorld world) {
+            Box box = new Box(entity.getBlockPos()).expand(boxLength);
+            List<T> entities = world.getEntitiesByClass(clazz, box, predicate.and(e -> e != entity));
+            if (!entities.isEmpty()) {
+                Map<Float, T> map = new HashMap<>();
+                for (var e : entities) {
+                    map.put(e.distanceTo(entity), e);
+                }
+                float min = Collections.min(map.keySet());
+                return map.get(min);
+            }
+        }
+        return null;
     }
 
     public static void openInv(PlayerEntity player, PlayerEntity target, Text title, ItemStack stack, boolean openSelfInv, boolean equip, boolean armor, int cards) {
@@ -452,5 +469,33 @@ public class ModTools {
             }
         }
         return 0;
+    }
+
+    public static String getTagValue(Entity entity, String name) {
+        return entity.getCommandTags().stream().filter(s -> s.startsWith(name + "_")).findFirst().map(s -> s.split("_")[1]).orElse("");
+    }
+    public static int getTagCount(Entity entity, String name) {
+        return entity.getCommandTags().stream().filter(s -> s.startsWith(name + "_")).findFirst().map(s -> Integer.parseInt(s.split("_")[1])).orElse(0);
+    }
+
+    public static boolean hasTag(Entity entity, String name) {
+        return entity.getCommandTags().stream().anyMatch(s -> s.startsWith(name));
+    }
+
+    public static void removeTag(Entity entity, String name) {
+        var each = entity.getCommandTags().iterator();
+        while (each.hasNext()) { //仅移除第一个符合条件的标签
+            if (each.next().startsWith(name)) {
+                each.remove(); break;
+            }
+        }
+    }
+
+    public static void addTag(Entity entity, String name, int n) {
+        removeTag(entity, name);
+        entity.addCommandTag(name + "_" + n);
+    }
+    public static void addTag(Entity entity, String name, String suffix) {
+        entity.addCommandTag(name + "_" + suffix);
     }
 }

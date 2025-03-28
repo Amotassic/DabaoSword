@@ -1,6 +1,5 @@
 package com.amotassic.dabaosword.item.card;
 
-import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -42,7 +41,7 @@ public class TiesuoItem extends CardItem.Armoury {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         if (!world.isClient && user.getOffHandStack().isOf(Items.KNOWLEDGE_BOOK)) {
-            voice(user, Sounds.NAHIDA, 3);
+            voice(user, "nahida", 3);
         }
         return ItemUsage.consumeHeldItem(world, user, hand);
     }

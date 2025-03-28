@@ -4,8 +4,8 @@ import com.amotassic.dabaosword.api.card.Card;
 import com.amotassic.dabaosword.api.skill.*;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
-import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
@@ -54,7 +54,7 @@ public class Weapon extends Equipment {
             //方天画戟：打中生物后触发特效，给予CD和持续时间
             if (skill.getCD() == 0) {
                 skill.setCD(20);
-                voice(player, Sounds.FANGTIAN);
+                voice(player, this);
                 player.sendMessage(Text.translatable("dabaosword.fangtian").formatted(Formatting.RED), true);
             }
         }
@@ -81,7 +81,7 @@ public class Weapon extends Equipment {
             int i = 0;
             for (var s : target.getArmorItems()) {if (s.isEmpty()) i++;}
             if (i == 4) {
-                voice(user, getSound("guding"));
+                voice(user, this);
                 adds.add(5f);
             }
             return 0;
@@ -162,7 +162,7 @@ public class Weapon extends Equipment {
             if (player.getAttackCooldownProgress(0f) < 1f) return;
             //青釭剑额外伤害
             float extraDamage = Math.min(20, 0.2f * target.getMaxHealth());
-            target.damage(player.getDamageSources().genericKill(), extraDamage); target.timeUntilRegen = 0;
+            target.damage(getDamageSource(player, DamageTypes.GENERIC_KILL), extraDamage); target.timeUntilRegen = 0;
             voice(player, this);
         }
     }

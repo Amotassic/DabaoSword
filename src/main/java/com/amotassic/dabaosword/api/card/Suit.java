@@ -1,34 +1,27 @@
 package com.amotassic.dabaosword.api.card;
 
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
-import java.util.Objects;
-
 public enum Suit {
-    Heart("♥", Formatting.RED),
-    Diamond("♦", Formatting.RED),
-    Spade("♠", Formatting.WHITE),
-    Club("♣", Formatting.WHITE),
-    None(" ", Formatting.WHITE);
+    Heart(Text.translatable("suit.heart"), Formatting.RED),
+    Diamond(Text.translatable("suit.diamond"), Formatting.RED),
+    Spade(Text.translatable("suit.spade"), Formatting.WHITE),
+    Club(Text.translatable("suit.club"), Formatting.WHITE),
+    None(Text.translatable(" "), Formatting.WHITE);
 
-    public final String suit;
+    public final MutableText suit;
     public final Formatting color;
 
-    Suit(String suit, Formatting color) {
+    Suit(MutableText suit, Formatting color) {
         this.suit = suit;
         this.color = color;
     }
 
-    public static Suit fromString(String suit) {
-        for (var s : Suit.values()) {
-            if (Objects.equals(s.suit, suit)) return s;
-        }
-        return None;
-    }
-
     public static Suit fromNbt(NbtCompound nbt) {
         if (!nbt.contains("Suit")) return None;
-        return fromString(nbt.getString("Suit"));
+        return Suit.valueOf(nbt.getString("Suit"));
     }
 }

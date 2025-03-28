@@ -5,7 +5,6 @@ import com.amotassic.dabaosword.event.PlayerEvents;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.ui.PlayerInvScreenHandler;
-import com.amotassic.dabaosword.util.Sounds;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import dev.emi.trinkets.api.SlotReference;
@@ -139,7 +138,7 @@ public class Wei {
                     if (extraHP >= 5 && !player.isCreative() && !player.isSpectator()) {
                         draw(player, 2);
                         skill.setTag(extraHP - 5);
-                        voice(player, Sounds.WEIZHONG);
+                        voice(player, "weizhong");
                     }
                 }
             }
@@ -336,7 +335,7 @@ public class Wei {
 
         @Override
         public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-            if (!world.isClient && !user.isSneaking()) voice(user, Sounds.ZILI);
+            if (!world.isClient && !user.isSneaking()) voice(user, "zili");
             return super.use(world, user, hand);
         }
 
@@ -356,7 +355,7 @@ public class Wei {
             if (quan > 0) {
                 if (quan > 4) draw(target);
                 skill.setTag(quan/2);
-                voice(user, Sounds.PAIYI);
+                voice(user, "paiyi");
                 adds.add((float) quan);
             }
             return 0;
@@ -472,7 +471,7 @@ public class Wei {
                 draw(user, 2);
                 user.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 20, 0, false, false, true));
                 skill.setTag(2);
-                voice(user, Sounds.YIJI);
+                voice(user, this);
             }
             return 0;
         }

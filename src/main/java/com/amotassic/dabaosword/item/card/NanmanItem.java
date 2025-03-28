@@ -20,7 +20,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import static com.amotassic.dabaosword.api.CardEvents.canHurtByCard;
 import static com.amotassic.dabaosword.api.CardEvents.hurtByCard;
 
 public class NanmanItem extends CardItem.Armoury {
@@ -34,6 +33,7 @@ public class NanmanItem extends CardItem.Armoury {
             targets.addAll(world.getEntitiesByClass(LivingEntity.class, box, p));
             targets.remove(user);
 
+            user.addCommandTag("nanman"); //防止触发杀
             onUse(user, user.getMainHandStack(), targets.toArray(new LivingEntity[0]));
             return TypedActionResult.success(user.getMainHandStack());
         }
@@ -42,8 +42,6 @@ public class NanmanItem extends CardItem.Armoury {
 
     @Override
     public void effect(LivingEntity user, ItemStack card, LivingEntity entity) {
-        user.addCommandTag("nanman"); //防止触发杀
-        if (!canHurtByCard(entity, card)) return;
         DamageSource source = user.getDamageSources().mobAttack(user);
         //防止触发闪
         entity.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 2, 0, false, false));

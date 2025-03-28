@@ -9,7 +9,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 
-import static com.amotassic.dabaosword.api.CardEvents.canHurtByCard;
 import static com.amotassic.dabaosword.api.CardEvents.hurtByCard;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
@@ -46,10 +45,8 @@ public class JuedouItem extends CardItem.Armoury {
 
     private void juedou(LivingEntity attacker, ItemStack card, LivingEntity target) {
         DamageSource source = getDamageSource(attacker, DamageTypes.GENERIC_KILL);
-        if (canHurtByCard(target, card)) {
-            target.timeUntilRegen = 0;
-            if (target.damage(source, 5f)) hurtByCard(target, card);
-        }
+        target.timeUntilRegen = 0;
+        if (target.damage(source, 5f)) hurtByCard(target, card);
     }
 
     @Override public boolean askForWuxie() {return true;}

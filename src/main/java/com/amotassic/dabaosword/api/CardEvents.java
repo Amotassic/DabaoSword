@@ -1,7 +1,6 @@
 package com.amotassic.dabaosword.api;
 
 import com.amotassic.dabaosword.api.skill.ExData;
-import com.amotassic.dabaosword.api.skill.Skill;
 import com.amotassic.dabaosword.api.skill.Trigger;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.card.equipment.Equipment;
@@ -41,15 +40,6 @@ public class CardEvents {
             Equipment.useOrReplaceEquip(to, c.toStack().copyWithCount(i));
         });
         getSkillOwners(from).forEach(player -> getResult(Trigger.LOSE_CARD_MOVE, player, from, exData));
-    }
-
-    public static boolean notHurtBy(LivingEntity e, Item c) {return !canHurtByCard(e, newCard(c));}
-    public static boolean canHurtByCard(LivingEntity entity, ItemStack card) {
-        for (Skill skill : getSkillsMayUse(entity)) {
-            boolean canHurt = skill.item.canHurtByCard(entity, skill, card);
-            if (!canHurt) return false;
-        }
-        return true;
     }
 
     public static void hurtBy(LivingEntity e, Item c) {hurtByCard(e, newCard(c));}

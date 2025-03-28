@@ -53,7 +53,7 @@ public final class Card {
     public ItemStack toStack() {
         if (isFromStack()) return copy.copy();
         var stack = new ItemStack(item, count); var nbt = new NbtCompound();
-        if (suit != Suit.None) nbt.putString("Suit", suit.suit);
+        if (suit != Suit.None) nbt.putString("Suit", suit.name());
         if (rank != Rank.None) nbt.putString("Rank", rank.rank);
         stack.setNbt(nbt);
         return stack;

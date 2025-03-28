@@ -1,7 +1,6 @@
 package com.amotassic.dabaosword.item;
 
 import com.amotassic.dabaosword.api.event.*;
-import com.amotassic.dabaosword.api.skill.ISkill;
 import com.amotassic.dabaosword.effect.*;
 import com.amotassic.dabaosword.entity.ModEntity;
 import com.amotassic.dabaosword.event.*;
@@ -20,10 +19,11 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
-import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroupEntries;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentTarget;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffect;
@@ -32,6 +32,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SpawnEggItem;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
@@ -154,7 +155,6 @@ public class ModItems {
     /**将注册的卡牌添加到卡牌列表中，便于自动将物品添加到物品组*/
     public static CardItem registerCard(String name, CardItem item) {
         CardItem card = register(name, item);
-        if (card instanceof ISkill) SkillCards.addSkillEffect(card);
         CARDS.add(card);
         return card;
     }
@@ -190,9 +190,14 @@ public class ModItems {
         }
     }*/
 
-    public static final RegistryKey<ItemGroup> ZZRS = RegistryKey.of(RegistryKeys.ITEM_GROUP, new Identifier("dabaosword", "item_group"));
+    public static final RegistryKey<ItemGroup> ZZRS = RegistryKey.of(RegistryKeys.ITEM_GROUP, new Identifier("dabaosword", "zzrs"));
 
-    private static void addToGroup(FabricItemGroupEntries entries) {
+    private static void addToGroup(ItemGroup.DisplayContext context, ItemGroup.Entries entries) {
+        ItemStack smile = new ItemStack(SUNSHINE_SMILE);
+        NbtCompound nbt = new NbtCompound();
+        nbt.putBoolean("Unbreakable", true);
+        smile.setNbt(nbt);
+        smile.addEnchantment(CRIT, 1);
         //添加所有卡牌
         CARDS.forEach(entries::add);
         entries.add(GAIN_CARD);
@@ -205,15 +210,15 @@ public class ModItems {
         entries.add(GIFTBOX);
         entries.add(BBJI);
         entries.add(LET_ME_CC);
-        entries.add(SUNSHINE_SMILE);
+        entries.add(smile);
         entries.add(XUYOU_SPAWN_EGG);
     }
 
     public static void register() {
         Registry.register(Registries.ITEM_GROUP, ZZRS,
                 FabricItemGroup.builder().icon(() -> new ItemStack(SUNSHINE_SMILE))
-                        .displayName(Text.translatable("itemGroup.dabaosword.item_group")).build());
-        ItemGroupEvents.modifyEntriesEvent(ZZRS).register(ModItems::addToGroup);
+                        .displayName(Text.translatable("itemGroup.dabaosword.zzrs"))
+                        .entries(ModItems::addToGroup).build());
 
         ServerWorldEvents.LOAD.register(new PVPGameEvents());
         ServerTickEvents.START_SERVER_TICK.register(new PVPGameEvents());
@@ -262,4 +267,12 @@ public class ModItems {
     public static final ScreenHandlerType<FullInvScreenHandler> FULL_INV_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "full_inv", new ExtendedScreenHandlerType<>(FullInvScreenHandler::new));
 
     public static final ScreenHandlerType<PileScreenHandler> PILE_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "card_pile", new ExtendedScreenHandlerType<>(PileScreenHandler::new));
+
+    public static final Enchantment CRIT = Registry.register(Registries.ENCHANTMENT, "dabaosword:crit", new CritEnchantment(EquipmentSlot.HEAD));
+
+    public static class CritEnchantment extends Enchantment {
+        public CritEnchantment(EquipmentSlot... slots) {super(Rarity.VERY_RARE, EnchantmentTarget.ARMOR_HEAD, slots);}
+        @Override public boolean isTreasure() {return true;}
+    }
+
 }

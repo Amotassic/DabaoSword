@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static com.amotassic.dabaosword.api.CardEvents.notHurtBy;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class ModifyDamage {
@@ -79,9 +78,6 @@ public class ModifyDamage {
             if (AT.hasStatusEffect(ModItems.TOO_HAPPY)) return 1;
         }
 
-        if (isWanjian(source) && notHurtBy(entity, ModItems.WANJIAN)) return 1;
-        if (isHuogong(source) && notHurtBy(entity, ModItems.FIRE_ATTACK)) return 1;
-        if (isShandian(source) && notHurtBy(entity, ModItems.SHANDIAN_ITEM)) return 1;
         if (so instanceof LivingEntity SE && shouldSha(SE)) { //只要能触发杀，伤害就会被取消
             ItemStack sha = isSha.test(SE.getMainHandStack()) ? SE.getMainHandStack() : getItem(SE, isSha);
             SE.addCommandTag("sha");
@@ -139,7 +135,6 @@ public class ModifyDamage {
         int cd = bl ? 60 : 40;
         entity.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 20,0,false,false,false));
         entity.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, cd,0,false,false,false));
-        if (bl) voice(entity, Sounds.BAGUA);
         if (entity instanceof PlayerEntity player) {
             writeDamage(source, amount, !bl, trinketItem(ModItems.CARD_PILE, player));
             if (bl) player.sendMessage(Text.translatable("dabaosword.bagua"),true);

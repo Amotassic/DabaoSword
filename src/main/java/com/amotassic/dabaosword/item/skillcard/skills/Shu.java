@@ -6,7 +6,6 @@ import com.amotassic.dabaosword.api.skill.*;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.ui.PlayerInvScreenHandler;
-import com.amotassic.dabaosword.util.Sounds;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
@@ -161,7 +160,7 @@ public class Shu {
                 if (world.getTime() % 20 == 0 && isBasic.test(off)) {
                     off.decrement(1);
                     give(player, getLongdanCard(copy).toStack());
-                    voice(player, Sounds.LONGDAN);
+                    voice(player, this);
                 }
             }
         }
@@ -187,7 +186,7 @@ public class Shu {
 
         @Override
         public boolean activeSkill(PlayerEntity user, Skill skill, LivingEntity entity) {
-            if (entity instanceof PlayerEntity target) {
+            if (entity instanceof PlayerEntity target && countCards(user) > 0) {
                 openInv(user, target, Text.translatable("give_card.title", skill.toHoverableText()), skill.stack, true, false, false, 2);
                 return true;
             } return false;
@@ -204,7 +203,7 @@ public class Shu {
             CardEvents.cardMove(player, handler.toExData(), target);
             int cd = skill.getCD();
             if (player.getHealth() < player.getMaxHealth() && cd == 0 && new Random().nextFloat() < 0.5 * count) {
-                player.heal(5); voice(player, Sounds.RECOVER);
+                player.heal(5); voice(player, "peach");
                 player.sendMessage(Text.translatable("recover.tip").formatted(Formatting.GREEN), true);
                 skill.setCD(30);
             }
@@ -221,7 +220,7 @@ public class Shu {
         @Override
         public void preAttack(PlayerEntity player, LivingEntity target, Skill skill) {
             if (hasItem(player, isSha)) {
-                voice(player, Sounds.TIEJI);
+                voice(player, this);
                 target.addStatusEffect(new StatusEffectInstance(ModItems.TIEJI,200,0,false,true,true));
                 if (new Random().nextFloat() < 0.75) target.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2,2,0,false,false,false));
             }

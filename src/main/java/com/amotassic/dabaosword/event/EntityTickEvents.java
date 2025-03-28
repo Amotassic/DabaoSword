@@ -32,7 +32,11 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
                 entity.getCommandTags().remove("sha");
                 entity.getCommandTags().remove("juedou");
                 entity.getCommandTags().remove("nanman");
+                entity.getCommandTags().remove("wanjian");
                 entity.getCommandTags().remove("benxi");
+            }
+            if (world.getTime() % 200 == 0) {
+                entity.getCommandTags().remove("seen_skill_tip");
             }
 
             //处理所有加触及距离和近战防御距离的效果
@@ -101,16 +105,7 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
                 }
             }
 
-            Box box = new Box(player.getBlockPos()).expand(20); // 检测范围，根据需要修改
-            for (LivingEntity nearbyPlayer : world.getEntitiesByClass(PlayerEntity.class, box, playerEntity -> playerEntity.hasStatusEffect(ModItems.DEFEND))) {
-                //实现沈佳宜的效果：若玩家看到的玩家有近战防御效果，则给当前玩家攻击范围缩短效果
-                int amplifier = Objects.requireNonNull(nearbyPlayer.getStatusEffect(ModItems.DEFEND)).getAmplifier();
-                int attack = (int) (player.getAttributeValue(ReachEntityAttributes.ATTACK_RANGE) + 3);
-                int defended = Math.min(amplifier, attack);
-                if (player != nearbyPlayer && isLooking(player, nearbyPlayer)) {
-                    player.addStatusEffect(new StatusEffectInstance(ModItems.DEFENDED, 1, defended,false,false,true));
-                }
-            }
+            if (time % 2 == 0) decreaseAttackRange(player);
 
             //下落攻击触发：脚底下两格是空气，手里拿着有耐久度的物品左键即可触发
             BlockPos blockPos = player.getBlockPos().down(1); BlockPos blockPos2 = player.getBlockPos().down(2);
@@ -121,12 +116,22 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
         }
     }
 
-    boolean isLooking(PlayerEntity player, Entity entity) {
-        Vec3d vec3d = player.getRotationVec(1.0f).normalize();
-        Vec3d vec3d2 = new Vec3d(entity.getX() - player.getX(), entity.getEyeY() - player.getEyeY(), entity.getZ() - player.getZ());
-        double d = vec3d2.length();
-        double e = vec3d.dotProduct(vec3d2.normalize());
-        if (e > 1.0 - 0.25 / d) return player.canSee(entity);
-        return false;
+    private void decreaseAttackRange(LivingEntity entity) {
+        Box box = new Box(entity.getBlockPos()).expand(20);
+        for (LivingEntity target : entity.getWorld().getEntitiesByClass(LivingEntity.class, box, living -> living != entity && living.hasStatusEffect(ModItems.DEFEND) && isLooking(entity, living))) {
+            //实现沈佳宜的效果：若玩家看到的玩家有近战防御效果，则给当前玩家攻击范围缩短效果
+            int amplifier = Objects.requireNonNull(target.getStatusEffect(ModItems.DEFEND)).getAmplifier();
+            double r = ReachEntityAttributes.getAttackRange(entity, entity instanceof PlayerEntity pl && pl.isCreative() ? 6 : 3);
+            int level = Math.min((int) r, amplifier);
+            entity.addStatusEffect(new StatusEffectInstance(ModItems.DEFENDED, 2, level,false,false,true));
+        }
+    }
+
+    public static boolean isLooking(LivingEntity entity, Entity target) {
+        Vec3d playerPos = entity.getEyePos();
+        Vec3d lookVec = entity.getRotationVec(1.0F);
+        Box targetBox = target.getBoundingBox();
+        // 进行射线与碰撞箱的相交检测
+        return targetBox.raycast(playerPos, playerPos.add(lookVec.multiply(100.0))).isPresent();
     }
 }
