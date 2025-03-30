@@ -13,7 +13,8 @@ import com.amotassic.dabaosword.event.PVPGameEvents;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.card.CardItem;
 import com.amotassic.dabaosword.item.card.Sha;
-import com.amotassic.dabaosword.network.ActiveSkillPayload;
+import com.amotassic.dabaosword.network.OpenScreenPayload;
+import com.amotassic.dabaosword.ui.FullInvScreenHandler;
 import com.amotassic.dabaosword.ui.PlayerInvScreenHandler;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -31,10 +32,7 @@ import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.FireballEntity;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -55,7 +53,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.Box;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -94,9 +91,7 @@ public class ModTools {
             isSpadeCard = s -> c(s).suit == Suit.Spade,
     isRedCard = isDiamondCard.or(isHeartCard),
     isBlackCard = isClubCard.or(isSpadeCard);
-    public static boolean isWanjian(DamageSource source) {
-        return source.getSource() instanceof ArrowEntity arrow && arrow.getCommandTags().contains("a");
-    }
+
     public static boolean isHuogong(DamageSource source) {
         return source.getSource() instanceof FireballEntity fireball && fireball.getCommandTags().contains("a");
     }
@@ -108,9 +103,7 @@ public class ModTools {
     public static <T> List<T> toList(T... t) {return new ArrayList<>(Arrays.asList(t));}
 
     /**判断是否有某个饰品*/
-    public static boolean hasTrinket(Item item, LivingEntity entity) {
-        return isEquipped(entity, p(item));
-    }
+    public static boolean hasTrinket(Item item, LivingEntity entity) {return isEquipped(entity, p(item));}
     public static boolean isEquipped(LivingEntity entity, Predicate<ItemStack> p) {
         return getTrinketComponent(entity).map(c -> c.isEquipped(p)).orElse(false);
     }
@@ -125,7 +118,8 @@ public class ModTools {
     }
 
     public static CardPileInventory getCardPack(PlayerEntity player) {
-        return PVPGameEvents.PLAYER_CARD_PACKS.getOrDefault((ServerPlayerEntity) player, new CardPileInventory(player));
+        if (player instanceof ServerPlayerEntity sp) return PVPGameEvents.PLAYER_CARD_PACKS.getOrDefault(sp, new CardPileInventory(player));
+        return new CardPileInventory(player);
     }
 
     /**判断牌堆和背包中是否有符合条件的卡牌*/
@@ -233,7 +227,7 @@ public class ModTools {
         if (CARD_PILE.isEmpty()) {
             for (ItemStack stack : ALL_CARDS) CARD_PILE.add(stack.copy());
             Collections.shuffle(CARD_PILE);
-            System.out.println("Shuffled card pile");
+            DabaoSword.LOGGER.info("Shuffled card pile");
         }
         return CARD_PILE.removeFirst();
     }
@@ -278,7 +272,7 @@ public class ModTools {
                 ALL_CARDS.add(card.toStack());
             }
         }
-        System.out.println("Loaded " + ALL_CARDS.size() + " cards");
+        DabaoSword.LOGGER.info("Loaded {} cards", ALL_CARDS.size());
     }
 
     public static @Nullable <T extends Entity> T getClosestEntity(Entity entity, Class<T> clazz, double boxLength, Predicate<T> predicate) {
@@ -308,91 +302,53 @@ public class ModTools {
         stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
     }
 
-    public static void openInv(PlayerEntity player, PlayerEntity target, Text title, ItemStack stack, boolean openSelfInv, boolean equip, boolean armor, int cards) {
-        if (!player.getWorld().isClient) {
-            player.openHandledScreen(new ExtendedScreenHandlerFactory<>() {
-                @Override
-                public Object getScreenOpeningData(ServerPlayerEntity player) {
-                    return new ActiveSkillPayload(player.getId());
-                }
-
-                @Override
-                public Text getDisplayName() {return title;}
-
-                @Override
-                public @NotNull ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                    PlayerEntity invOwner = openSelfInv ? player : target;
-                    return new PlayerInvScreenHandler(syncId, targetInv(invOwner, equip, armor, cards, stack, openSelfInv), target);
-                }
-            });
-        }
-    }
-
-    /**
-     @param equip: 是否显示装备牌
-     @param armor: 是否显示玩家的盔甲
-     @param showCard: 是否显示手牌。0：完全不显示；1：仅展示牌背；2：显示所有手牌；3：显示所有物品
-     */
-    public static Inventory targetInv(PlayerEntity invOwner, Boolean equip, Boolean armor, int showCard, ItemStack eventStack, boolean openSelfInv) {
-        Inventory targetInv = new SimpleInventory(60);
-
-        if (equip) for (var stack : allTrinkets(invOwner)) {
-            if (stack.isIn(Tags.WEAPON)) targetInv.setStack(0, stack);
-            if (stack.isIn(Tags.ARMOR)) targetInv.setStack(1, stack);
-            if (stack.isIn(Tags.DEFEND)) targetInv.setStack(2, stack);
-            if (stack.isIn(Tags.ATTACK)) targetInv.setStack(3, stack);
-        } //四件装备占1~4格
-
-        var armors = invOwner.getInventory().armor;
-        if (armor) for (ItemStack stack : armors) {
-            targetInv.setStack(7 - armors.indexOf(stack), stack);
-        } //4件盔甲占5~8格
-
-        ItemStack off = invOwner.getOffHandStack();
-        DefaultedList<ItemStack> inv = invOwner.getInventory().main;
-        boolean bl = showCard == 1;
-        if (showCard == 2 || bl) { //仅显示手牌或牌背的情况下，所有物品堆都要验证是否为卡牌
-            var pack = getCardPack(invOwner); var cards = pack.cards;
-            boolean bl2 = pack.isEmpty(); var container = bl2 ? inv : cards;
-            for (var stack : container) { //如果没有装备牌堆，就显示玩家物品栏的牌
-                if (!isCard(stack)) continue;
-                targetInv.setStack(container.indexOf(stack) + 9, bl ? paibei(stack.getCount()) : stack);
-            }
-            if (!bl2) { //如果有装备牌堆，就再添加玩家快捷栏的牌
-                for (int i = 0; i < 9; i++) {
-                    var stack = inv.get(i);
-                    if (isCard(stack)) targetInv.setStack(i + 45, bl ? paibei(stack.getCount()) : stack);
-                }
-            }
-            if (isCard(off)) targetInv.setStack(8, bl ? paibei(off.getCount()) : off);
-        }
-        if (showCard == 3) {
-            for (ItemStack stack : inv) targetInv.setStack(inv.indexOf(stack) + 9, stack);
-            targetInv.setStack(8, off);
-        }
-        targetInv.setStack(54, paibei(showCard));
-        targetInv.setStack(55, eventStack);//用于传递stack信息
-        if (openSelfInv) targetInv.setStack(56, paibei());
-        return targetInv;
-    }
-    public static ItemStack paibei(int... n) {
-        return new ItemStack(ModItems.GAIN_CARD, n.length > 0 ? n[0] : 1);
-    }
-
-    public static void openMenu(PlayerEntity player, PlayerEntity target, Inventory inventory, Text title) {
+    public static void openFullInv(PlayerEntity player, LivingEntity target, boolean editable) {
         if (player.getWorld().isClient) return;
+        var payload = new OpenScreenPayload(target.getId(), editable, "");
+        player.openHandledScreen(new ExtendedScreenHandlerFactory<>() {
+            public Text getDisplayName() {return target.getDisplayName();}
+
+            public Object getScreenOpeningData(ServerPlayerEntity player) {return payload;}
+
+            public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
+                return new FullInvScreenHandler(syncId, inv, payload);
+            }
+        });
+    }
+
+    public static void openInv(PlayerEntity player, LivingEntity owner, PlayerEntity target, Text title, ItemStack stack, boolean equip, boolean armor, int cards) {
+        if (player.getWorld().isClient) return;
+        var tempInv = new TempInventory(player, owner, stack, cards, equip, armor);
+        var rows = tempInv.rowsToShow;
         player.openHandledScreen(new ExtendedScreenHandlerFactory<>() {
             public Text getDisplayName() {return title;}
 
             public Object getScreenOpeningData(ServerPlayerEntity player) {
-                return new ActiveSkillPayload(player.getId());
+                return new OpenScreenPayload(target.getId(), true, rows.toString());
             }
-
-            public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
-                return new PlayerInvScreenHandler(syncId, inventory, target);
+            public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
+                return new PlayerInvScreenHandler(syncId, tempInv, target, rows);
             }
         });
     }
+
+    public static void openMenu(PlayerEntity player, PlayerEntity target, ItemStack stack, List<ItemStack> stacks, Text title) {
+        if (player.getWorld().isClient) return;
+        var tempInv = new TempInventory(player, stack, stacks);
+        var rows = tempInv.rowsToShow;
+        player.openHandledScreen(new ExtendedScreenHandlerFactory<>() {
+            public Text getDisplayName() {return title;}
+
+            public Object getScreenOpeningData(ServerPlayerEntity player) {
+                return new OpenScreenPayload(player.getId(), true, rows.toString());
+            }
+            public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
+                return new PlayerInvScreenHandler(syncId, tempInv, target, rows);
+            }
+        });
+    }
+
+    public static ItemStack paibei(int... n) {return new ItemStack(ModItems.GAIN_CARD, n.length > 0 ? n[0] : 1);}
 
     public static void closeGUI(PlayerEntity player) {
         player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 1,2,false,false,false));

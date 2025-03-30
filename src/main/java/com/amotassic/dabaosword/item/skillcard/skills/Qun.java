@@ -11,8 +11,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.screen.slot.SlotActionType;
@@ -180,14 +178,9 @@ public class Qun {
             }
             if (user.getHealth() + 5 * countCard(user, canSaveDying) > 4.99) {
 
-                Inventory inventory = new SimpleInventory(60);
-                for (var item : items) {
-                    if (Arrays.stream(used).toList().contains(Registries.ITEM.getId(item).getPath())) continue;
-                    inventory.setStack(items.indexOf(item) + 18, new ItemStack(item));
-                }
-                inventory.setStack(55, skill.stack);
+                List<ItemStack> stacks = items.stream().filter(i -> !Arrays.stream(used).toList().contains(Registries.ITEM.getId(i).getPath())).map(ItemStack::new).toList();
 
-                openMenu(user, user, inventory, Text.translatable("item.dabaosword.taoluan.screen"));
+                openMenu(user, user, skill.stack, stacks, Text.translatable("item.dabaosword.taoluan.screen"));
                 return true;
             } else user.sendMessage(Text.translatable("item.dabaosword.taoluan.tip").formatted(Formatting.RED), true);
             return false;

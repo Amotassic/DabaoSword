@@ -29,7 +29,7 @@ public class DiscardItem extends CardItem.Armoury {
     public void effect(LivingEntity user, ItemStack card, LivingEntity entity) {
         if (user instanceof PlayerEntity player) {
             if (entity instanceof PlayerEntity target) {
-                openInv(player, target, Text.translatable("dabaosword.discard.title", card.getName()), card, false, true, false, 1);
+                openInv(player, target, target, Text.translatable("dabaosword.discard.title", card.getName()), card, true, false, 1);
             } else {
                 List<ItemStack> stacks = getItems(entity, isCard, true, false, true, false);
                 if (!stacks.isEmpty()) {

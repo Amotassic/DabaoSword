@@ -33,7 +33,6 @@ public class ClientTickEnd {
                 if (SELECT_CARD.wasPressed()) {
                     int i = 0;
                     if (user.isSneaking() && ctrl.wasPressed()) i = 3;
-                    else if (user.isSneaking()) i = 1;
                     else if (ctrl.wasPressed()) i = 2;
                     ClientPlayNetworking.send(new QuickSwapPayload(i));
                     return;

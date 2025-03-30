@@ -12,9 +12,7 @@ import net.minecraft.world.World;
 
 import java.util.List;
 
-import static com.amotassic.dabaosword.command.InfoCommand.openFullInv;
-import static com.amotassic.dabaosword.util.ModTools.getClosestEntity;
-import static com.amotassic.dabaosword.util.ModTools.voice;
+import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class LetMeCCItem extends Item {
     public LetMeCCItem(Settings settings) {super(settings);}

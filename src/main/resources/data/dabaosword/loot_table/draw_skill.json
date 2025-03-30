@@ -15,6 +15,16 @@
           "name": "dabaosword:feiying"
         },
         {
+          "weight": 2,
+          "type": "minecraft:item",
+          "name": "dabaosword:paoxiao"
+        },
+        {
+          "weight": 2,
+          "type": "minecraft:item",
+          "name": "dabaosword:shixin"
+        },
+        {
           "weight": 3,
           "type": "minecraft:item",
           "name": "dabaosword:fanjian"

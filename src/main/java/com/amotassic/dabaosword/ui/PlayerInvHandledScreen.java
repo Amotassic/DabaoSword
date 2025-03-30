@@ -14,27 +14,49 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.amotassic.dabaosword.util.ModTools.getOrCreateNbt;
 import static com.amotassic.dabaosword.util.ModTools.s;
 
 public class PlayerInvHandledScreen extends HandledScreen<PlayerInvScreenHandler> {
-    private static final Identifier TEXTURE = Identifier.of("dabaosword", "textures/gui/generic_54.png");
+    private static final Identifier TEXTURE = Identifier.of("textures/gui/container/generic_54.png");
+    private final int rows;
 
     public PlayerInvHandledScreen(PlayerInvScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
-        this.backgroundHeight = 130;
+        this.rows = handler.rows;
+        this.backgroundHeight = 24 + rows * 18;
     }
 
+    public void renderBackground(DrawContext context, int mouseX, int mouseY, float delta) {
+        drawBackground(context, delta, mouseX, mouseY); //不要加深背景
+    }
     @Override
     protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
-        context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, x, y,0,0, backgroundWidth, backgroundHeight, 256, 256);
+        context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, x, y,0,0, backgroundWidth, 17, 256, 256);
+        for (int i = 0; i < rows; i++) {
+            context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, x, y + 17 + i * 18,0,17, backgroundWidth, 18, 256, 256);
+        }
+        context.drawTexture(RenderLayer::getGuiTextured, TEXTURE, x, y + rows * 18 + 17,0,215, backgroundWidth, 7, 256, 256);
     }
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        List<Text> screenTips = new ArrayList<>();
+        var skill = s(eventStack());
+        skill.item.addScreenTip(skill, screenTips);
+        if (!screenTips.isEmpty()) for (var text : screenTips) {
+            int y = 2 + 10 * screenTips.indexOf(text);
+            int textWidth = textRenderer.getWidth(text);
+            // 绘制文本背景
+            context.fill(1, y - 1, 1 + textWidth + 2, y + textRenderer.fontHeight, 0xFF202020);
+            // 绘制文本
+            context.drawText(textRenderer, text, 2, y, 0xE0E0E0, false);
+        }
         super.render(context, mouseX, mouseY, delta);
         this.drawMouseoverTooltip(context, mouseX, mouseY);
     }
@@ -82,10 +104,10 @@ public class PlayerInvHandledScreen extends HandledScreen<PlayerInvScreenHandler
         return super.mouseScrolled(mouseX, mouseY, horizontalAmount, amount);
     }
 
-    private ItemStack eventStack() {return handler.getSlot(55).getStack();}
+    private ItemStack eventStack() {return handler.getSlot(81).getStack();}
 
     private Map<Integer, Integer> getClicks() {
-        String str = getOrCreateNbt(handler.getSlot(57).getStack()).getString("Clicks");
+        String str = getOrCreateNbt(handler.getSlot(82).getStack()).getString("Clicks");
         Map<Integer, Integer> clicks = new HashMap<>();
         if (str.isEmpty()) return clicks;
         str = str.substring(1, str.length() - 1); //去掉{}如果还是空，则返回空map
