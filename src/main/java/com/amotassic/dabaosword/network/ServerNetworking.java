@@ -1,6 +1,5 @@
 package com.amotassic.dabaosword.network;
 
-import com.amotassic.dabaosword.command.InfoCommand;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.ui.PileScreenHandler;
@@ -61,10 +60,7 @@ public class ServerNetworking {
 
     private static void selectCardPacket(MinecraftServer server, ServerPlayerEntity player, ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
         int i = buf.readInt();
-        var cards = new ItemStack(ModItems.WANJIAN); var items = new ItemStack(ModItems.SUNSHINE_SMILE);
-        boolean bl = getCardPack(player).isEmpty(); //如果牌堆没有牌，会直接显示物品栏的牌，所以要判断一下
-        if (i == 0) openInv(player, player, Text.translatable("key.dabaosword.select_card"), bl ? items : cards, true, false, false, 2);
-        if (i == 1) openInv(player, player, Text.translatable("key.dabaosword.select_card"), items, true, false, false, 3);
+        if (i == 0) openInv(player, player, player, Text.translatable("key.dabaosword.select_card"), ItemStack.EMPTY, false, false, 3);
         if (i == 2 && hasTrinket(ModItems.CARD_PILE, player)) player.openHandledScreen(new ExtendedScreenHandlerFactory() {
             @Override
             public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {}
@@ -89,7 +85,7 @@ public class ServerNetworking {
         }
         if (i == 9) {
             PlayerEntity target = getClosestEntity(player, PlayerEntity.class, 100, LivingEntity::isAlive);
-            if (target != null) InfoCommand.openFullInv(player, target, false);
+            if (target != null) openFullInv(player, target, false);
         }
     }
 }

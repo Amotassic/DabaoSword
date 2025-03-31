@@ -35,7 +35,6 @@ public class ClientTickEnd {
 
                 if (SELECT_CARD.wasPressed()) {
                     if (user.isSneaking() && ctrl.wasPressed()) buf.writeInt(3);
-                    else if (user.isSneaking()) buf.writeInt(1);
                     else if (ctrl.wasPressed()) buf.writeInt(2);
                     else buf.writeInt(0);
                     ClientPlayNetworking.send(ServerNetworking.SELECT_CARD, buf);

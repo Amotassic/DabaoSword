@@ -11,6 +11,7 @@ import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.ClickEvent;
@@ -188,7 +189,7 @@ public class Wu {
                 if (cd > 0) user.sendMessage(Text.translatable("dabaosword.cooldown").formatted(RED), true);
                 else {
                     voice(user, this);
-                    openInv(user, target, Text.translatable("gongxin.title"), skill.stack, false, false, false, 2);
+                    openInv(user, target, target, Text.translatable("gongxin.title"), skill.stack, false, false, 2);
                     skill.setCD(30);
                     return true;
                 }
@@ -330,6 +331,22 @@ public class Wu {
         }
     }
 
+    public static class Shixin extends SkillItem {
+        @Override
+        public void addTip(Skill skill, List<Text> tooltip) {tooltip.add(getTip(GREEN));}
+
+        @Override public boolean lockOn() {return true;}
+
+        @SkillInfo(trigger = Trigger.CANCEL_DAMAGE_HIGH, relation = Relation.SELF)
+        public int fanghuo(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
+            if (data.source.isIn(DamageTypeTags.IS_FIRE)) {
+                if (skill.getCD() == 0) {voice(user, this); skill.setCD(10);}
+                return 1;
+            }
+            return 0;
+        }
+    }
+
     public static class Xiaoji extends SkillItem {
         @Override
         public void addTip(Skill skill, List<Text> tooltip) {tooltip.add(getTip(GREEN));}
@@ -367,12 +384,18 @@ public class Wu {
         @Override public boolean isActiveSkill() {return true;}
 
         @Override
+        public void addScreenTip(Skill skill, List<Text> tips) {
+            addPresetTips(skill, tips, 0, 1, 2, 3, 4);
+            super.addScreenTip(skill, tips);
+        }
+
+        @Override
         public boolean activeSkill(PlayerEntity user, Skill skill) {
             if (countAllCards(user) == 0) return false;
             int cd = skill.getCD();
             if (cd > 0) user.sendMessage(Text.translatable("dabaosword.cooldown").formatted(RED), true);
             else {
-                openInv(user, user, Text.translatable("zhiheng.title"), skill.stack, true, true, false, 2);
+                openInv(user, user, user, Text.translatable("zhiheng.title"), skill.stack, true, false, 2);
                 return true;
             }
             return false;

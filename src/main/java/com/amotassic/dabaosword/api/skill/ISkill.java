@@ -2,6 +2,7 @@ package com.amotassic.dabaosword.api.skill;
 
 import com.amotassic.dabaosword.api.TriPredicate;
 import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.ui.PlayerInvScreenHandler;
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.Trinket;
@@ -12,9 +13,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 
+import java.util.List;
+
 import static com.amotassic.dabaosword.util.ModTools.s;
+import static net.minecraft.util.Formatting.*;
 
 public interface ISkill extends Trinket {
     TriPredicate<LivingEntity, LivingEntity, DamageSource>
@@ -71,6 +76,49 @@ public interface ISkill extends Trinket {
     }
 
     default void tickSkill(Skill skill, LivingEntity entity) {}
+
+    /**在打开的GUI上添加操作提示，可按需添加，默认会添加物品本身的物品提示
+     * @see ISkill#addPresetTips(Skill, List, Integer...) */
+    default void addScreenTip(Skill skill, List<Text> tips) {
+        tips.add(skill.toHoverableText());
+        if (skill.stack.getItem() instanceof SkillItem si) si.addTip(skill, tips);
+    }
+
+    /**
+     * 预设的GUI界面提示信息，按需填写即可。
+     * @param presetLines 可以填写的预设的信息如下：
+     * <ul>
+     *     <li>0：标题以及关闭GUI确定选择操作提示</li>
+     *     <li>1：左键右键操作提示</li>
+     *     <li>2：鼠标滚轮操作提示</li>
+     *     <li>3：Shift+左/右键操作提示，若限制最大选牌数量则不显示</li>
+     *     <li>4：全选（若限制最大选牌数量则不显示）、取消全选操作的提示</li>
+     *     <li>5：最大可选数量、最小可选数量（如果没有限制则为空）的提示</li>
+     * </ul>
+     */
+    default void addPresetTips(Skill skill, List<Text> tips, Integer... presetLines) {
+        var preset = List.of(presetLines);
+        int max = skill.getMaxSelect(); int min = skill.getMinSelect();
+        for (Integer i : preset) {
+            switch (i) {
+                case 0 -> tips.add(Text.translatable("screen.dabaosword.title").formatted(AQUA, BOLD).append(Text.translatable("screen.dabaosword.title_").formatted(RED, BOLD)));
+                case 1 -> tips.add(Text.translatable("screen.dabaosword.tip1").formatted(BOLD));
+                case 2 -> tips.add(Text.translatable("screen.dabaosword.tip2").formatted(AQUA, BOLD));
+                case 3 -> {
+                    if (max > 100) tips.add(Text.translatable("screen.dabaosword.tip3").formatted(BOLD));
+                }
+                case 4 -> {
+                    MutableText text = max >= 100 ? Text.translatable("screen.dabaosword.ctrl_a").formatted(AQUA, BOLD) : Text.literal("");
+                    tips.add(text.append(Text.translatable("screen.dabaosword.ctrl_z").formatted(AQUA, BOLD)));
+                }
+                case 5 -> {
+                    MutableText minText = min > 0 ? Text.translatable("screen.dabaosword.min_tip", min).formatted(RED, BOLD) : Text.literal("");
+                    MutableText maxText = max < 100 ? Text.translatable("screen.dabaosword.max_tip", max).formatted(RED, BOLD) : Text.literal("");
+                    tips.add(minText.append(maxText));
+                }
+            }
+        }
+    }
 
     /**当玩家点击技能打开的GUI中的物品后，会发生的操作逻辑，会影响玩家是否能选取卡牌。如果需要实现自定义的选取逻辑，请重写这个方法*/
     default void onSlotClick(PlayerInvScreenHandler handler, PlayerEntity player, Skill skill, PlayerEntity target, int slot, int button, SlotActionType action) {

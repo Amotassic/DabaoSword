@@ -27,7 +27,7 @@ public class StealItem extends CardItem.Armoury {
     public void effect(LivingEntity user, ItemStack card, LivingEntity entity) {
         if (user instanceof PlayerEntity player) {
             if (entity instanceof PlayerEntity target) {
-                openInv(player, target, Text.translatable("dabaosword.steal.title"), card, false, true, true, 1);
+                openInv(player, target, target, Text.translatable("dabaosword.steal.title"), card, true, true, 1);
             } else {
                 List<ItemStack> stacks = getItems(entity, isCard, true, false, true, false);
                 if (!stacks.isEmpty()) {

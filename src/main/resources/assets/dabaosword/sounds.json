@@ -5,6 +5,72 @@
     ],
     "subtitle": "sounds.dabaosword.nahida"
   },
+  "chengxiang": {
+    "sounds": [
+      "dabaosword:skill/chengxiang1", "dabaosword:skill/chengxiang2"
+    ],
+    "subtitle": "sounds.dabaosword.chengxiang"
+  },
+  "daoshu": {
+    "sounds": [
+      "dabaosword:skill/daoshu1", "dabaosword:skill/daoshu2"
+    ],
+    "subtitle": "sounds.dabaosword.daoshu"
+  },
+  "duanchang": {
+    "sounds": [
+      "dabaosword:skill/duanchang1", "dabaosword:skill/duanchang2"
+    ],
+    "subtitle": "sounds.dabaosword.duanchang"
+  },
+  "fangquan": {
+    "sounds": [
+      "dabaosword:skill/fangquan1", "dabaosword:skill/fangquan2"
+    ],
+    "subtitle": "sounds.dabaosword.fangquan"
+  },
+  "huilei": {
+    "sounds": [
+      "dabaosword:skill/huilei1", "dabaosword:skill/huilei2"
+    ],
+    "subtitle": "sounds.dabaosword.huilei"
+  },
+  "huituo": {
+    "sounds": [
+      "dabaosword:skill/huituo1", "dabaosword:skill/huituo2"
+    ],
+    "subtitle": "sounds.dabaosword.huituo"
+  },
+  "jiang": {
+    "sounds": [
+      "dabaosword:skill/jiang1", "dabaosword:skill/jiang2", "dabaosword:skill/jiang3", "dabaosword:skill/jiang4"
+    ],
+    "subtitle": "sounds.dabaosword.jiang"
+  },
+  "luoying": {
+    "sounds": [
+      "dabaosword:skill/luoying1", "dabaosword:skill/luoying2"
+    ],
+    "subtitle": "sounds.dabaosword.luoying"
+  },
+  "mingjian": {
+    "sounds": [
+      "dabaosword:skill/mingjian1", "dabaosword:skill/mingjian2"
+    ],
+    "subtitle": "sounds.dabaosword.mingjian"
+  },
+  "paoxiao": {
+    "sounds": [
+      "dabaosword:skill/paoxiao1", "dabaosword:skill/paoxiao2", "dabaosword:skill/paoxiao3", "dabaosword:skill/paoxiao4"
+    ],
+    "subtitle": "sounds.dabaosword.paoxiao"
+  },
+  "shixin": {
+    "sounds": [
+      "dabaosword:skill/shixin1", "dabaosword:skill/shixin2"
+    ],
+    "subtitle": "sounds.dabaosword.shixin"
+  },
   "fanjian": {
     "sounds": [
       "dabaosword:skill/fanjian1", "dabaosword:skill/fanjian2"

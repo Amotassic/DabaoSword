@@ -14,9 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-import static com.amotassic.dabaosword.command.InfoCommand.openFullInv;
-import static com.amotassic.dabaosword.util.ModTools.getClosestEntity;
-import static com.amotassic.dabaosword.util.ModTools.voice;
+import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class LetMeCCItem extends Item {
     public LetMeCCItem() {super(new Item.Settings().maxCount(1));}

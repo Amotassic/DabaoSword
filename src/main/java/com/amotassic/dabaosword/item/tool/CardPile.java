@@ -28,9 +28,8 @@ public class CardPile extends TrinketItem {
         tooltip.add(Text.empty());
         tooltip.add(Text.translatable("item.dabaosword.card_pile.tip1").formatted(Formatting.BOLD));
         tooltip.add(Text.translatable("item.dabaosword.card_pile.tip2", Text.keybind("key.dabaosword.select_card")).formatted(Formatting.BOLD));
-        tooltip.add(Text.translatable("item.dabaosword.card_pile.tip3", Text.keybind("key.sneak"), Text.keybind("key.dabaosword.select_card")).formatted(Formatting.BOLD));
-        tooltip.add(Text.translatable("item.dabaosword.card_pile.tip4", Text.keybind("key.sprint"), Text.keybind("key.dabaosword.select_card")).formatted(Formatting.BOLD));
-        tooltip.add(Text.translatable("item.dabaosword.card_pile.tip5", Text.keybind("key.sprint"), Text.keybind("key.sneak"), Text.keybind("key.dabaosword.select_card")).formatted(Formatting.BOLD));
+        tooltip.add(Text.translatable("item.dabaosword.card_pile.tip3", Text.keybind("key.sprint"), Text.keybind("key.dabaosword.select_card")).formatted(Formatting.BOLD));
+        tooltip.add(Text.translatable("item.dabaosword.card_pile.tip4", Text.keybind("key.sprint"), Text.keybind("key.sneak"), Text.keybind("key.dabaosword.select_card")).formatted(Formatting.BOLD));
     }
 
     @Override

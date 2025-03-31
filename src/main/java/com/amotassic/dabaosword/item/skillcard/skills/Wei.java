@@ -16,8 +16,6 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.SlotActionType;
@@ -288,11 +286,9 @@ public class Wei {
                 if (countCards(user) > 0) {
 
                     Item[] items = {ModItems.BINGLIANG_ITEM, ModItems.TOO_HAPPY_ITEM, ModItems.DISCARD, ModItems.FIRE_ATTACK, ModItems.JIEDAO, ModItems.JUEDOU, ModItems.NANMAN, ModItems.STEAL, ModItems.TAOYUAN, ModItems.TIESUO, ModItems.WANJIAN, ModItems.WUXIE, ModItems.WUGU, ModItems.WUZHONG};
-                    Inventory inventory = new SimpleInventory(60);
-                    for (var item : items) inventory.setStack(Arrays.stream(items).toList().indexOf(item) + 18, new ItemStack(item));
-                    inventory.setStack(55, skill.stack);
+                    var stacks = Arrays.stream(items).map(ItemStack::new).toList();
 
-                    openMenu(user, user, inventory, Text.translatable("item.dabaosword.qice.screen"));
+                    openMenu(user, user, skill.stack, stacks, Text.translatable("item.dabaosword.qice.screen"));
                     return true;
                 } else user.sendMessage(Text.translatable("item.dabaosword.qice.tip").formatted(Formatting.RED), true);
             } else user.sendMessage(Text.translatable("dabaosword.cooldown").formatted(Formatting.RED), true);
@@ -375,7 +371,7 @@ public class Wei {
         public int onHit(LivingEntity user, LivingEntity entity, Skill skill, ExData data) {
             if (user instanceof PlayerEntity player && !user.hasStatusEffect(ModItems.COOLDOWN)) {
                 if (entity instanceof PlayerEntity target) {
-                    if (countAllCards(target) > 0) openInv(player, target, Text.translatable("dabaosword.discard.title", skill.toHoverableText()), skill.stack, false, true, false, 1);
+                    if (countAllCards(target) > 0) openInv(player, target, target, Text.translatable("dabaosword.discard.title", skill.toHoverableText()), skill.stack, true, false, 1);
                 } else {
                     voice(user, this);
                     if (new Random().nextFloat() < 0.5) {
@@ -477,12 +473,18 @@ public class Wei {
         }
 
         @Override
+        public void addScreenTip(Skill skill, List<Text> tips) {
+            addPresetTips(skill, tips, 0, 1, 2, 4, 5);
+            super.addScreenTip(skill, tips);
+        }
+
+        @Override
         public boolean activeSkill(PlayerEntity user, Skill skill, LivingEntity entity) {
             if (entity instanceof PlayerEntity target) {
                 int i = skill.getTag();
                 if (i <= 0) return false;
                 skill.setMaxSelect(i);
-                openInv(user, target, Text.translatable("give_card.title", skill.toHoverableText()), skill.stack, true, false, false, 2);
+                openInv(user, user, target, Text.translatable("give_card.title", skill.toHoverableText()), skill.stack, false, false, 2);
                 return true;
             }
             return false;
