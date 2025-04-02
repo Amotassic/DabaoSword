@@ -78,11 +78,11 @@ public class PlayerEvents implements PlayerDeathCallback, PlayerRespawnCallback 
             }
 
             if (world.getGameRules().getBoolean(Gamerule.CLEAR_CARDS_AFTER_DEATH)) {
-                var data = cardsToDrop(player);
-                CardEvents.cardDiscard(player, data);
+                CardEvents.cardDiscard(player, cardsToDrop(player));
             }
 
             if (hasItem(player, p(ModItems.BBJI))) voice(player, "xuyou");
+            player.getCommandTags().remove("duanchang");
         }
     }
 

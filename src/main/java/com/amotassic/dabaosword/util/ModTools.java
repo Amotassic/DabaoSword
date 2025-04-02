@@ -13,6 +13,7 @@ import com.amotassic.dabaosword.event.PVPGameEvents;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.card.CardItem;
 import com.amotassic.dabaosword.item.card.Sha;
+import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.network.OpenScreenPayload;
 import com.amotassic.dabaosword.ui.FullInvScreenHandler;
 import com.amotassic.dabaosword.ui.PlayerInvScreenHandler;
@@ -431,6 +432,7 @@ public class ModTools {
     public static List<Skill> getSkillsMayUse(LivingEntity entity) {
         Predicate<ItemStack> p = s -> {
             if (!(s.getItem() instanceof ISkill)) return false;
+            if (s.getItem() instanceof SkillItem && entity.getCommandTags().contains("duanchang")) return false;
             return s(s).lockOn() || !entity.hasStatusEffect(ModItems.TIEJI);
         };
         return getTrinketComponent(entity).map(c -> c.getEquipped(p).stream().map(Pair::getRight).map(Skill::new).toList()).orElse(Collections.emptyList());

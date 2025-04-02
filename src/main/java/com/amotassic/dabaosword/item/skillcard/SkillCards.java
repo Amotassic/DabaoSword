@@ -27,6 +27,8 @@ public class SkillCards {
     public static final List<SkillItem> SKILLS = new ArrayList<>();
     //魏
     public static final SkillItem
+    CHENGXIANG = register("chengxiang", Wei.Chengxiang::new),
+    DAOSHU = register("daoshu", Wei.Daoshu::new),
     DUANLIANG = register("duanliang", Wei.Duanliang::new),
     FANGZHU = register("fangzhu", Wei.Fangzhu::new),
     XINGSHANG = register("xingshang", Wei.Xingshang::new),
@@ -44,6 +46,7 @@ public class SkillCards {
     YIJI = register("yiji", Wei.Yiji::new),
     //蜀
     BENXI = register("benxi", Shu.Benxi::new),
+    HUILEI = register("huilei", Shu.Huilei::new),
     HUOJI = register("huoji", Shu.Huoji::new),
     KANPO = register("kanpo", Shu.Kanpo::new),
     JIZHI = register("jizhi", Shu.Jizhi::new),
@@ -71,6 +74,7 @@ public class SkillCards {
     ZHIHENG = register("zhiheng", Wu.Zhiheng::new),
     ZHIJIAN = register("zhijian", Wu.Zhijian::new),
     //群
+    DUANCHANG = register("duanchang", Qun.Duanchang::new),
     JIJIU = register("jijiu", Qun.Jijiu::new),
     JIUCHI = register("jiuchi", Qun.Jiuchi::new),
     JIZHAN = register("jizhan", Qun.Jizhan::new),

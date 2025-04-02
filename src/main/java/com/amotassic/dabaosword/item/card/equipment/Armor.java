@@ -72,7 +72,7 @@ public class Armor extends Equipment {
 
         @SkillInfo(trigger = Trigger.DROP_TARGET, relation = Relation.ANY)
         public int fangheisha(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
-            if (data.targets.contains(user) && isSha.and(isBlackCard).test(data.getCard().toStack())) {
+            if (data.targets.contains(user) && isSha.and(isBlackCard).test(data.getFirst().toStack())) {
                 voice(user, this); data.removeTarget(user);
             }
             return 0;
@@ -113,7 +113,7 @@ public class Armor extends Equipment {
 
         @SkillInfo(trigger = Trigger.DROP_TARGET, relation = Relation.ANY)
         public int goodEffect(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
-            var card = data.getCard().toStack();
+            var card = data.getFirst().toStack();
             boolean bl = card.isOf(ModItems.WANJIAN) || card.isOf(ModItems.NANMAN) || card.isOf(ModItems.SHA);
             if (data.targets.contains(user) && bl) {
                 voice(user, this); data.removeTarget(user);
