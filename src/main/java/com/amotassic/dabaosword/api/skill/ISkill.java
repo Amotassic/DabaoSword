@@ -64,6 +64,7 @@ public interface ISkill extends Trinket {
 
     @Override
     default void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
+        if (stack.getItem() instanceof SkillItem && entity.getCommandTags().contains("duanchang")) return;
         Skill skill = s(stack);
         if (skill.lockOn() || !entity.hasStatusEffect(ModItems.TIEJI)) tickSkill(skill, entity);
         if (entity.getWorld() instanceof ServerWorld world) {

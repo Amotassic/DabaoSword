@@ -34,7 +34,7 @@ public class Weapon extends Equipment {
 
         @SkillInfo(trigger = Trigger.SELECT_TARGET, relation = Relation.NOT_SELF)
         public int onSha(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
-            Card card = data.getCard();
+            Card card = data.getFirst();
             if (isSha.test(card.toStack()) && target != null && new Random().nextFloat() < 0.5) {
                 draw(user); voice(user, this);
             }

@@ -74,7 +74,7 @@ public class DabaoSwordCommand {
     }
 
     public interface CSkill {
-        default void triggerSkill(LivingEntity entity, Skill skill, LivingEntity target, int value) {}
+        void triggerSkill(LivingEntity entity, Skill skill, LivingEntity target, int value);
     }
 
     private static int createGame(ServerCommandSource ctx, int type) throws CommandSyntaxException {

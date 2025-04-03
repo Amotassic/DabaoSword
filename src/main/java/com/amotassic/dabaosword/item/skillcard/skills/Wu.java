@@ -161,7 +161,7 @@ public class Wu {
 
         @SkillInfo(trigger = Trigger.LOSE_CARD_USE, relation = Relation.SELF)
         public int useCard(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
-            var card = data.getCard().toStack();
+            var card = data.getFirst().toStack();
             var nbt = skill.getNbt();
             int last = nbt.contains("fenyin") ? nbt.getInt("fenyin") : 0;
             int current = isRedCard.test(card) ? 1 : isBlackCard.test(card) ? 2 : 0;
@@ -280,7 +280,7 @@ public class Wu {
 
         @SkillInfo(trigger = Trigger.DROP_TARGET, relation = Relation.NOT_SELF)
         public int beiSha(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
-            var targets = data.targets; var card = data.getCard();
+            var targets = data.targets; var card = data.getFirst();
             if (isSha.test(card.toStack()) && targets.contains(user) && hasCard(user, isCard)) {
                 LivingEntity near = getClosestEntity(user, LivingEntity.class, 50, e -> e != target);
                 if (near != null) {

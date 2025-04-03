@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.api.skill;
 
+import com.amotassic.dabaosword.api.CardEvents;
 import com.amotassic.dabaosword.api.card.Card;
 import com.amotassic.dabaosword.item.ModItems;
 import net.minecraft.entity.LivingEntity;
@@ -13,8 +14,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
-import static com.amotassic.dabaosword.util.ModTools.c;
-import static com.amotassic.dabaosword.util.ModTools.toList;
+import static com.amotassic.dabaosword.util.ModTools.*;
 
 /**
  * 不同的全局监听技能效果需要的参数不尽相同，为了能统一方法参数，故将除了技能本身外的参数封装在一个类中。
@@ -63,8 +63,17 @@ public class ExData {
         return this;
     }
 
+    /**一定要在最后需要移除卡牌的时候才调用此方法，否则可能会出现找不到卡牌的情况！
+     * <p>
+     * 清除所有记录于此ExData的卡牌而不触发任何监听事件，如果卡牌是来自某个生物才会生效*/
+    public void clearCards(LivingEntity cards_owner) {
+        forEachCard(ALL, (c, i) -> {
+            CardEvents.cardDecrement(cards_owner, getCard(cards_owner, s-> ItemStack.areEqual(s, c.toStack())), i);
+        });
+    }
+
     /**获取第一张来自于手牌区的牌，一般用于使用卡牌时机，直接获取使用者使用的牌，其他情况不推荐使用此方法*/
-    public Card getCard(boolean... fromEquip) {
+    public Card getFirst(boolean... fromEquip) {
         boolean bl = fromEquip.length > 0 && fromEquip[0];
         if (bl && !cards_from_equ.isEmpty()) return cards_from_equ.keySet().iterator().next();
         else if (!cards_from_inv.isEmpty()) return cards_from_inv.keySet().iterator().next();

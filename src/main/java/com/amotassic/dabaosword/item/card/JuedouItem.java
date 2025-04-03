@@ -1,7 +1,6 @@
 package com.amotassic.dabaosword.item.card;
 
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -44,7 +43,7 @@ public class JuedouItem extends CardItem.Armoury {
     }
 
     private void juedou(LivingEntity attacker, ItemStack card, LivingEntity target) {
-        DamageSource source = getDamageSource(attacker, DamageTypes.GENERIC_KILL);
+        var source = getDamageSource(attacker, DamageTypes.GENERIC);
         target.timeUntilRegen = 0;
         if (target.damage(source, 5f)) hurtByCard(target, card);
     }
