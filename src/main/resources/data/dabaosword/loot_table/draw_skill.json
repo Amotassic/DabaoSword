@@ -1,0 +1,282 @@
+{
+  "type": "minecraft:gift",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:mashu"
+        },
+        {
+          "weight": 1,
+          "type": "minecraft:item",
+          "name": "dabaosword:feiying"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:huilei"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:duanchang"
+        },
+        {
+          "weight": 2,
+          "type": "minecraft:item",
+          "name": "dabaosword:chengxiang"
+        },
+        {
+          "weight": 2,
+          "type": "minecraft:item",
+          "name": "dabaosword:daoshu"
+        },
+        {
+          "weight": 2,
+          "type": "minecraft:item",
+          "name": "dabaosword:paoxiao"
+        },
+        {
+          "weight": 2,
+          "type": "minecraft:item",
+          "name": "dabaosword:shixin"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:fanjian"
+        },
+        {
+          "weight": 1,
+          "type": "minecraft:item",
+          "name": "dabaosword:fenyin"
+        },
+        {
+          "weight": 2,
+          "type": "minecraft:item",
+          "name": "dabaosword:jijiu"
+        },
+        {
+          "weight": 2,
+          "type": "minecraft:item",
+          "name": "dabaosword:jiuchi"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:jianxiong"
+        },
+        {
+          "weight": 2,
+          "type": "minecraft:item",
+          "name": "dabaosword:jizhan"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:yingzi"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:weimu"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:wusheng"
+        },
+        {
+          "weight": 2,
+          "type": "minecraft:item",
+          "name": "dabaosword:shensu"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:xiaoji"
+        },
+        {
+          "weight": 1,
+          "type": "minecraft:item",
+          "name": "dabaosword:lianying"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:longdan"
+        },
+        {
+          "weight": 2,
+          "type": "minecraft:item",
+          "name": "dabaosword:shanzhuan"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:zhijian"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:gongxin"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:rende"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:zhiheng"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:buqu"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:tieji"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:ganglie"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:fangzhu"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:xingshang"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:duanliang"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:luoshen"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:qingguo"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:qixi"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:liegong"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:gongao"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:benxi"
+        },
+        {
+          "weight": 2,
+          "type": "minecraft:item",
+          "name": "dabaosword:leiji"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:guose"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:liuli"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:jizhi"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:kanpo"
+        },
+        {
+          "weight": 2,
+          "type": "minecraft:item",
+          "name": "dabaosword:huoji"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:qice"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:kurou"
+        },
+        {
+          "weight": 1,
+          "type": "minecraft:item",
+          "name": "dabaosword:jueqing"
+        },
+        {
+          "weight": 2,
+          "type": "minecraft:item",
+          "name": "dabaosword:pojun"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:kuanggu"
+        },
+        {
+          "weight": 2,
+          "type": "minecraft:item",
+          "name": "dabaosword:taoluan"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:quanji"
+        },
+        {
+          "weight": 2,
+          "type": "minecraft:item",
+          "name": "dabaosword:luanji"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:luoyi"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:yiji"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "dabaosword:draw_skill"
+}

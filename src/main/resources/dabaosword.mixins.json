@@ -1,0 +1,32 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.amotassic.dabaosword.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "ArrowEntiytMixin",
+    "Crafter",
+    "CrafterScreen",
+    "CraftingMixin",
+    "EntityMixin",
+    "FireballEntityMixin",
+    "ItemEntityMixin",
+    "LivingEntityMixin",
+    "MixinReachAttributes",
+    "MobEntityMixin",
+    "PlayerEntityMixin",
+    "PlayerManagerMixin",
+    "RavagerMixin",
+    "ServerPlayerEntityMixin",
+    "TridentMixin"
+  ],
+  "client": [
+    "client.DrawContextMixin",
+    "client.GameRendererMixin",
+    "client.KeyboardMixin",
+    "client.LivingEntityRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

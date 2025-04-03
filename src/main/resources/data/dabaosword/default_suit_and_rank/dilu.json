@@ -1,0 +1,20 @@
+{
+  "suits_and_ranks": [
+    {
+      "suit": "Heart",
+      "rank": "K"
+    },
+    {
+      "suit": "Diamond",
+      "rank": "K"
+    },
+    {
+      "suit": "Club",
+      "rank": "5"
+    },
+    {
+      "suit": "Spade",
+      "rank": "5"
+    }
+  ]
+}

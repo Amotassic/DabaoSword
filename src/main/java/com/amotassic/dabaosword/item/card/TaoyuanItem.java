@@ -1,0 +1,34 @@
+package com.amotassic.dabaosword.item.card;
+
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.world.World;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import static com.amotassic.dabaosword.util.ModTools.voice;
+
+public class TaoyuanItem extends CardItem.Armoury {
+    public TaoyuanItem(Settings settings) {super(settings);}
+
+    @Override
+    public ActionResult use(World world, PlayerEntity user, Hand hand) {
+        if (world instanceof ServerWorld sw && hand == Hand.MAIN_HAND) {
+            Set<LivingEntity> targets = new HashSet<>(sw.getPlayers());
+            onUse(user, user.getMainHandStack(), targets.toArray(new LivingEntity[0]));
+            return ActionResult.SUCCESS_SERVER;
+        }
+        return super.use(world, user, hand);
+    }
+
+    @Override
+    public void effect(LivingEntity user, ItemStack card, LivingEntity target) {
+        target.heal(5.0F);
+        if (target != user) voice(target, this);
+    }
+}
