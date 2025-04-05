@@ -9,19 +9,18 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-import static com.amotassic.dabaosword.api.event.CardEvents.cardUsePre;
-
-public class FireAttackItem extends CardItem {
+public class FireAttackItem extends CardItem.Armoury {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         if (!world.isClient && hand == Hand.MAIN_HAND) {
-            if (cardUsePre(user, user.getMainHandStack(), null)) return TypedActionResult.success(user.getMainHandStack());
+            onUse(user, user.getMainHandStack(), user);
+            return TypedActionResult.success(user.getMainHandStack());
         }
         return super.use(world, user, hand);
     }
 
     @Override
-    public void cardUse(LivingEntity user, ItemStack stack, LivingEntity target) {
+    public void effect(LivingEntity user, ItemStack card, LivingEntity target) {
         World world = user.getWorld();
         Vec3d momentum = user.getRotationVector().multiply(3);
         FireballEntity fireballEntity = new FireballEntity(world, user, momentum, 3);

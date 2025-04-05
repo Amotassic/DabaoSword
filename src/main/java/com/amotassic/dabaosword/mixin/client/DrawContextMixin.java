@@ -1,6 +1,7 @@
 package com.amotassic.dabaosword.mixin.client;
 
-import com.amotassic.dabaosword.api.Card;
+import com.amotassic.dabaosword.api.card.Rank;
+import com.amotassic.dabaosword.api.card.Suit;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.ModTools;
 import net.minecraft.client.MinecraftClient;
@@ -22,6 +23,8 @@ import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
+import static com.amotassic.dabaosword.util.ModTools.c;
+
 @Mixin(DrawContext.class)
 public abstract class DrawContextMixin {
     @Shadow @Final private MatrixStack matrices;
@@ -32,9 +35,9 @@ public abstract class DrawContextMixin {
 
     @Inject(method = "drawItemInSlot(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/item/ItemStack;isItemBarVisible()Z"))
     public void drawItemInSlot(TextRenderer textRenderer, ItemStack stack, int x, int y, String countOverride, CallbackInfo ci) {
-        var sr = ModTools.getSuitAndRank(stack);
-        if (sr != null) {
-            Card.Suits s = sr.getLeft(); Card.Ranks r = sr.getRight();
+        var card = c(stack);
+        var s = card.suit; var r = card.rank;
+        if (s != Suit.None && r != Rank.None) {
             Identifier suit = Identifier.of("dabaosword", "textures/item/suit/" + getSuitName(s) + ".png");
             Identifier rank = Identifier.of("dabaosword", "textures/item/rank2/" + getRankName(s, r) + ".png");
             if (stack.getCount() == 1) this.matrices.translate(0.0f, 0.0f, 200.0f);
@@ -55,16 +58,17 @@ public abstract class DrawContextMixin {
         }
     }
 
-    @Unique private String getSuitName(Card.Suits s) {
+    @Unique private String getSuitName(Suit s) {
         return switch (s) {
             case Heart -> "heart";
             case Diamond -> "diamond";
             case Spade -> "spade_w";
             case Club -> "club_w";
+            case None -> "";
         };
     }
 
-    @Unique private String getRankName(Card.Suits s, Card.Ranks r) {
+    @Unique private String getRankName(Suit s, Rank r) {
         return switch (s) {
             case Heart, Diamond -> switch (r) {
                 case Ace -> "ar";
@@ -80,6 +84,7 @@ public abstract class DrawContextMixin {
                 case Jack -> "jr";
                 case Queen -> "qr";
                 case King -> "kr";
+                case None -> "";
             };
             case Spade, Club -> switch (r) {
                 case Ace -> "ab";
@@ -95,7 +100,9 @@ public abstract class DrawContextMixin {
                 case Jack -> "jb";
                 case Queen -> "qb";
                 case King -> "kb";
+                case None -> "";
             };
+            case None -> "";
         };
     }
 }

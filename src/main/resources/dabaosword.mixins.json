@@ -5,6 +5,9 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "ArrowEntiytMixin",
+    "Crafter",
+    "CrafterScreen",
+    "CraftingMixin",
     "EntityMixin",
     "FireballEntityMixin",
     "ItemEntityMixin",
@@ -14,7 +17,8 @@
     "PlayerEntityMixin",
     "PlayerManagerMixin",
     "RavagerMixin",
-    "ServerPlayerEntityMixin"
+    "ServerPlayerEntityMixin",
+    "TridentMixin"
   ],
   "client": [
     "client.DrawContextMixin",

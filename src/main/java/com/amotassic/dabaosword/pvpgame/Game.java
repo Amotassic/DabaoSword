@@ -18,7 +18,8 @@ import net.minecraft.world.GameMode;
 import java.util.*;
 import java.util.function.Consumer;
 
-import static com.amotassic.dabaosword.util.ModTools.*;
+import static com.amotassic.dabaosword.util.ModTools.title;
+import static com.amotassic.dabaosword.util.ModTools.voice;
 
 public class Game {
     private final ServerWorld world;
@@ -159,7 +160,7 @@ public class Game {
     public void win(Identity identity) {
         forEachPlayer(player -> {
             if (getIdentity(player) == identity) {
-                voice(player, getSound("win"));
+                voice(player, "win");
                 title(player, Text.translatable("dabaosword.game.win").formatted(Formatting.GOLD));
             }
             player.sendMessage(Text.translatable("dabaosword.game.end", Text.translatable(identity.tag)).formatted(getIdentityColor(identity)));

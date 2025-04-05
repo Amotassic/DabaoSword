@@ -7,25 +7,31 @@ import com.amotassic.dabaosword.entity.ModEntity;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.network.ServerNetworking;
-import com.amotassic.dabaosword.util.*;
+import com.amotassic.dabaosword.util.Gamerule;
+import com.amotassic.dabaosword.util.ModConfig;
+import com.amotassic.dabaosword.util.ModTools;
+import com.amotassic.dabaosword.util.Tags;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.Items;
+import net.minecraft.server.MinecraftServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DabaoSword implements ModInitializer {
     public static final String MOD_ID = "dabaosword";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+    public static MinecraftServer server;
     @Override
     public void onInitialize() {
         LOGGER.info("Ciallo～(∠·ω< )⌒★");
         new Configuration(ModConfig.class, MOD_ID);
         ModItems.register();
-        Sounds.sound();
+        long start = System.currentTimeMillis();
         SkillCards.register();
+        LOGGER.info("Loaded all skills in {}ms", System.currentTimeMillis() - start);
         ModTools.initAllCards();
         Tags.Tag();
         Gamerule.registerGamerules();

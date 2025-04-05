@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.event;
 
+import com.amotassic.dabaosword.DabaoSword;
 import com.amotassic.dabaosword.api.CardPileInventory;
 import com.amotassic.dabaosword.api.event.PVPGameTickCallback;
 import com.amotassic.dabaosword.item.ModItems;
@@ -120,6 +121,7 @@ public class PVPGameEvents implements ServerWorldEvents.Load, ServerTickEvents.S
     public static final Map<ServerPlayerEntity, CardPileInventory> PLAYER_CARD_PACKS = new HashMap<>();
 
     public void onStartTick(MinecraftServer server) {
+        DabaoSword.server = server;
         List<ServerPlayerEntity> playerList = server.getPlayerManager().getPlayerList();
         for (var player : playerList) {
             if (!PLAYER_CARD_PACKS.containsKey(player) && hasTrinket(ModItems.CARD_PILE, player)) PLAYER_CARD_PACKS.put(player, new CardPileInventory(player));

@@ -15,6 +15,41 @@
           "name": "dabaosword:feiying"
         },
         {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:huilei"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:duanchang"
+        },
+        {
+          "weight": 2,
+          "type": "minecraft:item",
+          "name": "dabaosword:chengxiang"
+        },
+        {
+          "weight": 2,
+          "type": "minecraft:item",
+          "name": "dabaosword:daoshu"
+        },
+        {
+          "weight": 2,
+          "type": "minecraft:item",
+          "name": "dabaosword:paoxiao"
+        },
+        {
+          "weight": 2,
+          "type": "minecraft:item",
+          "name": "dabaosword:shixin"
+        },
+        {
+          "weight": 3,
+          "type": "minecraft:item",
+          "name": "dabaosword:fanjian"
+        },
+        {
           "weight": 1,
           "type": "minecraft:item",
           "name": "dabaosword:fenyin"

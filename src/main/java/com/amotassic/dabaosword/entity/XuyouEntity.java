@@ -1,6 +1,6 @@
 package com.amotassic.dabaosword.entity;
 
-import com.amotassic.dabaosword.util.Sounds;
+import com.amotassic.dabaosword.api.CardEvents;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -20,7 +20,6 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
-import static com.amotassic.dabaosword.api.event.CardEvents.cardDiscard;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class XuyouEntity extends HostileEntity implements RangedAttackMob {
@@ -87,17 +86,20 @@ public class XuyouEntity extends HostileEntity implements RangedAttackMob {
     }
 
     @Override
-    protected SoundEvent getDeathSound() {return Sounds.XUYOU;}
+    protected SoundEvent getDeathSound() {return getSound("dabaosword", "xuyou");}
 
     @Override
     protected SoundEvent getHurtSound(DamageSource source) {return source.getType().effects().getSound();}
 
     @Override
     public void onDeath(DamageSource damageSource) {
-        for (var stack : allTrinkets(this)) {
-            if(isCard(stack)) cardDiscard(this, stack, stack.getCount(), true);
-        }
         super.onDeath(damageSource);
+        if (getWorld().isClient) return;
+        var data = d();
+        for (var stack : allTrinkets(this)) {
+            if(isCard(stack)) data.cards(stack, stack.getCount(), true);
+        }
+        CardEvents.cardDiscard(this, data);
     }
 
     @Override
@@ -105,6 +107,6 @@ public class XuyouEntity extends HostileEntity implements RangedAttackMob {
         bbTimes++;
         target.timeUntilRegen = 0;
         target.damage(getDamageSource(this, DamageTypes.GENERIC), 2);
-        voice(this, Sounds.BBJI);
+        voice(this, "bbji");
     }
 }

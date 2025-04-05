@@ -1,253 +1,276 @@
 package com.amotassic.dabaosword.item.skillcard.skills;
 
-import com.amotassic.dabaosword.api.Card;
-import com.amotassic.dabaosword.api.ICardEvent;
-import com.amotassic.dabaosword.api.ReachDefend;
+import com.amotassic.dabaosword.api.card.Card;
+import com.amotassic.dabaosword.api.card.Rank;
+import com.amotassic.dabaosword.api.skill.*;
 import com.amotassic.dabaosword.command.DabaoSwordCommand;
 import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.item.card.CardItem;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
-import com.amotassic.dabaosword.util.Sounds;
-import dev.emi.trinkets.api.SlotReference;
+import com.amotassic.dabaosword.ui.PlayerInvScreenHandler;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
+import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
+import java.util.function.Predicate;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
+import static net.minecraft.util.Formatting.*;
 
 public class Qun {
 
+    public static class Duanchang extends SkillItem {
+        @Override
+        public void addTip(Skill skill, List<Text> tooltip) {tooltip.add(getTip());}
+
+        @Override public boolean lockOn() {return true;}
+
+        @SkillInfo(trigger = Trigger.ON_DEATH, relation = Relation.SELF)
+        public int chicai(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
+            Entity killer = null; Entity attacker = data.source.getAttacker();
+            if (attacker instanceof PlayerEntity player) killer = player;
+            else if (user.getPrimeAdversary() != null) killer = user.getPrimeAdversary();
+            if (killer instanceof PlayerEntity pl) {
+                voice(user, this);
+                killer.addCommandTag("duanchang");
+                pl.sendMessage(Text.translatable("duanchang.tip").formatted(RED, BOLD), false);
+            }
+            return 0;
+        }
+    }
+
     public static class Jijiu extends SkillItem {
         @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+        public void addTip(Skill skill, List<Text> tooltip) {
             tooltip.add(Text.literal("CD: 10s"));
-            tooltip.add(Text.translatable("item.dabaosword.jijiu.tooltip"));
+            tooltip.add(getTip());
         }
 
         @Override
-        public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            viewAs(entity, stack, 10, isRedCard, ModItems.PEACH);
-            super.tick(stack, slot, entity);
+        public void tickSkill(Skill skill, LivingEntity entity) {
+            viewAs(entity, skill, 10, isRedCard, ModItems.PEACH);
         }
     }
 
     public static class Jiuchi extends SkillItem {
         @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+        public void addTip(Skill skill, List<Text> tooltip) {
             tooltip.add(Text.literal("CD: 10s"));
-            tooltip.add(Text.translatable("item.dabaosword.jiuchi.tooltip"));
+            tooltip.add(getTip());
         }
 
         @Override
-        public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            viewAs(entity, stack, 10, isSpadeCard, ModItems.JIU);
-            super.tick(stack, slot, entity);
+        public void tickSkill(Skill skill, LivingEntity entity) {
+            viewAs(entity, skill, 10, isSpadeCard, ModItems.JIU);
         }
     }
 
     public static class Jizhan extends SkillItem implements DabaoSwordCommand.CSkill {
-        @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            tooltip.add(Text.translatable("item.dabaosword.jizhan.tooltip1"));
-            tooltip.add(Text.translatable("item.dabaosword.jizhan.tooltip2"));
+        public void addTip(Skill skill, List<Text> tooltip) {
+            tooltip.add(getTip("1"));
+            tooltip.add(getTip("2"));
         }
 
         private final MutableText JIZHAN_TEXT = Text.translatable("jizhan.text",
-                Text.translatable("rank.higher").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword dabaosword:jizhan 1"))),
-                Text.translatable("rank.lower").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword dabaosword:jizhan -1"))));
+                Text.translatable("rank.higher").formatted(AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword @s dabaosword:jizhan @s 1"))),
+                Text.translatable("rank.lower").formatted(AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword @s dabaosword:jizhan @s -1"))));
 
         @Override
-        public int onDrawPhase(PlayerEntity player, ItemStack stack) {
-            voice(player, stack);
+        public int onDrawPhase(PlayerEntity player, Skill skill) {
+            voice(player, this);
             ItemStack last = newCard();
             give(player, last); //先让玩家摸一张牌，保存到lastCard
-            player.getWorld().getPlayers().forEach(p -> p.sendMessage(Text.translatable("jizhan.draw", player.getDisplayName(), stack.toHoverableText(), last.toHoverableText(), Objects.requireNonNull(getRank(last)).rank), false));
-            NbtCompound tag = getOrCreateNbt(stack);
-            tag.putInt("lastCardRank", Objects.requireNonNull(getRank(last)).ordinal());
-            setNbt(stack, tag);
+            player.getWorld().getPlayers().forEach(p -> p.sendMessage(Text.translatable("jizhan.draw", player.getDisplayName(), skill.toHoverableText(), last.toHoverableText(), c(last).rank.rank), false));
+            var tag = skill.getNbt();
+            tag.putInt("lastCardRank", c(last).rank.ordinal());
+            skill.setNbt(tag);
             player.sendMessage(JIZHAN_TEXT, false);
             return -114;
         }
 
         @Override
-        public void triggerSkill(LivingEntity entity, ItemStack stack, int value) {
-            int last = getOrCreateNbt(stack).getInt("lastCardRank");
+        public void triggerSkill(LivingEntity entity, Skill skill, LivingEntity target, int value) {
+            int last = skill.getNbt().getInt("lastCardRank");
             if (last == -1 || !(entity instanceof PlayerEntity player)) return;
             ItemStack next = newCard();
             give(player, next); //又让玩家摸一张牌后，比较两张牌的点数，如果玩家选对了，就把新的牌保存到lastCard，否则关闭菜单
-            player.getWorld().getPlayers().forEach(p -> p.sendMessage(Text.translatable("jizhan.draw", player.getDisplayName(), stack.toHoverableText(), next.toHoverableText(), Objects.requireNonNull(getRank(next)).rank), false));
+            player.getWorld().getPlayers().forEach(p -> p.sendMessage(Text.translatable("jizhan.draw", player.getDisplayName(), skill.toHoverableText(), next.toHoverableText(), c(next).rank.rank), false));
             //下一张牌与上一张牌点数比较，有3种情况：更大返回1，更小返回-1，相等返回0
-            int cmp = Integer.compare(Objects.requireNonNull(getRank(next)).ordinal(), last);
+            int cmp = Integer.compare(c(next).rank.ordinal(), last);
             //玩家选择只有两张情况：选更大返回1，选更小返回-1
-            NbtCompound tag = getOrCreateNbt(stack);
+            var tag = skill.getNbt();
             if (cmp == value) {
-                tag.putInt("lastCardRank", Objects.requireNonNull(getRank(next)).ordinal());
+                tag.putInt("lastCardRank", c(next).rank.ordinal());
                 player.sendMessage(JIZHAN_TEXT, false);
             } else tag.putInt("lastCardRank", -1);
-            setNbt(stack, tag);
+            skill.setNbt(tag);
         }
     }
 
-    public static class Leiji extends SkillItem implements ICardEvent {
-        @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            tooltip.add(Text.translatable("item.dabaosword.leiji.tooltip"));
-        }
+    public static class Leiji extends SkillItem {
+        public void addTip(Skill skill, List<Text> tooltip) {tooltip.add(getTip());}
 
-        @Override
-        public void postCardUse(LivingEntity user, ItemStack card, LivingEntity target, ItemStack skill) {
+        @SkillInfo(trigger = Trigger.LOSE_CARD_USE, relation = Relation.SELF)
+        public int useShan(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
+            var card = data.getFirst();
             if (card.isOf(ModItems.SHAN)) {
-                voice(user, skill);
+                voice(user, this);
                 user.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 10,3,false,false,false));
             }
+            return 0;
         }
 
-        @Override
-        public Priority getPriority(LivingEntity target, DamageSource source, float amount) {return Priority.NORMAL;}
-
-        @Override
-        public boolean cancelDamage(LivingEntity target, DamageSource source, float amount) {
-            return source.isOf(DamageTypes.LIGHTNING_BOLT) && source.getAttacker() == null;
+        @SkillInfo(trigger = Trigger.CANCEL_DAMAGE_HIGH, relation = Relation.SELF)
+        public int fanglei(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
+            var source = data.source;
+            if (source.isOf(DamageTypes.LIGHTNING_BOLT) && source.getAttacker() == null) return 1;
+            return 0;
         }
     }
 
     public static class Luanji extends SkillItem {
         @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            int cd = getCD(stack);
+        public void addTip(Skill skill, List<Text> tooltip) {
+            int cd = skill.getCD();
             tooltip.add(Text.literal(cd == 0 ? "CD: 15s" : "CD: 15s   left: "+ cd +"s"));
-            tooltip.add(Text.translatable("item.dabaosword.luanji.tooltip"));
+            tooltip.add(getTip());
+        }
+
+        @Override public boolean isActiveSkill() {return true;}
+
+        @Override
+        public void addScreenTip(Skill skill, List<Text> tips) {
+            addPresetTips(skill, tips, 0, 1, 2, 4, 5);
+            super.addScreenTip(skill, tips);
         }
 
         @Override
-        public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            super.tick(stack, slot, entity);
-            if (!entity.getWorld().isClient && entity instanceof PlayerEntity player && noTieji(player) && getCD(stack) == 0) {
-                ItemStack off = player.getOffHandStack();
-                NbtCompound nbt = getOrCreateNbt(stack);
-                Card.Suits firstSuit = null;
-                if (nbt.contains("suit")) firstSuit = Card.Suits.get(nbt.getString("suit"));
-                if (entity.getWorld().getTime() % 100 == 0 && firstSuit != null) {
-                    player.sendMessage(Text.translatable("item.dabaosword.luanji.suit", stack.getName(), firstSuit.suit), true);
-                }
-                Card.Suits suit = getSuit(off);
-                if (isCard(off) && suit != null) {
-                    if (firstSuit == suit) { //如果记录花色和当前牌花色相同，就移除一张牌，获得万箭齐发，技能进入CD
-                        nbt.remove("suit");
-                        setNbt(stack, nbt);
-                        setCD(stack, 15);
-                        off.decrement(1);
-                        give(player, newCard(ModItems.WANJIAN));
-                        voice(player, Sounds.LUANJI);
-                        return;
-                    }
-                    if (firstSuit == null) { //如果没有记录花色，就移除一张牌，记录该花色
-                        nbt.putString("suit", suit.suit);
-                        setNbt(stack, nbt);
-                        off.decrement(1);
-                    }
-                }
+        public boolean activeSkill(PlayerEntity user, Skill skill) {
+            if (skill.getCD() > 0) return false;
+            if (ofSuit(user, isDiamondCard) || ofSuit(user, isHeartCard) || ofSuit(user, isClubCard) || ofSuit(user, isSpadeCard)) {
+                skill.setMaxSelect(2);
+                openInv(user, user, user, Text.translatable("item.dabaosword.luanji.suit"), skill.stack, false, false, 2);
+                return true;
+            }
+            return false;
+        }
+
+        boolean ofSuit(PlayerEntity user, Predicate<ItemStack> p) {return countCard(user, p) > 1;}
+
+        @Override
+        public void onSlotClick(PlayerInvScreenHandler handler, PlayerEntity player, Skill skill, PlayerEntity target, int slot, int button, SlotActionType action) {
+            int count = handler.getSelectedCount();
+            List<ItemStack> selects = handler.getSelected(); ItemStack choose = handler.getStack(slot);
+            boolean bl = count == 0 || c(selects.getFirst()).suit == c(choose).suit;
+            if (bl && action == SlotActionType.PICKUP) { //左键点击+1，右键点击-1
+                if (button == 0) handler.addClick(slot);
+                if (button == 1) handler.dropClick(slot);
+            }
+        }
+
+        @Override
+        public void onGuiClose(PlayerInvScreenHandler handler, PlayerEntity player, Skill skill, PlayerEntity target) {
+            if (handler.getSelectedCount() == 2) {
+                voice(player, this);
+                skill.setCD(15);
+                Card card = new Card(ModItems.WANJIAN, c(handler.getSelected().getFirst()).suit, Rank.Ace);
+                handler.toExData().clearCards(player);
+                give(player, card.toStack());
             }
         }
     }
 
-    public static class Taoluan extends SkillItem.ActiveSkill {
-        @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            tooltip.add(Text.translatable("item.dabaosword.taoluan.tooltip"));
-        }
+    public static class Taoluan extends SkillItem {
+        public void addTip(Skill skill, List<Text> tooltip) {tooltip.add(getTip());}
+
+        @Override public boolean isActiveSkill() {return true;}
 
         @Override
-        public void activeSkill(PlayerEntity user, ItemStack stack, PlayerEntity target) {
-            String[] used = getOrCreateNbt(stack).getString("used").split(";");
-            if (used.length == 18) {
-                user.sendMessage(Text.translatable("item.dabaosword.taoluan.fail").formatted(Formatting.RED), true);
-                return;
+        public boolean activeSkill(PlayerEntity user, Skill skill) {
+            List<CardItem> items = ModItems.CARDS.stream().filter(i -> i.getType() != 2).toList();
+            String[] used = skill.getNbt().getString("used").split(";");
+            if (used.length == items.size()) {
+                user.sendMessage(Text.translatable("item.dabaosword.taoluan.fail").formatted(RED), true);
+                return false;
             }
             if (user.getHealth() + 5 * countCard(user, canSaveDying) > 4.99) {
 
-                ItemStack[] stacks = {new ItemStack(ModItems.THUNDER_SHA), new ItemStack(ModItems.FIRE_SHA), new ItemStack(ModItems.SHAN), new ItemStack(ModItems.PEACH), new ItemStack(ModItems.JIU), new ItemStack(ModItems.BINGLIANG_ITEM), new ItemStack(ModItems.TOO_HAPPY_ITEM), new ItemStack(ModItems.DISCARD), new ItemStack(ModItems.FIRE_ATTACK), new ItemStack(ModItems.JIEDAO), new ItemStack(ModItems.JUEDOU), new ItemStack(ModItems.NANMAN), new ItemStack(ModItems.STEAL), new ItemStack(ModItems.TAOYUAN), new ItemStack(ModItems.TIESUO), new ItemStack(ModItems.WANJIAN), new ItemStack(ModItems.WUXIE), new ItemStack(ModItems.WUZHONG)};
-                Inventory inventory = new SimpleInventory(20);
-                for (var stack1 : stacks) {
-                    if (Arrays.stream(used).toList().contains(Registries.ITEM.getId(stack1.getItem()).getPath())) continue;
-                    inventory.setStack(Arrays.stream(stacks).toList().indexOf(stack1), stack1);
-                }
-                inventory.setStack(18, stack);
+                List<ItemStack> stacks = items.stream().filter(i -> !Arrays.stream(used).toList().contains(Registries.ITEM.getId(i).getPath())).map(ItemStack::new).toList();
 
-                openSimpleMenu(user, user, inventory, Text.translatable("item.dabaosword.taoluan.screen"));
-            } else user.sendMessage(Text.translatable("item.dabaosword.taoluan.tip").formatted(Formatting.RED), true);
+                openMenu(user, user, skill.stack, stacks, Text.translatable("item.dabaosword.taoluan.screen"));
+                return true;
+            } else user.sendMessage(Text.translatable("item.dabaosword.taoluan.tip").formatted(RED), true);
+            return false;
         }
 
         @Override
-        public void onClickGUISlot(PlayerEntity player, ItemStack stack, PlayerEntity target, ItemStack selected, int slotIndex) {
-            if (selected.isEmpty()) return;
+        public void onSlotClick(PlayerInvScreenHandler handler, PlayerEntity player, Skill skill, PlayerEntity target, int slot, int button, SlotActionType action) {
+            var selected = handler.getStack(slot);
             give(player, selected);
             if (!player.isCreative()) {
-                NbtCompound nbt = getOrCreateNbt(stack);
+                var nbt = skill.getNbt();
                 String used = nbt.getString("used"); String item = Registries.ITEM.getId(selected.getItem()).getPath();
                 used = used.isEmpty() ? item : used + ";" + item;
-                nbt.putString("used", used); setNbt(stack, nbt);
+                nbt.putString("used", used); skill.setNbt(nbt);
                 player.timeUntilRegen = 0;
                 player.damage(player.getDamageSources().genericKill(), 4.99f);
             }
-            voice(player, Sounds.TAOLUAN);
+            voice(player, this);
             closeGUI(player);
         }
+
+        @SkillInfo(trigger = Trigger.ON_DEATH, relation = Relation.SELF)
+        public int refresh(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
+            var nbt = skill.getNbt();
+            nbt.remove("used"); skill.setNbt(nbt);
+            return 0;
+        }
     }
 
-    public static class Weimu extends SkillItem implements ICardEvent {
-        @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-            tooltip.add(Text.translatable("item.dabaosword.weimu.tooltip"));
-        }
+    public static class Weimu extends SkillItem {
+        public void addTip(Skill skill, List<Text> tooltip) {tooltip.add(getTip());}
 
-        @Override
-        public boolean canUseIfTargetHasSkill(LivingEntity user, ItemStack card, LivingEntity target, ItemStack skill) {
-            if (isBlackCard.and(isArmoury).test(card)) {
-                voice(target, skill); return false;
+        @Override public boolean lockOn() {return true;}
+
+        @SkillInfo(trigger = Trigger.DROP_TARGET, relation = Relation.ANY)
+        public int weimu(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
+            //这里的user才是卡牌的目标，即技能的发动者
+            var card = data.getFirst();
+            if (data.targets.contains(user) && isBlackCard.and(isArmoury).test(card.toStack())) {
+                data.removeTarget(user);
+                voice(user, this);
             }
-            return true;
-        }
-
-        @Override
-        public boolean canHurtByCard(LivingEntity entity, ItemStack skill, ItemStack card) {
-            if (card.isOf(ModItems.NANMAN)) {voice(entity, skill); return false;}
-            return true;
+            return 0;
         }
     }
 
-    public static class Mashu extends SkillItem implements ReachDefend {
-        @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+    public static class Mashu extends SkillItem {
+        public void addTip(Skill skill, List<Text> tooltip) {
             tooltip.add(Text.translatable("item.dabaosword.chitu.tooltip"));
         }
 
-        @Override
-        public int getExtraReach(PlayerEntity player, ItemStack stack) {return 1;}
+        @Override public boolean lockOn() {return true;}
+
+        public int getExtraReach(LivingEntity entity, Skill skill) {return 1;}
     }
 
-    public static class Feiying extends SkillItem implements ReachDefend {
-        @Override
-        public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+    public static class Feiying extends SkillItem {
+        public void addTip(Skill skill, List<Text> tooltip) {
             tooltip.add(Text.translatable("item.dabaosword.dilu.tooltip"));
         }
 
-        @Override
-        public int getDefend(PlayerEntity player, ItemStack stack) {return 1;}
+        @Override public boolean lockOn() {return true;}
+
+        public int getDefend(LivingEntity entity, Skill skill) {return 1;}
     }
 }

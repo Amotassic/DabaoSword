@@ -1,30 +1,39 @@
 package com.amotassic.dabaosword.util;
 
-import com.amotassic.dabaosword.api.Card;
+import com.amotassic.dabaosword.DabaoSword;
 import com.amotassic.dabaosword.api.CardPileInventory;
-import com.amotassic.dabaosword.api.ISha;
+import com.amotassic.dabaosword.api.card.Card;
+import com.amotassic.dabaosword.api.card.Rank;
+import com.amotassic.dabaosword.api.card.Suit;
+import com.amotassic.dabaosword.api.skill.ExData;
+import com.amotassic.dabaosword.api.skill.ISkill;
+import com.amotassic.dabaosword.api.skill.Skill;
+import com.amotassic.dabaosword.api.skill.Trigger;
 import com.amotassic.dabaosword.event.PVPGameEvents;
 import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.item.card.CardItem;
+import com.amotassic.dabaosword.item.card.Sha;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
-import com.amotassic.dabaosword.network.ActiveSkillPayload;
+import com.amotassic.dabaosword.network.OpenScreenPayload;
+import com.amotassic.dabaosword.ui.FullInvScreenHandler;
 import com.amotassic.dabaosword.ui.PlayerInvScreenHandler;
-import com.amotassic.dabaosword.ui.SimpleMenuHandler;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
-import net.minecraft.entity.*;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.LightningEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.FireballEntity;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTable;
@@ -49,39 +58,44 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
-import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.util.math.Box;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.stream.IntStream;
 
 import static dev.emi.trinkets.api.TrinketsApi.getTrinketComponent;
 
-@SuppressWarnings("unused")
 public class ModTools {
+    public static Card c(ItemStack card) {return new Card(card);}
+    /**生成一张花色和点数相同，但牌名不同的牌*/
+    public static Card c(ItemStack card, CardItem replace) {
+        var c = c(card);
+        return new Card(replace, c.suit, c.rank);
+    }
+    public static Skill s(ItemStack skill) {return new Skill(skill);}
+    public static ExData d() {return new ExData();}
     //通过predicate寻找对应物品，免得添加标签
     public static Predicate<ItemStack> p(Item item) {return s -> s.isOf(item);}
     //判断是否是卡牌
-    public static boolean isCard(ItemStack s) {return s.getItem() instanceof Card card && card.getType() != null;}
+    public static boolean isCard(ItemStack s) {return s.getItem() instanceof CardItem;}
     public static final Predicate<ItemStack>
-    canSaveDying = p(ModItems.JIU).or(p(ModItems.PEACH)),
-    isSha = s -> s.getItem() instanceof ISha,
-    isCard = ModTools::isCard,
-    isBasic = s -> s.getItem() instanceof Card c && c.getType() == Card.Type.BASIC,
-    isArmoury = s -> s.getItem() instanceof Card c && c.getType() == Card.Type.ARMOURY,
-    isEquipment = s -> s.getItem() instanceof Card c && c.getType() == Card.Type.EQUIPMENT,
-    isDiamondCard = s -> getSuit(s) == Card.Suits.Diamond,
-    isHeartCard = s -> getSuit(s) == Card.Suits.Heart,
-    isClubCard = s -> getSuit(s) == Card.Suits.Club,
-    isSpadeCard = s -> getSuit(s) == Card.Suits.Spade,
+            canSaveDying = p(ModItems.JIU).or(p(ModItems.PEACH)),
+            isSha = s -> s.getItem() instanceof Sha,
+            isCard = ModTools::isCard,
+            isBasic = s -> c(s).type == Card.BASIC,
+            isArmoury = s -> c(s).type == Card.ARMOURY,
+            isEquipment = s -> c(s).type == Card.EQUIPMENT,
+            isDiamondCard = s -> c(s).suit == Suit.Diamond,
+            isHeartCard = s -> c(s).suit == Suit.Heart,
+            isClubCard = s -> c(s).suit == Suit.Club,
+            isSpadeCard = s -> c(s).suit == Suit.Spade,
     isRedCard = isDiamondCard.or(isHeartCard),
     isBlackCard = isClubCard.or(isSpadeCard);
-    public static boolean isWanjian(DamageSource source) {
-        return source.getSource() instanceof ArrowEntity arrow && arrow.getCommandTags().contains("a");
-    }
+
     public static boolean isHuogong(DamageSource source) {
         return source.getSource() instanceof FireballEntity fireball && fireball.getCommandTags().contains("a");
     }
@@ -89,15 +103,11 @@ public class ModTools {
         return source.getSource() instanceof LightningEntity lightning && lightning.getCommandTags().contains("a");
     }
 
-    public static boolean noTieji(LivingEntity entity) {return !entity.hasStatusEffect(ModItems.TIEJI);}
+    @SafeVarargs
+    public static <T> List<T> toList(T... t) {return new ArrayList<>(Arrays.asList(t));}
 
     /**判断是否有某个饰品*/
-    public static boolean hasTrinket(Item item, LivingEntity entity) {
-        if (item instanceof SkillItem) {
-            if (item.getDefaultStack().isIn(Tags.LOCK_SKILL)) return !trinketItem(item, entity).isEmpty();
-            else return !trinketItem(item, entity).isEmpty() && noTieji(entity);}
-        return !trinketItem(item, entity).isEmpty();
-    }
+    public static boolean hasTrinket(Item item, LivingEntity entity) {return isEquipped(entity, p(item));}
     public static boolean isEquipped(LivingEntity entity, Predicate<ItemStack> p) {
         return getTrinketComponent(entity).map(c -> c.isEquipped(p)).orElse(false);
     }
@@ -111,16 +121,9 @@ public class ModTools {
         return getTrinketComponent(entity).map(c -> c.getAllEquipped().stream().map(Pair::getRight).toList()).orElse(Collections.emptyList());
     }
 
-    /**判断技能是否能触发（依据是否为锁定技和是否有铁骑效果）*/
-    public static boolean canTrigger(ItemStack item, LivingEntity entity) {
-        if (item.getItem() instanceof SkillItem) {
-            if (item.isIn(Tags.LOCK_SKILL)) return true;
-            return noTieji(entity);
-        } return true;
-    }
-
     public static CardPileInventory getCardPack(PlayerEntity player) {
-        return PVPGameEvents.PLAYER_CARD_PACKS.getOrDefault((ServerPlayerEntity) player, new CardPileInventory(player));
+        if (player instanceof ServerPlayerEntity sp) return PVPGameEvents.PLAYER_CARD_PACKS.getOrDefault(sp, new CardPileInventory(player));
+        return new CardPileInventory(player);
     }
 
     /**判断牌堆和背包中是否有符合条件的卡牌*/
@@ -148,18 +151,23 @@ public class ModTools {
     }
 
     /**播放语音*/
-    public static void voice(@NotNull LivingEntity entity, SoundEvent sound) {voice(entity, sound, 2);}
-    public static void voice(@NotNull LivingEntity entity, SoundEvent sound, float volume) {
+    public static void voice(LivingEntity entity, SoundEvent sound, float... volume) {
         if (entity.getWorld() instanceof ServerWorld world) {
-            world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), sound, SoundCategory.PLAYERS, volume, 1.0F);
+            float v = volume.length > 0 ? volume[0] : 2;
+            world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), sound, SoundCategory.PLAYERS, v, 1.0F);
         }
     }
-    public static void voice(@NotNull LivingEntity entity, ItemStack stack) {
-        SoundEvent sound = Registries.SOUND_EVENT.get(Identifier.of(stack.getItem().toString()));
-        if (sound != null) voice(entity, sound);
+    public static void voice(LivingEntity entity, Item item, float... volume) {
+        voice(entity, Registries.ITEM.getId(item).getPath(), volume);
     }
-    public static SoundEvent getSound(String name) {
-        return Registries.SOUND_EVENT.get(Identifier.of("dabaosword", name));
+    public static void voice(LivingEntity entity, ItemStack stack, float... volume) {
+        voice(entity, stack.getItem(), volume);
+    }
+    public static void voice(LivingEntity entity, String name, float... volume) {
+        voice(entity, getSound("dabaosword", name), volume);
+    }
+    public static SoundEvent getSound(String namespace, String path) {
+        return RegistryEntry.of(SoundEvent.of(Identifier.of(namespace, path))).value();
     }
 
     /**数玩家所有手牌的数量*/
@@ -194,9 +202,9 @@ public class ModTools {
         return items;
     }
 
-    public static void draw(LivingEntity entity) {draw(entity, 1);}
-    public static void draw(LivingEntity entity, int count) {
-        for (int n = 0; n<count; n++) {
+    public static void draw(LivingEntity entity, int... count) {
+        int num = count.length > 0 ? count[0] : 1;
+        for (int n = 0; n < num; n++) {
             if (entity.hasStatusEffect(ModItems.BINGLIANG)) {
                 int amplifier = Objects.requireNonNull(entity.getStatusEffect(ModItems.BINGLIANG)).getAmplifier();
                 entity.removeStatusEffect(ModItems.BINGLIANG);
@@ -219,8 +227,14 @@ public class ModTools {
         return ItemStack.EMPTY;
     }
 
+    private static final List<ItemStack> CARD_PILE = new ArrayList<>();
     public static ItemStack newCard() {
-        return ALL_CARDS.get(new Random().nextInt(ALL_CARDS.size())).copy();
+        if (CARD_PILE.isEmpty()) {
+            for (ItemStack stack : ALL_CARDS) CARD_PILE.add(stack.copy());
+            Collections.shuffle(CARD_PILE);
+            DabaoSword.LOGGER.info("Shuffled card pile");
+        }
+        return CARD_PILE.removeFirst();
     }
     public static ItemStack newCard(Item item) {return newCard(p(item));}
     public static ItemStack newCard(Predicate<ItemStack> predicate) {
@@ -245,7 +259,7 @@ public class ModTools {
     private static final List<ItemStack> ALL_CARDS = new ArrayList<>();
 
     public static void initAllCards() {
-        for (Item item : ModItems.CARDS) {
+        for (CardItem item : ModItems.CARDS) {
             String path = Registries.ITEM.getId(item).getPath() + ".json";
             Gson gson = new Gson();
             InputStream stream = ModTools.class.getResourceAsStream("/data/dabaosword/default_suit_and_rank/" + path);
@@ -259,39 +273,30 @@ public class ModTools {
                 String suit = sr.get("suit").getAsString();
                 String rank = sr.get("rank").getAsString();
 
-                ItemStack stack = new ItemStack(item);
-                var nbt = new NbtCompound(); var list = new NbtList(); var compound = new NbtCompound();
-                compound.putString("Suit", Card.Suits.valueOf(suit).suit);
-                compound.putString("Rank", rank);
-                list.add(compound);
-                nbt.put("Card", list);
-                setNbt(stack, nbt);
-                ALL_CARDS.add(stack);
+                Card card = new Card(item, Suit.valueOf(suit), Rank.fromString(rank));
+                ALL_CARDS.add(card.toStack());
             }
         }
-        System.out.println("Loaded " + ALL_CARDS.size() + " cards");
+        DabaoSword.LOGGER.info("Loaded {} cards", ALL_CARDS.size());
     }
 
-    public static Pair<Card.Suits, Card.Ranks> getSuitAndRank(ItemStack stack) {
-        if (isCard(stack)) {
-            NbtCompound compound = getOrCreateNbt(stack);
-            if (compound.contains("Card")) {
-                NbtCompound nbtCompound = ((NbtList) Objects.requireNonNull(compound.get("Card"))).getCompound(0);
-                Card.Suits suit = Card.Suits.get(nbtCompound.getString("Suit"));
-                Card.Ranks rank = Card.Ranks.get(nbtCompound.getString("Rank"));
-                return new Pair<>(suit, rank);
+    /**查找最近的一个符合条件的实体，不包括第一个参数实体本身*/
+    public static @Nullable <T extends Entity> T getClosestEntity(Entity entity, Class<T> clazz, double boxLength, Predicate<T> predicate) {
+        if (entity.getWorld() instanceof ServerWorld world) {
+            Box box = new Box(entity.getBlockPos()).expand(boxLength);
+            List<T> entities = world.getEntitiesByClass(clazz, box, predicate.and(e -> e != entity));
+            if (!entities.isEmpty()) {
+                Map<Float, T> map = new HashMap<>();
+                for (var e : entities) {
+                    map.put(e.distanceTo(entity), e);
+                }
+                float min = Collections.min(map.keySet());
+                return map.get(min);
             }
         }
         return null;
     }
-    public static Card.Suits getSuit(ItemStack stack) {
-        var sr = getSuitAndRank(stack);
-        if (sr == null) return null; return sr.getLeft();
-    }
-    public static Card.Ranks getRank(ItemStack stack) {
-        var sr = getSuitAndRank(stack);
-        if (sr == null) return null; return sr.getRight();
-    }
+
     /**仿照1.20代码写的获取物品NBT的方法*/
     public static NbtCompound getOrCreateNbt(ItemStack stack) {
         if (stack.isEmpty()) return new NbtCompound();
@@ -303,108 +308,62 @@ public class ModTools {
         stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
     }
 
-    public static int getCD(ItemStack stack) { //获取物品的内置冷却时间
-        return stack.get(ModItems.CD) == null ? 0 : Objects.requireNonNull(stack.get(ModItems.CD));
-    }
+    public static void openFullInv(PlayerEntity player, LivingEntity target, boolean editable) {
+        if (player.getWorld().isClient) return;
+        var payload = new OpenScreenPayload(target.getId(), editable, "");
+        player.openHandledScreen(new ExtendedScreenHandlerFactory<>() {
+            public Text getDisplayName() {return target.getDisplayName();}
 
-    public static void setCD(ItemStack stack, int seconds) { //设置物品的内置冷却时间
-        stack.set(ModItems.CD, seconds);
-    }
+            public Object getScreenOpeningData(ServerPlayerEntity player) {return payload;}
 
-    public static int getTag(ItemStack stack) { //获取物品的标签的数量
-        return stack.get(ModItems.TAGS) == null ? 0 : Objects.requireNonNull(stack.get(ModItems.TAGS));
-    }
-
-    public static void setTag(ItemStack stack, int value) { //设置物品的标签的数量
-        stack.set(ModItems.TAGS, value);
-    }
-
-    public static void openInv(PlayerEntity player, PlayerEntity target, Text title, ItemStack stack, boolean openSelfInv, boolean equip, boolean armor, int cards) {
-        if (!player.getWorld().isClient) {
-            player.openHandledScreen(new ExtendedScreenHandlerFactory<>() {
-                @Override
-                public Object getScreenOpeningData(ServerPlayerEntity player) {
-                    return new ActiveSkillPayload(player.getId());
-                }
-
-                @Override
-                public Text getDisplayName() {return title;}
-
-                @Override
-                public @NotNull ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                    PlayerEntity invOwner = openSelfInv ? player : target;
-                    return new PlayerInvScreenHandler(syncId, targetInv(invOwner, equip, armor, cards, stack, openSelfInv), target);
-                }
-            });
-        }
-    }
-
-    public static Inventory targetInv(PlayerEntity invOwner, Boolean equip, Boolean armor, int cards, ItemStack eventStack, boolean openSelfInv) {
-        /*
-        Boolean equip: 是否显示装备牌
-        Boolean armor: 是否显示玩家的盔甲
-        int cards: 是否显示手牌。0：完全不显示；1：显示随机选取手牌；2：显示所有手牌；3：显示所有物品
-        */
-        Inventory targetInv = new SimpleInventory(60);
-        if (equip) {
-            for (var stack : allTrinkets(invOwner)) {
-                if (stack.streamTags().toList().equals(ModItems.GUDING_WEAPON.getDefaultStack().streamTags().toList())) targetInv.setStack(0, stack);
-                if (stack.streamTags().toList().equals(ModItems.BAGUA.getDefaultStack().streamTags().toList())) targetInv.setStack(1, stack);
-                if (stack.isOf(ModItems.DILU)) targetInv.setStack(2, stack);
-                if (stack.isOf(ModItems.CHITU)) targetInv.setStack(3, stack);
-            }//四件装备占1~4格
-        }
-
-        ItemStack off = invOwner.getOffHandStack();
-        List<ItemStack> armors = List.of(invOwner.getEquippedStack(EquipmentSlot.HEAD), invOwner.getEquippedStack(EquipmentSlot.CHEST), invOwner.getEquippedStack(EquipmentSlot.LEGS), invOwner.getEquippedStack(EquipmentSlot.FEET));
-        for (ItemStack stack : armors) {
-            if (armor && !stack.isEmpty()) targetInv.setStack(armors.indexOf(stack) + 4, stack);
-        }//4件盔甲占5~8格
-
-        DefaultedList<ItemStack> inv = invOwner.getInventory().main;
-        List<Integer> cardSlots = IntStream.range(0, inv.size()).filter(i -> isCard(inv.get(i))).boxed().toList();
-        if (cards == 2) {
-            var inventory = getCardPack(invOwner).cards;
-            for (var stack : inventory) targetInv.setStack(inventory.indexOf(stack) + 9, stack);
-            if (!cardSlots.isEmpty()) { //卡牌背包中的牌显示在中间36格
-                for(Integer i : cardSlots) {
-                    if (i > 8) break; //快捷栏的牌显示在最底层9格
-                    targetInv.setStack(i + 45, inv.get(i));
-                }
+            public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
+                return new FullInvScreenHandler(syncId, inv, payload);
             }
-            if (isCard(off)) targetInv.setStack(8, off);
-        }
-        if (cards == 3) {
-            for (ItemStack stack : inv) if (!stack.isEmpty()) targetInv.setStack(inv.indexOf(stack) + 9, stack);
-            targetInv.setStack(8, off);
-        }
-        targetInv.setStack(54, new ItemStack(ModItems.GAIN_CARD, cards));//用于传递显示卡牌信息
-        targetInv.setStack(55, eventStack);//用于传递stack信息
-        if (openSelfInv) targetInv.setStack(56, new ItemStack(ModItems.GAIN_CARD));
-        return targetInv;
+        });
     }
 
-    public static void openSimpleMenu(PlayerEntity player, PlayerEntity target, Inventory inventory, Text title) {
-        if (!player.getWorld().isClient) {
-            player.openHandledScreen(new ExtendedScreenHandlerFactory<>() {
-                @Override
-                public Object getScreenOpeningData(ServerPlayerEntity player) {
-                    return new ActiveSkillPayload(target.getId());
-                }
+    public static void openInv(PlayerEntity player, LivingEntity owner, PlayerEntity target, Text title, ItemStack stack, boolean equip, boolean armor, int cards) {
+        if (player.getWorld().isClient) return;
+        var tempInv = new TempInventory(player, owner, stack, cards, equip, armor);
+        var rows = tempInv.rowsToShow;
+        player.openHandledScreen(new ExtendedScreenHandlerFactory<>() {
+            public Text getDisplayName() {return title;}
 
-                @Override
-                public Text getDisplayName() {return title;}
-
-                @Override
-                public @NotNull ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                    return new SimpleMenuHandler(syncId, inventory, target);
-                }
-            });
-        }
+            public Object getScreenOpeningData(ServerPlayerEntity player) {
+                return new OpenScreenPayload(target.getId(), true, rows.toString());
+            }
+            public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
+                return new PlayerInvScreenHandler(syncId, tempInv, target, rows);
+            }
+        });
     }
+
+    public static void openMenu(PlayerEntity player, PlayerEntity target, ItemStack stack, List<ItemStack> stacks, Text title) {
+        if (player.getWorld().isClient) return;
+        var tempInv = new TempInventory(player, stack, stacks);
+        var rows = tempInv.rowsToShow;
+        player.openHandledScreen(new ExtendedScreenHandlerFactory<>() {
+            public Text getDisplayName() {return title;}
+
+            public Object getScreenOpeningData(ServerPlayerEntity player) {
+                return new OpenScreenPayload(player.getId(), true, rows.toString());
+            }
+            public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
+                return new PlayerInvScreenHandler(syncId, tempInv, target, rows);
+            }
+        });
+    }
+
+    public static ItemStack paibei(int... n) {return new ItemStack(ModItems.GAIN_CARD, n.length > 0 ? n[0] : 1);}
 
     public static void closeGUI(PlayerEntity player) {
         player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 1,2,false,false,false));
+    }
+
+    public static RegistryEntry<Enchantment> getEntry(RegistryKey<Enchantment> key, Entity... entity) {
+        Entity e = entity.length > 0 ? entity[0] : null;
+        if (e == null) return DabaoSword.server.getRegistryManager().get(RegistryKeys.ENCHANTMENT).entryOf(key);
+        return e.getRegistryManager().get(RegistryKeys.ENCHANTMENT).entryOf(key);
     }
 
     public static DamageSource getDamageSource(Entity source, RegistryKey<DamageType> type) {
@@ -468,6 +427,59 @@ public class ModTools {
 
     public static void subtitle(ServerPlayerEntity player, Text sub) {
         player.networkHandler.sendPacket(new SubtitleS2CPacket(sub));
+    }
+
+    public static List<LivingEntity> getSkillOwners(LivingEntity entity) {
+        if (entity.getWorld().isClient) return List.of();
+        return new ArrayList<>(Objects.requireNonNull(entity.getServer()).getPlayerManager().getPlayerList());
+    }
+
+    public static List<Skill> getSkillsMayUse(LivingEntity entity) {
+        Predicate<ItemStack> p = s -> {
+            if (!(s.getItem() instanceof ISkill)) return false;
+            if (s.getItem() instanceof SkillItem && entity.getCommandTags().contains("duanchang")) return false;
+            return s(s).lockOn() || !entity.hasStatusEffect(ModItems.TIEJI);
+        };
+        return getTrinketComponent(entity).map(c -> c.getEquipped(p).stream().map(Pair::getRight).map(Skill::new).toList()).orElse(Collections.emptyList());
+    }
+
+    public static int getResult(Trigger t, LivingEntity owner, LivingEntity triggered, ExData exData) {
+        for (Skill skill : getSkillsMayUse(owner)) {
+            for (var data : skill.data()) {
+                if (!List.of(data.trigger()).contains(t) || !data.relation().test(owner, triggered, exData.source)) continue;
+                int i = data.apply(owner, triggered, skill, exData);
+                if (i > 0) return i;
+            }
+        }
+        return 0;
+    }
+
+    public static String getTagValue(Entity entity, String name) {
+        return entity.getCommandTags().stream().filter(s -> s.startsWith(name + "_")).findFirst().map(s -> s.split("_")[1]).orElse("");
+    }
+    public static int getTagCount(Entity entity, String name) {
+        return entity.getCommandTags().stream().filter(s -> s.startsWith(name + "_")).findFirst().map(s -> Integer.parseInt(s.split("_")[1])).orElse(0);
+    }
+
+    public static boolean hasTag(Entity entity, String name) {
+        return entity.getCommandTags().stream().anyMatch(s -> s.startsWith(name));
+    }
+
+    public static void removeTag(Entity entity, String name) {
+        var each = entity.getCommandTags().iterator();
+        while (each.hasNext()) { //仅移除第一个符合条件的标签
+            if (each.next().startsWith(name)) {
+                each.remove(); break;
+            }
+        }
+    }
+
+    public static void addTag(Entity entity, String name, int n) {
+        removeTag(entity, name);
+        entity.addCommandTag(name + "_" + n);
+    }
+    public static void addTag(Entity entity, String name, String suffix) {
+        entity.addCommandTag(name + "_" + suffix);
     }
 
 }

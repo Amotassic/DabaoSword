@@ -1,37 +1,34 @@
 package com.amotassic.dabaosword.item.skillcard;
 
-import com.amotassic.dabaosword.api.Skill;
-import com.amotassic.dabaosword.util.Sounds;
+import com.amotassic.dabaosword.api.skill.ISkill;
+import com.amotassic.dabaosword.api.skill.Skill;
+import com.amotassic.dabaosword.item.card.CardItem;
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketItem;
+import dev.emi.trinkets.api.TrinketsApi;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.registry.Registries;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
+import java.util.List;
 import java.util.function.Predicate;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
 
-public class SkillItem extends TrinketItem implements Skill {
-    public SkillItem() {super(new Settings().maxCount(1));}
-
-    @Override
-    public void onEquip(ItemStack stack, SlotReference slot, LivingEntity entity) {
-        if (entity.getWorld() instanceof ServerWorld world && !equipped(stack)) {
-            world.getPlayers().forEach(player -> player.sendMessage(
-                    Text.translatable("dabaosword.entity.equip", entity.getDisplayName(), stack.toHoverableText())
-            ));
-            setEquipped(stack, true);
-        }
+public class SkillItem extends Item implements ISkill {
+    public SkillItem() {super(new Settings().maxCount(1));
+        TrinketsApi.registerTrinket(this, this);
     }
 
     @Override
@@ -39,59 +36,56 @@ public class SkillItem extends TrinketItem implements Skill {
         if (!world.isClient && equipped(stack)) setEquipped(stack, false);
     }
 
-    public static boolean equipped(ItemStack stack) {return getOrCreateNbt(stack).contains("equipped");}
+    public void appendTooltip(ItemStack s, TooltipContext c, List<Text> t, TooltipType ty) {addTip(s(s), t);}
+    public void addTip(Skill skill, List<Text> tooltip) {}
+    public MutableText getTip(Formatting... format) {return getTip("", format);}
+    public MutableText getTip(String suffix, Formatting... format) {
+        return Text.translatable(getTranslationKey() + ".tooltip" + suffix).formatted(format);
+    }
 
-    public static void setEquipped(ItemStack stack, boolean equipped) {
-        NbtCompound nbt = getOrCreateNbt(stack);
-        if (equipped) nbt.putBoolean("equipped", true);
-        else nbt.remove("equipped");
-        setNbt(stack, nbt);
+    public final void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
+        ISkill.super.tick(stack, slot, entity);
     }
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         if (!user.getWorld().isClient && user.getCommandTags().contains("change_skill") && hand == Hand.OFF_HAND && user.isSneaking()) {
-            ItemStack stack = user.getStackInHand(hand);
+            ItemStack stack = user.getOffHandStack();
             if (stack.getItem() instanceof SkillItem) {
                 stack.setCount(0);
                 changeSkill(user);
                 user.getCommandTags().remove("change_skill");
+                return TypedActionResult.success(user.getMainHandStack());
             }
+        }
+        ItemStack stack = user.getStackInHand(hand);
+        if (TrinketItem.equipItem(user, stack)) {
+            return TypedActionResult.success(stack, world.isClient());
         }
         return super.use(world, user, hand);
     }
 
-    @Override
-    public void tick(ItemStack stack, SlotReference slot, LivingEntity entity) {
-        if (entity.getWorld() instanceof ServerWorld world) {
-            int cd = getCD(stack); //世界时间除以20取余为0时，技能内置CD减一秒
-            if (cd > 0 && world.getTime() % 20 == 0) setCD(stack, cd - 1);
-        }
-    }
-
     public static void changeSkill(PlayerEntity player) {
         ItemStack stack = customLoot(player, "draw_skill");
-        if (stack.getItem() != Items.AIR) voice(player, Sounds.GIFTBOX,3);
+        if (!stack.isEmpty()) voice(player, "giftbox",3);
         give(player, stack);
     }
 
     /**转化卡牌技能通用方法*/
-    public static void viewAs(LivingEntity entity, ItemStack skill, int CD, Predicate<ItemStack> predicate, ItemStack result) {
-        if (!entity.getWorld().isClient && noTieji(entity) && getCD(skill) == 0) {
-            ItemStack stack = entity.getOffHandStack();
-            if (predicate.test(stack)) {
-                setCD(skill, CD);
-                stack.decrement(1);
-                give(entity, result);
-                voice(entity, skill);
-            }
+    public static void viewAs(LivingEntity entity, Skill skill, int CD, Predicate<ItemStack> p, CardItem result) {
+        if (entity.getWorld().isClient) return;
+        if (skill.getCD() > 0) return;
+        ItemStack off = entity.getOffHandStack(); var copy = off.copy();
+        if (off.isEmpty()) return;
+        if (p.test(off)) {
+            skill.setCD(CD);
+            off.decrement(1);
+            give(entity, c(copy, result).toStack());
+            voice(entity, skill.stack);
         }
     }
-    public static void viewAs(LivingEntity entity, ItemStack skill, int CD, Predicate<ItemStack> predicate, Item result) {
-        viewAs(entity, skill, CD, predicate, newCard(result));
+
+    public Text activeSkillText(PlayerEntity user, Skill skill) {
+        return Text.translatable("active_skill.select_target").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/dabaosword " + user.getName().getString() + " " + Registries.ITEM.getId(skill.stack.getItem()) + " ")));
     }
-
-    public static class ActiveSkill extends SkillItem {}
-
-    public static class ActiveSkillWithTarget extends SkillItem {}
 }

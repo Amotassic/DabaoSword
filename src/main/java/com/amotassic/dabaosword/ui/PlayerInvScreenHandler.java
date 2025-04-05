@@ -1,139 +1,160 @@
 package com.amotassic.dabaosword.ui;
 
-import com.amotassic.dabaosword.api.Skill;
+import com.amotassic.dabaosword.api.CardEvents;
+import com.amotassic.dabaosword.api.skill.ExData;
+import com.amotassic.dabaosword.api.skill.Skill;
 import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.network.OpenScreenPayload;
+import com.amotassic.dabaosword.util.TempInventory;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
+import java.util.function.Consumer;
 
-import static com.amotassic.dabaosword.api.event.CardEvents.*;
+import static com.amotassic.dabaosword.api.CardEvents.cardDiscard;
 import static com.amotassic.dabaosword.util.ModTools.*;
+import static net.minecraft.screen.PlayerScreenHandler.*;
 
 public class PlayerInvScreenHandler extends ScreenHandler {
     private final PlayerEntity target;
+    private final TempInventory inv;
     private final ItemStack stack;
-    private final int cards;
-    private final boolean isPlayerInv;
+    private final Skill skill;
+    private final List<Integer> clicks = new ArrayList<>();
+    public final int rows;
 
-    public PlayerInvScreenHandler(int syncId, Inventory inventory, PlayerEntity target) {
+    public PlayerInvScreenHandler(int syncId, PlayerInventory inv, OpenScreenPayload buf) {
+        this(syncId, new TempInventory(inv.player, paibei(), List.of()), (PlayerEntity) inv.player.getWorld().getEntityById(buf.id()), stringToSet(buf.str()));
+    }
+    private static Set<Integer> stringToSet(String str) {
+        String trimmed = str.substring(1, str.length() - 1);
+        String[] parts = trimmed.split(", ");
+        Set<Integer> set = new HashSet<>();
+        for (String part : parts) if (!part.isEmpty()) set.add(Integer.parseInt(part));
+        return set;
+    }
+
+    public PlayerInvScreenHandler(int syncId, TempInventory inventory, PlayerEntity target, Set<Integer> rowsToShow) {
         super(ModItems.PLAYER_INV_SCREEN_HANDLER, syncId);
         this.target = target;
-        this.cards = inventory.getStack(54).getCount();
-        this.stack = inventory.getStack(55);
-        this.isPlayerInv = !inventory.getStack(56).isEmpty();
-        for (int i = 0; i < 6; ++i) {
-            for (int j = 0; j < 9; ++j) {
-                addSlot(new Slot(inventory, j + i * 9, 8 + j * 18, 16 + i * 18));
+        this.inv = inventory;
+        this.stack = inv.getStack(81);
+        this.skill = s(stack);
+        this.rows = rowsToShow.size();
+        int line = 0;
+        for (int j = 0; j < 9; j++) {
+            if (rowsToShow.contains(j)) {
+                if (j == 0) {
+                    for (int i = 0; i < 4; ++i) addSlot(new Slot(inv, i, 8 + i * 18, 18));
+                    addSlot(new Slot(inv, 4, 8 + 4 * 18, 18) {
+                        public Pair<Identifier, Identifier> getBackgroundSprite() {
+                            return Pair.of(BLOCK_ATLAS_TEXTURE, EMPTY_HELMET_SLOT_TEXTURE);
+                        }
+                    });
+                    addSlot(new Slot(inv, 5, 8 + 5 * 18, 18) {
+                        public Pair<Identifier, Identifier> getBackgroundSprite() {
+                            return Pair.of(BLOCK_ATLAS_TEXTURE, EMPTY_CHESTPLATE_SLOT_TEXTURE);
+                        }
+                    });
+                    addSlot(new Slot(inv, 6, 8 + 6 * 18, 18) {
+                        public Pair<Identifier, Identifier> getBackgroundSprite() {
+                            return Pair.of(BLOCK_ATLAS_TEXTURE, EMPTY_LEGGINGS_SLOT_TEXTURE);
+                        }
+                    });
+                    addSlot(new Slot(inv, 7, 8 + 7 * 18, 18) {
+                        public Pair<Identifier, Identifier> getBackgroundSprite() {
+                            return Pair.of(BLOCK_ATLAS_TEXTURE, EMPTY_BOOTS_SLOT_TEXTURE);
+                        }
+                    });
+                    addSlot(new Slot(inv, 8, 8 + 8 * 18, 18) {
+                        public Pair<Identifier, Identifier> getBackgroundSprite() {
+                            return Pair.of(BLOCK_ATLAS_TEXTURE, EMPTY_OFFHAND_ARMOR_SLOT);
+                        }
+                    });
+                }
+                else {
+                    for (int i = 0; i < 9; ++i) addSlot(new Slot(inv, i + j * 9, 8 + i * 18, 18 + line * 18));
+                }
+                line++;
+            } else {
+                for (int i = 0; i < 9; ++i) addSlot(new Slot(inv, i + j * 9, 114514, 114514));
+            }
+        }
+        inv.setStack(82, paibei());
+        for (int i = 0; i < 2; i++) addSlot(new Slot(inv, 81 + i, 114514, 114514));
+    }
+
+    @Override
+    public void onSlotClick(int index, int button, SlotActionType action, PlayerEntity player) {
+        if (index >= 0 && index < 81 && !player.getWorld().isClient) {
+            //System.out.println(index + " button: " + button + " action: " + action);
+            var selected = getStack(index);
+            if (button == 65 && maxSelect() >= 100) forEachNonEmptySlot(s -> addClick(s.getIndex(), 99)); //全选
+            if (button == 90) forEachNonEmptySlot(s -> setClick(s.getIndex(), 0)); //清空
+            if (!selected.isEmpty()) skill.item.onSlotClick(this, player, skill, target, index, button, action);
+            writeClicks();
+
+            if (stack.isEmpty()) {
+                ItemStack mainHand = player.getMainHandStack(); var mainCopy = mainHand.copy();
+                var copy = selected.copy();
+
+                if (!selected.isEmpty() && !ItemStack.areEqual(mainHand, selected)) {
+                    mainHand.setCount(0); selected.setCount(0);
+                    if (index >= 45) getCardPack(player).removeStack(index - 45);
+                    player.setStackInHand(Hand.MAIN_HAND, copy);
+                    give(player, mainCopy);
+                } closeGUI(player);
+            }
+
+            if (!selected.isEmpty()) {
+                if (stack.isOf(ModItems.STEAL)) {
+                    Text message = Text.translatable("dabaosword.steal", player.getDisplayName(), target.getDisplayName(), selected.toHoverableText());
+                    player.sendMessage(message);
+                    target.sendMessage(message);
+                    if (isCard(selected)) { //如果选择的物品是卡牌才触发事件
+                        var exData = d().cards(selected, 1, index < 4);
+                        CardEvents.cardMove(target, exData, player);
+                    } else {
+                        give(player, selected.copyWithCount(1)); /*顺手：复制一个物品*/
+                        selected.decrement(1);
+                    }
+                    closeGUI(player);
+                }
+
+                if (stack.isOf(ModItems.DISCARD)) {
+                    Text message = Text.translatable("dabaosword.discard", player.getDisplayName(), target.getDisplayName(), selected.toHoverableText());
+                    player.sendMessage(message);
+                    target.sendMessage(message);
+                    var exData = d().cards(selected, 1, index < 4);
+                    cardDiscard(target, exData);
+                    closeGUI(player);
+                }
             }
         }
     }
 
     @Override
-    public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
-        if (slotIndex >= 0 && slotIndex < 54 && !player.getWorld().isClient) {
-            var selectedStack = selected(isPlayerInv ? player : target, slotIndex);
+    public void onClosed(PlayerEntity player) {skill.item.onGuiClose(this, player, skill, target);}
 
-            if (stack.isOf(ModItems.WANJIAN)) {
-                ItemStack mainHand = player.getMainHandStack(); var mainCopy = mainHand.copy();
-                var cards = getCardPack(player);
-                ItemStack selected = ItemStack.EMPTY; //对选择的卡牌进行赋值
-                if (slotIndex == 8) selected = player.getOffHandStack();
-                if (8 < slotIndex && slotIndex < 45) selected = cards.getStack(slotIndex - 9);
-                if (slotIndex >= 45) selected = selectedStack;
-                var copy = selected.copy(); //复制一份已选物品方便代码操作
-
-                if (!selected.isEmpty()) {
-                    if (isCard(mainHand)) { //如果主手物品是卡牌，就把主手物品设置为选择的牌，然后主手物品进入牌堆背包
-                        player.setStackInHand(Hand.MAIN_HAND, copy);
-                        selected.setCount(0);
-                        cards.insertStack(mainCopy);
-                    } else {
-                        if (slotIndex == 8 || slotIndex >= 45) { //如果选的不是牌堆中的牌，交换两者位置
-                            player.setStackInHand(Hand.MAIN_HAND, copy);
-                            selected.setCount(0);
-                            if (slotIndex == 8) player.setStackInHand(Hand.OFF_HAND, mainCopy); //处理副手
-                            if (slotIndex >= 45) player.getInventory().setStack(slotIndex - 45, mainCopy);
-                        } else {
-                            int emptySlot = player.getInventory().getEmptySlot();
-                            if (emptySlot == -1) player.sendMessage(Text.translatable("card_pile.player_inv.full").formatted(Formatting.RED), true);
-                            else { //如果选择牌堆中的牌且背包未满，则将主手物品设为选择的牌，主手物品移动到其它空槽位（显然不包括副手）
-                                player.setStackInHand(Hand.MAIN_HAND, copy);
-                                cards.removeStack(slotIndex - 9);
-                                //如果主手原本是空的，就不需要交换这一步，这点很重要
-                                if (!mainCopy.isEmpty()) player.getInventory().setStack(emptySlot, mainCopy);
-                            }
-                        }
-                    }
-                }
-                closeGUI(player);
-            }
-
-            if (stack.isOf(ModItems.SUNSHINE_SMILE)) {
-                ItemStack mainHand = player.getMainHandStack();
-                if (selectedStack.isEmpty()) { //如果玩家点了一个空的格子————
-                    int emptySlot = player.getInventory().getEmptySlot();
-                    if (emptySlot != -1) { //如果主手不为空，就把主手的物品移动到其他空格子，主手设为空
-                        player.getInventory().setStack(emptySlot, mainHand.copy());
-                        mainHand.setCount(0);
-                    }
-                } else { //如果玩家选了一个非空的格子，就交换主手和该格子的物品
-                    ItemStack mainCopy = mainHand.copy(); ItemStack swapCopy = selectedStack.copy();
-                    if (player.getOffHandStack().equals(selectedStack)) {
-                        player.setStackInHand(Hand.MAIN_HAND, swapCopy);
-                        player.setStackInHand(Hand.OFF_HAND, mainCopy);
-                    } else {
-                        int swapSlot = player.getInventory().getSlotWithStack(selectedStack);
-                        player.setStackInHand(Hand.MAIN_HAND, swapCopy);
-                        player.getInventory().setStack(swapSlot, mainCopy);
-                    }
-                }
-                closeGUI(player);
-            }
-
-            if (!selectedStack.isEmpty()) {
-                if (stack.getItem() instanceof Skill skill) skill.onClickGUISlot(player, stack, target, selectedStack, slotIndex);
-
-                if (stack.isOf(ModItems.STEAL)) {
-                    Text message = Text.translatable("dabaosword.steal", player.getDisplayName(), target.getDisplayName(), selectedStack.toHoverableText());
-                    player.sendMessage(message);
-                    target.sendMessage(message);
-                    if (isCard(selectedStack)) cardMove(target, player, selectedStack, 1, slotIndex < 4, false);
-                        //如果选择的物品是卡牌才触发事件
-                    else {give(player, selectedStack.copyWithCount(1)); /*顺手：复制一个物品*/
-                        selectedStack.decrement(1);}
-                    cardUsePost(player, stack, target);
-                    closeGUI(player);
-                }
-
-                if (stack.isOf(ModItems.DISCARD)) {
-                    Text message = Text.translatable("dabaosword.discard", player.getDisplayName(), target.getDisplayName(), selectedStack.toHoverableText());
-                    player.sendMessage(message);
-                    target.sendMessage(message);
-                    cardDiscard(target, selectedStack, 1, slotIndex < 4);
-                    cardUsePost(player, stack, target);
-                    closeGUI(player);
-                }
-            }
+    /**获取该容器内对应slot上的物品，即使卡牌以牌背形态显示，也返回目标对应的卡牌*/
+    public ItemStack getStack(int slot) {
+        if (slot < 0 || slot > 80) return ItemStack.EMPTY;
+        var item = inv.getStack(slot);
+        if (inv.type == 1 && item.isOf(ModItems.GAIN_CARD) && inv.owner instanceof PlayerEntity pl) {
+            if (slot < 45) return pl.getInventory().main.get(slot - 9);
+            else return getCardPack(pl).cards.get(slot - 45);
         }
-    }
-
-    private ItemStack selected(PlayerEntity player, int slotIndex) {
-        var itemStack = getSlot(slotIndex).getStack();
-        if (itemStack.isEmpty() && cards == 1 && slotIndex >= 8) {
-            List<ItemStack> candidate = getItems(player, isCard, true, false, false, true);
-            if(!candidate.isEmpty()) return candidate.get(new Random().nextInt(candidate.size()));
-        }
-        return itemStack;
+        return item;
     }
 
     @Override
@@ -141,6 +162,92 @@ public class PlayerInvScreenHandler extends ScreenHandler {
 
     @Override
     public boolean canUse(PlayerEntity player) {
-        return !player.hasStatusEffect(ModItems.COOLDOWN2) || (player.hasStatusEffect(ModItems.COOLDOWN2) && Objects.requireNonNull(player.getStatusEffect(ModItems.COOLDOWN2)).getAmplifier() != 2);
+        var effect = player.getStatusEffect(ModItems.COOLDOWN2);
+        return effect == null || effect.getAmplifier() != 2;
     }
+
+    public void forEachNonEmptySlot(Consumer<Slot> action) {
+        for (int i = 0; i < 81; i++) {
+            Slot slot = getSlot(i);
+            if (slot.hasStack()) action.accept(slot);
+        }
+    }
+
+    private void writeClicks() {
+        ItemStack cinfo = getSlot(82).getStack();
+        NbtCompound nbt = new NbtCompound();
+        nbt.putString("Clicks", getClickMap().toString());
+        setNbt(cinfo, nbt);
+    }
+
+    public int maxSelect() {return skill.getMaxSelect();}
+
+    private int getSlotClicked(int slot) {
+        if (!clicks.contains(slot)) return 0;
+        return getClickMap().get(slot);
+    }
+
+    /**使点击的槽位物品选择数量增加，如果增加后已选择物品数量大于最大可选数量，会自动移除最早的选择项*/
+    public void addClick(int slot, int... count) {
+        int num = count.length > 0 ? count[0] : 1;
+        int n = getSlot(slot).getStack().getCount();
+        num = Math.min(n - getSlotClicked(slot), num);
+        for (int i = 0; i < num; i++) {
+            clicks.add(slot);
+            if (getSelectedCount() > maxSelect()) dropFirst();
+        }
+    }
+
+    /**使点击的槽位物品选择数量减少*/
+    public void dropClick(int slot, int... count) {
+        if (!clicks.contains(slot)) return;
+        int num = count.length > 0 ? count[0] : 1;
+        for (int i = 0; i < num; i++) {
+            if (!clicks.remove(Integer.valueOf(slot))) break;
+        }
+    }
+
+    /**设置该槽位的选择数*/
+    public void setClick(int slot, int count) {
+        if (clicks.contains(slot)) dropClick(slot, 114514);
+        if (count > 0) addClick(slot, count);
+    }
+
+    public void dropFirst(int... count) {
+        if (clicks.isEmpty()) return;
+        dropClick(clicks.getFirst(), count);
+    }
+
+    /**@return GUI中已选择卡牌的数量*/
+    public int getSelectedCount() {return clicks.size();}
+
+    public List<ItemStack> getSelected() {
+        List<ItemStack> selected = new ArrayList<>();
+        clicks.forEach(slot -> {
+            ItemStack stack = getSlot(slot).getStack();
+            if (!stack.isEmpty()) selected.add(stack.copyWithCount(1));
+        });
+        return selected;
+    }
+
+    public Map<Integer, Integer> getClickMap() {
+        Map<Integer, Integer> map = new HashMap<>();
+        for (Integer num : clicks) {
+            if (map.containsKey(num)) {
+                map.put(num, map.get(num) + 1);
+            } else map.put(num, 1);
+        }
+        return map;
+    }
+
+    /**将GUI中已选的卡牌直接输出为ExData，省去手动获取已选卡牌的功夫，一般用于{@link com.amotassic.dabaosword.api.skill.ISkill#onGuiClose(PlayerInvScreenHandler, PlayerEntity, Skill, PlayerEntity)}*/
+    public ExData toExData() {
+        var exData = d(); var clickMap = getClickMap();
+        clickMap.forEach((slot, count) -> {
+            ItemStack stack = getStack(slot);
+            if (isCard(stack)) exData.cards(stack, count, slot < 4);
+        });
+        return exData;
+    }
+
 }

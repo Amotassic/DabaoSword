@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.command;
 
+import com.amotassic.dabaosword.api.skill.Skill;
 import com.amotassic.dabaosword.pvpgame.Game;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -10,6 +11,7 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.ItemStackArgument;
 import net.minecraft.command.argument.ItemStackArgumentType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -20,6 +22,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import static com.amotassic.dabaosword.event.PVPGameEvents.getGameManager;
+import static com.amotassic.dabaosword.util.ModTools.s;
 import static com.amotassic.dabaosword.util.ModTools.trinketItem;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
@@ -32,10 +35,15 @@ public class DabaoSwordCommand {
                 .then(argument("page", IntegerArgumentType.integer())
                         .executes(c -> help(c.getSource(), IntegerArgumentType.getInteger(c, "page")))
                 )
-                .then(argument("skill", ItemStackArgumentType.itemStack(access))
-                        .executes(c -> execute(c.getSource(), ItemStackArgumentType.getItemStackArgument(c, "skill"), 0))
-                        .then(argument("value", IntegerArgumentType.integer())
-                                .executes(c -> execute(c.getSource(), ItemStackArgumentType.getItemStackArgument(c, "skill"), IntegerArgumentType.getInteger(c, "value")))
+                .then(argument("user", EntityArgumentType.player())
+                        .then(argument("skill", ItemStackArgumentType.itemStack(access))
+                                .executes(c -> skill(EntityArgumentType.getPlayer(c, "user"), ItemStackArgumentType.getItemStackArgument(c, "skill"), EntityArgumentType.getPlayer(c, "user")))
+                                .then(argument("target", EntityArgumentType.entity())
+                                        .executes(c -> skill(EntityArgumentType.getPlayer(c, "user"), ItemStackArgumentType.getItemStackArgument(c, "skill"), (LivingEntity) EntityArgumentType.getEntity(c, "target")))
+                                        .then(argument("value", IntegerArgumentType.integer())
+                                                .executes(c -> skill(EntityArgumentType.getPlayer(c, "user"), ItemStackArgumentType.getItemStackArgument(c, "skill"), (LivingEntity) EntityArgumentType.getEntity(c, "target"), IntegerArgumentType.getInteger(c, "value")))
+                                        )
+                                )
                         )
                 )
                 .then(literal("creategame")
@@ -58,15 +66,15 @@ public class DabaoSwordCommand {
         );
     }
 
-    private static int execute(ServerCommandSource ctx, ItemStackArgument stack, int value) {
-        LivingEntity entity = (LivingEntity) ctx.getEntity();
-        ItemStack skill = trinketItem(stack.getItem(), entity);
-        if (skill.getItem() instanceof CSkill s) s.triggerSkill(entity, skill, value);
+    private static int skill(PlayerEntity user, ItemStackArgument stack, LivingEntity target, int... value) {
+        int val = value.length == 0 ? 0 : value[0];
+        ItemStack skill = trinketItem(stack.getItem(), user);
+        if (skill.getItem() instanceof CSkill s) s.triggerSkill(user, s(skill), target, val);
         return 1;
     }
 
     public interface CSkill {
-        default void triggerSkill(LivingEntity entity, ItemStack stack, int value) {}
+        void triggerSkill(LivingEntity entity, Skill skill, LivingEntity target, int value);
     }
 
     private static int createGame(ServerCommandSource ctx, int type) throws CommandSyntaxException {
