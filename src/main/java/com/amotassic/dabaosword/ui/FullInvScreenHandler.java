@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.amotassic.dabaosword.util.ModTools.getArmorItems;
 import static net.minecraft.screen.PlayerScreenHandler.*;
 
 public class FullInvScreenHandler extends ScreenHandler {
@@ -54,7 +55,7 @@ public class FullInvScreenHandler extends ScreenHandler {
             for (j = 0; j < 9; j++) {
                 int index = j + i * 9; boolean enabled = slotsEnabled.contains(index);
                 int x = enabled ? 8 + j * 18 : 114514; int y = enabled ? 18 + i * 18 : 114514;
-                addSlot(new Slot(inventory, index, x, y));
+                addSlot(new Slot(inventory, index, x, y) {public boolean canInsert(ItemStack stack) {return enabled;}});
             }
         }
         addSlot(new Slot(inventory, 36, 8 + 4 * 18, 18 * armor) {
@@ -76,7 +77,7 @@ public class FullInvScreenHandler extends ScreenHandler {
             for (j = 0; j < 9; j++) {
                 int index = 41 + j + i * 9; boolean enabled = slotsEnabled.contains(index);
                 int x = enabled ? 8 + j * 18 : 114514; int y = enabled ? (armor + 1 + i) * 18 : 114514;
-                addSlot(new Slot(inventory, index, x, y));
+                addSlot(new Slot(inventory, index, x, y) {public boolean canInsert(ItemStack stack) {return enabled;}});
             }
         }
         if (notSelf) addPlayerInventorySlots(inv, rows);
@@ -87,7 +88,7 @@ public class FullInvScreenHandler extends ScreenHandler {
         //物品栏
         if (editable) {
             if (target instanceof PlayerEntity player) {
-                var inv = player.getInventory().main;
+                var inv = player.getInventory().getMainStacks();
                 for (int i = 0; i < inv.size(); i++) {
                     if (i > 35) break;  // 只取前36个槽位
                     inventory.setStack(i, inv.get(i));
@@ -103,7 +104,7 @@ public class FullInvScreenHandler extends ScreenHandler {
         }
 
         int armorIndex = 0;
-        for (ItemStack stack : target.getArmorItems()) {
+        for (ItemStack stack : getArmorItems(target)) {
             inventory.setStack(39 - armorIndex, stack); set.add(39 - armorIndex); armorIndex++;
         } //盔甲栏
 

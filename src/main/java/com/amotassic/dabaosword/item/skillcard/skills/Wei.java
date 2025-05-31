@@ -57,7 +57,7 @@ public class Wei {
             DamageSource source = data.source; Float amount = data.amount;
             if (source.isOf(DamageTypes.GENERIC_KILL)) return 0;
             var nbt = skill.getNbt();
-            float hurt = nbt.getFloat("hurt"); hurt += amount;
+            float hurt = nbt.getFloat("hurt").orElse(0f); hurt += amount;
             if (hurt >= 7 && pl.isAlive()) {
                 voice(pl, this);
                 List<ItemStack> stacks = new ArrayList<>();
@@ -146,7 +146,7 @@ public class Wei {
         }
 
         private MutableText daoshuText(PlayerEntity user, PlayerEntity target, Suit suit) { //四种花色的提示
-            return suit.suit.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword " + user.getName().getString() + " dabaosword:daoshu " + target.getName().getString() + " " + (suit.ordinal() + 1)))).formatted(suit.color);
+            return suit.suit.styled(style -> style.withClickEvent(new ClickEvent.RunCommand("/dabaosword " + user.getName().getString() + " dabaosword:daoshu " + target.getName().getString() + " " + (suit.ordinal() + 1)))).formatted(suit.color);
         }
     }
 
@@ -385,7 +385,7 @@ public class Wei {
 
         private int getEmptyArmorSlot(LivingEntity entity) {
             int i = 0;
-            for (var slot : entity.getArmorItems()) {if (slot.isEmpty()) i++;}
+            for (var slot : getArmorItems(entity)) {if (slot.isEmpty()) i++;}
             return i;
         }
     }
@@ -536,7 +536,7 @@ public class Wei {
             var muls = data.muls;
             if (!user.hasStatusEffect(ModItems.COOLDOWN)) {
                 float walkSpeed = 4.317f;
-                float speed = skill.getNbt().getFloat("speed");
+                float speed = skill.getNbt().getFloat("speed").orElse(0f);
                 if (speed > walkSpeed) {
                     float m = (speed - walkSpeed) / walkSpeed / 2;
                     user.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, (int) (5 * 20 * m),0,false,false,true));
@@ -568,7 +568,7 @@ public class Wei {
 
         private int getEmptySlots(PlayerEntity player) {
             int i = 0;
-            for (var slot : player.getInventory().main) {if (slot.isEmpty()) i++;}
+            for (var slot : player.getInventory().getMainStacks()) {if (slot.isEmpty()) i++;}
             return i;
         }
     }

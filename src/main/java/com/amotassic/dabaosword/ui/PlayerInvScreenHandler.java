@@ -140,7 +140,7 @@ public class PlayerInvScreenHandler extends ScreenHandler {
         if (slot < 0 || slot > 80) return ItemStack.EMPTY;
         var item = inv.getStack(slot);
         if (inv.type == 1 && item.isOf(ModItems.GAIN_CARD) && inv.owner instanceof PlayerEntity pl) {
-            if (slot < 45) return pl.getInventory().main.get(slot - 9);
+            if (slot < 45) return pl.getInventory().getMainStacks().get(slot - 9);
             else return getCardPack(pl).cards.get(slot - 45);
         }
         return item;

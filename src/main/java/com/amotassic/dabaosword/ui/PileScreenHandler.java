@@ -78,7 +78,7 @@ public class PileScreenHandler extends ScreenHandler {
         if (button == 114 && !player.getWorld().isClient) {
             ItemStack pile = trinketItem(ModItems.CARD_PILE, player);
             NbtCompound nbt = getOrCreateNbt(pile);
-            int dropped = nbt.getInt("DroppedCards");
+            int dropped = nbt.getInt("DroppedCards").orElse(0);
             ItemStack stack = getSlot(slotIndex).getStack();
             if (isCard(stack)) { //按下delete键后丢弃卡片，当丢弃3张卡片后，摸一张牌
                 cardDiscard(player, d().cards(stack, 1));

@@ -45,22 +45,14 @@ public final class Skill {
     public int getTag() {Integer i = stack.get(ModItems.TAGS); return i == null ? 0 : i;}
     public void setTag(int value) {stack.set(ModItems.TAGS, value);}
 
-    public int getMinSelect() {
-        var nbt = getNbt();
-        if (!nbt.contains("minSelect")) return -1;
-        return nbt.getInt("minSelect");
-    }
+    public int getMinSelect() {return getNbt().getInt("minSelect").orElse(-1);}
     public void setMinSelect(int value) { //设置打开GUI时后需要选择物品的最小数量
         var nbt = getNbt();
         nbt.putInt("minSelect", value);
         setNbt(nbt);
     }
 
-    public int getMaxSelect() {
-        var nbt = getNbt();
-        if (!nbt.contains("maxSelect")) return Integer.MAX_VALUE;
-        return nbt.getInt("maxSelect");
-    }
+    public int getMaxSelect() {return getNbt().getInt("maxSelect").orElse(Integer.MAX_VALUE);}
     public void setMaxSelect(int value) { //设置打开GUI时后需要选择物品的最大数量
         var nbt = getNbt();
         nbt.putInt("maxSelect", value);

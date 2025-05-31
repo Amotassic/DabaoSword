@@ -81,7 +81,7 @@ public class Shu {
             if (killer instanceof PlayerEntity pl) {
                 voice(user, this);
                 CardEvents.cardDiscard(pl, PlayerEvents.cardsToDrop(pl));
-                for (var stack : pl.getInventory().main) {
+                for (var stack : pl.getInventory().getMainStacks()) {
                     if (stack.isEmpty()) continue;
                     var item = pl.dropItem(stack.copy(), true);
                     if (item != null) {

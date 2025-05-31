@@ -107,7 +107,7 @@ public class PlayerInvHandledScreen extends HandledScreen<PlayerInvScreenHandler
     private ItemStack eventStack() {return handler.getSlot(81).getStack();}
 
     private Map<Integer, Integer> getClicks() {
-        String str = getOrCreateNbt(handler.getSlot(82).getStack()).getString("Clicks");
+        String str = getOrCreateNbt(handler.getSlot(82).getStack()).getString("Clicks").orElse("");
         Map<Integer, Integer> clicks = new HashMap<>();
         if (str.isEmpty()) return clicks;
         str = str.substring(1, str.length() - 1); //去掉{}如果还是空，则返回空map

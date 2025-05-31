@@ -2,42 +2,32 @@ package com.amotassic.dabaosword.mixin.client;
 
 import com.amotassic.dabaosword.item.ModItems;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.GameRenderer;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Identifier;
-import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Final;
+import net.minecraft.client.render.Camera;
+import net.minecraft.entity.Entity;
+import net.minecraft.world.BlockView;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(GameRenderer.class)
+@Mixin(Camera.class)
 public abstract class GameRendererMixin {
 
-    @Shadow @Final private MinecraftClient client;
+    @Shadow protected abstract void setRotation(float yaw, float pitch);
 
-    @Shadow protected abstract void setPostProcessor(Identifier id);
+    @Shadow private float yaw;
 
-    @Shadow private @Nullable Identifier postProcessorId;
+    @Shadow private float pitch;
 
-    @Inject(method = "tick", at = @At("HEAD"))
-    public void tick(CallbackInfo ci) {
-        PlayerEntity player = client.player;
+    @Inject(method = "update", at = @At(value = "TAIL"))
+    public void setProjectionMatrix(BlockView area, Entity focusedEntity, boolean thirdPerson, boolean inverseView, float tickProgress, CallbackInfo ci) {
+        var player = MinecraftClient.getInstance().player;
         if (player != null) {
-            //如果玩家有翻面效果，玩家的视野会上下翻转
-            if (!player.isSpectator() && player.hasStatusEffect(ModItems.TURNOVER)) this.setPostProcessor(Identifier.ofVanilla("flip"));
-            else if (postProcessorId != null) postProcessorId = null;
+            if (!player.isSpectator() && player.hasStatusEffect(ModItems.TURNOVER)) {
+                //翻转摄像机，效果似乎更加河里了
+                setRotation(yaw + 180f, pitch + 180f);
+            }
         }
     }
-
-    /*"shaders/post/flip.json"          上下翻转
-    *"shaders/post/bumpy.json"          立体渲染
-    *"shaders/post/color_convolve.json" 鲜艳
-    *"shaders/post/bits.json"           红白机
-    *"shaders/post/deconverge.json"     近视
-    *"shaders/post/desaturate.json"     灰
-    *"shaders/post/pencil.json"         素描画
-    * */
 }

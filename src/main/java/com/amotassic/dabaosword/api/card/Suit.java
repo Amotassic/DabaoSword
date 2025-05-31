@@ -22,6 +22,6 @@ public enum Suit {
 
     public static Suit fromNbt(NbtCompound nbt) {
         if (!nbt.contains("Suit")) return None;
-        return Suit.valueOf(nbt.getString("Suit"));
+        return Suit.valueOf(nbt.getString("Suit").orElseThrow());
     }
 }

@@ -36,7 +36,7 @@ public class JiedaoItem extends CardItem.Armoury {
             }
         } else {
             user.setStackInHand(Hand.MAIN_HAND, main.copy());
-            if (user instanceof MobEntity mob) mob.updateDropChances(EquipmentSlot.MAINHAND);
+            if (user instanceof MobEntity mob) mob.setEquipmentDropChance(EquipmentSlot.MAINHAND, 1);
             main.setCount(0);
         }
     }

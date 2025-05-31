@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.item.tool;
 
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -17,14 +18,14 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 public class ArrowRainItem extends Item {
     public ArrowRainItem(Settings settings) {super(settings);}
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        tooltip.add(Text.translatable("item.dabaosword.wanjian.tooltip"));
+    public void appendTooltip(ItemStack stack, TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
+        textConsumer.accept(Text.translatable("item.dabaosword.wanjian.tooltip"));
     }
 
     //一次射五发

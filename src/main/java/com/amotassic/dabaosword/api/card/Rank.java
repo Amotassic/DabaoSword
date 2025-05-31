@@ -35,6 +35,6 @@ public enum Rank {
 
     public static Rank fromNbt(NbtCompound nbt) {
         if (!nbt.contains("Rank")) return None;
-        return fromString(nbt.getString("Rank"));
+        return fromString(nbt.getString("Rank").orElseThrow());
     }
 }

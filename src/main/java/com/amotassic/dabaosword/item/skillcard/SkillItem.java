@@ -6,13 +6,16 @@ import com.amotassic.dabaosword.item.card.CardItem;
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketItem;
 import dev.emi.trinkets.api.TrinketsApi;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.registry.Registries;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -20,8 +23,11 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
@@ -32,11 +38,16 @@ public class SkillItem extends Item implements ISkill {
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
+    public void inventoryTick(ItemStack stack, ServerWorld world, Entity entity, @Nullable EquipmentSlot slot) {
         if (!world.isClient && equipped(stack)) setEquipped(stack, false);
     }
 
-    public void appendTooltip(ItemStack s, TooltipContext c, List<Text> t, TooltipType ty) {addTip(s(s), t);}
+    @Override @SuppressWarnings("deprecation")
+    public void appendTooltip(ItemStack s, TooltipContext c, TooltipDisplayComponent d, Consumer<Text> tc, TooltipType type) {
+        List<Text> t = new ArrayList<>();
+        addTip(s(s), t);
+        t.forEach(tc);
+    }
     public void addTip(Skill skill, List<Text> tooltip) {}
     public MutableText getTip(Formatting... format) {return getTip("", format);}
     public MutableText getTip(String suffix, Formatting... format) {
@@ -86,6 +97,6 @@ public class SkillItem extends Item implements ISkill {
     }
 
     public Text activeSkillText(PlayerEntity user, Skill skill) {
-        return Text.translatable("active_skill.select_target").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/dabaosword " + user.getName().getString() + " " + Registries.ITEM.getId(skill.stack.getItem()) + " ")));
+        return Text.translatable("active_skill.select_target").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent.SuggestCommand("/dabaosword " + user.getName().getString() + " " + Registries.ITEM.getId(skill.stack.getItem()) + " ")));
     }
 }

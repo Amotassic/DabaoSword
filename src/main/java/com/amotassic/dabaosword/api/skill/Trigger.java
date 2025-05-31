@@ -9,7 +9,7 @@ public enum Trigger {
     SELECT_TARGET,
     /**当玩家成为卡牌目标时*/
     BECOME_TARGET,
-    /**从牌堆摸新牌*/
+    /**从牌堆摸新牌（暂时未完成，因为还没有用到，先摆这儿）*/
     GET_CARD_DRAW,
     /**不因摸牌而获得牌*/
     GET_CARD_MOVE,
@@ -44,8 +44,5 @@ public enum Trigger {
     HURT_BY_CARD,
     /**当实体死亡*/
     ON_DEATH,
-    NONE;
-
-    public static final Trigger[] GET_CARD = {GET_CARD_DRAW, GET_CARD_MOVE},
-            LOSE_CARD = {LOSE_CARD_USE, LOSE_CARD_DISCARD, LOSE_CARD_MOVE};
+    NONE
 }

@@ -24,10 +24,7 @@ import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.LightningEntity;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.*;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -41,6 +38,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -182,6 +180,15 @@ public class ModTools {
         return n;
     }
 
+    public static List<ItemStack> getArmorItems(LivingEntity entity) {
+        List<ItemStack> items = new ArrayList<>();
+        items.add(entity.getEquippedStack(EquipmentSlot.FEET));
+        items.add(entity.getEquippedStack(EquipmentSlot.LEGS));
+        items.add(entity.getEquippedStack(EquipmentSlot.CHEST));
+        items.add(entity.getEquippedStack(EquipmentSlot.HEAD));
+        return items;
+    }
+
     /**将一个生物的所有符合条件的物品整理成一个list
      * @param main 如果是玩家，包括玩家的物品栏和副手物品，否则只包括生物的主副手物品*/
     public static List<ItemStack> getItems(LivingEntity entity, Predicate<ItemStack> p, boolean main, boolean armor, boolean trinket, boolean pile) {
@@ -194,7 +201,7 @@ public class ModTools {
             } else if (p.test(entity.getMainHandStack())) items.add(entity.getMainHandStack());
             if (p.test(entity.getOffHandStack())) items.add(entity.getOffHandStack());
         }
-        if (armor) for (var stack : entity.getArmorItems()) if (p.test(stack)) items.add(stack);
+        if (armor) for (var stack : getArmorItems(entity)) if (p.test(stack)) items.add(stack);
         if (trinket) for (var stack : allTrinkets(entity)) if (p.test(stack)) items.add(stack);
         return items;
     }
@@ -355,8 +362,12 @@ public class ModTools {
         player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 1,2,false,false,false));
     }
 
-    public static RegistryEntry<Enchantment> getEntry(RegistryKey<Enchantment> key) {
-        return DabaoSword.server.getRegistryManager().getOrThrow(RegistryKeys.ENCHANTMENT).getOrThrow(key);
+    public static RegistryEntry<Enchantment> getEntry(RegistryKey<Enchantment> key, Entity... entity) {
+        Entity e = entity.length > 0 ? entity[0] : null;
+        Registry<Enchantment> enchantments;
+        if (e == null) enchantments = DabaoSword.server.getRegistryManager().getOrThrow(RegistryKeys.ENCHANTMENT);
+        else enchantments = e.getRegistryManager().getOrThrow(RegistryKeys.ENCHANTMENT);
+        return enchantments.getOptional(key).orElse(null);
     }
 
     public static DamageSource damageSource(Entity source, RegistryKey<DamageType> type) {
@@ -383,15 +394,15 @@ public class ModTools {
             ItemStack stack = trinketItem(ModItems.CARD_PILE, player);
             NbtCompound compound = getOrCreateNbt(stack);
             if (compound.contains("DamageDodged")) {
-                NbtCompound nbt = ((NbtList) Objects.requireNonNull(compound.get("DamageDodged"))).getCompound(0);
-                RegistryKey<DamageType> type = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of(nbt.getString("type")));
+                NbtCompound nbt = compound.getList("DamageDodged").orElseThrow().getCompound(0).orElseThrow();
+                RegistryKey<DamageType> type = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of(nbt.getString("type").orElseThrow()));
                 var entry = player.getWorld().getRegistryManager().getOrThrow(RegistryKeys.DAMAGE_TYPE).getOrThrow(type);
-                Entity source = world.getEntityById(nbt.getInt("source"));
-                Entity attacker = world.getEntityById(nbt.getInt("attacker"));
+                Entity source = world.getEntityById(nbt.getInt("source").orElse(0));
+                Entity attacker = world.getEntityById(nbt.getInt("attacker").orElse(0));
                 DamageSource damageSource = new DamageSource(entry, source, attacker);
                 ItemStack returning = ItemStack.EMPTY;
-                if (nbt.contains("returning")) returning = new ItemStack(Registries.ITEM.get(Identifier.of(nbt.getString("returning"))));
-                float amount = nbt.getFloat("amount");
+                if (nbt.contains("returning")) returning = new ItemStack(Registries.ITEM.get(Identifier.of(nbt.getString("returning").orElseThrow())));
+                float amount = nbt.getFloat("amount").orElseThrow();
                 return new Pair<>(new Pair<>(damageSource, amount), returning);
             }
         }

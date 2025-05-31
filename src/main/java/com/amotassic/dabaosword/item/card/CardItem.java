@@ -9,17 +9,23 @@ import com.amotassic.dabaosword.item.ModItems;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.CustomModelDataComponent;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
 import static net.minecraft.util.Formatting.*;
@@ -31,9 +37,11 @@ public abstract class CardItem extends Item {
 
     public void effect(LivingEntity user, ItemStack card, LivingEntity target) {}
 
-    @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+    @Override @SuppressWarnings("deprecation")
+    public void appendTooltip(ItemStack stack, TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
+        List<Text> tooltip = new ArrayList<>();
         addSRTip(c(stack), tooltip); addTip(stack, tooltip);
+        tooltip.forEach(textConsumer);
     }
 
     public void addTip(ItemStack stack, List<Text> tooltip) {
@@ -152,7 +160,7 @@ public abstract class CardItem extends Item {
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
+    public void inventoryTick(ItemStack stack, ServerWorld world, Entity entity, @Nullable EquipmentSlot slot) {
         addModel(stack, world);
     }
 

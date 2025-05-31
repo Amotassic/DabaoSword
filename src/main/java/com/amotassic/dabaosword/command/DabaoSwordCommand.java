@@ -21,6 +21,8 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
+import java.net.URI;
+
 import static com.amotassic.dabaosword.event.PVPGameEvents.getGameManager;
 import static com.amotassic.dabaosword.util.ModTools.s;
 import static com.amotassic.dabaosword.util.ModTools.trinketItem;
@@ -135,19 +137,19 @@ public class DabaoSwordCommand {
         switch (page) {
             case 0 -> {
                 player.sendMessage(Text.translatable("dabaosword.welcome"));
-                MutableText text = Text.translatable("dabaosword.mainpage").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://modrinth.com/mod/dabaosword")).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.literal("Modrinth")))).append(
+                MutableText text = Text.translatable("dabaosword.mainpage").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent.OpenUrl(URI.create("https://modrinth.com/mod/dabaosword"))).withHoverEvent(new HoverEvent.ShowText(Text.literal("Modrinth")))).append(
 
-                Text.translatable("dabaosword.help.menu").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword 1")).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("dabaosword.help.menu_hover")))));
-                //System.out.println(Text.Serializer.toSortedJsonString(t1.append(t2))); //用于获取json文本
+                Text.translatable("dabaosword.help.menu").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent.RunCommand("/dabaosword 1")).withHoverEvent(new HoverEvent.ShowText(Text.translatable("dabaosword.help.menu_hover")))));
+                //System.out.println(Text.Serialization.toJsonString(text, DynamicRegistryManager.EMPTY)); //用于获取json文本
                 player.sendMessage(text);
             }
             case 1 -> player.sendMessage(menu);
             case 2 -> {
-                MutableText text = Text.translatable("dabaosword.rule").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword 3"))).append(
+                MutableText text = Text.translatable("dabaosword.rule").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent.RunCommand("/dabaosword 3"))).append(
 
-                Text.translatable("dabaosword.newgame0").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword creategame 0")).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("dabaosword.newgame0_hover"))))).append(
+                Text.translatable("dabaosword.newgame0").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent.RunCommand("/dabaosword creategame 0")).withHoverEvent(new HoverEvent.ShowText(Text.translatable("dabaosword.newgame0_hover"))))).append(
 
-                Text.translatable("dabaosword.newgame1").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword creategame 1")).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("dabaosword.newgame1_hover"))))
+                Text.translatable("dabaosword.newgame1").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent.RunCommand("/dabaosword creategame 1")).withHoverEvent(new HoverEvent.ShowText(Text.translatable("dabaosword.newgame1_hover"))))
                 );
                 player.sendMessage(text);
             }
@@ -162,9 +164,9 @@ public class DabaoSwordCommand {
         return 1;
     }
 
-    private static final MutableText info = Text.translatable("dabaosword.help.info").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/info ")).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("dabaosword.help.info_hover")))),
-    newGame = Text.translatable("dabaosword.newgame").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword 2")).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("dabaosword.newgame_hover")))),
-    viewId = Text.translatable("dabaosword.viewid").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/dabaosword viewidentity @s")).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("dabaosword.viewid_hover")))),
-    disGame = Text.translatable("dabaosword.disgame").formatted(Formatting.LIGHT_PURPLE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/dabaosword discardgame ")).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("dabaosword.disgame_hover"))));
+    private static final MutableText info = Text.translatable("dabaosword.help.info").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent.SuggestCommand("/info ")).withHoverEvent(new HoverEvent.ShowText(Text.translatable("dabaosword.help.info_hover")))),
+    newGame = Text.translatable("dabaosword.newgame").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent.RunCommand("/dabaosword 2")).withHoverEvent(new HoverEvent.ShowText(Text.translatable("dabaosword.newgame_hover")))),
+    viewId = Text.translatable("dabaosword.viewid").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent.SuggestCommand("/dabaosword viewidentity @s")).withHoverEvent(new HoverEvent.ShowText(Text.translatable("dabaosword.viewid_hover")))),
+    disGame = Text.translatable("dabaosword.disgame").formatted(Formatting.LIGHT_PURPLE).styled(style -> style.withClickEvent(new ClickEvent.SuggestCommand("/dabaosword discardgame ")).withHoverEvent(new HoverEvent.ShowText(Text.translatable("dabaosword.disgame_hover"))));
     public static final MutableText menu = info.append(newGame).append(viewId).append(disGame);
 }

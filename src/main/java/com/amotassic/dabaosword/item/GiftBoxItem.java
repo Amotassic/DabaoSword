@@ -1,6 +1,7 @@
 package com.amotassic.dabaosword.item;
 
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -13,16 +14,15 @@ import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.util.Random;
+import java.util.function.Consumer;
 
 public class GiftBoxItem extends Item {
     public GiftBoxItem(Settings settings) {super(settings);}
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        tooltip.add(Text.translatable("item.dabaosword.gift_box.tooltip").formatted(Formatting.GOLD));
-        super.appendTooltip(stack, context, tooltip, type);
+    public void appendTooltip(ItemStack stack, TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
+        textConsumer.accept(Text.translatable("item.dabaosword.gift_box.tooltip").formatted(Formatting.GOLD));
     }
 
     @Override

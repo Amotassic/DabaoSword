@@ -1,18 +1,19 @@
 package com.amotassic.dabaosword.pvpgame;
 
+import com.amotassic.dabaosword.DabaoSword;
 import com.amotassic.dabaosword.api.event.PVPGameTickCallback;
 import com.amotassic.dabaosword.event.PVPGameEvents;
 import com.amotassic.dabaosword.util.ModConfig;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Uuids;
 import net.minecraft.world.GameMode;
 
 import java.util.*;
@@ -21,7 +22,24 @@ import java.util.function.Consumer;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class Game {
-    private final ServerWorld world;
+    public static final MapCodec<Game> CODEC = RecordCodecBuilder.mapCodec(
+            instance -> instance.group(
+                            Codec.INT.fieldOf("id").forGetter(game -> game.id),
+                            Uuids.SET_CODEC.fieldOf("players").forGetter(game -> game.players),
+                            Codec.INT.fieldOf("type").forGetter(game -> game.type),
+                            Codec.BOOL.fieldOf("active").forGetter(game -> game.active),
+                            Codec.INT.fieldOf("count_down").forGetter(game -> game.countDown),
+                            Codec.INT.fieldOf("game_time").forGetter(game -> game.gameTime),
+                            Codec.INT.fieldOf("time_out").forGetter(game -> game.timeOut),
+                            Codec.INT.fieldOf("zhong_lives").forGetter(game -> game.zhongLives),
+                            Codec.INT.fieldOf("fan_lives").forGetter(game -> game.fanLives),
+                            Codec.INT.fieldOf("nei_lives").forGetter(game -> game.neiLives),
+                            Codec.INT.fieldOf("zhong_score").forGetter(game -> game.zhongScore),
+                            Codec.INT.fieldOf("fan_score").forGetter(game -> game.fanScore),
+                            Codec.INT.fieldOf("nei_score").forGetter(game -> game.neiScore)
+                    )
+                    .apply(instance, Game::new)
+    );
     private final int id;
     private final Set<UUID> players = new HashSet<>();
     private final int type;
@@ -35,8 +53,7 @@ public class Game {
     private Map<String, Integer> primaryDataCache;
     public static final String FANCOUNT = "fanCount", NEICOUNT = "neiCount", ZHONGCOUNT = "zhongCount", ZHONGLIVES = "zhongLives", FANLIVES = "fanLives", NEILIVES = "neiLives";
 
-    public Game(int id, ServerWorld world, Set<UUID> players, int type) {
-        this.world = world;
+    public Game(int id, Set<UUID> players, int type) {
         this.id = id;
         this.players.addAll(players);
         this.type = type;
@@ -48,24 +65,20 @@ public class Game {
         initData();
     }
 
-    public Game(ServerWorld world, NbtCompound nbt) {
-        this.world = world;
-        this.id = nbt.getInt("Id");
-        NbtList nbtList = nbt.getList("Players", NbtElement.INT_ARRAY_TYPE);
-        for (NbtElement nbtElement : nbtList) {
-            this.players.add(NbtHelper.toUuid(nbtElement));
-        }
-        this.type = nbt.getInt("Type");
-        this.active = nbt.getBoolean("Active");
-        this.countDown = nbt.getInt("CountDown");
-        this.gameTime = nbt.getInt("GameTime");
-        this.timeOut = nbt.getInt("TimeOut");
-        this.zhongLives = nbt.getInt("ZhongLives");
-        this.fanLives = nbt.getInt("FanLives");
-        this.neiLives = nbt.getInt("NeiLives");
-        this.zhongScore = nbt.getInt("ZhongScore");
-        this.fanScore = nbt.getInt("FanScore");
-        this.neiScore = nbt.getInt("NeiScore");
+    private Game(int id, Set<UUID> players, int type, boolean active, int countDown, int gameTime, int timeOut, int zhongLives, int fanLives, int neiLives, int zhongScore, int fanScore, int neiScore) {
+        this.id = id;
+        this.players.addAll(players);
+        this.type = type;
+        this.active = active;
+        this.countDown = countDown;
+        this.gameTime = gameTime;
+        this.timeOut = timeOut;
+        this.zhongLives = zhongLives;
+        this.fanLives = fanLives;
+        this.neiLives = neiLives;
+        this.zhongScore = zhongScore;
+        this.fanScore = fanScore;
+        this.neiScore = neiScore;
     }
 
     public Map<String, Integer> getPrimaryData() {
@@ -106,24 +119,6 @@ public class Game {
         this.zhongScore = this.fanScore = this.neiScore = 0;
     }
 
-    public void writeNbt(NbtCompound nbt) {
-        nbt.putInt("Id", this.id);
-        NbtList nbtList = new NbtList();
-        for (UUID uuid : this.players) nbtList.add(NbtHelper.fromUuid(uuid));
-        nbt.put("Players", nbtList);
-        nbt.putInt("Type", this.type);
-        nbt.putBoolean("Active", this.active);
-        nbt.putInt("CountDown", this.countDown);
-        nbt.putInt("GameTime", this.gameTime);
-        nbt.putInt("TimeOut", this.timeOut);
-        nbt.putInt("ZhongLives", this.zhongLives);
-        nbt.putInt("FanLives", this.fanLives);
-        nbt.putInt("NeiLives", this.neiLives);
-        nbt.putInt("ZhongScore", this.zhongScore);
-        nbt.putInt("FanScore", this.fanScore);
-        nbt.putInt("NeiScore", this.neiScore);
-    }
-
     public boolean isPlayerInThisGame(PlayerEntity player) {
         return this.players.contains(player.getUuid());
     }
@@ -152,7 +147,7 @@ public class Game {
         discardGame();
         forEachPlayer(p -> {
             p.sendMessage(Text.translatable("dabaosword.game.refuse", player.getDisplayName()).formatted(Formatting.RED));
-            voice(p, SoundEvents.ITEM_SHIELD_BREAK);
+            voice(p, SoundEvents.ITEM_SHIELD_BREAK.value());
         });
     }
 
@@ -178,7 +173,7 @@ public class Game {
 
     public void discardGame() {
         this.active = false;
-        var scoreboard = world.getServer().getScoreboard();
+        var scoreboard = DabaoSword.server.getScoreboard();
         var obj = scoreboard.getObjectives().stream().filter(o -> o.getName().equals("dabaosword.death")).findFirst().orElse(null);
         if (obj != null && PVPGameEvents.getGameManager().getGameCount() <= 1) scoreboard.removeObjective(obj);
         forEachPlayer(player -> {
@@ -191,7 +186,7 @@ public class Game {
         });
     }
 
-    public void tick() {
+    public void tick(ServerWorld world) {
         if (!this.active) return;
         PVPGameTickCallback.EVENT.invoker().onGameTick(this, world);
         //倒计时为-1时，游戏开始计时
@@ -201,7 +196,7 @@ public class Game {
 
     public void forEachPlayer(Consumer<ServerPlayerEntity> action) {
         for (UUID uuid : getPlayers()) {
-            ServerPlayerEntity player = world.getServer().getPlayerManager().getPlayer(uuid);
+            ServerPlayerEntity player = DabaoSword.server.getPlayerManager().getPlayer(uuid);
             if (player == null) continue;
             action.accept(player);
         }

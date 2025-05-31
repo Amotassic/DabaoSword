@@ -43,7 +43,7 @@ public class DabaoSword implements ModInitializer {
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register(content -> {
             content.addAfter(Items.NETHERITE_SWORD,ModItems.GUDINGDAO);
-            content.addAfter(Items.EGG,ModItems.ARROW_RAIN);
+            content.addBefore(Items.BOW,ModItems.ARROW_RAIN);
         });
     }
 }

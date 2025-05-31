@@ -23,7 +23,6 @@ import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.UnbreakableComponent;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -41,6 +40,7 @@ import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rarity;
+import net.minecraft.util.Unit;
 import net.minecraft.util.dynamic.Codecs;
 
 import java.util.ArrayList;
@@ -136,14 +136,14 @@ public class ModItems {
     CARD_PILE = register("card_pile", CardPile::new, 1),
     //礼盒
     GIFTBOX = register("gift_box", GiftBoxItem::new, new Item.Settings().rarity(Rarity.UNCOMMON)),
-    GUDINGDAO = register("gudingdao", GudingdaoItem::new, new Item.Settings().maxDamage(999).rarity(Rarity.EPIC)),
+    GUDINGDAO = register("gudingdao", GudingdaoItem::new, new Item.Settings().maxDamage(999).rarity(Rarity.EPIC).sword(ToolMaterial.NETHERITE, 5, -2.4f)),
     ARROW_RAIN = register("arrow_rain", ArrowRainItem::new, new Item.Settings().maxDamage(50).rarity(Rarity.UNCOMMON)),
     //BB机
     BBJI = register("bbji", BBjiItem::new, new Item.Settings().maxDamage(250).rarity(Rarity.UNCOMMON)),
     //让我康康
     LET_ME_CC = register("let_me_cc", LetMeCCItem::new, 1),
     //阳光开朗的笑容
-    SUNSHINE_SMILE = register("sunshine_smile", SunshineSmile::new, new Item.Settings().maxDamage(999).rarity(Rarity.UNCOMMON).equippable(EquipmentSlot.HEAD).enchantable(25).component(DataComponentTypes.UNBREAKABLE, new UnbreakableComponent(true))),
+    SUNSHINE_SMILE = register("sunshine_smile", SunshineSmile::new, new Item.Settings().maxDamage(999).rarity(Rarity.UNCOMMON).equippable(EquipmentSlot.HEAD).enchantable(25).component(DataComponentTypes.UNBREAKABLE, Unit.INSTANCE)),
     XUYOU_SPAWN_EGG = register("xuyou_spawn_egg", s -> new SpawnEggItem(ModEntity.XUYOU, s)),
     GUDING_ITEM = register("guding", Item::new),
     INCOMPLETE_GUDINGDAO = register("incomplete_gdd", Item::new, 1);
@@ -173,9 +173,9 @@ public class ModItems {
 
     private static void addToGroup(ItemGroup.DisplayContext context, ItemGroup.Entries entries) {
         var wrapper = context.lookup().getOrThrow(RegistryKeys.ENCHANTMENT);
-        var entry = wrapper.getOrThrow(CRIT);
+        var entry = wrapper.getOptional(CRIT).orElse(null);
         ItemStack smile = new ItemStack(SUNSHINE_SMILE);
-        smile.addEnchantment(entry, 1);
+        if (entry != null) smile.addEnchantment(entry, 1);
         //添加所有卡牌
         CARDS.forEach(entries::add);
         entries.add(GAIN_CARD);

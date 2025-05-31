@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.item.tool;
 
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -12,7 +13,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 
-import java.util.List;
+import java.util.function.Consumer;
 
 import static com.amotassic.dabaosword.util.ModTools.voice;
 import static com.amotassic.dabaosword.util.ModTools.world;
@@ -21,8 +22,8 @@ public class BBjiItem extends Item {
     public BBjiItem(Settings settings) {super(settings);}
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
-        tooltip.add(Text.translatable("item.dabaosword.bbji.tooltip"));
+    public void appendTooltip(ItemStack stack, TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
+        textConsumer.accept(Text.translatable("item.dabaosword.bbji.tooltip"));
     }
 
     @Override

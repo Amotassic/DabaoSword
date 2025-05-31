@@ -37,7 +37,7 @@ public class ModifyDamage {
         if (source.getSource() instanceof LivingEntity SE && SE.getMainHandStack().isOf(ModItems.GUDINGDAO)) {
             //插入一个武器版古锭刀的结算
             int i = 0; //i == 4则说明受击者的盔甲栏没有任何物品
-            for (var s : entity.getArmorItems()) {if (s.isEmpty()) i++;}
+            for (var s : getArmorItems(entity)) {if (s.isEmpty()) i++;}
             if (i == 4) multiply += 1;
         }
 

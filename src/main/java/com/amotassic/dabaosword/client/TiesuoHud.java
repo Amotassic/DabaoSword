@@ -26,7 +26,7 @@ public class TiesuoHud implements HudRenderCallback {
         MinecraftClient client = MinecraftClient.getInstance();
         this.scaledWidth = drawContext.getScaledWindowWidth();
         this.scaledHeight = drawContext.getScaledWindowHeight();
-        float f = tickCounter.getLastFrameDuration();
+        float f = tickCounter.getDynamicDeltaTicks();
         this.tiesuoScale = MathHelper.lerp(0.5f * f, this.tiesuoScale, 1.125f);
         if (client.options.getPerspective().isFirstPerson()) {
             var player = client.player;

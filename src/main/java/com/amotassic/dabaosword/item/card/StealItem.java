@@ -45,7 +45,7 @@ public class StealItem extends CardItem.Armoury {
 
     private boolean canSteal(LivingEntity entity) {
         int count = countAllCards(entity);
-        for (ItemStack stack : entity.getArmorItems()) {count += stack.getCount();}
+        for (ItemStack stack : getArmorItems(entity)) {count += stack.getCount();}
         return count > 0;
     }
 }

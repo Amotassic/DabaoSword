@@ -32,7 +32,7 @@ public class Wu {
         public Buqu(Settings settings) {super(settings);}
         @Override
         public void addTip(Skill skill, List<Text> tooltip) {
-            String c = skill.getNbt().getString("Chuang");
+            String c = skill.getNbt().getString("Chuang").orElse("");
             if (!c.isEmpty()) tooltip.add(Text.literal("创：" + c));
             tooltip.add(getTip("1", GREEN));
             tooltip.add(getTip("2", GREEN));
@@ -43,7 +43,7 @@ public class Wu {
         @SkillInfo(trigger = Trigger.ON_HURT, relation = Relation.SELF)
         public int onDying(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
             if (user instanceof PlayerEntity player && player.isDead()) {
-                var nbt = skill.getNbt(); var chuang = nbt.getString("Chuang");
+                var nbt = skill.getNbt(); var chuang = nbt.getString("Chuang").orElse("");
                 if (chuang.length() > 36) return 0;
                 var card = c(newCard());
                 player.getWorld().getPlayers().forEach(p -> p.sendMessage(Text.translatable("buqu.tip1", player.getDisplayName(), skill.toHoverableText(), card.toStack().toHoverableText(), card.rank.rank), false));
@@ -68,7 +68,7 @@ public class Wu {
 
         @SkillInfo(trigger = Trigger.ON_DEATH, relation = Relation.SELF)
         public int die(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
-            var nbt = skill.getNbt(); var chuang = nbt.getString("Chuang");
+            var nbt = skill.getNbt(); var chuang = nbt.getString("Chuang").orElse("");
             if (chuang.length() > 6) {
                 chuang = chuang.substring(6);
                 nbt.putString("Chuang", chuang);
@@ -116,7 +116,7 @@ public class Wu {
         }
 
         private MutableText fanjianText(PlayerEntity user, PlayerEntity player, Suit suit) { //四种花色的提示
-            return suit.suit.styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword " + user.getName().getString() + " dabaosword:fanjian " + player.getName().getString() + " " + (suit.ordinal() + 1)))).formatted(suit.color);
+            return suit.suit.styled(style -> style.withClickEvent(new ClickEvent.RunCommand("/dabaosword " + user.getName().getString() + " dabaosword:fanjian " + player.getName().getString() + " " + (suit.ordinal() + 1)))).formatted(suit.color);
         }
 
         @Override
@@ -168,7 +168,7 @@ public class Wu {
         public int useCard(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
             var card = data.getFirst().toStack();
             var nbt = skill.getNbt();
-            int last = nbt.contains("fenyin") ? nbt.getInt("fenyin") : 0;
+            int last = nbt.getInt("fenyin").orElse(0);
             int current = isRedCard.test(card) ? 1 : isBlackCard.test(card) ? 2 : 0;
             if (last != 0 && current != 0 && current != last) {draw(user); voice(user, this);}
             nbt.putInt("fenyin", current);
@@ -317,7 +317,7 @@ public class Wu {
         public void preAttack(PlayerEntity player, LivingEntity target, Skill skill) {
             //破军：攻击命中盔甲槽有物品的生物后，会让其所有盔甲掉落，配合古锭刀特效使用，pvp神器
             if (!player.hasStatusEffect(ModItems.COOLDOWN)) {
-                for (var armor : target.getArmorItems()) {
+                for (var armor : getArmorItems(target)) {
                     if (armor.isEmpty()) continue;
                     if (target instanceof PlayerEntity pl) {give(pl, armor.copy()); armor.setCount(0);}
                     else {target.dropStack(world(player), armor.copy()); armor.setCount(0);}

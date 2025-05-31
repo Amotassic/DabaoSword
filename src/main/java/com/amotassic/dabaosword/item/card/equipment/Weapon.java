@@ -85,7 +85,7 @@ public class Weapon extends Equipment {
         public int addDamage(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
             var adds = data.adds;
             int i = 0;
-            for (var s : target.getArmorItems()) {if (s.isEmpty()) i++;}
+            for (var s : getArmorItems(target)) {if (s.isEmpty()) i++;}
             if (i == 4) {
                 voice(user, this);
                 adds.add(5f);

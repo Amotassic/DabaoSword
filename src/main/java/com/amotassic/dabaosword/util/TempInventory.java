@@ -50,7 +50,7 @@ public class TempInventory extends SimpleInventory {
             if (stack.isIn(Tags.ATTACK)) setStack(3, stack);
         } //四件装备占1~4格
 
-        var armors = owner.getArmorItems(); int armorIndex = 0;
+        var armors = getArmorItems(owner); int armorIndex = 0;
         if (armor) for (ItemStack stack : armors) {
             setStack(7 - armorIndex, stack); armorIndex++;
         } //4件盔甲占5~8格
@@ -60,7 +60,7 @@ public class TempInventory extends SimpleInventory {
 
         boolean bl = type == 1;
         if (owner instanceof PlayerEntity pl) {
-            var inv = pl.getInventory().main; //背包占2,3,4,5行
+            var inv = pl.getInventory().getMainStacks(); //背包占2,3,4,5行
             for (var s : inv) if (shouldAdd(type, s)) setStack(9 + inv.indexOf(s), bl ? paibei(s.getCount()) : s);
             var pack = getCardPack(pl); var cards = pack.cards;
             if (!pack.isEmpty()) { //手牌背包的卡牌占6,7,8,9行

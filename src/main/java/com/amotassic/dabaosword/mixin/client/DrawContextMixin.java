@@ -2,7 +2,6 @@ package com.amotassic.dabaosword.mixin.client;
 
 import com.amotassic.dabaosword.api.card.Rank;
 import com.amotassic.dabaosword.api.card.Suit;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
@@ -24,8 +23,6 @@ import static com.amotassic.dabaosword.util.ModTools.c;
 @Mixin(DrawContext.class)
 public abstract class DrawContextMixin {
     @Shadow @Final private MatrixStack matrices;
-
-    @Shadow @Final private MinecraftClient client;
 
     @Shadow protected abstract void drawTexturedQuad(Function<Identifier, RenderLayer> renderLayers, Identifier sprite, int x1, int x2, int y1, int y2, float u1, float u2, float v1, float v2, int color);
 

@@ -65,8 +65,8 @@ public class XuyouEntity extends HostileEntity implements RangedAttackMob {
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        bbcd = nbt.getInt("bbcd");
-        bbTimes = nbt.getInt("bbTimes");
+        bbcd = nbt.getInt("bbcd").orElse(0);
+        bbTimes = nbt.getInt("bbTimes").orElse(0);
     }
 
     @Override

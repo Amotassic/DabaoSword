@@ -10,6 +10,8 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.collection.DefaultedList;
 
+import java.util.Optional;
+
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class CardPileInventory implements Inventory {
@@ -35,15 +37,15 @@ public class CardPileInventory implements Inventory {
     }
 
     public void readNbt() {
-        NbtList list = getOrCreateNbt(trinketItem(pile, player)).getList("Items", 10);
-        if (list != null) readNbt(list);
+        Optional<NbtList> list = getOrCreateNbt(trinketItem(pile, player)).getList("Items");
+        list.ifPresent(this::readNbt);
     }
 
     public void readNbt(NbtList nbtList) {
         cards.clear();
         for (int i = 0; i < nbtList.size(); ++i) {
-            NbtCompound nbtCompound = nbtList.getCompound(i);
-            int j = nbtCompound.getByte("Slot");
+            NbtCompound nbtCompound = nbtList.getCompound(i).orElseThrow();
+            int j = nbtCompound.getByte("Slot").orElseThrow();
             ItemStack itemStack = ItemStack.fromNbt(player.getRegistryManager(), nbtCompound).orElse(ItemStack.EMPTY);
             if (itemStack.isEmpty()) continue;
             if (j >= 0 && j < size()) setStack(j, itemStack);

@@ -108,7 +108,7 @@ abstract class ItemEntityMixin extends Entity {
         }
 
         if (stack.isOf(Items.EMERALD) && stack.getCount() == 64) {
-            if (entity instanceof VillagerEntity villager && villager.getVillagerData().getProfession() == VillagerProfession.NITWIT) {
+            if (entity instanceof VillagerEntity villager && villager.getVillagerData().profession().getKey().orElse(VillagerProfession.NONE) == VillagerProfession.NITWIT) {
                 this.setStack(new ItemStack(ModItems.GIFTBOX, 1));
             }
         }

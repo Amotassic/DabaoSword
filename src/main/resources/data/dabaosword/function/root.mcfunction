@@ -1,3 +1,3 @@
 loot give @p loot dabaosword:draw_skill
 tellraw @p {"translate":"dabaosword.welcome"}
-tellraw @p {"clickEvent":{"action":"open_url","value":"https://modrinth.com/mod/dabaosword"},"color":"aqua","extra":[{"clickEvent":{"action":"run_command","value":"/dabaosword 1"},"color":"aqua","hoverEvent":{"action":"show_text","contents":{"translate":"dabaosword.help.menu_hover"}},"translate":"dabaosword.help.menu"}],"hoverEvent":{"action":"show_text","contents":{"text":"Modrinth"}},"translate":"dabaosword.mainpage"}
+tellraw @p {"translate":"dabaosword.mainpage","extra":[{"translate":"dabaosword.help.menu","hover_event":{"value":{"translate":"dabaosword.help.menu_hover"},"action":"show_text"},"click_event":{"command":"/dabaosword 1","action":"run_command"},"color":"aqua"}],"hover_event":{"value":"Modrinth","action":"show_text"},"click_event":{"url":"https://modrinth.com/mod/dabaosword","action":"open_url"},"color":"aqua"}

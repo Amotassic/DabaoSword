@@ -33,13 +33,13 @@ public class PVPGameEvents implements ServerWorldEvents.Load, ServerTickEvents.S
     @Override
     public void onWorldLoad(MinecraftServer server, ServerWorld world) {
         //只需要保存在主世界的data目录下即可
-        if (world.getRegistryKey() == World.OVERWORLD) gameManager = world.getPersistentStateManager().getOrCreate(GameManager.getPersistentStateType(world), "dabaosword_game");
+        if (world.getRegistryKey() == World.OVERWORLD) gameManager = world.getPersistentStateManager().getOrCreate(GameManager.getPersistentStateType());
     }
 
     @Override
     public void onStartTick(ServerWorld world) {
         //防止每个维度都加载一次，暂时不知道用什么更优雅的办法
-        if (world.getRegistryKey() == World.OVERWORLD) gameManager.tick();
+        if (world.getRegistryKey() == World.OVERWORLD) gameManager.tick(world);
     }
 
     @Override
@@ -73,7 +73,7 @@ public class PVPGameEvents implements ServerWorldEvents.Load, ServerTickEvents.S
         if (countDown % 20 != 0) return;
         game.forEachPlayer(player -> {
             if (countDown % 100 == 0) {
-                Text quit = Text.translatable("dabaosword.refuse").formatted(Formatting.RED).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword refusegame")).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("dabaosword.refuse_hover"))));
+                Text quit = Text.translatable("dabaosword.refuse").formatted(Formatting.RED).styled(style -> style.withClickEvent(new ClickEvent.RunCommand("/dabaosword refusegame")).withHoverEvent(new HoverEvent.ShowText(Text.translatable("dabaosword.refuse_hover"))));
                 player.sendMessage(Text.translatable("dabaosword.game.wait", countDown / 20).append(quit));
                 return;
             }

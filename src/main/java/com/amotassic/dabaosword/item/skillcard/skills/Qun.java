@@ -87,8 +87,8 @@ public class Qun {
         }
 
         private final MutableText JIZHAN_TEXT = Text.translatable("jizhan.text",
-                Text.translatable("rank.higher").formatted(AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword @s dabaosword:jizhan @s 1"))),
-                Text.translatable("rank.lower").formatted(AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword @s dabaosword:jizhan @s -1"))));
+                Text.translatable("rank.higher").formatted(AQUA).styled(style -> style.withClickEvent(new ClickEvent.RunCommand("/dabaosword @s dabaosword:jizhan @s 1"))),
+                Text.translatable("rank.lower").formatted(AQUA).styled(style -> style.withClickEvent(new ClickEvent.RunCommand("/dabaosword @s dabaosword:jizhan @s -1"))));
 
         @Override
         public int onDrawPhase(PlayerEntity player, Skill skill) {
@@ -105,7 +105,7 @@ public class Qun {
 
         @Override
         public void triggerSkill(LivingEntity entity, Skill skill, LivingEntity target, int value) {
-            int last = skill.getNbt().getInt("lastCardRank");
+            int last = skill.getNbt().getInt("lastCardRank").orElse(0);
             if (last == -1 || !(entity instanceof PlayerEntity player)) return;
             ItemStack next = newCard();
             give(player, next); //又让玩家摸一张牌后，比较两张牌的点数，如果玩家选对了，就把新的牌保存到lastCard，否则关闭菜单
@@ -208,7 +208,7 @@ public class Qun {
         @Override
         public boolean activeSkill(PlayerEntity user, Skill skill) {
             List<CardItem> items = ModItems.CARDS.stream().filter(i -> i.getType() != 2).toList();
-            String[] used = skill.getNbt().getString("used").split(";");
+            String[] used = skill.getNbt().getString("used").orElse("").split(";");
             if (used.length == items.size()) {
                 user.sendMessage(Text.translatable("item.dabaosword.taoluan.fail").formatted(RED), true);
                 return false;
@@ -229,7 +229,7 @@ public class Qun {
             give(player, selected);
             if (!player.isCreative()) {
                 var nbt = skill.getNbt();
-                String used = nbt.getString("used"); String item = Registries.ITEM.getId(selected.getItem()).getPath();
+                String used = nbt.getString("used").orElse(""); String item = Registries.ITEM.getId(selected.getItem()).getPath();
                 used = used.isEmpty() ? item : used + ";" + item;
                 nbt.putString("used", used); skill.setNbt(nbt);
                 player.timeUntilRegen = 0;

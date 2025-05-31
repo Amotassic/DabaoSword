@@ -8,17 +8,23 @@ import dev.emi.trinkets.TrinketSlot;
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketsApi;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import static com.amotassic.dabaosword.api.CardEvents.cardDiscard;
 import static com.amotassic.dabaosword.util.ModTools.*;
@@ -34,19 +40,21 @@ public class Equipment extends CardItem implements ISkill {
     public final boolean lockOn() {return true;}
 
     @Override
-    public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
-        super.inventoryTick(stack, world, entity, slot, selected);
+    public void inventoryTick(ItemStack stack, ServerWorld world, Entity entity, @Nullable EquipmentSlot slot) {
+        super.inventoryTick(stack, world, entity, slot);
         if (!world.isClient && equipped(stack)) setEquipped(stack, false);
     }
 
     @Override
-    public final void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+    public void appendTooltip(ItemStack stack, TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
+        List<Text> tooltip = new ArrayList<>();
         addSRTip(c(stack), tooltip); addTip(s(stack), tooltip);
 
         if (Screen.hasShiftDown()) {
             tooltip.add(Text.translatable("equipment.tip1").formatted(BOLD));
             tooltip.add(Text.translatable("equipment.tip2").formatted(BOLD));
         } else tooltip.add(Text.translatable("dabaosword.shift_tip", Text.keybind("key.sneak")));
+        tooltip.forEach(textConsumer);
     }
     public void addTip(Skill skill, List<Text> tooltip) {}
     /**防止重写错方法*/
