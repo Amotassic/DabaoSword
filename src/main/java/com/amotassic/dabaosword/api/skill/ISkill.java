@@ -76,7 +76,16 @@ public interface ISkill extends Trinket {
         }
     }
 
+    /**当玩家被断肠或者非锁定技失效时，此效果将无法触发*/
     default void tickSkill(Skill skill, LivingEntity entity) {}
+
+    default boolean shouldTickUpdate() {return false;}
+    default void tickUpdateNbt(Skill skill, LivingEntity entity) {
+        int tick = (int) (entity.getWorld().getTime() % 20);
+        var nbt = skill.getNbt();
+        nbt.putInt("TickOfSecond", tick);
+        skill.setNbt(nbt);
+    }
 
     /**在打开的GUI上添加操作提示，可按需添加，默认会添加物品本身的物品提示
      * @see ISkill#addPresetTips(Skill, List, Integer...) */
@@ -139,7 +148,8 @@ public interface ISkill extends Trinket {
 
     /**这个方法是用于在子类重写，以此快速生成一个带有参数的方法。
      * <p>
-     * 加上{@link SkillInfo}注解后，子类的方法可以随意改名，但是这里该有的参数一个也不能少！*/
+     * 加上{@link SkillInfo}注解后，子类的方法可以随意改名，但是这里该有的参数一个也不能少！
+     * @return 除了取消伤害五个触发时机的技能需要返回大于0的值，其余请直接返回0*/
     @SuppressWarnings("unused")
     default int skillPattern(LivingEntity user, LivingEntity target, Skill skill, ExData data) {return 0;}
 

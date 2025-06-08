@@ -151,7 +151,7 @@ public class ModTools {
     public static void voice(LivingEntity entity, SoundEvent sound, float... volume) {
         if (entity.getWorld() instanceof ServerWorld world) {
             float v = volume.length > 0 ? volume[0] : 2;
-            world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), sound, SoundCategory.PLAYERS, v, 1.0F);
+            world.playSoundFromEntity(null, entity, RegistryEntry.of(sound), SoundCategory.PLAYERS, v, 1.0F, net.minecraft.util.math.random.Random.create().nextLong());
         }
     }
     public static void voice(LivingEntity entity, Item item, float... volume) {
@@ -352,8 +352,11 @@ public class ModTools {
         player.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 1,2,false,false,false));
     }
 
-    public static DamageSource getDamageSource(Entity source, RegistryKey<DamageType> type) {
+    public static DamageSource damageSource(Entity source, RegistryKey<DamageType> type) {
         return new DamageSource(source.getWorld().getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).entryOf(type), source);
+    }
+    public static DamageSource loseHP(Entity entity) {
+        return new DamageSource(entity.getWorld().getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).entryOf(ModItems.LOSEHP));
     }
 
     public static void writeDamage(DamageSource source, float amount, boolean returnShan, ItemStack stack) {

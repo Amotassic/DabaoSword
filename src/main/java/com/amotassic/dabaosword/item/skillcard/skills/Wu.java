@@ -132,7 +132,7 @@ public class Wu {
                 if (c.suit.ordinal() + 1 != value) {
                     // 防止触发杀和闪
                     user.addCommandTag("sha"); target.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 1));
-                    target.damage(getDamageSource(user, DamageTypes.MAGIC), 6);
+                    target.damage(damageSource(user, DamageTypes.MAGIC), 6);
                 }
                 skill.setCD(20);
             }
@@ -233,7 +233,7 @@ public class Wu {
                 draw(user, 2);
                 if (!user.isCreative()) {
                     user.timeUntilRegen = 0;
-                    user.damage(user.getDamageSources().genericKill(), 4.99f);
+                    user.damage(loseHP(user), 4.99f);
                 }
                 voice(user, this);
                 return true;

@@ -22,37 +22,63 @@ public class ClientTickEnd {
     public static void initialize() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             var user = client.player;
+            if (user == null) return;
             var ctrl = client.options.sprintKey;
             PacketByteBuf buf = PacketByteBufs.create();
-            if (user != null) {
-                if (hasTrinket(SkillCards.SHENSU, user)) {
-                    Vec3d lastPos = new Vec3d(user.lastRenderX, user.lastRenderY, user.lastRenderZ);
-                    float speed = (float) (user.getPos().distanceTo(lastPos) * 20);
-                    PacketByteBuf buf1 = PacketByteBufs.create();
-                    buf1.writeFloat(speed);
-                    ClientPlayNetworking.send(ServerNetworking.SHENSU, buf1);
-                }
 
-                if (SELECT_CARD.wasPressed()) {
-                    if (user.isSneaking() && ctrl.wasPressed()) buf.writeInt(3);
-                    else if (ctrl.wasPressed()) buf.writeInt(2);
-                    else buf.writeInt(0);
-                    ClientPlayNetworking.send(ServerNetworking.SELECT_CARD, buf);
-                    return;
-                }
+            if (hasTrinket(SkillCards.SHENSU, user)) {
+                Vec3d lastPos = new Vec3d(user.lastRenderX, user.lastRenderY, user.lastRenderZ);
+                float speed = (float) (user.getPos().distanceTo(lastPos) * 20);
+                PacketByteBuf buf1 = PacketByteBufs.create();
+                buf1.writeFloat(speed);
+                ClientPlayNetworking.send(ServerNetworking.SHENSU, buf1);
+            }
 
-                var result = client.crosshairTarget; LivingEntity target;
-                if (result instanceof EntityHitResult eResult && eResult.getEntity() instanceof LivingEntity entity) {
-                    target = entity;
-                } else target = user;
+            if (SELECT_CARD.wasPressed()) {
+                if (user.isSneaking() && ctrl.wasPressed()) buf.writeInt(3);
+                else if (ctrl.wasPressed()) buf.writeInt(2);
+                else buf.writeInt(0);
+                ClientPlayNetworking.send(ServerNetworking.SELECT_CARD, buf);
+                return;
+            }
 
-                if (ACTIVE_SKILL.wasPressed() && isEquipped(user, s -> s(s).isActiveSkill())) {
-                    buf.writeInt(target.getId());
-                    ClientPlayNetworking.send(ServerNetworking.ACTIVE_SKILL, buf);
-                }
+            var result = client.crosshairTarget; LivingEntity target;
+            if (result instanceof EntityHitResult eResult && eResult.getEntity() instanceof LivingEntity entity) {
+                target = entity;
+            } else target = user;
+
+            if (ACTIVE_SKILL.wasPressed() && isEquipped(user, s -> s(s).isActiveSkill())) {
+                buf.writeInt(target.getId());
+                ClientPlayNetworking.send(ServerNetworking.ACTIVE_SKILL, buf);
             }
         });
     }
+
+/*    public static boolean clientFly = false;
+
+    private static void doClientFly(MinecraftClient mc, ClientPlayerEntity player) {
+        var options = mc.options;
+
+        boolean up = options.jumpKey.isPressed();
+        boolean down = options.sneakKey.isPressed();
+        if (up || down) {
+            if (up) {
+                player.jump();
+                player.fallDistance = 0.0F;
+            }
+            int i = 0;
+            if (down) i--;
+
+            if (i != 0) {
+                Vec3d v = player.getVelocity();
+                Vec3d v2 = new Vec3d(v.x, (float)i * player.getAbilities().getFlySpeed() * 10F, v.z);
+                player.setVelocity(v2);
+            }
+        } else {
+            Vec3d v = player.getVelocity(); Vec3d v2 = new Vec3d(v.x, 0, v.z);
+            player.setVelocity(v2);
+        }
+    }*/
 
     private static KeyBinding keyBinding(String name, int key) {
         String category = "category.dabaosword.keybindings";

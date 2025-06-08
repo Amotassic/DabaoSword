@@ -75,7 +75,7 @@ public class Sha extends CardItem.Basic {
         @Override
         public boolean sha(LivingEntity user, LivingEntity target, float amount) {
             target.setOnFire(true);
-            return target.damage(getDamageSource(user, DamageTypes.ON_FIRE), amount);
+            return target.damage(damageSource(user, DamageTypes.ON_FIRE), amount);
         }
 
         @Override
@@ -88,7 +88,7 @@ public class Sha extends CardItem.Basic {
     public static class Thunder extends Sha {
         @Override
         public boolean sha(LivingEntity user, LivingEntity target, float amount) {
-            return target.damage(getDamageSource(user, DamageTypes.LIGHTNING_BOLT), amount + 5);
+            return target.damage(damageSource(user, DamageTypes.LIGHTNING_BOLT), amount + 5);
         }
 
         @Override

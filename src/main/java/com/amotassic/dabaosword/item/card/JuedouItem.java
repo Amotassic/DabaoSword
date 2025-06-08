@@ -43,7 +43,7 @@ public class JuedouItem extends CardItem.Armoury {
     }
 
     private void juedou(LivingEntity attacker, ItemStack card, LivingEntity target) {
-        var source = getDamageSource(attacker, DamageTypes.GENERIC);
+        var source = damageSource(attacker, DamageTypes.GENERIC);
         target.timeUntilRegen = 0;
         if (target.damage(source, 5f)) hurtByCard(target, card);
     }

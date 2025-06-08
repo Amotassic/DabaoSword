@@ -28,6 +28,10 @@ public class KeyInputHandler implements KeyInputCallback {
         }
         if (action != GLFW.GLFW_PRESS) return;
 
+/*        if (key == GLFW.GLFW_KEY_RIGHT_SHIFT) {
+            switchFly(); return;
+        }*/
+
         String keyPressed = getInputKey(key);
         if (keyPressed.isEmpty()) {
             keysPressed = "";
@@ -41,6 +45,16 @@ public class KeyInputHandler implements KeyInputCallback {
             keysPressed = "";
         }
     }
+/*
+    private void switchFly() {
+        var player = mc.player;
+        if (player == null) return;
+
+        boolean bl = !ClientTickEnd.clientFly;
+        ClientTickEnd.clientFly = bl;
+        if (bl) player.sendMessage(Text.literal("Client Fly ON").formatted(Formatting.GREEN), true);
+        else player.sendMessage(Text.literal("Client Fly OFF").formatted(Formatting.RED), true);
+    }*/
 
     private void doSomething() {
         var player = mc.player;

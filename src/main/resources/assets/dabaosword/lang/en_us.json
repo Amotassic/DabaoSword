@@ -440,6 +440,8 @@
   "suit.spade": "♠",
   "suit.club": "♣",
 
+  "death.attack.loseHP": "%1$s died from excessive bleeding",
+
   "dabaosword.welcome": "Welcome to Dabaosword! Our mod is thriving!",
   "dabaosword.mainpage": "[Mod Homepage]  ",
   "dabaosword.help.menu": "[Quick Menu]  ",

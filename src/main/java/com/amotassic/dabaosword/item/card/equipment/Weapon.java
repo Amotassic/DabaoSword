@@ -162,7 +162,7 @@ public class Weapon extends Equipment {
             if (player.getAttackCooldownProgress(0f) < 1f) return;
             //青釭剑额外伤害
             float extraDamage = Math.min(20, 0.2f * target.getMaxHealth());
-            target.damage(getDamageSource(player, DamageTypes.GENERIC_KILL), extraDamage); target.timeUntilRegen = 0;
+            target.damage(damageSource(player, DamageTypes.GENERIC_KILL), extraDamage); target.timeUntilRegen = 0;
             voice(player, this);
         }
     }

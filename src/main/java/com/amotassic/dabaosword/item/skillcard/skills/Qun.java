@@ -223,7 +223,7 @@ public class Qun {
                 used = used.isEmpty() ? item : used + ";" + item;
                 nbt.putString("used", used); skill.setNbt(nbt);
                 player.timeUntilRegen = 0;
-                player.damage(player.getDamageSources().genericKill(), 4.99f);
+                player.damage(loseHP(player), 4.99f);
             }
             voice(player, this);
             closeGUI(player);

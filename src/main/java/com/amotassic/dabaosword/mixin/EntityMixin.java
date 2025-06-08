@@ -2,6 +2,7 @@ package com.amotassic.dabaosword.mixin;
 
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.ModConfig;
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
@@ -9,6 +10,7 @@ import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -34,8 +36,16 @@ public abstract class EntityMixin {
 
     @Inject(method = "onStruckByLightning", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"), cancellable = true)
     public void onStruckByLightning(ServerWorld world, LightningEntity lightning, CallbackInfo ci) {
-        this.damage(getDamageSource(lightning, DamageTypes.LIGHTNING_BOLT), 5.0f);
+        this.damage(damageSource(lightning, DamageTypes.LIGHTNING_BOLT), 5.0f);
         ci.cancel();
+    }
+
+    @ModifyReturnValue(method = "occludeVibrationSignals", at = @At("RETURN"))
+    public boolean occludeVibrationSignals(boolean original) {
+        if ((Entity) (Object) this instanceof PlayerEntity player && player.getCommandTags().contains("wuyan")) {
+            return true;
+        }
+        return original;
     }
 }
 

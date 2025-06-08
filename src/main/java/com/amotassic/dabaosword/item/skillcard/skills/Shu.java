@@ -213,11 +213,13 @@ public class Shu {
     public static class Paoxiao extends SkillItem {
         @Override public boolean lockOn() {return true;}
 
+        @Override public boolean shouldTickUpdate() {return true;}
+
         @Override
         public Multimap<EntityAttribute, EntityAttributeModifier> getModifiers(ItemStack stack, SlotReference slot, LivingEntity entity, UUID uuid) {
             var modifiers = super.getModifiers(stack, slot, entity, uuid);
-            if (entity.getCommandTags().contains("duanchang")) return modifiers;
-            modifiers.put(EntityAttributes.GENERIC_ATTACK_SPEED, new EntityAttributeModifier(uuid, "paoxiao", 1, EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
+            int i = entity.getCommandTags().contains("duanchang") ? 0 : 1;
+            modifiers.put(EntityAttributes.GENERIC_ATTACK_SPEED, new EntityAttributeModifier(uuid, "paoxiao", i, EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
             return modifiers;
         }
 

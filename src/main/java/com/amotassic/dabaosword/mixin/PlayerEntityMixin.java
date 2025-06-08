@@ -4,6 +4,7 @@ import com.amotassic.dabaosword.api.event.EndEntityTick;
 import com.amotassic.dabaosword.api.event.EntityHurtCallback;
 import com.amotassic.dabaosword.api.event.PlayerDeathCallback;
 import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.util.ModTools;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -12,6 +13,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -19,6 +21,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin extends LivingEntity {
@@ -42,6 +45,23 @@ public abstract class PlayerEntityMixin extends LivingEntity {
         boolean crit = EnchantmentHelper.getLevel(ModItems.CRIT, getEquippedStack(EquipmentSlot.HEAD)) > 0;
         return bl || crit;
     }
+
+    @Inject(method = "getHurtSound", at = @At("RETURN"), cancellable = true)
+    protected void getHurtSound(DamageSource source, CallbackInfoReturnable<SoundEvent> cir) {
+        if (source.isOf(ModItems.LOSEHP)) cir.setReturnValue(ModTools.getSound("dabaosword", "losehp"));
+    }
+
+/*    @Unique boolean fly = ClientTickEnd.clientFly;
+
+    @Inject(method = "checkFallFlying", at = @At("HEAD"), cancellable = true)
+    public void checkGliding(CallbackInfoReturnable<Boolean> cir) {
+        if (fly) cir.setReturnValue(false);
+    }
+
+    @Inject(method = "getOffGroundSpeed", at = @At("HEAD"), cancellable = true)
+    protected void getOffGroundSpeed(CallbackInfoReturnable<Float> cir) {
+        if (fly) cir.setReturnValue(this.isSprinting() ? this.abilities.getFlySpeed() * 2.0F : this.abilities.getFlySpeed());
+    }*/
 }
 
 @Mixin(ServerPlayerEntity.class)

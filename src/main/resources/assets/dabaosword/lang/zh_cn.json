@@ -440,6 +440,8 @@
   "suit.spade": "♠",
   "suit.club": "♣",
 
+  "death.attack.loseHP": "%1$s一滴（血）也没有了",
+
   "dabaosword.welcome": "欢迎游玩大宝刀！我们的mod正在蒸蒸日上哦！",
   "dabaosword.mainpage": "【模组主页】  ",
   "dabaosword.help.menu": "【快捷菜单】  ",
