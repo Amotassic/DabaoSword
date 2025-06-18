@@ -24,13 +24,15 @@ import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.*;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -78,25 +80,18 @@ public class ModTools {
     //判断是否是卡牌
     public static boolean isCard(ItemStack s) {return s.getItem() instanceof CardItem;}
     public static final Predicate<ItemStack>
-            canSaveDying = p(ModItems.JIU).or(p(ModItems.PEACH)),
-            isSha = s -> s.getItem() instanceof Sha,
-            isCard = ModTools::isCard,
-            isBasic = s -> c(s).type == Card.BASIC,
-            isArmoury = s -> c(s).type == Card.ARMOURY,
-            isEquipment = s -> c(s).type == Card.EQUIPMENT,
-            isDiamondCard = s -> c(s).suit == Suit.Diamond,
-            isHeartCard = s -> c(s).suit == Suit.Heart,
-            isClubCard = s -> c(s).suit == Suit.Club,
-            isSpadeCard = s -> c(s).suit == Suit.Spade,
+    canSaveDying = p(ModItems.JIU).or(p(ModItems.PEACH)),
+    isSha = s -> s.getItem() instanceof Sha,
+    isCard = ModTools::isCard,
+    isBasic = s -> c(s).type == Card.BASIC,
+    isArmoury = s -> c(s).type == Card.ARMOURY,
+    isEquipment = s -> c(s).type == Card.EQUIPMENT,
+    isDiamondCard = s -> c(s).suit == Suit.Diamond,
+    isHeartCard = s -> c(s).suit == Suit.Heart,
+    isClubCard = s -> c(s).suit == Suit.Club,
+    isSpadeCard = s -> c(s).suit == Suit.Spade,
     isRedCard = isDiamondCard.or(isHeartCard),
     isBlackCard = isClubCard.or(isSpadeCard);
-
-    public static boolean isHuogong(DamageSource source) {
-        return source.getSource() instanceof FireballEntity fireball && fireball.getCommandTags().contains("a");
-    }
-    public static boolean isShandian(DamageSource source) {
-        return source.getSource() instanceof LightningEntity lightning && lightning.getCommandTags().contains("a");
-    }
 
     @SafeVarargs
     public static <T> List<T> toList(T... t) {return new ArrayList<>(Arrays.asList(t));}
@@ -149,7 +144,7 @@ public class ModTools {
     public static void voice(LivingEntity entity, SoundEvent sound, float... volume) {
         if (entity.getWorld() instanceof ServerWorld world) {
             float v = volume.length > 0 ? volume[0] : 2;
-            world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), sound, SoundCategory.PLAYERS, v, 1.0F);
+            world.playSoundFromEntity(null, entity, RegistryEntry.of(sound), SoundCategory.PLAYERS, v, 1.0F, net.minecraft.util.math.random.Random.create().nextLong());
         }
     }
     public static void voice(LivingEntity entity, Item item, float... volume) {
@@ -302,9 +297,9 @@ public class ModTools {
     /**仿照1.20代码写的获取物品NBT的方法*/
     public static NbtCompound getOrCreateNbt(ItemStack stack) {
         if (stack.isEmpty()) return new NbtCompound();
-        NbtComponent component = stack.get(DataComponentTypes.CUSTOM_DATA);
-        if (component == null) setNbt(stack, new NbtCompound());
-        return Objects.requireNonNull(stack.get(DataComponentTypes.CUSTOM_DATA)).copyNbt();
+        var component = stack.get(DataComponentTypes.CUSTOM_DATA);
+        if (component == null) return new NbtCompound();
+        return component.copyNbt();
     }
     public static void setNbt(ItemStack stack, NbtCompound nbt) {
         stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));

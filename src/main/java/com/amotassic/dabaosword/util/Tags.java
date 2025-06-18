@@ -25,5 +25,7 @@ public class Tags {
 
     public static final TagKey<DamageType> TRIGGER_TIESUO = TagKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of("dabaosword", "trigger_tiesuo"));
 
+    public static final TagKey<DamageType> FROM_CARD = TagKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of("dabaosword", "from_card"));
+
     public static void Tag() {}
 }

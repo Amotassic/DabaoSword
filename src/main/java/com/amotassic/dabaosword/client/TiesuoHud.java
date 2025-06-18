@@ -3,7 +3,9 @@ package com.amotassic.dabaosword.client;
 import com.amotassic.dabaosword.item.ModItems;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
+import net.fabricmc.fabric.api.client.rendering.v1.LayeredDrawerWrapper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
@@ -13,7 +15,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value= EnvType.CLIENT)
-public class TiesuoHud implements HudRenderCallback {
+public class TiesuoHud implements HudLayerRegistrationCallback {
 
     private static final Identifier TIESUO_HUD = Identifier.of("dabaosword","textures/misc/tiesuo_hud.png");
 
@@ -22,7 +24,11 @@ public class TiesuoHud implements HudRenderCallback {
     private float tiesuoScale;
 
     @Override
-    public void onHudRender(DrawContext drawContext, RenderTickCounter tickCounter) {
+    public void register(LayeredDrawerWrapper layeredDrawer) {
+        layeredDrawer.attachLayerAfter(IdentifiedLayer.MISC_OVERLAYS, TIESUO_HUD, this::onHudRender);
+    }
+
+    private void onHudRender(DrawContext drawContext, RenderTickCounter tickCounter) {
         MinecraftClient client = MinecraftClient.getInstance();
         this.scaledWidth = drawContext.getScaledWindowWidth();
         this.scaledHeight = drawContext.getScaledWindowHeight();

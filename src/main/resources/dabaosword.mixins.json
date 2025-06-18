@@ -9,6 +9,7 @@
     "CrafterScreen",
     "CraftingMixin",
     "EntityMixin",
+    "ExplosionMixin",
     "FireballEntityMixin",
     "ItemEntityMixin",
     "LivingEntityMixin",

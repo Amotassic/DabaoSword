@@ -76,7 +76,16 @@ public interface ISkill extends Trinket {
         }
     }
 
+    /**当玩家被断肠或者非锁定技失效时，此效果将无法触发*/
     default void tickSkill(Skill skill, LivingEntity entity) {}
+
+    default boolean shouldTickUpdate() {return false;}
+    default void tickUpdateNbt(Skill skill, LivingEntity entity) {
+        int tick = (int) (entity.getWorld().getTime() % 20);
+        var nbt = skill.getNbt();
+        nbt.putInt("TickOfSecond", tick);
+        skill.setNbt(nbt);
+    }
 
     /**在打开的GUI上添加操作提示，可按需添加，默认会添加物品本身的物品提示
      * @see ISkill#addPresetTips(Skill, List, Integer...) */

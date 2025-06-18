@@ -12,13 +12,13 @@ import com.amotassic.dabaosword.ui.PlayerInvHandledScreen;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
 
 public class DabaoSwordClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        HudRenderCallback.EVENT.register(new TiesuoHud());
+        HudLayerRegistrationCallback.EVENT.register(new TiesuoHud());
         HandledScreens.register(ModItems.PLAYER_INV_SCREEN_HANDLER, PlayerInvHandledScreen::new);
         HandledScreens.register(ModItems.FULL_INV_SCREEN_HANDLER, FullInvHandledScreen::new);
         HandledScreens.register(ModItems.PILE_SCREEN_HANDLER, PileHandledScreen::new);

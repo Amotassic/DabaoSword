@@ -22,30 +22,30 @@ public class ClientTickEnd {
     public static void initialize() {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             var user = client.player;
+            if (user == null) return;
             var ctrl = client.options.sprintKey;
-            if (user != null) {
-                if (hasTrinket(SkillCards.SHENSU, user)) {
-                    Vec3d lastPos = new Vec3d(user.lastRenderX, user.lastRenderY, user.lastRenderZ);
-                    float speed = (float) (user.getPos().distanceTo(lastPos) * 20);
-                    ClientPlayNetworking.send(new ShensuPayload(speed));
-                }
 
-                if (SELECT_CARD.wasPressed()) {
-                    int i = 0;
-                    if (user.isSneaking() && ctrl.wasPressed()) i = 3;
-                    else if (ctrl.wasPressed()) i = 2;
-                    ClientPlayNetworking.send(new QuickSwapPayload(i));
-                    return;
-                }
+            if (hasTrinket(SkillCards.SHENSU, user)) {
+                Vec3d lastPos = new Vec3d(user.lastRenderX, user.lastRenderY, user.lastRenderZ);
+                float speed = (float) (user.getPos().distanceTo(lastPos) * 20);
+                ClientPlayNetworking.send(new ShensuPayload(speed));
+            }
 
-                var result = client.crosshairTarget; LivingEntity target;
-                if (result instanceof EntityHitResult eResult && eResult.getEntity() instanceof LivingEntity entity) {
-                    target = entity;
-                } else target = user;
+            if (SELECT_CARD.wasPressed()) {
+                int i = 0;
+                if (user.isSneaking() && ctrl.wasPressed()) i = 3;
+                else if (ctrl.wasPressed()) i = 2;
+                ClientPlayNetworking.send(new QuickSwapPayload(i));
+                return;
+            }
 
-                if (ACTIVE_SKILL.wasPressed() && isEquipped(user, s -> s(s).isActiveSkill())) {
-                    ClientPlayNetworking.send(new ActiveSkillPayload(target.getId()));
-                }
+            var result = client.crosshairTarget; LivingEntity target;
+            if (result instanceof EntityHitResult eResult && eResult.getEntity() instanceof LivingEntity entity) {
+                target = entity;
+            } else target = user;
+
+            if (ACTIVE_SKILL.wasPressed() && isEquipped(user, s -> s(s).isActiveSkill())) {
+                ClientPlayNetworking.send(new ActiveSkillPayload(target.getId()));
             }
         });
     }

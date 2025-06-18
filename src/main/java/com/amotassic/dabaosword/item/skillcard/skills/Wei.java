@@ -3,22 +3,25 @@ package com.amotassic.dabaosword.item.skillcard.skills;
 import com.amotassic.dabaosword.api.card.Suit;
 import com.amotassic.dabaosword.api.skill.*;
 import com.amotassic.dabaosword.command.DabaoSwordCommand;
+import com.amotassic.dabaosword.damage_type.ModDT;
 import com.amotassic.dabaosword.event.PlayerEvents;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.ui.PlayerInvScreenHandler;
+import com.google.common.collect.Multimap;
 import dev.emi.trinkets.api.SlotReference;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.MutableText;
@@ -28,7 +31,10 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 
 import static com.amotassic.dabaosword.api.CardEvents.*;
 import static com.amotassic.dabaosword.util.ModTools.*;
@@ -55,7 +61,7 @@ public class Wei {
         public int onHurt(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
             if (!(user instanceof PlayerEntity pl)) return 0;
             DamageSource source = data.source; Float amount = data.amount;
-            if (source.isOf(DamageTypes.GENERIC_KILL)) return 0;
+            if (source.isOf(ModDT.LOSEHP)) return 0;
             var nbt = skill.getNbt();
             float hurt = nbt.getFloat("hurt").orElse(0f); hurt += amount;
             if (hurt >= 7 && pl.isAlive()) {
@@ -240,48 +246,38 @@ public class Wei {
 
         @Override public boolean lockOn() {return true;}
 
-        @Override
-        public void onUnequip(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (!entity.getWorld().isClient) gainMaxHp(entity, 0);
-        }
+        @Override public boolean shouldTickUpdate() {return true;}
 
         @Override
         public void tickSkill(Skill skill, LivingEntity entity) {
-            if (entity.getWorld().isClient) return;
-            int extraHP = skill.getTag();
-            gainMaxHp(entity, extraHP);
-
-            if (entity.getWorld().getTime() % 600 == 0) { // 每30s触发扣体力上限
-                if (entity instanceof PlayerEntity player) {
-                    if (extraHP >= 5 && !player.isCreative() && !player.isSpectator()) {
-                        draw(player, 2);
-                        skill.setTag(extraHP - 5);
-                        voice(player, "weizhong");
-                    }
+            if (entity.getWorld().getTime() % 600 == 0 && entity instanceof PlayerEntity player) { // 每30s触发扣体力上限
+                int extraHP = skill.getTag();
+                if (extraHP >= 5 && !player.isCreative() && !player.isSpectator()) {
+                    draw(player, 2);
+                    skill.setTag(extraHP - 5);
+                    voice(player, "weizhong");
                 }
             }
+        }
+
+        @Override
+        public Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> getModifiers(ItemStack stack, SlotReference slot, LivingEntity entity, Identifier slotIdentifier) {
+            var modifiers = super.getModifiers(stack, slot, entity, slotIdentifier);
+            modifiers.put(EntityAttributes.MAX_HEALTH, new EntityAttributeModifier(slotIdentifier, s(stack).getTag(), EntityAttributeModifier.Operation.ADD_VALUE));
+            return modifiers;
         }
 
         @SkillInfo(trigger = Trigger.ON_DEATH, relation = Relation.KILLER)
         public int onKill(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
             int extraHP = skill.getTag();
-            if (target instanceof HostileEntity) {
-                extraHP += 1;
-                user.heal(1);
-                voice(user, this);
-            }
-            if (target instanceof PlayerEntity) {
-                extraHP += 5;
-                user.heal(5);
+            int i = target instanceof PlayerEntity ? 5 : target instanceof HostileEntity ? 1 : 0;
+            if (i > 0) {
+                extraHP += i;
+                user.heal(i);
                 voice(user, this);
             }
             skill.setTag(extraHP);
             return 0;
-        }
-
-        private void gainMaxHp(LivingEntity entity, int value) {
-            EntityAttributeModifier AttributeModifier = new EntityAttributeModifier(Identifier.of("max_hp"), value, EntityAttributeModifier.Operation.ADD_VALUE);
-            Objects.requireNonNull(entity.getAttributes().getCustomInstance(EntityAttributes.MAX_HEALTH)).updateModifier(AttributeModifier);
         }
     }
 
@@ -330,7 +326,7 @@ public class Wei {
         @SkillInfo(trigger = Trigger.CANCEL_DAMAGE_LOWEST, relation = Relation.ATTACKER_SELF)
         public int onHit(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
             var amount = data.amount;
-            target.damage(world(target), target.getDamageSources().genericKill(), Math.min(Math.max(7, target.getMaxHealth() / 3), amount));
+            target.damage(world(target), ModDT.loseHP(user), Math.min(Math.max(7, target.getMaxHealth() / 3), amount));
             voice(user, this, 1);
             return 1;
         }
@@ -362,25 +358,20 @@ public class Wei {
 
         @Override public boolean lockOn() {return true;}
 
-        @Override
-        public void tickSkill(Skill skill, LivingEntity entity) {
-            if (!entity.getWorld().isClient) gainStrength(entity, getEmptyArmorSlot(entity) + 1);
-        }
+        @Override public boolean shouldTickUpdate() {return true;}
 
         @Override
-        public void onUnequip(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (!entity.getWorld().isClient) gainStrength(entity,0);
+        public Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> getModifiers(ItemStack stack, SlotReference slot, LivingEntity entity, Identifier slotIdentifier) {
+            var modifiers = super.getModifiers(stack, slot, entity, slotIdentifier);
+            int luoyi = entity.getCommandTags().contains("duanchang") ? 0 : getEmptyArmorSlot(entity) + 1;
+            modifiers.put(EntityAttributes.ATTACK_DAMAGE, new EntityAttributeModifier(slotIdentifier, luoyi, EntityAttributeModifier.Operation.ADD_VALUE));
+            return modifiers;
         }
 
         @Override
         public ActionResult use(World world, PlayerEntity user, Hand hand) {
             if (!world.isClient && !user.isSneaking()) voice(user, this);
             return super.use(world, user, hand);
-        }
-
-        private void gainStrength(LivingEntity entity, int value) {
-            EntityAttributeModifier AttributeModifier = new EntityAttributeModifier(Identifier.of("attack_damage"), value, EntityAttributeModifier.Operation.ADD_VALUE);
-            Objects.requireNonNull(entity.getAttributes().getCustomInstance(EntityAttributes.ATTACK_DAMAGE)).updateModifier(AttributeModifier);
         }
 
         private int getEmptyArmorSlot(LivingEntity entity) {
@@ -549,21 +540,14 @@ public class Wei {
         }
 
         @Override
-        public void tickSkill(Skill skill, LivingEntity entity) {
-            if (!entity.getWorld().isClient && entity instanceof PlayerEntity player) {
-                double d = Math.min(getEmptySlots(player), 20d) / 40; //当空余20格时，获得最大加成0.5
-                gainSpeed(player, Math.max(0, d));
+        public Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> getModifiers(ItemStack stack, SlotReference slot, LivingEntity entity, Identifier slotIdentifier) {
+            var modifiers = super.getModifiers(stack, slot, entity, slotIdentifier);
+            double d = 0;
+            if (entity instanceof PlayerEntity player && !player.getCommandTags().contains("duanchang")) {
+                d = Math.min(getEmptySlots(player), 20d) / 40; //当空余20格时，获得最大加成0.5
             }
-        }
-
-        @Override
-        public void onUnequip(ItemStack stack, SlotReference slot, LivingEntity entity) {
-            if (!entity.getWorld().isClient) gainSpeed(entity,0);
-        }
-
-        public static void gainSpeed(LivingEntity entity, double value) {
-            EntityAttributeModifier modifier = new EntityAttributeModifier(Identifier.of("shensu"), value, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
-            Objects.requireNonNull(entity.getAttributes().getCustomInstance(EntityAttributes.MOVEMENT_SPEED)).updateModifier(modifier);
+            modifiers.put(EntityAttributes.MOVEMENT_SPEED, new EntityAttributeModifier(slotIdentifier, d, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+            return modifiers;
         }
 
         private int getEmptySlots(PlayerEntity player) {
@@ -587,7 +571,7 @@ public class Wei {
 
         @SkillInfo(trigger = Trigger.ON_HURT, relation = Relation.SELF)
         public int onHurt(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
-            if (data.source.isOf(DamageTypes.GENERIC_KILL)) return 0;
+            if (data.source.isOf(ModDT.LOSEHP)) return 0;
             if (!user.hasStatusEffect(ModItems.COOLDOWN) && user.getHealth() <= 15) {
                 draw(user, 2);
                 user.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 20, 0, false, false, true));

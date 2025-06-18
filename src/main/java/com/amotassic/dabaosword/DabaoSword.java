@@ -3,6 +3,7 @@ package com.amotassic.dabaosword;
 import com.amotassic.dabaosword.api.config.Configuration;
 import com.amotassic.dabaosword.command.DabaoSwordCommand;
 import com.amotassic.dabaosword.command.InfoCommand;
+import com.amotassic.dabaosword.damage_type.ModDT;
 import com.amotassic.dabaosword.entity.ModEntity;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
@@ -33,6 +34,7 @@ public class DabaoSword implements ModInitializer {
         SkillCards.register();
         LOGGER.info("Loaded all skills in {}ms", System.currentTimeMillis() - start);
         ModTools.initAllCards();
+        ModDT.init();
         Tags.Tag();
         Gamerule.registerGamerules();
         ServerNetworking.registerActiveSkill();

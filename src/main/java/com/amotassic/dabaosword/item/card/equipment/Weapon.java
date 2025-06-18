@@ -5,6 +5,7 @@ import com.amotassic.dabaosword.api.skill.*;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
@@ -173,7 +174,7 @@ public class Weapon extends Equipment {
             if (player.getAttackCooldownProgress(0f) < 1f) return;
             //青釭剑额外伤害
             float extraDamage = Math.min(20, 0.2f * target.getMaxHealth());
-            target.damage(world(player), player.getDamageSources().genericKill(), extraDamage); target.timeUntilRegen = 0;
+            target.damage(world(player), damageSource(player, DamageTypes.GENERIC_KILL), extraDamage); target.timeUntilRegen = 0;
             voice(player, this);
         }
     }

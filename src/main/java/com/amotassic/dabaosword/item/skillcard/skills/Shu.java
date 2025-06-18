@@ -224,11 +224,13 @@ public class Shu {
 
         @Override public boolean lockOn() {return true;}
 
+        @Override public boolean shouldTickUpdate() {return true;}
+
         @Override
         public Multimap<RegistryEntry<EntityAttribute>, EntityAttributeModifier> getModifiers(ItemStack stack, SlotReference slot, LivingEntity entity, Identifier slotIdentifier) {
             var modifiers = super.getModifiers(stack, slot, entity, slotIdentifier);
-            if (entity.getCommandTags().contains("duanchang")) return modifiers;
-            modifiers.put(EntityAttributes.ATTACK_SPEED, new EntityAttributeModifier(slotIdentifier, 1, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+            int i = entity.getCommandTags().contains("duanchang") ? 0 : 1;
+            modifiers.put(EntityAttributes.ATTACK_SPEED, new EntityAttributeModifier(slotIdentifier, i, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
             return modifiers;
         }
 

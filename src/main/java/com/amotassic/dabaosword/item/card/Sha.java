@@ -2,11 +2,11 @@ package com.amotassic.dabaosword.item.card;
 
 import com.amotassic.dabaosword.api.CardEvents;
 import com.amotassic.dabaosword.api.skill.Trigger;
+import com.amotassic.dabaosword.damage_type.ModDT;
 import com.amotassic.dabaosword.effect.ShandianEffect;
 import com.amotassic.dabaosword.item.ModItems;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -14,7 +14,6 @@ import net.minecraft.util.Formatting;
 
 import java.util.List;
 
-import static com.amotassic.dabaosword.api.CardEvents.hurtByCard;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class Sha extends CardItem.Basic {
@@ -66,12 +65,7 @@ public class Sha extends CardItem.Basic {
     /**原本的伤害处理被取消，改为由杀造成伤害，因此一定要用{@link LivingEntity#damage(ServerWorld, DamageSource, float)}来造成伤害
      * @param amount 原本的伤害值*/
     public boolean sha(LivingEntity user, LivingEntity target, float amount) {
-        return target.damage(world(user), user.getDamageSources().mobAttack(user), amount + 5);
-    }
-
-    @Override
-    public void effect(LivingEntity user, ItemStack card, LivingEntity target) {
-        hurtByCard(target, card);
+        return target.damage(world(user), ModDT.sha(user), amount + 5);
     }
 
     public static class Fire extends Sha {
@@ -80,13 +74,12 @@ public class Sha extends CardItem.Basic {
         @Override
         public boolean sha(LivingEntity user, LivingEntity target, float amount) {
             target.setOnFire(true);
-            return target.damage(world(user), damageSource(user, DamageTypes.ON_FIRE), amount);
+            return target.damage(world(user), ModDT.shaFire(user), amount);
         }
 
         @Override
         public void effect(LivingEntity user, ItemStack sha, LivingEntity target) {
             target.setOnFireFor(6);
-            hurtByCard(target, sha);
         }
     }
 
@@ -95,13 +88,12 @@ public class Sha extends CardItem.Basic {
 
         @Override
         public boolean sha(LivingEntity user, LivingEntity target, float amount) {
-            return target.damage(world(user), damageSource(user, DamageTypes.LIGHTNING_BOLT), amount + 5);
+            return target.damage(world(user), ModDT.shaThunder(user), amount + 5);
         }
 
         @Override
         public void effect(LivingEntity user, ItemStack sha, LivingEntity target) {
             ShandianEffect.summonLightning(target, true, false);
-            hurtByCard(target, sha);
         }
     }
 }
