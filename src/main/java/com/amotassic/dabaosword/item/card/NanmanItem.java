@@ -1,9 +1,9 @@
 package com.amotassic.dabaosword.item.card;
 
+import com.amotassic.dabaosword.damage_type.ModDT;
 import com.amotassic.dabaosword.item.ModItems;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.RavagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -19,8 +19,6 @@ import net.minecraft.world.World;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
-
-import static com.amotassic.dabaosword.api.CardEvents.hurtByCard;
 
 public class NanmanItem extends CardItem.Armoury {
     @Override
@@ -42,10 +40,9 @@ public class NanmanItem extends CardItem.Armoury {
 
     @Override
     public void effect(LivingEntity user, ItemStack card, LivingEntity entity) {
-        DamageSource source = user.getDamageSources().mobAttack(user);
         //防止触发闪
         entity.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 2, 0, false, false));
-        if (entity.damage(source, 6)) hurtByCard(entity, card);
+        entity.damage(ModDT.nanman(user), 6);
         summonRavager(entity);
     }
 

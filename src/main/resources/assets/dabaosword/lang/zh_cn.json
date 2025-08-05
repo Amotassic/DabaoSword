@@ -441,6 +441,15 @@
   "suit.club": "♣",
 
   "death.attack.loseHP": "%1$s一滴（血）也没有了",
+  "death.attack.bbll": "%1$s被%2$s吵死了",
+  "death.attack.huogong": "%1$s被%2$s的熊熊烈火燃尽了",
+  "death.attack.juedou": "%1$s在与%2$s的决斗中落败了",
+  "death.attack.nanman": "%1$s被%2$s的象兵踩扁了",
+  "death.attack.sha": "%1$s大意了，没有闪掉%2$s的攻击",
+  "death.attack.shaFire": "%2$s太烧了，%1$s闪不掉",
+  "death.attack.shaThunder": "%1$s被%2$s电得外焦里嫩",
+  "death.attack.shandian": "%1$s试图追逐闪电的力量",
+  "death.attack.wanjian": "%1$s被%2$s万箭穿心",
 
   "dabaosword.welcome": "欢迎游玩大宝刀！我们的mod正在蒸蒸日上哦！",
   "dabaosword.mainpage": "【模组主页】  ",

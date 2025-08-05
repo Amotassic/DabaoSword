@@ -3,6 +3,7 @@ package com.amotassic.dabaosword.item.skillcard.skills;
 import com.amotassic.dabaosword.api.card.Suit;
 import com.amotassic.dabaosword.api.skill.*;
 import com.amotassic.dabaosword.command.DabaoSwordCommand;
+import com.amotassic.dabaosword.damage_type.ModDT;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.ui.PlayerInvScreenHandler;
@@ -233,7 +234,7 @@ public class Wu {
                 draw(user, 2);
                 if (!user.isCreative()) {
                     user.timeUntilRegen = 0;
-                    user.damage(loseHP(user), 4.99f);
+                    user.damage(ModDT.loseHP(user), 4.99f);
                 }
                 voice(user, this);
                 return true;

@@ -3,12 +3,12 @@ package com.amotassic.dabaosword.util;
 import com.amotassic.dabaosword.DabaoSword;
 import com.amotassic.dabaosword.api.CardPileInventory;
 import com.amotassic.dabaosword.api.card.Card;
-import com.amotassic.dabaosword.api.card.Rank;
 import com.amotassic.dabaosword.api.card.Suit;
 import com.amotassic.dabaosword.api.skill.ExData;
 import com.amotassic.dabaosword.api.skill.ISkill;
 import com.amotassic.dabaosword.api.skill.Skill;
 import com.amotassic.dabaosword.api.skill.Trigger;
+import com.amotassic.dabaosword.data.CardSuitAndRank;
 import com.amotassic.dabaosword.event.PVPGameEvents;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.card.CardItem;
@@ -16,21 +16,17 @@ import com.amotassic.dabaosword.item.card.Sha;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.ui.FullInvScreenHandler;
 import com.amotassic.dabaosword.ui.PlayerInvScreenHandler;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootTable;
@@ -60,8 +56,6 @@ import net.minecraft.util.math.Box;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -93,12 +87,6 @@ public class ModTools {
     isSpadeCard = s -> c(s).suit == Suit.Spade,
     isRedCard = isDiamondCard.or(isHeartCard),
     isBlackCard = isClubCard.or(isSpadeCard);
-    public static boolean isHuogong(DamageSource source) {
-        return source.getSource() instanceof FireballEntity fireball && fireball.getCommandTags().contains("a");
-    }
-    public static boolean isShandian(DamageSource source) {
-        return source.getSource() instanceof LightningEntity lightning && lightning.getCommandTags().contains("a");
-    }
 
     @SafeVarargs
     public static <T> List<T> toList(T... t) {return new ArrayList<>(Arrays.asList(t));}
@@ -227,7 +215,7 @@ public class ModTools {
     private static final List<ItemStack> CARD_PILE = new ArrayList<>();
     public static ItemStack newCard() {
         if (CARD_PILE.isEmpty()) {
-            for (ItemStack stack : ALL_CARDS) CARD_PILE.add(stack.copy());
+            for (ItemStack stack : CardSuitAndRank.ALL_CARDS) CARD_PILE.add(stack.copy());
             Collections.shuffle(CARD_PILE);
             DabaoSword.LOGGER.info("Shuffled card pile");
         }
@@ -235,7 +223,7 @@ public class ModTools {
     }
     public static ItemStack newCard(Item item) {return newCard(p(item));}
     public static ItemStack newCard(Predicate<ItemStack> predicate) {
-        List<ItemStack> list = ALL_CARDS.stream().filter(predicate).toList();
+        List<ItemStack> list = CardSuitAndRank.ALL_CARDS.stream().filter(predicate).toList();
         if (list.isEmpty()) return ItemStack.EMPTY;
         return list.get(new Random().nextInt(list.size())).copy();
     }
@@ -251,30 +239,6 @@ public class ModTools {
         }
         if (entity.getMainHandStack().isEmpty()) entity.setStackInHand(Hand.MAIN_HAND, stack);
         else if (entity.getOffHandStack().isEmpty()) entity.setStackInHand(Hand.OFF_HAND, stack);
-    }
-
-    private static final List<ItemStack> ALL_CARDS = new ArrayList<>();
-
-    public static void initAllCards() {
-        for (CardItem item : ModItems.CARDS) {
-            String path = Registries.ITEM.getId(item).getPath() + ".json";
-            Gson gson = new Gson();
-            InputStream stream = ModTools.class.getResourceAsStream("/data/dabaosword/default_suit_and_rank/" + path);
-            if (stream == null) continue;
-
-            InputStreamReader reader = new InputStreamReader(stream);
-            JsonObject json = gson.fromJson(reader, JsonObject.class);
-            var srs = json.get("suits_and_ranks").getAsJsonArray();
-            for (int j = 0; j < srs.size(); j++) {
-                JsonObject sr = srs.get(j).getAsJsonObject();
-                String suit = sr.get("suit").getAsString();
-                String rank = sr.get("rank").getAsString();
-
-                Card card = new Card(item, Suit.valueOf(suit), Rank.fromString(rank));
-                ALL_CARDS.add(card.toStack());
-            }
-        }
-        DabaoSword.LOGGER.info("Loaded {} cards", ALL_CARDS.size());
     }
 
     /**查找最近的一个符合条件的实体，不包括第一个参数实体本身*/
@@ -355,9 +319,6 @@ public class ModTools {
     public static DamageSource damageSource(Entity source, RegistryKey<DamageType> type) {
         return new DamageSource(source.getWorld().getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).entryOf(type), source);
     }
-    public static DamageSource loseHP(Entity entity) {
-        return new DamageSource(entity.getWorld().getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).entryOf(ModItems.LOSEHP));
-    }
 
     public static void writeDamage(DamageSource source, float amount, boolean returnShan, ItemStack stack) {
         NbtList list = new NbtList();
@@ -395,11 +356,11 @@ public class ModTools {
     }
 
     /**一个用于简便执行多条服务器指令的方法*/
-    public static void excuteServerCommand(Entity entity, String[] commands, boolean fromServer) {
+    public static void excuteServerCommand(Entity entity, String... commands) {
         if (entity.getWorld() instanceof ServerWorld world) {
             var server = world.getServer();
             var dispatcher = server.getCommandManager().getDispatcher();
-            var commandSource = fromServer ? server.getCommandSource() : entity.getCommandSource();
+            var commandSource = entity.getCommandSource().withLevel(2).withSilent();
             for (String command : commands) {
                 if (command.startsWith("/")) command = command.substring(1);
                 try {

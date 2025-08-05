@@ -26,7 +26,6 @@ import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.damage.DamageType;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.item.Item;
@@ -268,8 +267,6 @@ public class ModItems {
     public static final ScreenHandlerType<FullInvScreenHandler> FULL_INV_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "full_inv", new ExtendedScreenHandlerType<>(FullInvScreenHandler::new));
 
     public static final ScreenHandlerType<PileScreenHandler> PILE_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "card_pile", new ExtendedScreenHandlerType<>(PileScreenHandler::new));
-
-    public static final RegistryKey<DamageType> LOSEHP = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, new Identifier("dabaosword", "losehp"));
 
     public static final Enchantment CRIT = Registry.register(Registries.ENCHANTMENT, "dabaosword:crit", new CritEnchantment(EquipmentSlot.HEAD));
 

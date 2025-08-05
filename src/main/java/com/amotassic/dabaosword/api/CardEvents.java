@@ -5,6 +5,7 @@ import com.amotassic.dabaosword.api.skill.Trigger;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.card.equipment.Equipment;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -42,10 +43,20 @@ public class CardEvents {
         getSkillOwners(from).forEach(player -> getResult(Trigger.LOSE_CARD_MOVE, player, from, exData));
     }
 
-    public static void hurtBy(LivingEntity e, Item c) {hurtByCard(e, newCard(c));}
-    public static void hurtByCard(LivingEntity entity, ItemStack card) {
+    public static void hurtByCard(LivingEntity entity, DamageSource source, float amount) {
+        Item card = switch (source.getType().msgId()) {
+            case "huogong" -> ModItems.FIRE_ATTACK;
+            case "juedou" -> ModItems.JUEDOU;
+            case "nanman" -> ModItems.NANMAN;
+            case "wanjian" -> ModItems.WANJIAN;
+            case "shandian" -> ModItems.SHANDIAN_ITEM;
+            case "sha" -> ModItems.SHA;
+            case "shaFire" -> ModItems.FIRE_SHA;
+            case "shaThunder" -> ModItems.THUNDER_SHA;
+            default -> ItemStack.EMPTY.getItem();
+        };
         getSkillOwners(entity).forEach(player ->
-                getResult(Trigger.HURT_BY_CARD, player, entity, d().cards(card, card.getCount())));
+                getResult(Trigger.HURT_BY_CARD, player, entity, d().cards(newCard(card), 1).withDamage(source, amount)));
     }
 
     /**专为处理卡牌减少而写的方法，牌堆中的卡牌减少，需要保存nbt*/

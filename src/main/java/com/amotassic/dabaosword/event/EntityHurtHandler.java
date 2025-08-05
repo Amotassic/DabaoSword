@@ -3,7 +3,6 @@ package com.amotassic.dabaosword.event;
 import com.amotassic.dabaosword.api.event.EntityHurtCallback;
 import com.amotassic.dabaosword.api.skill.Trigger;
 import com.amotassic.dabaosword.effect.ShandianEffect;
-import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.card.CardItem;
 import com.amotassic.dabaosword.util.Tags;
 import net.minecraft.entity.LivingEntity;
@@ -20,7 +19,7 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
-import static com.amotassic.dabaosword.api.CardEvents.hurtBy;
+import static com.amotassic.dabaosword.api.CardEvents.hurtByCard;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class EntityHurtHandler implements EntityHurtCallback {
@@ -67,8 +66,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
 
             trySave(entity, amount);
 
-            if (isHuogong(source)) hurtBy(entity, ModItems.FIRE_ATTACK);
-            if (isShandian(source)) hurtBy(entity, ModItems.SHANDIAN_ITEM);
+            if (source.isIn(Tags.FROM_CARD)) hurtByCard(entity, source, amount);
 
             if (source.getAttacker() instanceof LivingEntity living) {
                 if (living.getCommandTags().contains("px")) entity.timeUntilRegen = 0;

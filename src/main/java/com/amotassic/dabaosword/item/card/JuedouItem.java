@@ -1,14 +1,13 @@
 package com.amotassic.dabaosword.item.card;
 
+import com.amotassic.dabaosword.damage_type.ModDT;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 
-import static com.amotassic.dabaosword.api.CardEvents.hurtByCard;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class JuedouItem extends CardItem.Armoury {
@@ -43,9 +42,8 @@ public class JuedouItem extends CardItem.Armoury {
     }
 
     private void juedou(LivingEntity attacker, ItemStack card, LivingEntity target) {
-        var source = damageSource(attacker, DamageTypes.GENERIC);
         target.timeUntilRegen = 0;
-        if (target.damage(source, 5f)) hurtByCard(target, card);
+        target.damage(ModDT.juedou(attacker), 5f);
     }
 
     @Override public boolean askForWuxie() {return true;}

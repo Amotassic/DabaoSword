@@ -21,8 +21,7 @@ public class ShandianItem extends CardItem.Armoury {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         if (world instanceof ServerWorld sw && hand == Hand.MAIN_HAND) {
-            String[] command = {"weather thunder 15s"};
-            excuteServerCommand(user, command, true);
+            excuteServerCommand(user, "weather thunder 15s");
             //world.setWeather(0, 15, true, true);
 
             Set<LivingEntity> targets = new HashSet<>(sw.getPlayers());

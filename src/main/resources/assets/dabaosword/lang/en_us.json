@@ -441,6 +441,15 @@
   "suit.club": "♣",
 
   "death.attack.loseHP": "%1$s died from excessive bleeding",
+  "death.attack.bbll": "%1$s was annoyed to death by %2$s",
+  "death.attack.huogong": "%1$s was reduced to ashes by %2$s's raging fire",
+  "death.attack.juedou": "%1$s was defeated in a duel against %2$s",
+  "death.attack.nanman": "%1$s was trampled flat by %2$s's war elephants",
+  "death.attack.sha": "%1$s got careless and failed to dodge %2$s's attack",
+  "death.attack.shaFire": "%2$s was too scorching hot for %1$s to dodge",
+  "death.attack.shaThunder": "%1$s got electrocuted to a crisp by %2$s",
+  "death.attack.shandian": "%1$s tried to harness the power of lightning",
+  "death.attack.wanjian": "%1$s was pierced by ten thousand arrows from %2$s",
 
   "dabaosword.welcome": "Welcome to Dabaosword! Our mod is thriving!",
   "dabaosword.mainpage": "[Mod Homepage]  ",

@@ -4,6 +4,7 @@ import com.amotassic.dabaosword.api.card.Card;
 import com.amotassic.dabaosword.api.card.Rank;
 import com.amotassic.dabaosword.api.skill.*;
 import com.amotassic.dabaosword.command.DabaoSwordCommand;
+import com.amotassic.dabaosword.damage_type.ModDT;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.card.CardItem;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
@@ -223,7 +224,7 @@ public class Qun {
                 used = used.isEmpty() ? item : used + ";" + item;
                 nbt.putString("used", used); skill.setNbt(nbt);
                 player.timeUntilRegen = 0;
-                player.damage(loseHP(player), 4.99f);
+                player.damage(ModDT.loseHP(player), 4.99f);
             }
             voice(player, this);
             closeGUI(player);

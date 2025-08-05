@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.mixin;
 
+import com.amotassic.dabaosword.damage_type.ModDT;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.ModConfig;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
@@ -8,7 +9,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.*;
@@ -18,16 +18,21 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.world.World;
+import net.minecraft.world.explosion.Explosion;
+import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
-import static com.amotassic.dabaosword.util.ModTools.*;
+import static com.amotassic.dabaosword.util.ModTools.getClosestEntity;
+import static com.amotassic.dabaosword.util.ModTools.isCard;
 
 @Mixin(Entity.class)
 public abstract class EntityMixin {
@@ -36,8 +41,10 @@ public abstract class EntityMixin {
 
     @Inject(method = "onStruckByLightning", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"), cancellable = true)
     public void onStruckByLightning(ServerWorld world, LightningEntity lightning, CallbackInfo ci) {
-        this.damage(damageSource(lightning, DamageTypes.LIGHTNING_BOLT), 5.0f);
-        ci.cancel();
+        if (lightning.getCommandTags().contains("a")) {
+            this.damage(ModDT.shandian(lightning), 5.0f);
+            ci.cancel();
+        }
     }
 
     @ModifyReturnValue(method = "occludeVibrationSignals", at = @At("RETURN"))
@@ -120,6 +127,30 @@ abstract class FireballEntityMixin extends AbstractFireballEntity {
             args.set(5, false);
             args.set(6, World.ExplosionSourceType.NONE);
         }
+    }
+
+    @ModifyArgs(method = "onEntityHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
+    protected void onEntityHit(Args args) {
+        if (getCommandTags().contains("a") && getOwner() != null) {
+            getOwner().addCommandTag("nanman"); //防止触发杀
+            args.set(0, ModDT.huogong(getOwner()));
+            args.set(1, 7f);
+        }
+    }
+}
+
+@Mixin(Explosion.class)
+abstract class ExplosionMixin {
+
+    @Shadow @Final private @Nullable Entity entity;
+
+    @ModifyArg(method = "collectBlocksAndDamageEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
+    public DamageSource collectBlocksAndDamageEntities(DamageSource source) {
+        if (entity instanceof FireballEntity fireball && entity.getCommandTags().contains("a") && fireball.getOwner() != null) {
+            fireball.getOwner().addCommandTag("nanman"); //防止触发杀
+            return ModDT.huogong(fireball.getOwner());
+        }
+        return source;
     }
 }
 

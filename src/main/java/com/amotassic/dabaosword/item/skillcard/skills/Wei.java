@@ -3,6 +3,7 @@ package com.amotassic.dabaosword.item.skillcard.skills;
 import com.amotassic.dabaosword.api.card.Suit;
 import com.amotassic.dabaosword.api.skill.*;
 import com.amotassic.dabaosword.command.DabaoSwordCommand;
+import com.amotassic.dabaosword.damage_type.ModDT;
 import com.amotassic.dabaosword.event.PlayerEvents;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
@@ -54,7 +55,7 @@ public class Wei {
         public int onHurt(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
             if (!(user instanceof PlayerEntity pl)) return 0;
             DamageSource source = data.source; Float amount = data.amount;
-            if (source.isOf(ModItems.LOSEHP)) return 0;
+            if (source.isOf(ModDT.LOSEHP)) return 0;
             var nbt = skill.getNbt();
             float hurt = nbt.getFloat("hurt"); hurt += amount;
             if (hurt >= 7 && pl.isAlive()) {
@@ -309,7 +310,7 @@ public class Wei {
         @SkillInfo(trigger = Trigger.CANCEL_DAMAGE_LOWEST, relation = Relation.ATTACKER_SELF)
         public int onHit(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
             var amount = data.amount;
-            target.damage(loseHP(user), Math.min(Math.max(7, target.getMaxHealth() / 3), amount));
+            target.damage(ModDT.loseHP(user), Math.min(Math.max(7, target.getMaxHealth() / 3), amount));
             voice(user, this, 1);
             return 1;
         }
@@ -544,7 +545,7 @@ public class Wei {
 
         @SkillInfo(trigger = Trigger.ON_HURT, relation = Relation.SELF)
         public int onHurt(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
-            if (data.source.isOf(ModItems.LOSEHP)) return 0;
+            if (data.source.isOf(ModDT.LOSEHP)) return 0;
             if (!user.hasStatusEffect(ModItems.COOLDOWN) && user.getHealth() <= 15) {
                 draw(user, 2);
                 user.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN, 20 * 20, 0, false, false, true));

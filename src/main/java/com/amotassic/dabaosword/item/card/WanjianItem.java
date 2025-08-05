@@ -1,9 +1,9 @@
 package com.amotassic.dabaosword.item.card;
 
+import com.amotassic.dabaosword.damage_type.ModDT;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.ModTools;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -15,8 +15,6 @@ import net.minecraft.world.World;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import static com.amotassic.dabaosword.api.CardEvents.hurtByCard;
 
 public class WanjianItem extends CardItem.Armoury {
     @Override
@@ -39,8 +37,7 @@ public class WanjianItem extends CardItem.Armoury {
 
     @Override
     public void effect(LivingEntity user, ItemStack card, LivingEntity entity) {
-        DamageSource source = user.getDamageSources().mobAttack(user);
-        if (entity.damage(source, 6)) hurtByCard(entity, card);
+        entity.damage(ModDT.wanjian(user), 6);
         if (entity instanceof PlayerEntity || entity.getCommandTags().contains("wanjian")) entity.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 20, 1, false, false));
     }
 
