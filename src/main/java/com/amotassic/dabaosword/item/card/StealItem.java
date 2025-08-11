@@ -18,8 +18,8 @@ public class StealItem extends CardItem.Armoury {
 
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (!user.getWorld().isClient && hand == Hand.MAIN_HAND && canSteal(entity)) {
-            onUse(user, user.getMainHandStack(), entity);
+        if (!user.getWorld().isClient && canSteal(entity)) {
+            onUse(user, user.getStackInHand(hand), hand, entity);
             return ActionResult.SUCCESS_SERVER;
         }
         return ActionResult.PASS;

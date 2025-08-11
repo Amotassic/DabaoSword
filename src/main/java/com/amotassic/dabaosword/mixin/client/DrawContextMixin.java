@@ -2,13 +2,12 @@ package com.amotassic.dabaosword.mixin.client;
 
 import com.amotassic.dabaosword.api.card.Rank;
 import com.amotassic.dabaosword.api.card.Suit;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -16,15 +15,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.function.Function;
-
 import static com.amotassic.dabaosword.util.ModTools.c;
 
 @Mixin(DrawContext.class)
 public abstract class DrawContextMixin {
-    @Shadow @Final private MatrixStack matrices;
-
-    @Shadow protected abstract void drawTexturedQuad(Function<Identifier, RenderLayer> renderLayers, Identifier sprite, int x1, int x2, int y1, int y2, float u1, float u2, float v1, float v2, int color);
+    @Shadow protected abstract void drawTexturedQuad(RenderPipeline pipeline, Identifier sprite, int x1, int x2, int y1, int y2, float u1, float u2, float v1, float v2, int color);
 
     @Inject(method = "drawStackOverlay(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawItemBar(Lnet/minecraft/item/ItemStack;II)V"))
     public void drawItemInSlot(TextRenderer textRenderer, ItemStack stack, int x, int y, String countOverride, CallbackInfo ci) {
@@ -33,10 +28,8 @@ public abstract class DrawContextMixin {
         if (s != Suit.None && r != Rank.None) {
             Identifier suit = Identifier.of("dabaosword", "textures/item/suit/" + getSuitName(s) + ".png");
             Identifier rank = Identifier.of("dabaosword", "textures/item/rank2/" + getRankName(s, r) + ".png");
-            this.matrices.translate(0.0f, 0.0f, 200.0f);
-            drawTexturedQuad(RenderLayer::getGuiTextured, suit, x, x + 5, y, y + 5, 0, 1, 0, 1, -1);
-            drawTexturedQuad(RenderLayer::getGuiTextured, rank, x + 5, x + 11, y, y + 5, 0, 1, 0, 1, -1);
-            this.matrices.translate(0.0f, 0.0f, -200.0f);
+            drawTexturedQuad(RenderPipelines.GUI_TEXTURED, suit, x, x + 5, y, y + 5, 0, 1, 0, 1, -1);
+            drawTexturedQuad(RenderPipelines.GUI_TEXTURED, rank, x + 5, x + 11, y, y + 5, 0, 1, 0, 1, -1);
         }
     }
 

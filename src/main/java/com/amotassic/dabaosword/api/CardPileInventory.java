@@ -1,16 +1,17 @@
 package com.amotassic.dabaosword.api;
 
+import com.amotassic.dabaosword.DabaoSword;
 import com.amotassic.dabaosword.item.ModItems;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.storage.NbtReadView;
+import net.minecraft.storage.NbtWriteView;
+import net.minecraft.util.ErrorReporter;
 import net.minecraft.util.collection.DefaultedList;
-
-import java.util.Optional;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
 
@@ -37,33 +38,23 @@ public class CardPileInventory implements Inventory {
     }
 
     public void readNbt() {
-        Optional<NbtList> list = getOrCreateNbt(trinketItem(pile, player)).getList("Items");
-        list.ifPresent(this::readNbt);
-    }
-
-    public void readNbt(NbtList nbtList) {
         cards.clear();
-        for (int i = 0; i < nbtList.size(); ++i) {
-            NbtCompound nbtCompound = nbtList.getCompound(i).orElseThrow();
-            int j = nbtCompound.getByte("Slot").orElseThrow();
-            ItemStack itemStack = ItemStack.fromNbt(player.getRegistryManager(), nbtCompound).orElse(ItemStack.EMPTY);
-            if (itemStack.isEmpty()) continue;
-            if (j >= 0 && j < size()) setStack(j, itemStack);
+        try (ErrorReporter.Logging logging = new ErrorReporter.Logging(player.getErrorReporterContext(), DabaoSword.LOGGER)) {
+            var view = NbtReadView.create(logging, player.getRegistryManager(), getOrCreateNbt(trinketItem(pile, player)));
+            Inventories.readData(view, cards);
         }
     }
 
     public void writeNbtToStack() { //当涉及牌堆物品变化后，必须调用这个方法
         if (player.getWorld().isClient()) return;
-        NbtList nbtList = new NbtList();
-        NbtCompound nbtCompound;
-        for (int i = 0; i < size(); ++i) {
-            if (cards.get(i).isEmpty()) continue;
-            nbtCompound = new NbtCompound();
-            nbtCompound.putByte("Slot", (byte) i);
-            nbtList.add(cards.get(i).toNbt(player.getRegistryManager(), nbtCompound));
+        NbtList nbtList;
+        try (ErrorReporter.Logging logging = new ErrorReporter.Logging(player.getErrorReporterContext(), DabaoSword.LOGGER)) {
+            var view = NbtWriteView.create(logging, player.getRegistryManager());
+            Inventories.writeData(view, cards);
+            nbtList = view.getNbt().getList("Items").orElse(new NbtList());
         }
         ItemStack stack = trinketItem(pile, player);
-        nbtCompound = getOrCreateNbt(stack);
+        var nbtCompound = getOrCreateNbt(stack);
         nbtCompound.put("Items", nbtList);
         setNbt(stack, nbtCompound);
     }

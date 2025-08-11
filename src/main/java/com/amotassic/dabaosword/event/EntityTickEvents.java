@@ -35,7 +35,7 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
         if (entity.getWorld() instanceof ServerWorld world) {
             long time = world.getTime();
             if (time % 2 == 0) {
-                String[] tags = {"sha", "juedou", "nanman", "wanjian", "benxi"};
+                String[] tags = {"sha", "juedou", "nanman", "wanjian"};
                 for (var tag : tags) entity.getCommandTags().remove(tag);
             }
             if (time % 20 == 0) {
@@ -48,8 +48,7 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
 
             //处理所有加触及距离和近战防御距离的效果
             int level1 = 0; int level2 = 0;
-            ItemStack mainHand = entity.getMainHandStack();
-            if (mainHand.isOf(ModItems.DISCARD) || mainHand.isOf(ModItems.JUEDOU)) level1 += 114;
+            if (shouldReachLong(entity)) level1 += 114;
             for (var skill : getSkillsMayUse(entity)) {
                 level1 += skill.item.getExtraReach(entity, skill);
                 level2 += skill.item.getDefend(entity, skill);

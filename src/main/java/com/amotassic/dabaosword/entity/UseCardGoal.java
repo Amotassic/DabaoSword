@@ -37,27 +37,27 @@ public class UseCardGoal extends Goal {
     public void tick() {
         if (mob.getWorld().getTime() % 20 != 0) return;
         for (ItemStack card : getCards()) {
-            if (isEquipment.test(card)) onUse(mob, card, mob);
+            if (isEquipment.test(card)) onUse(mob, card, null, mob);
             if (isSha.test(card) || card.isOf(ModItems.SHAN) || card.isOf(ModItems.WUXIE)) continue;
             if (card.isOf(ModItems.WUGU) || card.isOf(ModItems.TAOYUAN)) card.setCount(0);
             if (card.isOf(ModItems.PEACH)) {
                 if (mob.getHealth() > mob.getMaxHealth() - 5) continue;
-                onUse(mob, card, mob);
+                onUse(mob, card, null, mob);
             }
             if (card.isOf(ModItems.JIU)) {
                 if (mob.hasStatusEffect(StatusEffects.STRENGTH)) continue;
-                onUse(mob, card, mob);
+                onUse(mob, card, null, mob);
             }
-            if (card.isOf(ModItems.WUZHONG)) onUse(mob, card, mob);
+            if (card.isOf(ModItems.WUZHONG)) onUse(mob, card, null, mob);
             LivingEntity target = mob.getTarget();
             if (target == null) continue;
             if (card.isOf(ModItems.FIRE_ATTACK) || card.isOf(ModItems.WANJIAN)) {
                 mob.getLookControl().lookAt(target);
-                onUse(mob, card, mob);
+                onUse(mob, card, null, mob);
             }
             if (c(card).askForWuxie()) {
                 if (mob.distanceTo(target) > 5) continue;
-                onUse(mob, card, target);
+                onUse(mob, card, null, target);
             }
         }
     }

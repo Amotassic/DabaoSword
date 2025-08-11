@@ -2,16 +2,20 @@ package com.amotassic.dabaosword.util;
 
 import com.amotassic.dabaosword.api.skill.Trigger;
 import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.item.WarmWineItem;
 import com.amotassic.dabaosword.item.card.CardItem;
 import com.amotassic.dabaosword.item.card.Sha;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.DamageTypeTags;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.Hand;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,18 +74,17 @@ public class ModifyDamage {
                 if (Objects.requireNonNull(entity.getStatusEffect(ModItems.DEFEND)).getAmplifier() >= 2) return 1;
             }
             //决斗等物品虽然手长，但过远时普通伤害无效
-            if (!source.isIn(DamageTypeTags.BYPASSES_ARMOR) && entity.distanceTo(SE) > 5) {
-                if (SE.getMainHandStack().isOf(ModItems.JUEDOU) || SE.getMainHandStack().isOf(ModItems.DISCARD)) return 1;
-            }
+            if (!source.isIn(DamageTypeTags.BYPASSES_ARMOR) && shouldReachLong(SE) && entity.distanceTo(SE) > 5) return 1;
         } else if (at instanceof LivingEntity AT) {
             //被乐的生物无法造成伤害
             if (AT.hasStatusEffect(ModItems.TOO_HAPPY)) return 1;
         }
 
         if (so instanceof LivingEntity SE && shouldSha(SE)) { //只要能触发杀，伤害就会被取消
-            ItemStack sha = isSha.test(SE.getMainHandStack()) ? SE.getMainHandStack() : getItem(SE, isSha);
+            Hand hand = isSha.test(SE.getMainHandStack()) ? Hand.MAIN_HAND : isSha.test(SE.getOffHandStack()) ? Hand.OFF_HAND : null;
+            ItemStack sha = hand != null ? SE.getStackInHand(hand) : getItem(SE, isSha);
             SE.addCommandTag("sha");
-            Sha.shaUse(SE, sha, amount, entity);
+            Sha.shaUse(SE, sha, hand, amount, entity);
             return 2;
         }
 
@@ -104,7 +107,7 @@ public class ModifyDamage {
             var stack = getCard(entity, isSha);
             if (!stack.isEmpty()) {
                 voice(entity, stack);
-                CardItem.onUse(entity, stack, true);
+                CardItem.onUse(entity, stack, null, true);
                 return 1;
             }
         }
@@ -113,7 +116,7 @@ public class ModifyDamage {
                 //此处条件是故意设置得与八卦阵条件不一样的，虽然感觉没啥用
                 if (hasCard(entity, p(ModItems.SHAN)) && !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
                     ItemStack shan = new ItemStack(ModItems.SHAN);
-                    CardItem.onUse(entity, shan, true);
+                    CardItem.onUse(entity, shan, null, true);
                     shan(entity, false, source, amount);
                     return 1;
                 }
@@ -146,5 +149,23 @@ public class ModifyDamage {
             stack.addEnchantment(ModTools.getEntry(ModItems.CRIT), 1);
         }
         return stack;
+    }
+
+    public static boolean warmWine(LivingEntity entity, DamageSource source) {
+        if (entity.getWorld() instanceof ServerWorld world) {
+            if (source.getAttacker() instanceof PlayerEntity player && !player.getCommandTags().contains("sha")) {
+                ItemStack wine = getItem(player, p(ModItems.WARM_WINE));
+                if (wine.isEmpty()) return false;
+                player.addCommandTag("sha"); wine.decrement(1);
+                if (!player.isCreative() && !player.isSpectator()) give(player, newCard(ModItems.JIU));
+
+                ItemStack head = WarmWineItem.dropHead(entity);
+                if (!head.isEmpty()) entity.dropStack(world, head);
+                entity.damage(world, damageSource(player, DamageTypes.GENERIC_KILL), entity.getMaxHealth() * 100);
+                entity.kill(world);
+                return true;
+            }
+        }
+        return false;
     }
 }

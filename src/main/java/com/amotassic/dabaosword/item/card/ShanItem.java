@@ -17,8 +17,8 @@ public class ShanItem extends CardItem.Basic {
     @Override
     public ActionResult use(World world, PlayerEntity user, Hand hand) {
         //判断是否有独立冷却buff，若冷却中则无法生效
-        if (!world.isClient && !user.hasStatusEffect(ModItems.COOLDOWN2) && hand == Hand.MAIN_HAND) {
-            onUse(user, user.getMainHandStack(), user);
+        if (!world.isClient && !user.hasStatusEffect(ModItems.COOLDOWN2)) {
+            onUse(user, user.getStackInHand(hand), hand, user);
             return ActionResult.SUCCESS_SERVER;
         }
         return super.use(world, user, hand);

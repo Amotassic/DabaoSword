@@ -23,10 +23,10 @@ public class TiesuoItem extends CardItem.Armoury {
     //原始的铁索连环
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (!user.getWorld().isClient && !entity.isGlowing() && !user.getOffHandStack().isOf(Items.KNOWLEDGE_BOOK) && hand == Hand.MAIN_HAND) {
+        if (!user.getWorld().isClient && !entity.isGlowing() && !user.getOffHandStack().isOf(Items.KNOWLEDGE_BOOK)) {
             Box box = user.getBoundingBox().stretch(user.getRotationVec(1.0F).multiply(10));
             Set<LivingEntity> targets = new HashSet<>(user.getWorld().getEntitiesByClass(LivingEntity.class, box, LivingEntity::isAlive));
-            onUse(user, user.getMainHandStack(), targets.toArray(new LivingEntity[0]));
+            onUse(user, user.getStackInHand(hand), hand, targets.toArray(new LivingEntity[0]));
             user.removeStatusEffect(StatusEffects.GLOWING);
             return ActionResult.SUCCESS_SERVER;
         }

@@ -5,6 +5,7 @@ import com.amotassic.dabaosword.api.skill.*;
 import com.amotassic.dabaosword.command.DabaoSwordCommand;
 import com.amotassic.dabaosword.damage_type.ModDT;
 import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.item.card.CardItem;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.ui.PlayerInvScreenHandler;
 import net.minecraft.entity.LivingEntity;
@@ -214,19 +215,16 @@ public class Wu {
         }
     }
 
-    public static class Guose extends SkillItem {
+    public static class Guose extends ConvertSkill {
         public Guose(Settings settings) {super(settings);}
         @Override
         public void addTip(Skill skill, List<Text> tooltip) {
-            int cd = skill.getCD();
-            tooltip.add(Text.literal(cd == 0 ? "CD: 15s" : "CD: 15s   left: "+ cd +"s"));
             tooltip.add(getTip(GREEN));
         }
 
-        @Override
-        public void tickSkill(Skill skill, LivingEntity entity) {
-            viewAs(entity, skill, 15, isDiamondCard, ModItems.TOO_HAPPY_ITEM);
-        }
+        @Override public boolean chooseEquipment() {return true;}
+        @Override public Predicate<ItemStack> getConvertFilter() {return isDiamondCard;}
+        @Override public CardItem convert(ItemStack stack) {return ModItems.TOO_HAPPY_ITEM;}
     }
 
     public static class Kurou extends SkillItem {
@@ -320,7 +318,7 @@ public class Wu {
             if (!player.hasStatusEffect(ModItems.COOLDOWN)) {
                 for (var armor : getArmorItems(target)) {
                     if (armor.isEmpty()) continue;
-                    if (target instanceof PlayerEntity pl) {give(pl, armor.copy()); armor.setCount(0);}
+                    if (target instanceof PlayerEntity pl) {give(pl, armor.copy(), 100); armor.setCount(0);}
                     else {target.dropStack(world(player), armor.copy()); armor.setCount(0);}
                 }
                 voice(player, this);
@@ -330,18 +328,16 @@ public class Wu {
         }
     }
 
-    public static class Qixi extends SkillItem {
+    public static class Qixi extends ConvertSkill {
         public Qixi(Settings settings) {super(settings);}
         @Override
         public void addTip(Skill skill, List<Text> tooltip) {
-            tooltip.add(Text.literal("CD: 5s"));
             tooltip.add(getTip(GREEN));
         }
 
-        @Override
-        public void tickSkill(Skill skill, LivingEntity entity) {
-            viewAs(entity, skill, 5, isBlackCard, ModItems.DISCARD);
-        }
+        @Override public boolean chooseEquipment() {return true;}
+        @Override public Predicate<ItemStack> getConvertFilter() {return isBlackCard;}
+        @Override public CardItem convert(ItemStack stack) {return ModItems.DISCARD;}
     }
 
     public static class Shixin extends SkillItem {

@@ -2,7 +2,7 @@ package com.amotassic.dabaosword.ui;
 
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.network.OpenScreenPayload;
-import dev.emi.trinkets.api.TrinketInventory;
+import com.amotassic.dabaosword.util.ModTools;
 import dev.emi.trinkets.api.TrinketsApi;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.InventoryOwner;
@@ -19,7 +19,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Pair;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -173,20 +172,12 @@ public class FullInvScreenHandler extends ScreenHandler {
             if (i == 39) to.equipStack(EquipmentSlot.FEET, stack);
             if (i == 40) to.setStackInHand(Hand.OFF_HAND, stack);
             if (i >= 41) {
-                var pair = findSlot(to, i - 41);
-                if (pair != null) pair.getLeft().setStack(pair.getRight(), stack);
+                var pairs = ModTools.trinketsWithSlots(to);
+                for (var pair : pairs) {
+                    if (pairs.indexOf(pair) == i - 41) pair.getLeft().setStack(pair.getRight(), stack);
+                }
             }
         }
-    }
-
-    public static Pair<TrinketInventory, Integer> findSlot(LivingEntity entity, int index) {
-        //将饰品栏的每一格添加到一个List中，若index与List中的饰品格的序列号相同，则输出该饰品格
-        List<Pair<TrinketInventory, Integer>> pairs = new ArrayList<>();
-        TrinketsApi.getTrinketComponent(entity).ifPresent(component -> component.getInventory().values().forEach(group -> group.values().forEach(inv -> {
-            for (int i = 0; i < inv.size(); i++) pairs.add(new Pair<>(inv, i));
-        })));
-        for (var pair : pairs) {if (pairs.indexOf(pair) == index) return pair;}
-        return null;
     }
 
     @Override public boolean canUse(PlayerEntity player) {return true;}

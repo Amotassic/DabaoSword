@@ -14,7 +14,8 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
-import static com.amotassic.dabaosword.util.ModTools.*;
+import static com.amotassic.dabaosword.util.ModTools.c;
+import static com.amotassic.dabaosword.util.ModTools.toList;
 
 /**
  * 不同的全局监听技能效果需要的参数不尽相同，为了能统一方法参数，故将除了技能本身外的参数封装在一个类中。
@@ -59,7 +60,20 @@ public class ExData {
     public ExData cards(Card card, int count, boolean... fromEquip) {
         boolean bl = fromEquip.length > 0 && fromEquip[0];
         if (bl) cards_from_equ.put(card, count);
-        else cards_from_inv.put(card, count);
+        else {
+            for (var c : cards_from_inv.keySet()) {
+                // 如果将要添加的卡牌已经存在了，但数量未达到该物品堆的数量，就增加该物品堆已计入的数量
+                if (ItemStack.areEqual(c.toStack(), card.toStack())) {
+                    Integer stored = cards_from_inv.get(c); int stackCount = c.count;
+                    if (stored == stackCount) continue;
+
+                    cards_from_inv.put(c, Math.min(stored + count, stackCount));
+                    count -= stackCount - stored;
+                    if (count <= 0) return this;
+                }
+            }
+            cards_from_inv.put(card, count);
+        }
         return this;
     }
 
@@ -68,7 +82,7 @@ public class ExData {
      * 清除所有记录于此ExData的卡牌而不触发任何监听事件，如果卡牌是来自某个生物才会生效*/
     public void clearCards(LivingEntity cards_owner) {
         forEachCard(ALL, (c, i) -> {
-            CardEvents.cardDecrement(cards_owner, getCard(cards_owner, s-> ItemStack.areEqual(s, c.toStack())), i);
+            CardEvents.cardDecrement(cards_owner, c.origin(), i);
         });
     }
 

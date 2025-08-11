@@ -73,8 +73,8 @@ public class Equipment extends CardItem implements ISkill {
     @Override
     public ActionResult use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
-        if (!world.isClient && hand == Hand.MAIN_HAND) {
-            onUse(user, stack, user);
+        if (!world.isClient) {
+            onUse(user, stack, hand, user);
             return ActionResult.SUCCESS_SERVER;
         }
         return ActionResult.PASS;

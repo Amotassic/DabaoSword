@@ -25,7 +25,8 @@
     "client.DrawContextMixin",
     "client.GameRendererMixin",
     "client.KeyboardMixin",
-    "client.LivingEntityRendererMixin"
+    "client.LivingEntityRendererMixin",
+    "client.MouseMixin"
   ],
   "injectors": {
     "defaultRequire": 1

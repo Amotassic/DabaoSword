@@ -3,12 +3,12 @@ package com.amotassic.dabaosword.util;
 import com.amotassic.dabaosword.DabaoSword;
 import com.amotassic.dabaosword.api.CardPileInventory;
 import com.amotassic.dabaosword.api.card.Card;
-import com.amotassic.dabaosword.api.card.Rank;
 import com.amotassic.dabaosword.api.card.Suit;
 import com.amotassic.dabaosword.api.skill.ExData;
 import com.amotassic.dabaosword.api.skill.ISkill;
 import com.amotassic.dabaosword.api.skill.Skill;
 import com.amotassic.dabaosword.api.skill.Trigger;
+import com.amotassic.dabaosword.data.CardSuitAndRank;
 import com.amotassic.dabaosword.event.PVPGameEvents;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.card.CardItem;
@@ -17,9 +17,8 @@ import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.network.OpenScreenPayload;
 import com.amotassic.dabaosword.ui.FullInvScreenHandler;
 import com.amotassic.dabaosword.ui.PlayerInvScreenHandler;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.emi.trinkets.api.TrinketInventory;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
@@ -58,8 +57,6 @@ import net.minecraft.util.math.Box;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
@@ -110,10 +107,43 @@ public class ModTools {
     public static List<ItemStack> allTrinkets(LivingEntity entity) {
         return getTrinketComponent(entity).map(c -> c.getAllEquipped().stream().map(Pair::getRight).toList()).orElse(Collections.emptyList());
     }
+    public static List<Pair<TrinketInventory, Integer>> trinketsWithSlots(LivingEntity entity) {
+        return trinketsWithSlots(entity, s -> true);
+    }
+    public static List<Pair<TrinketInventory, Integer>> trinketsWithSlots(LivingEntity entity, Predicate<ItemStack> filter) {
+        List<Pair<TrinketInventory, Integer>> pairs = new ArrayList<>();
+        getTrinketComponent(entity).ifPresent(c -> c.getInventory().values().forEach(group -> group.values().forEach(inv -> {
+            for (int i = 0; i < inv.size(); i++) {
+                if (filter.test(inv.getStack(i))) pairs.add(new Pair<>(inv, i));
+            }
+        })));
+        return pairs;
+    }
+
+    public static void replaceTrinketSlot(List<Pair<TrinketInventory, Integer>> pairs, int slot) {
+        if (slot < 1 || slot >= pairs.size()) return;
+        List<ItemStack> copys = new ArrayList<>(pairs.stream().map(p -> p.getLeft().getStack(p.getRight()).copy()).toList());
+        ItemStack stack = copys.get(slot).copy();
+        for (int i = slot; i > 0; i--) {
+            copys.set(i, copys.get(i - 1));
+        }
+        copys.set(0, stack);
+        for (int i = 0; i < pairs.size(); i++) {
+            pairs.get(i).getLeft().setStack(pairs.get(i).getRight(), copys.get(i));
+        }
+    }
 
     public static CardPileInventory getCardPack(PlayerEntity player) {
         if (player instanceof ServerPlayerEntity sp) return PVPGameEvents.PLAYER_CARD_PACKS.getOrDefault(sp, new CardPileInventory(player));
         return new CardPileInventory(player);
+    }
+
+    public static boolean shouldReachLong(LivingEntity entity) {
+        for (var hand : Hand.values()) {
+            ItemStack stack = entity.getStackInHand(hand);
+            if (stack.isOf(ModItems.DISCARD) || stack.isOf(ModItems.JUEDOU) || stack.isOf(ModItems.TOO_HAPPY_ITEM)) return true;
+        }
+        return false;
     }
 
     /**判断牌堆和背包中是否有符合条件的卡牌*/
@@ -136,7 +166,10 @@ public class ModTools {
     }
     /**获取玩家背包中第一个符合条件的物品，或者生物的符合条件的主副手物品*/
     public static ItemStack getItem(@NotNull LivingEntity entity, Predicate<ItemStack> predicate) {
-        for (var stack : getItems(entity, predicate, true, false, false, false)) if (predicate.test(stack)) return stack;
+        if (entity instanceof PlayerEntity player) {
+            for (var stack : player.getInventory().getMainStacks()) if (predicate.test(stack)) return stack;
+        } else if (predicate.test(entity.getMainHandStack())) return entity.getMainHandStack();
+        if (predicate.test(entity.getOffHandStack())) return entity.getOffHandStack();
         return ItemStack.EMPTY;
     }
 
@@ -228,7 +261,7 @@ public class ModTools {
     private static final List<ItemStack> CARD_PILE = new ArrayList<>();
     public static ItemStack newCard() {
         if (CARD_PILE.isEmpty()) {
-            for (ItemStack stack : ALL_CARDS) CARD_PILE.add(stack.copy());
+            for (ItemStack stack : CardSuitAndRank.ALL_CARDS) CARD_PILE.add(stack.copy());
             Collections.shuffle(CARD_PILE);
             DabaoSword.LOGGER.info("Shuffled card pile");
         }
@@ -236,46 +269,24 @@ public class ModTools {
     }
     public static ItemStack newCard(Item item) {return newCard(p(item));}
     public static ItemStack newCard(Predicate<ItemStack> predicate) {
-        List<ItemStack> list = ALL_CARDS.stream().filter(predicate).toList();
+        List<ItemStack> list = CardSuitAndRank.ALL_CARDS.stream().filter(predicate).toList();
         if (list.isEmpty()) return ItemStack.EMPTY;
         return list.get(new Random().nextInt(list.size())).copy();
     }
 
-    public static void give(LivingEntity entity, ItemStack stack) {
+    public static void give(LivingEntity entity, ItemStack stack, int... pickupDelay) {
         if (entity instanceof PlayerEntity player) {
             ItemEntity item = player.dropItem(stack, false);
             if (item == null) return;
             item.setInvulnerable(true);
-            item.resetPickupDelay();
+            int delay = pickupDelay.length > 0 ? pickupDelay[0] : 0;
+            item.setPickupDelay(delay);
             item.setOwner(player.getUuid());
+            item.addCommandTag("follow_owner");
             return;
         }
         if (entity.getMainHandStack().isEmpty()) entity.setStackInHand(Hand.MAIN_HAND, stack);
         else if (entity.getOffHandStack().isEmpty()) entity.setStackInHand(Hand.OFF_HAND, stack);
-    }
-
-    private static final List<ItemStack> ALL_CARDS = new ArrayList<>();
-
-    public static void initAllCards() {
-        for (CardItem item : ModItems.CARDS) {
-            String path = Registries.ITEM.getId(item).getPath() + ".json";
-            Gson gson = new Gson();
-            InputStream stream = ModTools.class.getResourceAsStream("/data/dabaosword/default_suit_and_rank/" + path);
-            if (stream == null) continue;
-
-            InputStreamReader reader = new InputStreamReader(stream);
-            JsonObject json = gson.fromJson(reader, JsonObject.class);
-            var srs = json.get("suits_and_ranks").getAsJsonArray();
-            for (int j = 0; j < srs.size(); j++) {
-                JsonObject sr = srs.get(j).getAsJsonObject();
-                String suit = sr.get("suit").getAsString();
-                String rank = sr.get("rank").getAsString();
-
-                Card card = new Card(item, Suit.valueOf(suit), Rank.fromString(rank));
-                ALL_CARDS.add(card.toStack());
-            }
-        }
-        DabaoSword.LOGGER.info("Loaded {} cards", ALL_CARDS.size());
     }
 
     public static @Nullable <T extends Entity> T getClosestEntity(Entity entity, Class<T> clazz, double boxLength, Predicate<T> predicate) {
@@ -407,11 +418,11 @@ public class ModTools {
     public static ServerWorld world(Entity entity) {return (ServerWorld) entity.getWorld();}
 
     /**一个用于简便执行多条服务器指令的方法*/
-    public static void excuteServerCommand(Entity entity, String[] commands, boolean fromServer) {
+    public static void excuteServerCommand(Entity entity, String... commands) {
         if (entity.getWorld() instanceof ServerWorld world) {
             var server = world.getServer();
             var dispatcher = server.getCommandManager().getDispatcher();
-            var commandSource = fromServer ? server.getCommandSource() : entity.getCommandSource(world);
+            var commandSource = entity.getCommandSource(world).withLevel(2).withSilent();
             for (String command : commands) {
                 if (command.startsWith("/")) command = command.substring(1);
                 try {

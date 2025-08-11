@@ -14,8 +14,8 @@ public class FireAttackItem extends CardItem.Armoury {
 
     @Override
     public ActionResult use(World world, PlayerEntity user, Hand hand) {
-        if (!world.isClient && hand == Hand.MAIN_HAND) {
-            onUse(user, user.getMainHandStack(), user);
+        if (!world.isClient) {
+            onUse(user, user.getStackInHand(hand), hand, user);
             return ActionResult.SUCCESS_SERVER;
         }
         return super.use(world, user, hand);
@@ -25,7 +25,7 @@ public class FireAttackItem extends CardItem.Armoury {
     public void effect(LivingEntity user, ItemStack card, LivingEntity target) {
         World world = user.getWorld();
         Vec3d momentum = user.getRotationVector().multiply(3);
-        FireballEntity fireballEntity = new FireballEntity(world, user, momentum, 3);
+        FireballEntity fireballEntity = new FireballEntity(world, user, momentum, 2);
         fireballEntity.addCommandTag("a");
         fireballEntity.setPosition(user.getX(), user.getBodyY(0.5) + 0.5, user.getZ());
         world.spawnEntity(fireballEntity);

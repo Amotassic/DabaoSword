@@ -28,7 +28,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
             if (entity.isAlive()) return;
             ItemStack stack = getCard(entity, canSaveDying);
             if (!stack.isEmpty()) {
-                CardItem.onUse(entity, stack, true);
+                CardItem.onUse(entity, stack, null, true);
                 entity.setHealth(entity.getHealth() - amount + 5);
                 amount -= 5;
             }

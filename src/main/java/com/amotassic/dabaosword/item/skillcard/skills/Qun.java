@@ -51,33 +51,27 @@ public class Qun {
         }
     }
 
-    public static class Jijiu extends SkillItem {
+    public static class Jijiu extends ConvertSkill {
         public Jijiu(Settings settings) {super(settings);}
-
         @Override
         public void addTip(Skill skill, List<Text> tooltip) {
-            tooltip.add(Text.literal("CD: 10s"));
             tooltip.add(getTip());
         }
 
-        @Override
-        public void tickSkill(Skill skill, LivingEntity entity) {
-            viewAs(entity, skill, 10, isRedCard, ModItems.PEACH);
-        }
+        @Override public boolean chooseEquipment() {return true;}
+        @Override public Predicate<ItemStack> getConvertFilter() {return isRedCard;}
+        @Override public CardItem convert(ItemStack stack) {return ModItems.PEACH;}
     }
 
-    public static class Jiuchi extends SkillItem {
+    public static class Jiuchi extends ConvertSkill {
         public Jiuchi(Settings settings) {super(settings);}
         @Override
         public void addTip(Skill skill, List<Text> tooltip) {
-            tooltip.add(Text.literal("CD: 10s"));
             tooltip.add(getTip());
         }
 
-        @Override
-        public void tickSkill(Skill skill, LivingEntity entity) {
-            viewAs(entity, skill, 10, isSpadeCard, ModItems.JIU);
-        }
+        @Override public Predicate<ItemStack> getConvertFilter() {return isSpadeCard;}
+        @Override public CardItem convert(ItemStack stack) {return ModItems.JIU;}
     }
 
     public static class Jizhan extends SkillItem implements DabaoSwordCommand.CSkill {

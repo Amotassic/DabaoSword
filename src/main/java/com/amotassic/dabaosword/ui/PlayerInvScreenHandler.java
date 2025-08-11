@@ -94,13 +94,14 @@ public class PlayerInvScreenHandler extends ScreenHandler {
             writeClicks();
 
             if (stack.isEmpty()) {
-                ItemStack mainHand = player.getMainHandStack(); var mainCopy = mainHand.copy();
-                var copy = selected.copy();
+                boolean right = action == SlotActionType.PICKUP && button == 1;
+                ItemStack toReplace = right ? player.getMainHandStack() : player.getOffHandStack();
+                var mainCopy = toReplace.copy(); var copy = selected.copy();
 
-                if (!selected.isEmpty() && !ItemStack.areEqual(mainHand, selected)) {
-                    mainHand.setCount(0); selected.setCount(0);
+                if (!selected.isEmpty() && !ItemStack.areEqual(toReplace, selected)) {
+                    toReplace.setCount(0); selected.setCount(0);
                     if (index >= 45) getCardPack(player).removeStack(index - 45);
-                    player.setStackInHand(Hand.MAIN_HAND, copy);
+                    player.setStackInHand(right ? Hand.MAIN_HAND : Hand.OFF_HAND, copy);
                     give(player, mainCopy);
                 } closeGUI(player);
             }

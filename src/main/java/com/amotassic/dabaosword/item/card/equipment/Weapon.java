@@ -10,7 +10,6 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
@@ -205,24 +204,18 @@ public class Weapon extends Equipment {
             tooltip.add(getTip("2", AQUA));
         }
 
-        @Override
-        public void tickSkill(Skill skill, LivingEntity entity) {
-            if (entity.getWorld().isClient) return;
-            if (entity instanceof PlayerEntity player && skill.getCD() == 0) {
-                ItemStack off = player.getOffHandStack();
-                NbtCompound nbt = skill.getNbt();
-                boolean one = nbt.contains("has_one");
-                if (isCard(off)) {
-                    if (one) {
-                        nbt.remove("has_one");
-                        skill.setCD(5);
-                        give(player, newCard(ModItems.SHA));
-                        voice(player, this);
-                    } else {nbt.putBoolean("has_one", true);}
-                    skill.setNbt(nbt);
-                    off.decrement(1);
-                }
+        @SkillInfo(trigger = Trigger.LOSE_CARD_USE, relation = Relation.SELF)
+        public int useCardGetSha(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
+            if (skill.getCD() > 0) return 0;
+            ItemStack stack = data.getFirst().toStack();
+            if (isSha.test(stack)) return 0;
+            skill.setTag(skill.getTag() + 1);
+            if (skill.getTag() >= 2) {
+                skill.setTag(0);
+                skill.setCD(1);
+                give(user, new Card(ModItems.SHA).toStack());
             }
+            return 0;
         }
     }
 

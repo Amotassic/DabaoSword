@@ -21,7 +21,7 @@ public class WanjianItem extends CardItem.Armoury {
 
     @Override
     public ActionResult use(World world, PlayerEntity user, Hand hand) {
-        if (world instanceof ServerWorld sw && hand == Hand.MAIN_HAND) {
+        if (world instanceof ServerWorld sw) {
 
             Set<LivingEntity> targets = new HashSet<>(sw.getPlayers());
             Box box = new Box(user.getBlockPos()).expand(10);
@@ -31,7 +31,7 @@ public class WanjianItem extends CardItem.Armoury {
             targets.remove(user);
 
             user.addCommandTag("sha"); //防止触发杀
-            onUse(user, user.getMainHandStack(), targets.toArray(new LivingEntity[0]));
+            onUse(user, user.getStackInHand(hand), hand, targets.toArray(new LivingEntity[0]));
             return ActionResult.SUCCESS_SERVER;
         }
         return super.use(world, user, hand);

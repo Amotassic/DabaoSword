@@ -32,6 +32,10 @@ repositories {
         name = "Ladysnake Libs"
         url = 'https://maven.ladysnake.org/releases'
     }
+    maven {
+        name = "Modrinth"
+        url = "https://api.modrinth.com/maven"
+    }
 }
 
 dependencies {
@@ -48,7 +52,9 @@ dependencies {
     modImplementation("org.ladysnake.cardinal-components-api:cardinal-components-base:${project.cca_version}")
     modImplementation("org.ladysnake.cardinal-components-api:cardinal-components-entity:${project.cca_version}")
 
-    implementation files(project.rootDir.toString() + '/libs/trinkets-3.11.1-dev.jar')
+    //implementation files(project.rootDir.toString() + '/libs/trinkets-3.11.1-dev.jar')
+
+    modImplementation "maven.modrinth:trinkets-canary:3.11.0-1.21.6"
 }
 
 processResources {
@@ -88,10 +94,10 @@ java {
 }
 
 jar {
-    from('libs/trinkets-3.11.1.jar') { // 指定要添加的文件路径
+/*    from('libs/trinkets-3.11.1.jar') { // 指定要添加的文件路径
         into('META-INF/jars') // 指定要添加到的目录
         exclude 'META-INF' // 排除不必要的META-INF文件
-    }
+    }*/
     from("LICENSE") {
         rename { "${it}_${project.archivesBaseName}" }
     }
@@ -113,4 +119,8 @@ publishing {
         // The repositories here will be used for publishing your artifact, not for
         // retrieving dependencies.
     }
+}
+
+loom {
+    accessWidenerPath = file("src/main/resources/dabaosword.accesswidener")
 }

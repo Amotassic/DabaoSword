@@ -43,7 +43,7 @@ public abstract class MobEntityMixin extends LivingEntity {
 
     @Unique
     private void tryUseCard(ItemStack stack, LivingEntity target) {
-        if (!isBasic.test(stack) && !stack.isOf(ModItems.WUXIE)) CardItem.onUse(mob, stack, target);
+        if (!isBasic.test(stack) && !stack.isOf(ModItems.WUXIE)) CardItem.onUse(mob, stack, null, target);
     }
 
     @Unique private float getChance() {

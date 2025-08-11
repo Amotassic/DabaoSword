@@ -18,9 +18,9 @@ public class TaoyuanItem extends CardItem.Armoury {
 
     @Override
     public ActionResult use(World world, PlayerEntity user, Hand hand) {
-        if (world instanceof ServerWorld sw && hand == Hand.MAIN_HAND) {
+        if (world instanceof ServerWorld sw) {
             Set<LivingEntity> targets = new HashSet<>(sw.getPlayers());
-            onUse(user, user.getMainHandStack(), targets.toArray(new LivingEntity[0]));
+            onUse(user, user.getStackInHand(hand), hand, targets.toArray(new LivingEntity[0]));
             return ActionResult.SUCCESS_SERVER;
         }
         return super.use(world, user, hand);

@@ -18,7 +18,7 @@ public record SkillExecutor(Trigger[] trigger, TriPredicate<LivingEntity, Living
         try {
             return (Integer) method.invokeWithArguments(user, target, skill, data);
         } catch (Throwable e) {
-            throw new RuntimeException(e);
+            return 0;
         }
     }
 }

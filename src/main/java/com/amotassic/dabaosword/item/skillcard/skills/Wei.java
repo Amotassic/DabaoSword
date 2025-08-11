@@ -6,6 +6,7 @@ import com.amotassic.dabaosword.command.DabaoSwordCommand;
 import com.amotassic.dabaosword.damage_type.ModDT;
 import com.amotassic.dabaosword.event.PlayerEvents;
 import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.item.card.CardItem;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.ui.PlayerInvScreenHandler;
 import com.google.common.collect.Multimap;
@@ -35,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Predicate;
 
 import static com.amotassic.dabaosword.api.CardEvents.*;
 import static com.amotassic.dabaosword.util.ModTools.*;
@@ -156,19 +158,16 @@ public class Wei {
         }
     }
 
-    public static class Duanliang extends SkillItem {
+    public static class Duanliang extends ConvertSkill {
         public Duanliang(Settings settings) {super(settings);}
 
         @Override
         public void addTip(Skill skill, List<Text> tooltip) {
-            tooltip.add(Text.literal("CD: 5s"));
             tooltip.add(getTip(BLUE));
         }
 
-        @Override
-        public void tickSkill(Skill skill, LivingEntity entity) {
-            viewAs(entity, skill, 5, isBlackCard.and(isArmoury.negate()), ModItems.BINGLIANG_ITEM);
-        }
+        @Override public Predicate<ItemStack> getConvertFilter() {return isBlackCard.and(isArmoury.negate());}
+        @Override public CardItem convert(ItemStack stack) {return ModItems.BINGLIANG_ITEM;}
     }
 
     public static class Fangzhu extends SkillItem {
@@ -420,18 +419,15 @@ public class Wei {
         }
     }
 
-    public static class Qingguo extends SkillItem {
+    public static class Qingguo extends ConvertSkill {
         public Qingguo(Settings settings) {super(settings);}
         @Override
         public void addTip(Skill skill, List<Text> tooltip) {
-            tooltip.add(Text.literal("CD: 5s"));
             tooltip.add(getTip(BLUE));
         }
 
-        @Override
-        public void tickSkill(Skill skill, LivingEntity entity) {
-            viewAs(entity, skill, 5, isBlackCard, ModItems.SHAN);
-        }
+        @Override public Predicate<ItemStack> getConvertFilter() {return isBlackCard;}
+        @Override public CardItem convert(ItemStack stack) {return ModItems.SHAN;}
     }
 
     public static class Quanji extends SkillItem {

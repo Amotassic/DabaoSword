@@ -138,6 +138,7 @@ public class ModItems {
     GIFTBOX = register("gift_box", GiftBoxItem::new, new Item.Settings().rarity(Rarity.UNCOMMON)),
     GUDINGDAO = register("gudingdao", GudingdaoItem::new, new Item.Settings().maxDamage(999).rarity(Rarity.EPIC).sword(ToolMaterial.NETHERITE, 5, -2.4f)),
     ARROW_RAIN = register("arrow_rain", ArrowRainItem::new, new Item.Settings().maxDamage(50).rarity(Rarity.UNCOMMON)),
+    WARM_WINE = register("warm_wine", WarmWineItem::new, new Item.Settings().rarity(Rarity.UNCOMMON)),
     //BB机
     BBJI = register("bbji", BBjiItem::new, new Item.Settings().maxDamage(250).rarity(Rarity.UNCOMMON)),
     //让我康康
@@ -184,6 +185,7 @@ public class ModItems {
         SkillCards.SKILLS.forEach(entries::add);
 
         entries.add(GIFTBOX);
+        entries.add(WARM_WINE);
         entries.add(BBJI);
         entries.add(LET_ME_CC);
         entries.add(smile);

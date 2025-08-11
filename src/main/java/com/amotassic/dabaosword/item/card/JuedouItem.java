@@ -15,8 +15,8 @@ public class JuedouItem extends CardItem.Armoury {
 
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (!user.getWorld().isClient && hand == Hand.MAIN_HAND && entity.isAlive()) {
-            onUse(user, user.getMainHandStack(), entity);
+        if (!user.getWorld().isClient && entity.isAlive()) {
+            onUse(user, user.getStackInHand(hand), hand, entity);
             return ActionResult.SUCCESS_SERVER;
         }
         return ActionResult.PASS;
@@ -37,7 +37,7 @@ public class JuedouItem extends CardItem.Armoury {
                 //如果目标的杀比使用者的杀多，反击使用者，则目标减少一张杀
                 if (targetSha != 0) {
                     ItemStack sha = getCard(target, isSha);
-                    onUse(target, sha, true, true);
+                    onUse(target, sha, null, true, true);
                 }
             }
         } else juedou(user, card, entity);

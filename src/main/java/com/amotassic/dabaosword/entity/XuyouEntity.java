@@ -13,8 +13,9 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.storage.ReadView;
+import net.minecraft.storage.WriteView;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -56,17 +57,17 @@ public class XuyouEntity extends HostileEntity implements RangedAttackMob {
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
-        nbt.putInt("bbcd", bbcd);
-        nbt.putInt("bbTimes", bbTimes);
+    protected void writeCustomData(WriteView view) {
+        super.writeCustomData(view);
+        view.putInt("bbcd", bbcd);
+        view.putInt("bbTimes", bbTimes);
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        bbcd = nbt.getInt("bbcd").orElse(0);
-        bbTimes = nbt.getInt("bbTimes").orElse(0);
+    protected void readCustomData(ReadView view) {
+        super.readCustomData(view);
+        bbcd = view.getInt("bbcd", 0);
+        bbTimes = view.getInt("bbTimes", 0);
     }
 
     @Override
