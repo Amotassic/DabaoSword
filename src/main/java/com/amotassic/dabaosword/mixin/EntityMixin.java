@@ -31,6 +31,9 @@ import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
+import java.util.HashSet;
+import java.util.UUID;
+
 import static com.amotassic.dabaosword.util.ModTools.getClosestEntity;
 import static com.amotassic.dabaosword.util.ModTools.isCard;
 
@@ -66,16 +69,23 @@ abstract class ItemEntityMixin extends Entity {
 
     @Shadow public abstract void resetPickupDelay();
 
+    @Shadow private @Nullable UUID owner;
     @Unique
     ItemEntity thisItem = (ItemEntity) (Object) this;
 
     @Inject(method = "tick", at = @At("HEAD"))
     public void tick(CallbackInfo ci) {
         if (isCard(this.getStack())) this.resetPickupDelay();
+        if (getWorld() instanceof ServerWorld world) {
+            Entity follow = world.getEntity(owner);
+            if (world.getTime() % 20 == 0 && getCommandTags().contains("follow_owner") && follow != null) {
+                teleport((ServerWorld) follow.getWorld(), follow.getX(), follow.getY(), follow.getZ(), new HashSet<>(), getPitch(), getYaw());
+            }
+        }
 
         ItemStack stack = this.getStack();
-        var entity = getClosestEntity(thisItem, Entity.class, 0.2, e -> true);
         if (stack.isOf(Items.ARROW) && stack.getCount() == 64) {
+            var entity = getClosestEntity(thisItem, Entity.class, 0.2, e -> true);
             if (entity instanceof ItemEntity item && item.getStack().isOf(Items.BOW)) {
                 item.setStack(new ItemStack(ModItems.ARROW_RAIN));
                 this.discard();
@@ -83,6 +93,7 @@ abstract class ItemEntityMixin extends Entity {
         }
 
         if (stack.isOf(Items.EMERALD) && stack.getCount() == 64) {
+            var entity = getClosestEntity(thisItem, Entity.class, 0.2, e -> true);
             if (entity instanceof VillagerEntity villager && villager.getVillagerData().getProfession() == VillagerProfession.NITWIT) {
                 this.setStack(new ItemStack(ModItems.GIFTBOX, 1));
             }
@@ -132,9 +143,9 @@ abstract class FireballEntityMixin extends AbstractFireballEntity {
     @ModifyArgs(method = "onEntityHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
     protected void onEntityHit(Args args) {
         if (getCommandTags().contains("a") && getOwner() != null) {
-            getOwner().addCommandTag("nanman"); //防止触发杀
+            getOwner().addCommandTag("sha"); //防止触发杀
             args.set(0, ModDT.huogong(getOwner()));
-            args.set(1, 7f);
+            args.set(1, 6f);
         }
     }
 }
@@ -147,7 +158,7 @@ abstract class ExplosionMixin {
     @ModifyArg(method = "collectBlocksAndDamageEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
     public DamageSource collectBlocksAndDamageEntities(DamageSource source) {
         if (entity instanceof FireballEntity fireball && entity.getCommandTags().contains("a") && fireball.getOwner() != null) {
-            fireball.getOwner().addCommandTag("nanman"); //防止触发杀
+            fireball.getOwner().addCommandTag("sha"); //防止触发杀
             return ModDT.huogong(fireball.getOwner());
         }
         return source;

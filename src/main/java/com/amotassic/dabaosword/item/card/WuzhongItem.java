@@ -12,9 +12,9 @@ import static com.amotassic.dabaosword.util.ModTools.draw;
 public class WuzhongItem extends CardItem.Armoury {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        if (!world.isClient && hand == Hand.MAIN_HAND) {
-            onUse(user, user.getMainHandStack(), user);
-            return TypedActionResult.success(user.getMainHandStack());
+        if (!world.isClient) {
+            onUse(user, user.getStackInHand(hand), hand, user);
+            return TypedActionResult.success(user.getStackInHand(hand));
         }
         return super.use(world, user, hand);
     }

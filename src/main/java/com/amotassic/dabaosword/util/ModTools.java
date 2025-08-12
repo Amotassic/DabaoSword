@@ -17,6 +17,7 @@ import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.ui.FullInvScreenHandler;
 import com.amotassic.dabaosword.ui.PlayerInvScreenHandler;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import dev.emi.trinkets.api.TrinketInventory;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.entity.Entity;
@@ -105,10 +106,43 @@ public class ModTools {
     public static List<ItemStack> allTrinkets(LivingEntity entity) {
         return getTrinketComponent(entity).map(c -> c.getAllEquipped().stream().map(Pair::getRight).toList()).orElse(Collections.emptyList());
     }
+    public static List<Pair<TrinketInventory, Integer>> trinketsWithSlots(LivingEntity entity) {
+        return trinketsWithSlots(entity, s -> true);
+    }
+    public static List<Pair<TrinketInventory, Integer>> trinketsWithSlots(LivingEntity entity, Predicate<ItemStack> filter) {
+        List<Pair<TrinketInventory, Integer>> pairs = new ArrayList<>();
+        getTrinketComponent(entity).ifPresent(c -> c.getInventory().values().forEach(group -> group.values().forEach(inv -> {
+            for (int i = 0; i < inv.size(); i++) {
+                if (filter.test(inv.getStack(i))) pairs.add(new Pair<>(inv, i));
+            }
+        })));
+        return pairs;
+    }
+
+    public static void replaceTrinketSlot(List<Pair<TrinketInventory, Integer>> pairs, int slot) {
+        if (slot < 1 || slot >= pairs.size()) return;
+        List<ItemStack> copys = new ArrayList<>(pairs.stream().map(p -> p.getLeft().getStack(p.getRight()).copy()).toList());
+        ItemStack stack = copys.get(slot).copy();
+        for (int i = slot; i > 0; i--) {
+            copys.set(i, copys.get(i - 1));
+        }
+        copys.set(0, stack);
+        for (int i = 0; i < pairs.size(); i++) {
+            pairs.get(i).getLeft().setStack(pairs.get(i).getRight(), copys.get(i));
+        }
+    }
 
     public static CardPileInventory getCardPack(PlayerEntity player) {
         if (player instanceof ServerPlayerEntity sp) return PVPGameEvents.PLAYER_CARD_PACKS.getOrDefault(sp, new CardPileInventory(player));
         return new CardPileInventory(player);
+    }
+
+    public static boolean shouldReachLong(LivingEntity entity) {
+        for (var hand : Hand.values()) {
+            ItemStack stack = entity.getStackInHand(hand);
+            if (stack.isOf(ModItems.DISCARD) || stack.isOf(ModItems.JUEDOU) || stack.isOf(ModItems.TOO_HAPPY_ITEM)) return true;
+        }
+        return false;
     }
 
     /**判断牌堆和背包中是否有符合条件的卡牌*/
@@ -131,7 +165,10 @@ public class ModTools {
     }
     /**获取玩家背包中第一个符合条件的物品，或者生物的符合条件的主副手物品*/
     public static ItemStack getItem(@NotNull LivingEntity entity, Predicate<ItemStack> predicate) {
-        for (var stack : getItems(entity, predicate, true, false, false, false)) if (predicate.test(stack)) return stack;
+        if (entity instanceof PlayerEntity player) {
+            for (var stack : player.getInventory().main) if (predicate.test(stack)) return stack;
+        } else if (predicate.test(entity.getMainHandStack())) return entity.getMainHandStack();
+        if (predicate.test(entity.getOffHandStack())) return entity.getOffHandStack();
         return ItemStack.EMPTY;
     }
 
@@ -228,13 +265,15 @@ public class ModTools {
         return list.get(new Random().nextInt(list.size())).copy();
     }
 
-    public static void give(LivingEntity entity, ItemStack stack) {
+    public static void give(LivingEntity entity, ItemStack stack, int... pickupDelay) {
         if (entity instanceof PlayerEntity player) {
             ItemEntity item = player.dropItem(stack, false);
             if (item == null) return;
             item.setInvulnerable(true);
-            item.resetPickupDelay();
+            int delay = pickupDelay.length > 0 ? pickupDelay[0] : 0;
+            item.setPickupDelay(delay);
             item.setOwner(player.getUuid());
+            item.addCommandTag("follow_owner");
             return;
         }
         if (entity.getMainHandStack().isEmpty()) entity.setStackInHand(Hand.MAIN_HAND, stack);

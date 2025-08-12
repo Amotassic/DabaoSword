@@ -7,9 +7,7 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.option.KeyBinding;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.Vec3d;
 import org.lwjgl.glfw.GLFW;
 
@@ -25,6 +23,10 @@ public class ClientTickEnd {
             if (user == null) return;
             var ctrl = client.options.sprintKey;
             PacketByteBuf buf = PacketByteBufs.create();
+            // 当打开screen后，关闭选择技能渲染
+            if (ChangeSkillRender.isRendering && client.currentScreen != null) {
+                ChangeSkillRender.close();
+            }
 
             if (hasTrinket(SkillCards.SHENSU, user)) {
                 Vec3d lastPos = new Vec3d(user.lastRenderX, user.lastRenderY, user.lastRenderZ);
@@ -39,17 +41,6 @@ public class ClientTickEnd {
                 else if (ctrl.wasPressed()) buf.writeInt(2);
                 else buf.writeInt(0);
                 ClientPlayNetworking.send(ServerNetworking.SELECT_CARD, buf);
-                return;
-            }
-
-            var result = client.crosshairTarget; LivingEntity target;
-            if (result instanceof EntityHitResult eResult && eResult.getEntity() instanceof LivingEntity entity) {
-                target = entity;
-            } else target = user;
-
-            if (ACTIVE_SKILL.wasPressed() && isEquipped(user, s -> s(s).isActiveSkill())) {
-                buf.writeInt(target.getId());
-                ClientPlayNetworking.send(ServerNetworking.ACTIVE_SKILL, buf);
             }
         });
     }

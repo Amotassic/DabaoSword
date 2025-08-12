@@ -15,9 +15,9 @@ public class ShanItem extends CardItem.Basic {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         //判断是否有独立冷却buff，若冷却中则无法生效
-        if (!world.isClient && !user.hasStatusEffect(ModItems.COOLDOWN2) && hand == Hand.MAIN_HAND) {
-            onUse(user, user.getMainHandStack(), user);
-            return TypedActionResult.success(user.getMainHandStack());
+        if (!world.isClient && !user.hasStatusEffect(ModItems.COOLDOWN2)) {
+            onUse(user, user.getStackInHand(hand), hand, user);
+            return TypedActionResult.success(user.getStackInHand(hand));
         }
         return super.use(world, user, hand);
     }
@@ -25,7 +25,7 @@ public class ShanItem extends CardItem.Basic {
     @Override
     public void effect(LivingEntity user, ItemStack card, LivingEntity target) {
         Vec3d momentum = user.getRotationVector().multiply(3);
-        user.velocityModified = true; user.addVelocity(momentum.getX(),0 ,momentum.getZ());
+        user.velocityModified = true; user.addVelocity(momentum.getX(), 0, momentum.getZ());
         user.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 20,0,false,false,false));
         user.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 20,0,false,false,false));
     }

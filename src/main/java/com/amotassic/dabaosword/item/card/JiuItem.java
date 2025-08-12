@@ -13,9 +13,9 @@ import net.minecraft.world.World;
 public class JiuItem extends CardItem.Basic {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        if (!user.hasStatusEffect(StatusEffects.STRENGTH) && !world.isClient && hand == Hand.MAIN_HAND) {
-            onUse(user, user.getMainHandStack(), user);
-            return TypedActionResult.success(user.getMainHandStack());
+        if (!user.hasStatusEffect(StatusEffects.STRENGTH) && !world.isClient) {
+            onUse(user, user.getStackInHand(hand), hand, user);
+            return TypedActionResult.success(user.getStackInHand(hand));
         }
         return super.use(world, user, hand);
     }

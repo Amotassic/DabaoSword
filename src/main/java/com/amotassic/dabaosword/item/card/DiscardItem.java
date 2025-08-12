@@ -16,8 +16,8 @@ import static com.amotassic.dabaosword.util.ModTools.*;
 public class DiscardItem extends CardItem.Armoury {
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (!user.getWorld().isClient && hand == Hand.MAIN_HAND && countAllCards(entity) > 0) {
-            onUse(user, user.getMainHandStack(), entity);
+        if (!user.getWorld().isClient && countAllCards(entity) > 0) {
+            onUse(user, user.getStackInHand(hand), hand, entity);
             return ActionResult.SUCCESS;
         }
         return ActionResult.PASS;

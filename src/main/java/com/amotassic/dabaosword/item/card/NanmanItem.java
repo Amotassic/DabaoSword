@@ -23,7 +23,7 @@ import java.util.function.Predicate;
 public class NanmanItem extends CardItem.Armoury {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        if (world instanceof ServerWorld sw && hand == Hand.MAIN_HAND) {
+        if (world instanceof ServerWorld sw) {
 
             Set<LivingEntity> targets = new HashSet<>(sw.getPlayers());
             Box box = new Box(user.getBlockPos()).expand(10);
@@ -31,9 +31,9 @@ public class NanmanItem extends CardItem.Armoury {
             targets.addAll(world.getEntitiesByClass(LivingEntity.class, box, p));
             targets.remove(user);
 
-            user.addCommandTag("nanman"); //防止触发杀
-            onUse(user, user.getMainHandStack(), targets.toArray(new LivingEntity[0]));
-            return TypedActionResult.success(user.getMainHandStack());
+            user.addCommandTag("nanman"); //防止触发杀以及标记使用了南蛮
+            onUse(user, user.getStackInHand(hand), hand, targets.toArray(new LivingEntity[0]));
+            return TypedActionResult.success(user.getStackInHand(hand));
         }
         return super.use(world, user, hand);
     }

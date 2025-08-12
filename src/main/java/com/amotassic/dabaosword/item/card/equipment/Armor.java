@@ -34,7 +34,7 @@ public class Armor extends Equipment {
                 if (new Random().nextFloat() < 0.5 && !source.isIn(DamageTypeTags.BYPASSES_ARMOR)) {
                     voice(user, this);
                     ItemStack shan = new ItemStack(ModItems.SHAN);
-                    onUse(user, shan, true, false);
+                    onUse(user, shan, null, true, false);
                     ModifyDamage.shan(user, true, source, data.amount);
                     return 1;
                 }
@@ -52,6 +52,19 @@ public class Armor extends Equipment {
             if (!source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY) && source.getAttacker() instanceof LivingEntity) {
                 voice(target, this);
                 muls.add(-0.4f);
+            }
+            return 0;
+        }
+
+        @SkillInfo(trigger = {Trigger.LOSE_CARD_DISCARD, Trigger.LOSE_CARD_MOVE}, relation = Relation.SELF)
+        public int recover(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
+            if (user.isAlive() && user.getHealth() < user.getMaxHealth()) {
+                for (var card : data.cards_from_equ.keySet()) {
+                    if (card.toStack().isOf(this)) {
+                        voice(user, this);
+                        user.heal(5);
+                    }
+                }
             }
             return 0;
         }

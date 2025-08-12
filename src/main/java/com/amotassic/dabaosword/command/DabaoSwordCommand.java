@@ -159,7 +159,7 @@ public class DabaoSwordCommand {
                 MutableText text = Text.translatable("dabaosword.mainpage").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://modrinth.com/mod/dabaosword")).withHoverEvent(HoverEvent.Action.SHOW_TEXT.buildHoverEvent(Text.literal("Modrinth")))).append(
 
                 Text.translatable("dabaosword.help.menu").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword 1")).withHoverEvent(HoverEvent.Action.SHOW_TEXT.buildHoverEvent(Text.translatable("dabaosword.help.menu_hover")))));
-                //System.out.println(Text.Serializer.toSortedJsonString(t1.append(t2))); //用于获取json文本
+                //System.out.println(Text.Serializer.toSortedJsonString(text)); //用于获取json文本
                 player.sendMessage(text);
             }
             case 1 -> player.sendMessage(menu);

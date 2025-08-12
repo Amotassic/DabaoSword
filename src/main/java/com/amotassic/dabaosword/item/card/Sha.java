@@ -10,6 +10,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Hand;
 
 import java.util.List;
 
@@ -25,12 +26,12 @@ public class Sha extends CardItem.Basic {
         if (stack.isOf(ModItems.THUNDER_SHA)) tooltip.add(getTip(Formatting.BLUE));
     }
 
-    public static void shaUse(LivingEntity user, ItemStack stack, float amount, LivingEntity... targets) {
-        shaUse(user, stack, amount, true, targets);
+    public static void shaUse(LivingEntity user, ItemStack stack, Hand hand, float amount, LivingEntity... targets) {
+        shaUse(user, stack, hand, amount, true, targets);
     }
-    public static void shaUse(LivingEntity user, ItemStack stack, float amount, boolean consume, LivingEntity... targets) {
+    public static void shaUse(LivingEntity user, ItemStack stack, Hand hand, float amount, boolean consume, LivingEntity... targets) {
         var card = c(stack); var cardData = d().cards(card, card.count);
-        if (consume) CardEvents.cardUseAndDecrement(user, stack);
+        if (consume) CardEvents.cardUseAndDecrement(user, stack, hand);
         voice(user, card.item());
         List<LivingEntity> owners = getSkillOwners(user);
         //触发卡牌使用事件

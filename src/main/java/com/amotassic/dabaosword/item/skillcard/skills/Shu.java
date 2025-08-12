@@ -1,10 +1,10 @@
 package com.amotassic.dabaosword.item.skillcard.skills;
 
 import com.amotassic.dabaosword.api.CardEvents;
-import com.amotassic.dabaosword.api.card.Card;
 import com.amotassic.dabaosword.api.skill.*;
 import com.amotassic.dabaosword.event.PlayerEvents;
 import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.item.card.CardItem;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.ui.PlayerInvScreenHandler;
 import com.google.common.collect.Multimap;
@@ -17,13 +17,13 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
 import static net.minecraft.util.Formatting.RED;
@@ -54,8 +54,7 @@ public class Shu {
         @SkillInfo(trigger = Trigger.ON_HURT, relation = Relation.DIRECT_ATTACKER)
         public int onHit(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
             var benxi = skill.getTag();
-            if (!user.getCommandTags().contains("benxi") && benxi > 1) {
-                user.addCommandTag("benxi");
+            if (benxi > 1) {
                 skill.setTag(benxi - 2);
                 draw(user);
                 voice(user, this);
@@ -80,12 +79,7 @@ public class Shu {
                 CardEvents.cardDiscard(pl, PlayerEvents.cardsToDrop(pl));
                 for (var stack : pl.getInventory().main) {
                     if (stack.isEmpty()) continue;
-                    var item = pl.dropItem(stack.copy(), true);
-                    if (item != null) {
-                        item.setInvulnerable(true);
-                        item.setOwner(pl.getUuid());
-                        item.setPickupDelay(400);
-                    }
+                    give(pl, stack.copy(), 400);
                     stack.setCount(0);
                 }
             }
@@ -93,18 +87,14 @@ public class Shu {
         }
     }
 
-    public static class Huoji extends SkillItem {
+    public static class Huoji extends ConvertSkill {
         @Override
         public void addTip(Skill skill, List<Text> tooltip) {
-            int cd = skill.getCD();
-            tooltip.add(Text.literal(cd == 0 ? "CD: 15s" : "CD: 15s   left: "+ cd +"s"));
             tooltip.add(getTip(RED));
         }
 
-        @Override
-        public void tickSkill(Skill skill, LivingEntity entity) {
-            viewAs(entity, skill, 15, isRedCard, ModItems.FIRE_ATTACK);
-        }
+        @Override public Predicate<ItemStack> getConvertFilter() {return isRedCard;}
+        @Override public CardItem convert(ItemStack stack) {return ModItems.FIRE_ATTACK;}
     }
 
     public static class Jizhi extends SkillItem {
@@ -118,18 +108,14 @@ public class Shu {
         }
     }
 
-    public static class Kanpo extends SkillItem {
+    public static class Kanpo extends ConvertSkill {
         @Override
         public void addTip(Skill skill, List<Text> tooltip) {
-            int cd = skill.getCD();
-            tooltip.add(Text.literal(cd == 0 ? "CD: 10s" : "CD: 10s   left: "+ cd +"s"));
             tooltip.add(getTip(RED));
         }
 
-        @Override
-        public void tickSkill(Skill skill, LivingEntity entity) {
-            viewAs(entity, skill, 10, isBlackCard, ModItems.WUXIE);
-        }
+        @Override public Predicate<ItemStack> getConvertFilter() {return isBlackCard;}
+        @Override public CardItem convert(ItemStack stack) {return ModItems.WUXIE;}
     }
 
     public static class Kuanggu extends SkillItem {
@@ -183,30 +169,21 @@ public class Shu {
         }
     }
 
-    public static class Longdan extends SkillItem {
+    public static class Longdan extends ConvertSkill {
         @Override
         public void addTip(Skill skill, List<Text> tooltip) {
             tooltip.add(getTip("1", RED));
             tooltip.add(getTip("2", RED));
         }
 
-        @Override
-        public void tickSkill(Skill skill, LivingEntity entity) {
-            if (entity.getWorld() instanceof ServerWorld world && entity instanceof PlayerEntity player) {
-                ItemStack off = player.getOffHandStack(); ItemStack copy = off.copy();
-                if (world.getTime() % 20 == 0 && isBasic.test(off)) {
-                    off.decrement(1);
-                    give(player, getLongdanCard(copy).toStack());
-                    voice(player, this);
-                }
-            }
-        }
+        @Override public Predicate<ItemStack> getConvertFilter() {return isBasic;}
 
-        private Card getLongdanCard(ItemStack stack) {
-            if (stack.isOf(ModItems.SHAN)) return c(stack, ModItems.SHA);
-            if (stack.isOf(ModItems.PEACH)) return c(stack, ModItems.JIU);
-            if (stack.isOf(ModItems.JIU)) return c(stack, ModItems.PEACH);
-            return c(stack, ModItems.SHAN);
+        @Override
+        public CardItem convert(ItemStack stack) {
+            if (stack.isOf(ModItems.SHAN)) return ModItems.SHA;
+            if (stack.isOf(ModItems.PEACH)) return ModItems.JIU;
+            if (stack.isOf(ModItems.JIU)) return ModItems.PEACH;
+            return ModItems.SHAN;
         }
     }
 
@@ -290,22 +267,20 @@ public class Shu {
         }
     }
 
-    public static class Wusheng extends SkillItem {
+    public static class Wusheng extends ConvertSkill {
         @Override
         public void addTip(Skill skill, List<Text> tooltip) {
-            tooltip.add(Text.literal("CD: 5s"));
             tooltip.add(getTip("1", RED));
             tooltip.add(getTip("2", RED));
         }
 
         @Override
         public int getExtraReach(LivingEntity entity, Skill skill) {
-            return isSha.test(entity.getMainHandStack()) ? 13 : 0;
+            return isSha.test(entity.getMainHandStack()) ? 13 : isSha.test(entity.getOffHandStack()) ? 13 : 0;
         }
 
-        @Override
-        public void tickSkill(Skill skill, LivingEntity entity) {
-            viewAs(entity, skill, 5, isRedCard, ModItems.SHA);
-        }
+        @Override public boolean chooseEquipment() {return true;}
+        @Override public Predicate<ItemStack> getConvertFilter() {return isRedCard;}
+        @Override public CardItem convert(ItemStack stack) {return ModItems.SHA;}
     }
 }
