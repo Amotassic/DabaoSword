@@ -3,6 +3,7 @@ package com.amotassic.dabaosword.command;
 import com.amotassic.dabaosword.api.skill.Skill;
 import com.amotassic.dabaosword.pvpgame.Game;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -10,6 +11,7 @@ import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.ItemStackArgument;
 import net.minecraft.command.argument.ItemStackArgumentType;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -22,8 +24,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import static com.amotassic.dabaosword.event.PVPGameEvents.getGameManager;
-import static com.amotassic.dabaosword.util.ModTools.s;
-import static com.amotassic.dabaosword.util.ModTools.trinketItem;
+import static com.amotassic.dabaosword.util.ModTools.*;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
@@ -63,7 +64,27 @@ public class DabaoSwordCommand {
                                 .executes(c -> viewIdentity(c.getSource(), EntityArgumentType.getPlayer(c, "target")))
                         )
                 )
+                .then(literal("info")
+                        .then(argument("target", EntityArgumentType.entity())
+                                .executes(c -> info(c, EntityArgumentType.getEntity(c, "target"), false))
+                                .then(argument("editable", BoolArgumentType.bool())
+                                        .requires(source -> source.hasPermissionLevel(2))
+                                        .executes(c -> info(c, EntityArgumentType.getEntity(c, "target"), BoolArgumentType.getBool(c, "editable")))
+                                )
+                        )
+                )
         );
+    }
+
+    private static int info(CommandContext<ServerCommandSource> context, Entity entity, boolean editable) throws CommandSyntaxException {
+        var player = context.getSource().getPlayerOrThrow();
+        if (entity instanceof LivingEntity target) {
+            openFullInv(player, target, editable);
+            return 1;
+        } else {
+            player.sendMessage(Text.translatable("info.fail").formatted(Formatting.RED));
+            return 0;
+        }
     }
 
     private static int skill(PlayerEntity user, ItemStackArgument stack, LivingEntity target, int... value) {
@@ -162,7 +183,7 @@ public class DabaoSwordCommand {
         return 1;
     }
 
-    private static final MutableText info = Text.translatable("dabaosword.help.info").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/info ")).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("dabaosword.help.info_hover")))),
+    private static final MutableText info = Text.translatable("dabaosword.help.info").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/dabaosword info ")).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("dabaosword.help.info_hover")))),
     newGame = Text.translatable("dabaosword.newgame").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/dabaosword 2")).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("dabaosword.newgame_hover")))),
     viewId = Text.translatable("dabaosword.viewid").formatted(Formatting.AQUA).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/dabaosword viewidentity @s")).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("dabaosword.viewid_hover")))),
     disGame = Text.translatable("dabaosword.disgame").formatted(Formatting.LIGHT_PURPLE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/dabaosword discardgame ")).withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Text.translatable("dabaosword.disgame_hover"))));

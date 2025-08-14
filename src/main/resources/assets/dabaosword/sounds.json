@@ -826,5 +826,13 @@
         "name": "dabaosword:misc/kill7"
       }
     ]
+  },
+  "losehp": {
+    "sounds": [
+      {
+        "type": "file",
+        "name": "dabaosword:misc/losehp"
+      }
+    ]
   }
 }

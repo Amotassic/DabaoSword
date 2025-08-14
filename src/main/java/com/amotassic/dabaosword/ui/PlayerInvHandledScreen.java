@@ -48,6 +48,10 @@ public class PlayerInvHandledScreen extends HandledScreen<PlayerInvScreenHandler
         List<Text> screenTips = new ArrayList<>();
         var skill = s(eventStack());
         skill.item.addScreenTip(skill, screenTips);
+        if (skill.stack.isEmpty()) {
+            screenTips.clear();
+            screenTips.add(Text.translatable("screen.dabaosword.select_card"));
+        }
         if (!screenTips.isEmpty()) for (var text : screenTips) {
             int y = 2 + 10 * screenTips.indexOf(text);
             int textWidth = textRenderer.getWidth(text);

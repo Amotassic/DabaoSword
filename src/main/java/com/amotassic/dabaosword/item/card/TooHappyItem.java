@@ -11,8 +11,8 @@ import net.minecraft.util.Hand;
 public class TooHappyItem extends CardItem.Armoury {
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (!user.getWorld().isClient && hand == Hand.MAIN_HAND) {
-            onUse(user, user.getMainHandStack(), entity);
+        if (!user.getWorld().isClient) {
+            onUse(user, user.getStackInHand(hand), hand, entity);
             return ActionResult.SUCCESS;
         }
         return ActionResult.PASS;

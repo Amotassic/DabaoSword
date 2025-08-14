@@ -1,21 +1,20 @@
 package com.amotassic.dabaosword.item.card;
 
+import com.amotassic.dabaosword.damage_type.ModDT;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 
-import static com.amotassic.dabaosword.api.CardEvents.hurtByCard;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class JuedouItem extends CardItem.Armoury {
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (!user.getWorld().isClient && hand == Hand.MAIN_HAND && entity.isAlive()) {
-            onUse(user, user.getMainHandStack(), entity);
+        if (!user.getWorld().isClient && entity.isAlive()) {
+            onUse(user, user.getStackInHand(hand), hand, entity);
             return ActionResult.SUCCESS;
         }
         return ActionResult.PASS;
@@ -36,16 +35,15 @@ public class JuedouItem extends CardItem.Armoury {
                 //如果目标的杀比使用者的杀多，反击使用者，则目标减少一张杀
                 if (targetSha != 0) {
                     ItemStack sha = getCard(target, isSha);
-                    onUse(target, sha, true, true);
+                    onUse(target, sha, null, true, true);
                 }
             }
         } else juedou(user, card, entity);
     }
 
     private void juedou(LivingEntity attacker, ItemStack card, LivingEntity target) {
-        var source = getDamageSource(attacker, DamageTypes.GENERIC);
         target.timeUntilRegen = 0;
-        if (target.damage(source, 5f)) hurtByCard(target, card);
+        target.damage(ModDT.juedou(attacker), 5f);
     }
 
     @Override public boolean askForWuxie() {return true;}

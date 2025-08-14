@@ -3,6 +3,7 @@ package com.amotassic.dabaosword.network;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.ui.PileScreenHandler;
+import com.amotassic.dabaosword.util.Tags;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
@@ -80,6 +81,9 @@ public class ServerNetworking {
             if (i == 9) {
                 PlayerEntity target = getClosestEntity(player, PlayerEntity.class, 100, LivingEntity::isAlive);
                 if (target != null) openFullInv(player, target, false);
+            }
+            if (i >= 100) {
+                replaceTrinketSlot(trinketsWithSlots(player, s -> s.isIn(Tags.SKILLS)), i - 100);
             }
         });
     }

@@ -29,6 +29,8 @@ public class DabaoSwordClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         HudRenderCallback.EVENT.register(new TiesuoHud());
+        HudRenderCallback.EVENT.register(new ChangeSkillRender());
+//        HudRenderCallback.EVENT.register(new CardPileHud());
         HandledScreens.register(ModItems.PLAYER_INV_SCREEN_HANDLER, PlayerInvHandledScreen::new);
         HandledScreens.register(ModItems.FULL_INV_SCREEN_HANDLER, FullInvHandledScreen::new);
         HandledScreens.register(ModItems.PILE_SCREEN_HANDLER, PileHandledScreen::new);

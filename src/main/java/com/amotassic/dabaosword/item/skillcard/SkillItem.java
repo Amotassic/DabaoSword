@@ -2,7 +2,6 @@ package com.amotassic.dabaosword.item.skillcard;
 
 import com.amotassic.dabaosword.api.skill.ISkill;
 import com.amotassic.dabaosword.api.skill.Skill;
-import com.amotassic.dabaosword.item.card.CardItem;
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketItem;
 import dev.emi.trinkets.api.TrinketsApi;
@@ -22,7 +21,6 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 import java.util.List;
-import java.util.function.Predicate;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
 
@@ -69,20 +67,6 @@ public class SkillItem extends Item implements ISkill {
         ItemStack stack = customLoot(player, "draw_skill");
         if (!stack.isEmpty()) voice(player, "giftbox",3);
         give(player, stack);
-    }
-
-    /**转化卡牌技能通用方法*/
-    public static void viewAs(LivingEntity entity, Skill skill, int CD, Predicate<ItemStack> p, CardItem result) {
-        if (entity.getWorld().isClient) return;
-        if (skill.getCD() > 0) return;
-        ItemStack off = entity.getOffHandStack(); var copy = off.copy();
-        if (off.isEmpty()) return;
-        if (p.test(off)) {
-            skill.setCD(CD);
-            off.decrement(1);
-            give(entity, c(copy, result).toStack());
-            voice(entity, skill.stack);
-        }
     }
 
     public Text activeSkillText(PlayerEntity user, Skill skill) {

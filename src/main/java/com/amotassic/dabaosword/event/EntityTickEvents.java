@@ -1,6 +1,8 @@
 package com.amotassic.dabaosword.event;
 
 import com.amotassic.dabaosword.api.event.EndEntityTick;
+import com.amotassic.dabaosword.api.skill.ISkill;
+import com.amotassic.dabaosword.api.skill.Skill;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.Gamerule;
 import com.amotassic.dabaosword.util.ModConfig;
@@ -15,14 +17,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.Pair;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameMode;
 
+import java.util.Collections;
 import java.util.Objects;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
+import static dev.emi.trinkets.api.TrinketsApi.getTrinketComponent;
 
 public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityTick.EndPlayerTick {
     @Override
@@ -30,7 +35,7 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
         if (entity.getWorld() instanceof ServerWorld world) {
             long time = world.getTime();
             if (time % 2 == 0) {
-                String[] tags = {"sha", "juedou", "nanman", "wanjian", "benxi"};
+                String[] tags = {"sha", "juedou", "nanman", "wanjian"};
                 for (var tag : tags) entity.getCommandTags().remove(tag);
             }
             if (time % 20 == 0) {
@@ -43,8 +48,7 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
 
             //处理所有加触及距离和近战防御距离的效果
             int level1 = 0; int level2 = 0;
-            ItemStack mainHand = entity.getMainHandStack();
-            if (mainHand.isOf(ModItems.DISCARD) || mainHand.isOf(ModItems.JUEDOU)) level1 += 114;
+            if (shouldReachLong(entity)) level1 += 114;
             for (var skill : getSkillsMayUse(entity)) {
                 level1 += skill.item.getExtraReach(entity, skill);
                 level2 += skill.item.getDefend(entity, skill);
@@ -106,6 +110,13 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
             }
 
             if (time % 2 == 0) decreaseAttackRange(player);
+
+            if (player.currentScreenHandler != player.playerScreenHandler && time % 3 == 0) {
+                for (var skill : getTrinketComponent(player).map(c -> c.getEquipped(s -> s.getItem() instanceof ISkill).stream().map(Pair::getRight).map(Skill::new).toList()).orElse(Collections.emptyList())) {
+                    var s = skill.item;
+                    if (s.shouldTickUpdate()) s.tickUpdateNbt(skill, player);
+                }
+            }
 
             //下落攻击触发：脚底下两格是空气，手里拿着有耐久度的物品左键即可触发
             BlockPos blockPos = player.getBlockPos().down(1); BlockPos blockPos2 = player.getBlockPos().down(2);

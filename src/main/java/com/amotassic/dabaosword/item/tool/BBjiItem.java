@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.item.tool;
 
+import com.amotassic.dabaosword.damage_type.ModDT;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -30,7 +31,7 @@ public class BBjiItem extends Item {
             Box box = new Box(user.getBlockPos()).expand(13);
             for (LivingEntity nearbyEntity : world.getEntitiesByClass(LivingEntity.class, box, LivingEntity -> LivingEntity != user)) {
                 nearbyEntity.timeUntilRegen = 0;
-                nearbyEntity.damage(user.getDamageSources().sonicBoom(user),2);
+                nearbyEntity.damage(ModDT.bbll(user),2);
             }
             voice(user, this);
             ItemStack stack = user.getStackInHand(hand);

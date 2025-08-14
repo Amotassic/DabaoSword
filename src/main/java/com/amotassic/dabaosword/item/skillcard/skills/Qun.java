@@ -4,6 +4,7 @@ import com.amotassic.dabaosword.api.card.Card;
 import com.amotassic.dabaosword.api.card.Rank;
 import com.amotassic.dabaosword.api.skill.*;
 import com.amotassic.dabaosword.command.DabaoSwordCommand;
+import com.amotassic.dabaosword.damage_type.ModDT;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.card.CardItem;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
@@ -49,30 +50,25 @@ public class Qun {
         }
     }
 
-    public static class Jijiu extends SkillItem {
+    public static class Jijiu extends ConvertSkill {
         @Override
         public void addTip(Skill skill, List<Text> tooltip) {
-            tooltip.add(Text.literal("CD: 10s"));
             tooltip.add(getTip());
         }
 
-        @Override
-        public void tickSkill(Skill skill, LivingEntity entity) {
-            viewAs(entity, skill, 10, isRedCard, ModItems.PEACH);
-        }
+        @Override public boolean chooseEquipment() {return true;}
+        @Override public Predicate<ItemStack> getConvertFilter() {return isRedCard;}
+        @Override public CardItem convert(ItemStack stack) {return ModItems.PEACH;}
     }
 
-    public static class Jiuchi extends SkillItem {
+    public static class Jiuchi extends ConvertSkill {
         @Override
         public void addTip(Skill skill, List<Text> tooltip) {
-            tooltip.add(Text.literal("CD: 10s"));
             tooltip.add(getTip());
         }
 
-        @Override
-        public void tickSkill(Skill skill, LivingEntity entity) {
-            viewAs(entity, skill, 10, isSpadeCard, ModItems.JIU);
-        }
+        @Override public Predicate<ItemStack> getConvertFilter() {return isSpadeCard;}
+        @Override public CardItem convert(ItemStack stack) {return ModItems.JIU;}
     }
 
     public static class Jizhan extends SkillItem implements DabaoSwordCommand.CSkill {
@@ -223,7 +219,7 @@ public class Qun {
                 used = used.isEmpty() ? item : used + ";" + item;
                 nbt.putString("used", used); skill.setNbt(nbt);
                 player.timeUntilRegen = 0;
-                player.damage(player.getDamageSources().genericKill(), 4.99f);
+                player.damage(ModDT.loseHP(player), 4.99f);
             }
             voice(player, this);
             closeGUI(player);

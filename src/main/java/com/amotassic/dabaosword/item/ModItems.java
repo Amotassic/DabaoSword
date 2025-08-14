@@ -37,6 +37,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -235,11 +236,15 @@ public class ModItems {
         return Registry.register(Registries.DATA_COMPONENT_TYPE, Identifier.of("dabaosword",id), (builderOperator.apply(ComponentType.builder())).build());
     }
 
-    public static final ScreenHandlerType<PlayerInvScreenHandler> PLAYER_INV_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "player_inv", new ExtendedScreenHandlerType<>(PlayerInvScreenHandler::new, OpenScreenPayload.CODEC));
+    public static final ScreenHandlerType<PlayerInvScreenHandler> PLAYER_INV_SCREEN_HANDLER = regScreen("player_inv", new ExtendedScreenHandlerType<>(PlayerInvScreenHandler::new, OpenScreenPayload.CODEC));
 
-    public static final ScreenHandlerType<FullInvScreenHandler> FULL_INV_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "full_inv", new ExtendedScreenHandlerType<>(FullInvScreenHandler::new, OpenScreenPayload.CODEC));
+    public static final ScreenHandlerType<FullInvScreenHandler> FULL_INV_SCREEN_HANDLER = regScreen("full_inv", new ExtendedScreenHandlerType<>(FullInvScreenHandler::new, OpenScreenPayload.CODEC));
 
-    public static final ScreenHandlerType<PileScreenHandler> PILE_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "card_pile", new ExtendedScreenHandlerType<>(PileScreenHandler::new, ActiveSkillPayload.CODEC));
+    public static final ScreenHandlerType<PileScreenHandler> PILE_SCREEN_HANDLER = regScreen("card_pile", new ExtendedScreenHandlerType<>(PileScreenHandler::new, ActiveSkillPayload.CODEC));
+
+    private static <T extends ScreenHandler> ScreenHandlerType<T> regScreen(String id, ScreenHandlerType<T> entry) {
+        return Registry.register(Registries.SCREEN_HANDLER, id, entry);
+    }
 
     public static final RegistryKey<Enchantment> CRIT = RegistryKey.of(RegistryKeys.ENCHANTMENT, Identifier.of("dabaosword:crit"));
 }
