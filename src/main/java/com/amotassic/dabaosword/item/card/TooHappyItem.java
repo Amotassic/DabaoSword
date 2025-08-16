@@ -25,5 +25,7 @@ public class TooHappyItem extends CardItem.Armoury {
         entity.addStatusEffect(new StatusEffectInstance(ModItems.TOO_HAPPY, 20 * duration));
     }
 
+    @Override public boolean rangedUse() {return true;}
+
     @Override public boolean askForWuxie() {return true;}
 }

@@ -2,6 +2,7 @@ package com.amotassic.dabaosword.client;
 
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.network.ServerNetworking;
+import com.amotassic.dabaosword.util.ModTools;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -10,8 +11,6 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.Vec3d;
 import org.lwjgl.glfw.GLFW;
-
-import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class ClientTickEnd {
     public static final KeyBinding ACTIVE_SKILL = keyBinding("active_skill", GLFW.GLFW_KEY_J);
@@ -28,7 +27,7 @@ public class ClientTickEnd {
                 ChangeSkillRender.close();
             }
 
-            if (hasTrinket(SkillCards.SHENSU, user)) {
+            if (ModTools.hasTrinket(SkillCards.SHENSU, user)) {
                 Vec3d lastPos = new Vec3d(user.lastRenderX, user.lastRenderY, user.lastRenderZ);
                 float speed = (float) (user.getPos().distanceTo(lastPos) * 20);
                 PacketByteBuf buf1 = PacketByteBufs.create();

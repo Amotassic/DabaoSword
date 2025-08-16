@@ -46,5 +46,7 @@ public class JuedouItem extends CardItem.Armoury {
         target.damage(ModDT.juedou(attacker), 5f);
     }
 
+    @Override public boolean rangedUse() {return true;}
+
     @Override public boolean askForWuxie() {return true;}
 }

@@ -59,5 +59,7 @@ public class DiscardItem extends CardItem.Armoury {
         }
     }
 
+    @Override public boolean rangedUse() {return true;}
+
     @Override public boolean askForWuxie() {return true;}
 }
