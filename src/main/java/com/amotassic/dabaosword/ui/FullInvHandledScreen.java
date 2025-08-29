@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.ui;
 
+import com.amotassic.dabaosword.util.ModTools;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.entity.player.PlayerInventory;
@@ -34,9 +35,16 @@ public class FullInvHandledScreen extends HandledScreen<FullInvScreenHandler> {
         }
         int v = notSelf ? 125 : 215; int height = notSelf ? 97 : 7;
         context.drawTexture(TEXTURE, x, y + rows * 18 + 17,0, v, backgroundWidth, height);
+        var trinkets = ModTools.trinketsWithSlots(handler.target);
         for (int i : slotsEnabled) { //绘制启用的格子背景
             Slot slot = handler.getSlot(i);
             context.drawTexture(TEXTURE, slot.x + x - 1, slot.y + y - 1,7, 17, 18, 18);
+
+            int index = i - 42; // 绘制饰品槽位图标
+            if (index < 0 || slot.hasStack()) continue;
+            var texture = trinkets.get(index).getLeft().getSlotType().getIcon();
+            if (texture == null) continue;
+            context.drawTexture(texture, slot.x + x, slot.y + y, 0, 0, 16, 16, 16, 16);
         }
     }
 
@@ -50,7 +58,7 @@ public class FullInvHandledScreen extends HandledScreen<FullInvScreenHandler> {
     protected void drawForeground(DrawContext context, int mouseX, int mouseY) {
         context.drawText(this.textRenderer, this.title, this.titleX, this.titleY, 0x404040, false);
         if (notSelf) context.drawText(this.textRenderer, this.playerInventoryTitle, 8, 21 + rows * 18, 0x404040, false);
-        if (slotsEnabled.contains(41)) context.drawText(this.textRenderer, Text.translatable("trinkets"), 8, 5 + armorRow * 18, 0x404040, false);
+        if (slotsEnabled.contains(42)) context.drawText(this.textRenderer, Text.translatable("trinkets"), 8, 5 + armorRow * 18, 0x404040, false);
     }
 
     @Override

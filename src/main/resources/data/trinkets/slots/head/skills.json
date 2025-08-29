@@ -1,5 +1,5 @@
 {
-  "icon": "trinkets:gui/slots/blank",
+  "icon": "trinkets:gui/slots/skills",
   "amount": 3,
   "drop_rule": "keep"
 }

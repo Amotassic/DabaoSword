@@ -56,31 +56,19 @@ public class PlayerInvScreenHandler extends ScreenHandler {
             if (rowsToShow.contains(j)) {
                 if (j == 0) {
                     for (int i = 0; i < 4; ++i) addSlot(new Slot(inv, i, 8 + i * 18, 18));
-                    addSlot(new Slot(inv, 4, 8 + 4 * 18, 18) {
-                        public Pair<Identifier, Identifier> getBackgroundSprite() {
-                            return Pair.of(BLOCK_ATLAS_TEXTURE, EMPTY_HELMET_SLOT_TEXTURE);
-                        }
-                    });
-                    addSlot(new Slot(inv, 5, 8 + 5 * 18, 18) {
-                        public Pair<Identifier, Identifier> getBackgroundSprite() {
-                            return Pair.of(BLOCK_ATLAS_TEXTURE, EMPTY_CHESTPLATE_SLOT_TEXTURE);
-                        }
-                    });
-                    addSlot(new Slot(inv, 6, 8 + 6 * 18, 18) {
-                        public Pair<Identifier, Identifier> getBackgroundSprite() {
-                            return Pair.of(BLOCK_ATLAS_TEXTURE, EMPTY_LEGGINGS_SLOT_TEXTURE);
-                        }
-                    });
-                    addSlot(new Slot(inv, 7, 8 + 7 * 18, 18) {
-                        public Pair<Identifier, Identifier> getBackgroundSprite() {
-                            return Pair.of(BLOCK_ATLAS_TEXTURE, EMPTY_BOOTS_SLOT_TEXTURE);
-                        }
-                    });
-                    addSlot(new Slot(inv, 8, 8 + 8 * 18, 18) {
-                        public Pair<Identifier, Identifier> getBackgroundSprite() {
-                            return Pair.of(BLOCK_ATLAS_TEXTURE, EMPTY_OFFHAND_ARMOR_SLOT);
-                        }
-                    });
+                    List<Object[]> slotData = Arrays.asList(
+                            new Object[]{4, EMPTY_HELMET_SLOT_TEXTURE},
+                            new Object[]{5, EMPTY_CHESTPLATE_SLOT_TEXTURE},
+                            new Object[]{6, EMPTY_LEGGINGS_SLOT_TEXTURE},
+                            new Object[]{7, EMPTY_BOOTS_SLOT_TEXTURE},
+                            new Object[]{8, EMPTY_OFFHAND_ARMOR_SLOT}
+                    ); //护甲和副手的格子
+                    for (Object[] data : slotData) {
+                        int slotId = (int) data[0]; Identifier texture = (Identifier) data[1];
+                        addSlot(new Slot(inv, slotId, 8 + slotId * 18, 18) {
+                            public Pair<Identifier, Identifier> getBackgroundSprite() {return Pair.of(BLOCK_ATLAS_TEXTURE, texture);}
+                        });
+                    }
                 }
                 else {
                     for (int i = 0; i < 9; ++i) addSlot(new Slot(inv, i + j * 9, 8 + i * 18, 18 + line * 18));
