@@ -3,6 +3,7 @@ package com.amotassic.dabaosword.api.skill;
 import com.amotassic.dabaosword.api.CardEvents;
 import com.amotassic.dabaosword.api.card.Card;
 import com.amotassic.dabaosword.item.ModItems;
+import com.amotassic.dabaosword.util.ModTools;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.item.ItemStack;
@@ -13,9 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-
-import static com.amotassic.dabaosword.util.ModTools.c;
-import static com.amotassic.dabaosword.util.ModTools.toList;
 
 /**
  * 不同的全局监听技能效果需要的参数不尽相同，为了能统一方法参数，故将除了技能本身外的参数封装在一个类中。
@@ -36,7 +34,7 @@ public class ExData {
     public final List<Float> muls = new ArrayList<>();
 
     public ExData withTargets(LivingEntity... targets) {
-        this.targets = toList(targets);
+        this.targets = ModTools.toList(targets);
         return this;
     }
 
@@ -54,7 +52,7 @@ public class ExData {
 
     /**添加卡牌到data中，若卡牌来自于装备区，则第三个参数填true*/
     public ExData cards(ItemStack card, int count, boolean... fromEquip) {
-        return cards(c(card), count, fromEquip);
+        return cards(ModTools.c(card), count, fromEquip);
     }
 
     public ExData cards(Card card, int count, boolean... fromEquip) {

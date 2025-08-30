@@ -38,6 +38,9 @@ public abstract class CardItem extends Item {
 
     public void effect(LivingEntity user, ItemStack card, LivingEntity target) {}
 
+    /**是否可以远距离使用*/
+    public boolean rangedUse() {return false;}
+
     @Override @SuppressWarnings("deprecation")
     public void appendTooltip(ItemStack stack, TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
         List<Text> tooltip = new ArrayList<>();
@@ -90,7 +93,7 @@ public abstract class CardItem extends Item {
             }
         }
 
-        if (stack.isOf(ModItems.DISCARD) || stack.isOf(ModItems.JUEDOU) || stack.isOf(ModItems.TOO_HAPPY_ITEM)) {
+        if (stack.getItem() instanceof CardItem c && c.rangedUse()) {
             tooltip.add(Text.translatable("item.dabaosword.long_hand").formatted(BOLD));
         }
 

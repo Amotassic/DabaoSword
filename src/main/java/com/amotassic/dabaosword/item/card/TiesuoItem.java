@@ -24,8 +24,9 @@ public class TiesuoItem extends CardItem.Armoury {
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         if (!user.getWorld().isClient && !entity.isGlowing() && !user.getOffHandStack().isOf(Items.KNOWLEDGE_BOOK)) {
-            Box box = user.getBoundingBox().stretch(user.getRotationVec(1.0F).multiply(10));
+            Box box = new Box(entity.getBlockPos()).expand(5);
             Set<LivingEntity> targets = new HashSet<>(user.getWorld().getEntitiesByClass(LivingEntity.class, box, LivingEntity::isAlive));
+            targets.remove(user);
             onUse(user, user.getStackInHand(hand), hand, targets.toArray(new LivingEntity[0]));
             user.removeStatusEffect(StatusEffects.GLOWING);
             return ActionResult.SUCCESS_SERVER;
@@ -68,6 +69,8 @@ public class TiesuoItem extends CardItem.Armoury {
         user.removeStatusEffect(StatusEffects.GLOWING);
         return true;
     }
+
+    @Override public boolean rangedUse() {return true;}
 
     @Override public boolean askForWuxie() {return true;}
 }

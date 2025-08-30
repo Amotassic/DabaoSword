@@ -73,8 +73,6 @@ public class ModifyDamage {
             if (!(SE instanceof PlayerEntity) && entity.hasStatusEffect(ModItems.DEFEND)) {
                 if (Objects.requireNonNull(entity.getStatusEffect(ModItems.DEFEND)).getAmplifier() >= 2) return 1;
             }
-            //决斗等物品虽然手长，但过远时普通伤害无效
-            if (!source.isIn(DamageTypeTags.BYPASSES_ARMOR) && shouldReachLong(SE) && entity.distanceTo(SE) > 5) return 1;
         } else if (at instanceof LivingEntity AT) {
             //被乐的生物无法造成伤害
             if (AT.hasStatusEffect(ModItems.TOO_HAPPY)) return 1;
@@ -142,13 +140,6 @@ public class ModifyDamage {
             writeDamage(source, amount, !bl, trinketItem(ModItems.CARD_PILE, player));
             if (bl) player.sendMessage(Text.translatable("dabaosword.bagua"),true);
         }
-    }
-
-    public static ItemStack modifyStack(ItemStack stack) {
-        if (stack.isOf(ModItems.SUNSHINE_SMILE)) {
-            stack.addEnchantment(ModTools.getEntry(ModItems.CRIT), 1);
-        }
-        return stack;
     }
 
     public static boolean warmWine(LivingEntity entity, DamageSource source) {

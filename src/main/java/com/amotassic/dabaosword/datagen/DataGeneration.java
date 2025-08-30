@@ -9,5 +9,6 @@ public class DataGeneration implements DataGeneratorEntrypoint {
         var pack = generator.createPack();
         pack.addProvider(AdvancementsProvider::new);
         pack.addProvider(ModModelProvider::new);
+        pack.addProvider(RecipesProvider.Provider::new);
     }
 }

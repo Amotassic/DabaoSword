@@ -15,9 +15,10 @@ public class AttackEntityHandler implements AttackEntityCallback {
 
     @Override
     public ActionResult interact(PlayerEntity player, World world, Hand hand, Entity entity, @Nullable EntityHitResult hitResult) {
-        if (!world.isClient && !player.isSpectator() && entity instanceof LivingEntity target) {
-            if (ModTools.shouldReachLong(player) && target.distanceTo(player) >= 5) return ActionResult.PASS;
-            for (var skill : ModTools.getSkillsMayUse(player)) {
+        if (!world.isClient && !player.isSpectator()) {
+            //决斗等物品虽然手长，但过远时普通伤害无效
+            if (ModTools.shouldReachLong(player) && entity.distanceTo(player) >= 5) return ActionResult.FAIL;
+            if (entity instanceof LivingEntity target) for (var skill : ModTools.getSkillsMayUse(player)) {
                 skill.item.preAttack(player, target, skill);
             }
         }

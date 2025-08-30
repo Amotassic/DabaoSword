@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.ui;
 
+import com.amotassic.dabaosword.util.ModTools;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -18,6 +19,7 @@ public class FullInvHandledScreen extends HandledScreen<FullInvScreenHandler> {
     private final int rows;
     private final boolean notSelf;
     private final int armorRow;
+    private static final int TRINKET_INDEX = 43; //第一个饰品栏的索引
 
     public FullInvHandledScreen(FullInvScreenHandler handler, PlayerInventory inventory, Text title) {
         super(handler, inventory, title);
@@ -37,9 +39,16 @@ public class FullInvHandledScreen extends HandledScreen<FullInvScreenHandler> {
         }
         int v = notSelf ? 125 : 215; int height = notSelf ? 97 : 7;
         context.drawTexture(RenderPipelines.GUI_TEXTURED, TEXTURE, x, y + rows * 18 + 17,0, v, backgroundWidth, height, 256, 256);
+        var trinkets = ModTools.trinketsWithSlots(handler.target);
         for (int i : slotsEnabled) { //绘制启用的格子背景
             Slot slot = handler.getSlot(i);
             context.drawTexture(RenderPipelines.GUI_TEXTURED, TEXTURE, slot.x + x - 1, slot.y + y - 1,7, 17, 18, 18, 256, 256);
+
+            int index = i - TRINKET_INDEX; // 绘制饰品槽位图标
+            if (index < 0 || slot.hasStack()) continue;
+            var texture = trinkets.get(index).getLeft().getSlotType().getIcon();
+            if (texture == null) continue;
+            context.drawTexture(RenderPipelines.GUI_TEXTURED, texture, slot.x + x, slot.y + y, 0, 0, 16, 16, 16, 16);
         }
     }
 
@@ -53,7 +62,7 @@ public class FullInvHandledScreen extends HandledScreen<FullInvScreenHandler> {
     protected void drawForeground(DrawContext context, int mouseX, int mouseY) {
         context.drawText(this.textRenderer, this.title, this.titleX, this.titleY, Colors.DARK_GRAY, false);
         if (notSelf) context.drawText(this.textRenderer, this.playerInventoryTitle, 8, 21 + rows * 18, Colors.DARK_GRAY, false);
-        if (slotsEnabled.contains(41)) context.drawText(this.textRenderer, Text.translatable("trinkets"), 8, 5 + armorRow * 18, Colors.DARK_GRAY, false);
+        if (slotsEnabled.contains(TRINKET_INDEX)) context.drawText(this.textRenderer, Text.translatable("trinkets"), 8, 5 + armorRow * 18, Colors.DARK_GRAY, false);
     }
 
     @Override
