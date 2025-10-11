@@ -6,15 +6,11 @@ import com.amotassic.dabaosword.ui.PileScreenHandler;
 import com.amotassic.dabaosword.util.Tags;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
@@ -54,18 +50,9 @@ public class ServerNetworking {
             PlayerEntity player = c.player();
             int i = pl.id();
             if (i == 0) openInv(player, player, player, Text.translatable("key.dabaosword.select_card"), ItemStack.EMPTY, false, false, 3);
-            if (i == 2 && hasTrinket(ModItems.CARD_PILE, player)) player.openHandledScreen(new ExtendedScreenHandlerFactory<>() {
-                @Override
-                public Object getScreenOpeningData(ServerPlayerEntity player) {return new ActiveSkillPayload(0);}
-
-                @Override
-                public Text getDisplayName() {return Text.translatable("card_pile.title");}
-
-                @Override
-                public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                    return new PileScreenHandler(syncId, inv);
-                }
-            });
+            if (i == 2 && hasTrinket(ModItems.CARD_PILE, player))
+                openScreen(player, Text.translatable("card_pile.title"), p -> new ActiveSkillPayload(0),
+                        ((syncId, inv, p) -> new PileScreenHandler(syncId, inv)));
             if (i == 3) {
                 var pair = getDamage(player);
                 if (pair != null) {

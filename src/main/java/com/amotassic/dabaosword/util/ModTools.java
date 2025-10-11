@@ -44,6 +44,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -59,6 +60,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static dev.emi.trinkets.api.TrinketsApi.getTrinketComponent;
@@ -315,50 +317,37 @@ public class ModTools {
         stack.set(DataComponentTypes.CUSTOM_DATA, NbtComponent.of(nbt));
     }
 
+    public static void openScreen(PlayerEntity player, Text title, Function<ServerPlayerEntity, Object> data, ScreenHandlerFactory factory) {
+        player.openHandledScreen(new ExtendedScreenHandlerFactory<>() {
+            public Text getDisplayName() {return title;}
+            public Object getScreenOpeningData(ServerPlayerEntity player) {return data.apply(player);}
+            public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
+                return factory.createMenu(syncId, inv, player);
+            }
+        });
+    }
+
     public static void openFullInv(PlayerEntity player, LivingEntity target, boolean editable) {
         if (player.getWorld().isClient) return;
         var payload = new OpenScreenPayload(target.getId(), editable, "");
-        player.openHandledScreen(new ExtendedScreenHandlerFactory<>() {
-            public Text getDisplayName() {return target.getDisplayName();}
-
-            public Object getScreenOpeningData(ServerPlayerEntity player) {return payload;}
-
-            public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                return new FullInvScreenHandler(syncId, inv, payload);
-            }
-        });
+        openScreen(player, target.getDisplayName(), p -> payload,
+                ((syncId, inv, p) -> new FullInvScreenHandler(syncId, inv, payload)));
     }
 
     public static void openInv(PlayerEntity player, LivingEntity owner, PlayerEntity target, Text title, ItemStack stack, boolean equip, boolean armor, int cards) {
         if (player.getWorld().isClient) return;
         var tempInv = new TempInventory(player, owner, stack, cards, equip, armor);
         var rows = tempInv.rowsToShow;
-        player.openHandledScreen(new ExtendedScreenHandlerFactory<>() {
-            public Text getDisplayName() {return title;}
-
-            public Object getScreenOpeningData(ServerPlayerEntity player) {
-                return new OpenScreenPayload(target.getId(), true, rows.toString());
-            }
-            public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                return new PlayerInvScreenHandler(syncId, tempInv, target, rows);
-            }
-        });
+        openScreen(player, title, p -> new OpenScreenPayload(target.getId(), true, rows.toString()),
+                ((syncId, inv, p) -> new PlayerInvScreenHandler(syncId, tempInv, target, rows)));
     }
 
     public static void openMenu(PlayerEntity player, PlayerEntity target, ItemStack stack, List<ItemStack> stacks, Text title) {
         if (player.getWorld().isClient) return;
         var tempInv = new TempInventory(player, stack, stacks);
         var rows = tempInv.rowsToShow;
-        player.openHandledScreen(new ExtendedScreenHandlerFactory<>() {
-            public Text getDisplayName() {return title;}
-
-            public Object getScreenOpeningData(ServerPlayerEntity player) {
-                return new OpenScreenPayload(player.getId(), true, rows.toString());
-            }
-            public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
-                return new PlayerInvScreenHandler(syncId, tempInv, target, rows);
-            }
-        });
+        openScreen(player, title, p -> new OpenScreenPayload(p.getId(), true, rows.toString()),
+                ((syncId, inv, p) -> new PlayerInvScreenHandler(syncId, tempInv, target, rows)));
     }
 
     public static ItemStack paibei(int... n) {return new ItemStack(ModItems.GAIN_CARD, n.length > 0 ? n[0] : 1);}
