@@ -1,14 +1,11 @@
 package com.amotassic.dabaosword.client;
 
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
-import com.amotassic.dabaosword.network.ServerNetworking;
+import com.amotassic.dabaosword.network.SimplePayload;
 import com.amotassic.dabaosword.util.ModTools;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.option.KeyBinding;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.Vec3d;
 import org.lwjgl.glfw.GLFW;
 
@@ -21,7 +18,6 @@ public class ClientTickEnd {
             var user = client.player;
             if (user == null) return;
             var ctrl = client.options.sprintKey;
-            PacketByteBuf buf = PacketByteBufs.create();
             // 当打开screen后，关闭选择技能渲染
             if (ChangeSkillRender.isRendering && client.currentScreen != null) {
                 ChangeSkillRender.close();
@@ -30,16 +26,13 @@ public class ClientTickEnd {
             if (ModTools.hasTrinket(SkillCards.SHENSU, user)) {
                 Vec3d lastPos = new Vec3d(user.lastRenderX, user.lastRenderY, user.lastRenderZ);
                 float speed = (float) (user.getPos().distanceTo(lastPos) * 20);
-                PacketByteBuf buf1 = PacketByteBufs.create();
-                buf1.writeFloat(speed);
-                ClientPlayNetworking.send(ServerNetworking.SHENSU, buf1);
+                SimplePayload.sendToServer(SimplePayload.SHENSU, Float.toString(speed));
             }
 
             if (SELECT_CARD.wasPressed()) {
-                if (user.isSneaking() && ctrl.wasPressed()) buf.writeInt(3);
-                else if (ctrl.wasPressed()) buf.writeInt(2);
-                else buf.writeInt(0);
-                ClientPlayNetworking.send(ServerNetworking.SELECT_CARD, buf);
+                if (user.isSneaking() && ctrl.wasPressed()) SimplePayload.sendToServer(SimplePayload.CANCEL_DODGE);
+                else if (ctrl.wasPressed()) SimplePayload.sendToServer(SimplePayload.CARD_PILE);
+                else SimplePayload.sendToServer(SimplePayload.QUICK_SWAP);
             }
         });
     }

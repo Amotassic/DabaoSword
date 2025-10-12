@@ -37,16 +37,15 @@ public class FullInvScreenHandler extends ScreenHandler {
     public FullInvScreenHandler(int syncId, PlayerInventory inv, PacketByteBuf buf) {
         super(ModItems.FULL_INV_SCREEN_HANDLER, syncId);
         this.target = (LivingEntity) inv.player.getWorld().getEntityById(buf.readInt());
-        this.inventory = new EntityInventory(target);
         this.editable = buf.readBoolean();
+        this.inventory = new EntityInventory(target, editable);
         this.slotsEnabled = inventory.slotIndexes;
         this.notSelf = inv.player != target;
         int row = 2, armor = 2; //行数和护甲栏所在行数
         int[] keySlots0 = new int[]{9, 18, 27};
-        for (int i : keySlots0) {if (slotsEnabled.contains(i)) armor++;}
+        for (int i : keySlots0) {if (slotsEnabled.contains(i)) {armor++; row++;}}
         this.armorRow = armor;
-        int[] keySlots = new int[]{9, 18, 27, 42, 51, 60, 69, 78, 87, 96, 105, 114, 123, 132, 141, 150};
-        for (int i : keySlots) {if (slotsEnabled.contains(i)) row++;}
+        for (int i = 42; slotsEnabled.contains(i); i += 9) row++;
         this.rows = row;
         int i, j;
         for (i = 0; i < 4; i++) { //物品栏，即使没有启用，也需要添加槽位，否则会导致崩溃
@@ -138,10 +137,10 @@ public class FullInvScreenHandler extends ScreenHandler {
         public final LivingEntity owner;
         public final Set<Integer> slotIndexes = new HashSet<>();
 
-        public EntityInventory(LivingEntity owner) {
+        public EntityInventory(LivingEntity owner, boolean editable) {
             this.owner = owner;
             // 如果是玩家，就加上36格物品栏，否则只加上主手
-            if (owner instanceof PlayerEntity) for (int i = 0; i < 36; i++) slotIndexes.add(i);
+            if (owner instanceof PlayerEntity && editable) for (int i = 0; i < 36; i++) slotIndexes.add(i);
             else slotIndexes.add(0);
             // 如果生物有物品栏，就加上物品栏的槽位，index为物品栏的index + 1
             if (owner instanceof InventoryOwner inv) for (int i = 0; i < inv.getInventory().size(); i++) slotIndexes.add(i + 1);

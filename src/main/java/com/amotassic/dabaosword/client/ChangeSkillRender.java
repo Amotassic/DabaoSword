@@ -1,17 +1,14 @@
 package com.amotassic.dabaosword.client;
 
-import com.amotassic.dabaosword.network.ServerNetworking;
+import com.amotassic.dabaosword.network.SimplePayload;
 import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Tags;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.OrderedText;
 
 import java.util.ArrayList;
@@ -77,9 +74,7 @@ public class ChangeSkillRender implements HudRenderCallback {
         if (part <= 0) return;
 
         // System.out.printf("鼠标与中心夹角: %.2f°，所在部分: %d\n", angleDegrees, part);
-        PacketByteBuf buf = PacketByteBufs.create();
-        buf.writeInt(part + 100);
-        ClientPlayNetworking.send(ServerNetworking.SELECT_CARD, buf);
+        SimplePayload.sendToServer(SimplePayload.REPLACE_TRINKET, Integer.toString(part));
     }
 
     private static double getAngleDegrees(double x, double y) {

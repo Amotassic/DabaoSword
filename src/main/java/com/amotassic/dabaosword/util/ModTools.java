@@ -44,6 +44,7 @@ import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -58,6 +59,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 import static dev.emi.trinkets.api.TrinketsApi.getTrinketComponent;
@@ -296,56 +298,43 @@ public class ModTools {
         return null;
     }
 
-    public static void openFullInv(PlayerEntity player, LivingEntity target, boolean editable) {
-        if (player.getWorld().isClient) return;
+    public static void openScreen(PlayerEntity player, Text title, BiConsumer<ServerPlayerEntity, PacketByteBuf> data, ScreenHandlerFactory factory) {
         player.openHandledScreen(new ExtendedScreenHandlerFactory() {
-            public Text getDisplayName() {return target.getDisplayName();}
-
+            public Text getDisplayName() {return title;}
             public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
-                buf.writeInt(target.getId()); buf.writeBoolean(editable);
+                data.accept(player, buf);
             }
             public ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                PacketByteBuf buf = PacketByteBufs.create();
-                buf.writeInt(target.getId()); buf.writeBoolean(editable);
-                return new FullInvScreenHandler(syncId, inv, buf);
+                return factory.createMenu(syncId, inv, player);
             }
         });
+    }
+
+    public static void openFullInv(PlayerEntity player, LivingEntity target, boolean editable) {
+        if (player.getWorld().isClient) return;
+        PacketByteBuf b = PacketByteBufs.create();
+        b.writeInt(target.getId()); b.writeBoolean(editable);
+        openScreen(player, target.getDisplayName(), (p, buf) -> {
+            buf.writeInt(target.getId()); buf.writeBoolean(editable);
+        }, (syncId, inv, p) -> new FullInvScreenHandler(syncId, inv, b));
     }
 
     public static void openInv(PlayerEntity player, LivingEntity owner, PlayerEntity target, Text title, ItemStack stack, boolean equip, boolean armor, int cards) {
         if (player.getWorld().isClient) return;
         var tempInv = new TempInventory(player, owner, stack, cards, equip, armor);
         var rows = tempInv.rowsToShow;
-        player.openHandledScreen(new ExtendedScreenHandlerFactory() {
-            @Override
-            public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
-                buf.writeInt(target.getId()); buf.writeString(rows.toString());
-            }
-
-            @Override public Text getDisplayName() {return title;}
-
-            @Override
-            public @NotNull ScreenHandler createMenu(int syncId, PlayerInventory inv, PlayerEntity player) {
-                return new PlayerInvScreenHandler(syncId, tempInv, target, rows);
-            }
-        });
+        openScreen(player, title, (p, buf) -> {
+            buf.writeInt(target.getId()); buf.writeString(rows.toString());
+        }, (syncId, inv, p) -> new PlayerInvScreenHandler(syncId, tempInv, target, rows));
     }
 
     public static void openMenu(PlayerEntity player, PlayerEntity target, ItemStack stack, List<ItemStack> stacks, Text title) {
         if (player.getWorld().isClient) return;
         var tempInv = new TempInventory(player, stack, stacks);
         var rows = tempInv.rowsToShow;
-        player.openHandledScreen(new ExtendedScreenHandlerFactory() {
-            public Text getDisplayName() {return title;}
-
-            public void writeScreenOpeningData(ServerPlayerEntity player, PacketByteBuf buf) {
-                buf.writeInt(target.getId()); buf.writeString(rows.toString());
-            }
-
-            public ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
-                return new PlayerInvScreenHandler(syncId, tempInv, target, rows);
-            }
-        });
+        openScreen(player, title, (p, buf) -> {
+            buf.writeInt(target.getId()); buf.writeString(rows.toString());
+        }, (syncId, inv, p) -> new PlayerInvScreenHandler(syncId, tempInv, target, rows));
     }
 
     public static ItemStack paibei(int... n) {return new ItemStack(ModItems.GAIN_CARD, n.length > 0 ? n[0] : 1);}

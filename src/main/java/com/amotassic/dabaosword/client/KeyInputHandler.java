@@ -2,13 +2,10 @@ package com.amotassic.dabaosword.client;
 
 import com.amotassic.dabaosword.api.event.KeyInputCallback;
 import com.amotassic.dabaosword.command.DabaoSwordCommand;
-import com.amotassic.dabaosword.network.ServerNetworking;
+import com.amotassic.dabaosword.network.SimplePayload;
 import com.amotassic.dabaosword.util.ModTools;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.hit.EntityHitResult;
 import org.lwjgl.glfw.GLFW;
@@ -22,11 +19,7 @@ public class KeyInputHandler implements KeyInputCallback {
         // System.out.println("key: " + key + " scancode: " + scancode + " action: " + action + " mod: " + modifiers);
         if (action == 1 && modifiers == 2 && mc.player != null) {
             if (key == GLFW.GLFW_KEY_M) mc.player.sendMessage(DabaoSwordCommand.menu);
-            if (key == GLFW.GLFW_KEY_I) {
-                PacketByteBuf buf = PacketByteBufs.create();
-                buf.writeInt(9);
-                ClientPlayNetworking.send(ServerNetworking.SELECT_CARD, buf);
-            }
+            if (key == GLFW.GLFW_KEY_I) SimplePayload.sendToServer(SimplePayload.VIEW_INFO);
             return;
         }
 
@@ -40,9 +33,7 @@ public class KeyInputHandler implements KeyInputCallback {
                     target = entity;
                 } else target = user;
 
-                PacketByteBuf buf = PacketByteBufs.create();
-                buf.writeInt(target.getId());
-                ClientPlayNetworking.send(ServerNetworking.ACTIVE_SKILL, buf);
+                SimplePayload.sendToServer(SimplePayload.ACTIVE_SKILL, Integer.toString(target.getId()));
             } // 长按打开技能选择轮盘
             if (action == 2) {
                 ChangeSkillRender.isRendering = true;
