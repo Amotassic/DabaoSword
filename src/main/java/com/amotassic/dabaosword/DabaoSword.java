@@ -39,7 +39,7 @@ public class DabaoSword implements ModInitializer {
         ModDT.init();
         Tags.Tag();
         Gamerule.registerGamerules();
-        ServerNetworking.registerActiveSkill();
+        ServerNetworking.register();
         CommandRegistrationCallback.EVENT.register(((d, a, e) -> DabaoSwordCommand.register(d,a)));
         ModEntity.register();
         ModEntity.entitySpawn();

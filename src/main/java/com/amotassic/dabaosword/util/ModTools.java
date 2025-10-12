@@ -14,7 +14,7 @@ import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.card.CardItem;
 import com.amotassic.dabaosword.item.card.Sha;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
-import com.amotassic.dabaosword.network.OpenScreenPayload;
+import com.amotassic.dabaosword.network.SimplePayload;
 import com.amotassic.dabaosword.ui.FullInvScreenHandler;
 import com.amotassic.dabaosword.ui.PlayerInvScreenHandler;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -329,7 +329,7 @@ public class ModTools {
 
     public static void openFullInv(PlayerEntity player, LivingEntity target, boolean editable) {
         if (player.getWorld().isClient) return;
-        var payload = new OpenScreenPayload(target.getId(), editable, "");
+        var payload = new SimplePayload(Integer.toString(target.getId()), String.valueOf(editable));
         openScreen(player, target.getDisplayName(), p -> payload,
                 ((syncId, inv, p) -> new FullInvScreenHandler(syncId, inv, payload)));
     }
@@ -338,7 +338,8 @@ public class ModTools {
         if (player.getWorld().isClient) return;
         var tempInv = new TempInventory(player, owner, stack, cards, equip, armor);
         var rows = tempInv.rowsToShow;
-        openScreen(player, title, p -> new OpenScreenPayload(target.getId(), true, rows.toString()),
+        var payload = new SimplePayload(Integer.toString(target.getId()), rows.toString());
+        openScreen(player, title, p -> payload,
                 ((syncId, inv, p) -> new PlayerInvScreenHandler(syncId, tempInv, target, rows)));
     }
 
@@ -346,7 +347,8 @@ public class ModTools {
         if (player.getWorld().isClient) return;
         var tempInv = new TempInventory(player, stack, stacks);
         var rows = tempInv.rowsToShow;
-        openScreen(player, title, p -> new OpenScreenPayload(p.getId(), true, rows.toString()),
+        var payload = new SimplePayload(Integer.toString(target.getId()), rows.toString());
+        openScreen(player, title, p -> payload,
                 ((syncId, inv, p) -> new PlayerInvScreenHandler(syncId, tempInv, target, rows)));
     }
 

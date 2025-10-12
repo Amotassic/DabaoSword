@@ -1,9 +1,8 @@
 package com.amotassic.dabaosword.client;
 
-import com.amotassic.dabaosword.network.QuickSwapPayload;
+import com.amotassic.dabaosword.network.SimplePayload;
 import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Tags;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -77,7 +76,7 @@ public class ChangeSkillRender implements HudRenderCallback {
         if (part <= 0) return;
 
         // System.out.printf("鼠标与中心夹角: %.2f°，所在部分: %d\n", angleDegrees, part);
-        ClientPlayNetworking.send(new QuickSwapPayload(part + 100));
+        SimplePayload.sendToServer(SimplePayload.REPLACE_TRINKET, Integer.toString(part));
     }
 
     private static double getAngleDegrees(double x, double y) {

@@ -4,7 +4,7 @@ import com.amotassic.dabaosword.api.CardEvents;
 import com.amotassic.dabaosword.api.skill.ExData;
 import com.amotassic.dabaosword.api.skill.Skill;
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.network.OpenScreenPayload;
+import com.amotassic.dabaosword.network.SimplePayload;
 import com.amotassic.dabaosword.util.TempInventory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -32,8 +32,8 @@ public class PlayerInvScreenHandler extends ScreenHandler {
     private final List<Integer> clicks = new ArrayList<>();
     public final int rows;
 
-    public PlayerInvScreenHandler(int syncId, PlayerInventory inv, OpenScreenPayload buf) {
-        this(syncId, new TempInventory(inv.player, paibei(), List.of()), (PlayerEntity) inv.player.getWorld().getEntityById(buf.id()), stringToSet(buf.str()));
+    public PlayerInvScreenHandler(int syncId, PlayerInventory inv, SimplePayload buf) {
+        this(syncId, new TempInventory(inv.player, paibei(), List.of()), (PlayerEntity) inv.player.getWorld().getEntityById(Integer.parseInt(buf.name())), stringToSet(buf.value()));
     }
     private static Set<Integer> stringToSet(String str) {
         String trimmed = str.substring(1, str.length() - 1);

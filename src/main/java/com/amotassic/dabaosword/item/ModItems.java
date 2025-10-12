@@ -11,8 +11,7 @@ import com.amotassic.dabaosword.item.card.equipment.Weapon;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
 import com.amotassic.dabaosword.item.tool.*;
-import com.amotassic.dabaosword.network.ActiveSkillPayload;
-import com.amotassic.dabaosword.network.OpenScreenPayload;
+import com.amotassic.dabaosword.network.SimplePayload;
 import com.amotassic.dabaosword.ui.FullInvScreenHandler;
 import com.amotassic.dabaosword.ui.PileScreenHandler;
 import com.amotassic.dabaosword.ui.PlayerInvScreenHandler;
@@ -248,11 +247,11 @@ public class ModItems {
         return Registry.register(Registries.DATA_COMPONENT_TYPE, Identifier.of("dabaosword",id), (builderOperator.apply(ComponentType.builder())).build());
     }
 
-    public static final ScreenHandlerType<PlayerInvScreenHandler> PLAYER_INV_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "player_inv", new ExtendedScreenHandlerType<>(PlayerInvScreenHandler::new, OpenScreenPayload.CODEC));
+    public static final ScreenHandlerType<PlayerInvScreenHandler> PLAYER_INV_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "player_inv", new ExtendedScreenHandlerType<>(PlayerInvScreenHandler::new, SimplePayload.CODEC));
 
-    public static final ScreenHandlerType<FullInvScreenHandler> FULL_INV_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "full_inv", new ExtendedScreenHandlerType<>(FullInvScreenHandler::new, OpenScreenPayload.CODEC));
+    public static final ScreenHandlerType<FullInvScreenHandler> FULL_INV_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "full_inv", new ExtendedScreenHandlerType<>(FullInvScreenHandler::new, SimplePayload.CODEC));
 
-    public static final ScreenHandlerType<PileScreenHandler> PILE_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "card_pile", new ExtendedScreenHandlerType<>(PileScreenHandler::new, ActiveSkillPayload.CODEC));
+    public static final ScreenHandlerType<PileScreenHandler> PILE_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "card_pile", new ExtendedScreenHandlerType<>(PileScreenHandler::new, SimplePayload.CODEC));
 
     public static final RegistryKey<Enchantment> CRIT = RegistryKey.of(RegistryKeys.ENCHANTMENT, Identifier.of("dabaosword:crit"));
 }

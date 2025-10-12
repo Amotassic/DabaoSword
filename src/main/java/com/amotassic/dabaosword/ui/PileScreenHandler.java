@@ -3,7 +3,7 @@ package com.amotassic.dabaosword.ui;
 import com.amotassic.dabaosword.api.CardPileInventory;
 import com.amotassic.dabaosword.event.PVPGameEvents;
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.network.ActiveSkillPayload;
+import com.amotassic.dabaosword.network.SimplePayload;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -20,7 +20,7 @@ import static com.amotassic.dabaosword.util.ModTools.*;
 public class PileScreenHandler extends ScreenHandler {
     private final CardPileInventory inventory;
 
-    public PileScreenHandler(int syncId, PlayerInventory inv, ActiveSkillPayload data) {this(syncId, inv);}
+    public PileScreenHandler(int syncId, PlayerInventory inv, SimplePayload data) {this(syncId, inv);}
 
     public PileScreenHandler(int syncId, PlayerInventory inv) {
         super(ModItems.PILE_SCREEN_HANDLER, syncId);

@@ -1,7 +1,7 @@
 package com.amotassic.dabaosword.ui;
 
 import com.amotassic.dabaosword.item.ModItems;
-import com.amotassic.dabaosword.network.OpenScreenPayload;
+import com.amotassic.dabaosword.network.SimplePayload;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.InventoryOwner;
 import net.minecraft.entity.LivingEntity;
@@ -34,11 +34,11 @@ public class FullInvScreenHandler extends ScreenHandler {
     public final boolean notSelf;
     private static final int TRINKET_INDEX = 43; //第一个饰品栏的索引
 
-    public FullInvScreenHandler(int syncId, PlayerInventory inv, OpenScreenPayload buf) {
+    public FullInvScreenHandler(int syncId, PlayerInventory inv, SimplePayload buf) {
         super(ModItems.FULL_INV_SCREEN_HANDLER, syncId);
-        this.target = (LivingEntity) inv.player.getWorld().getEntityById(buf.id());
-        this.inventory = new EntityInventory(target);
-        this.editable = buf.bl();
+        this.target = (LivingEntity) inv.player.getWorld().getEntityById(Integer.parseInt(buf.name()));
+        this.editable = Boolean.parseBoolean(buf.value());
+        this.inventory = new EntityInventory(target, editable);
         this.slotsEnabled = inventory.slotIndexes;
         this.notSelf = inv.player != target;
         int row = 2, armor = 2; //行数和护甲栏所在行数
@@ -141,10 +141,10 @@ public class FullInvScreenHandler extends ScreenHandler {
         public final LivingEntity owner;
         public final Set<Integer> slotIndexes = new HashSet<>();
 
-        public EntityInventory(LivingEntity owner) {
+        public EntityInventory(LivingEntity owner, boolean editable) {
             this.owner = owner;
             // 如果是玩家，就加上36格物品栏，否则只加上主手
-            if (owner instanceof PlayerEntity) for (int i = 0; i < 36; i++) slotIndexes.add(i);
+            if (owner instanceof PlayerEntity && editable) for (int i = 0; i < 36; i++) slotIndexes.add(i);
             else slotIndexes.add(0);
             // 如果生物有物品栏，就加上物品栏的槽位，index为物品栏的index + 1
             if (owner instanceof InventoryOwner inv) for (int i = 0; i < inv.getInventory().size(); i++) slotIndexes.add(i + 1);

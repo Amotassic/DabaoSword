@@ -85,7 +85,7 @@
   "item.dabaosword.bingliang.tooltip2": "Affected players remain weakened until two Draw Card are removed",
   "effect.dabaosword.bingliang": "Starvation",
   "item.dabaosword.tiesuo": "Iron Shackles",
-  "item.dabaosword.tiesuo.tooltip": "Upon use on a entity, connects all entities within ten blocks in front of you",
+  "item.dabaosword.tiesuo.tooltip": "Upon use on a entity, connects all entities near by",
   "item.dabaosword.jiedao": "Borrow a Knife to Kill",
   "item.dabaosword.jiedao.tooltip": "Obtains the main hand item of the opponent",
   "item.dabaosword.nanman": "Barbarian Invasion",
@@ -517,7 +517,7 @@
   "screen.dabaosword.ctrl_z": "Ctrl+Z Deselect All",
   "screen.dabaosword.min_tip": "Minimum %1$s cards required  ",
   "screen.dabaosword.max_tip": "Maximum %1$s cards allowed",
-  "screen.dabaosword.select_card": "右键点击将物品转移到主手，否则转移到副手",
+  "screen.dabaosword.select_card": "Right-click moves to main hand, otherwise to off-hand",
 
   "category.dabaosword.keybindings": "DabaoSword",
   "key.dabaosword.active_skill": "Active skill",

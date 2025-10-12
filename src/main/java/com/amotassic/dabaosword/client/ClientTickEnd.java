@@ -1,12 +1,10 @@
 package com.amotassic.dabaosword.client;
 
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
-import com.amotassic.dabaosword.network.QuickSwapPayload;
-import com.amotassic.dabaosword.network.ShensuPayload;
+import com.amotassic.dabaosword.network.SimplePayload;
 import com.amotassic.dabaosword.util.ModTools;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.util.math.Vec3d;
 import org.lwjgl.glfw.GLFW;
@@ -28,14 +26,13 @@ public class ClientTickEnd {
             if (ModTools.hasTrinket(SkillCards.SHENSU, user)) {
                 Vec3d lastPos = new Vec3d(user.lastRenderX, user.lastRenderY, user.lastRenderZ);
                 float speed = (float) (user.getPos().distanceTo(lastPos) * 20);
-                ClientPlayNetworking.send(new ShensuPayload(speed));
+                SimplePayload.sendToServer(SimplePayload.SHENSU, Float.toString(speed));
             }
 
             if (SELECT_CARD.wasPressed()) {
-                int i = 0;
-                if (user.isSneaking() && ctrl.wasPressed()) i = 3;
-                else if (ctrl.wasPressed()) i = 2;
-                ClientPlayNetworking.send(new QuickSwapPayload(i));
+                if (user.isSneaking() && ctrl.wasPressed()) SimplePayload.sendToServer(SimplePayload.CANCEL_DODGE);
+                else if (ctrl.wasPressed()) SimplePayload.sendToServer(SimplePayload.CARD_PILE);
+                else SimplePayload.sendToServer(SimplePayload.QUICK_SWAP);
             }
         });
     }

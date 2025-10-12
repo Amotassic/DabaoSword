@@ -85,7 +85,7 @@
   "item.dabaosword.bingliang.tooltip2": "被兵的玩家持续虚弱，直到被扣除了两张牌",
   "effect.dabaosword.bingliang": "兵粮寸断",
   "item.dabaosword.tiesuo": "铁锁连环",
-  "item.dabaosword.tiesuo.tooltip": "对生物使用后，连接眼前十格内的所有生物",
+  "item.dabaosword.tiesuo.tooltip": "对生物使用后，连接目标附近的生物",
   "item.dabaosword.jiedao": "借刀杀人",
   "item.dabaosword.jiedao.tooltip": "获得对方主手上的物品",
   "item.dabaosword.nanman": "南蛮入侵",

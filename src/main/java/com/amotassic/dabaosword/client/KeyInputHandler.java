@@ -2,10 +2,8 @@ package com.amotassic.dabaosword.client;
 
 import com.amotassic.dabaosword.api.event.KeyInputCallback;
 import com.amotassic.dabaosword.command.DabaoSwordCommand;
-import com.amotassic.dabaosword.network.ActiveSkillPayload;
-import com.amotassic.dabaosword.network.QuickSwapPayload;
+import com.amotassic.dabaosword.network.SimplePayload;
 import com.amotassic.dabaosword.util.ModTools;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.text.Text;
@@ -21,7 +19,7 @@ public class KeyInputHandler implements KeyInputCallback {
         //System.out.println("key: " + key + " scancode: " + scancode + " action: " + action + "mod: " + modifiers);
         if (action == 1 && modifiers == 2 && mc.player != null) {
             if (key == GLFW.GLFW_KEY_M) mc.player.sendMessage(DabaoSwordCommand.menu, false);
-            if (key == GLFW.GLFW_KEY_I) ClientPlayNetworking.send(new QuickSwapPayload(9));
+            if (key == GLFW.GLFW_KEY_I) SimplePayload.sendToServer(SimplePayload.VIEW_INFO);
             return;
         }
 
@@ -35,7 +33,7 @@ public class KeyInputHandler implements KeyInputCallback {
                     target = entity;
                 } else target = user;
 
-                ClientPlayNetworking.send(new ActiveSkillPayload(target.getId()));
+                SimplePayload.sendToServer(SimplePayload.ACTIVE_SKILL, Integer.toString(target.getId()));
             } // 长按打开技能选择轮盘
             if (action == 2) {
                 ChangeSkillRender.isRendering = true;
