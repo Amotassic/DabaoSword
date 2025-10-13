@@ -33,7 +33,7 @@ public class CardPile extends TrinketItem {
 
     @Override
     public void tick(ItemStack pile, SlotReference slot, LivingEntity entity) {
-        if (entity.getWorld() instanceof ServerWorld world && entity instanceof PlayerEntity player) {
+        if (entity.getEntityWorld() instanceof ServerWorld world && entity instanceof PlayerEntity player) {
             long time = world.getTime();
             int skill = world.getGameRules().getInt(Gamerule.CHANGE_SKILL_INTERVAL) * 20;
 

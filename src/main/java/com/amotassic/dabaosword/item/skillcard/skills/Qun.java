@@ -90,7 +90,7 @@ public class Qun {
             voice(player, this);
             ItemStack last = newCard();
             give(player, last); //先让玩家摸一张牌，保存到lastCard
-            player.getWorld().getPlayers().forEach(p -> p.sendMessage(Text.translatable("jizhan.draw", player.getDisplayName(), skill.toHoverableText(), last.toHoverableText(), c(last).rank.rank), false));
+            player.getEntityWorld().getPlayers().forEach(p -> p.sendMessage(Text.translatable("jizhan.draw", player.getDisplayName(), skill.toHoverableText(), last.toHoverableText(), c(last).rank.rank), false));
             var tag = skill.getNbt();
             tag.putInt("lastCardRank", c(last).rank.ordinal());
             skill.setNbt(tag);
@@ -104,7 +104,7 @@ public class Qun {
             if (last == -1 || !(entity instanceof PlayerEntity player)) return;
             ItemStack next = newCard();
             give(player, next); //又让玩家摸一张牌后，比较两张牌的点数，如果玩家选对了，就把新的牌保存到lastCard，否则关闭菜单
-            player.getWorld().getPlayers().forEach(p -> p.sendMessage(Text.translatable("jizhan.draw", player.getDisplayName(), skill.toHoverableText(), next.toHoverableText(), c(next).rank.rank), false));
+            player.getEntityWorld().getPlayers().forEach(p -> p.sendMessage(Text.translatable("jizhan.draw", player.getDisplayName(), skill.toHoverableText(), next.toHoverableText(), c(next).rank.rank), false));
             //下一张牌与上一张牌点数比较，有3种情况：更大返回1，更小返回-1，相等返回0
             int cmp = Integer.compare(c(next).rank.ordinal(), last);
             //玩家选择只有两张情况：选更大返回1，选更小返回-1

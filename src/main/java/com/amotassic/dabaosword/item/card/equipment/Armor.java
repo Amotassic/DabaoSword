@@ -101,11 +101,11 @@ public class Armor extends Equipment {
         @Override
         public void tickSkill(Skill skill, LivingEntity entity) {
             if (entity.isSneaking()) return;
-            World world = entity.getWorld();
+            World world = entity.getEntityWorld();
             BlockPos pos = entity.getBlockPos();
             boolean water = !world.getFluidState(pos).isOf(Fluids.WATER) && world.getFluidState(pos.down()).isOf(Fluids.WATER);
 
-            if (water && entity.getPos().y - pos.getY() < 0.15) {
+            if (water && entity.getEntityPos().y - pos.getY() < 0.15) {
                 Vec3d motion = entity.getVelocity();
                 entity.setVelocity(motion.x, 0.0D, motion.z);
                 entity.fallDistance = 0;

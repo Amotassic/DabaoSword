@@ -51,7 +51,7 @@ public class NanmanItem extends CardItem.Armoury {
     }
 
     private void summonRavager(LivingEntity entity) {
-        World world = entity.getWorld();
+        World world = entity.getEntityWorld();
         RavagerEntity ravager = new RavagerEntity(EntityType.RAVAGER, world);
         ravager.setCustomName(Text.of(String.valueOf(entity.getId())));
         world.spawnEntity(ravager);
@@ -61,7 +61,7 @@ public class NanmanItem extends CardItem.Armoury {
     }
 
     public Vec3d getBlockInFront(LivingEntity entity, int distance) {
-        Vec3d pos = entity.getPos();
+        Vec3d pos = entity.getEntityPos();
         Vec3d playerDirection = entity.getRotationVec(1.0F);
         double x = pos.x + playerDirection.x * distance;
         double z = pos.z + playerDirection.z * distance;

@@ -29,7 +29,7 @@ public class BBjiItem extends Item {
 
     @Override
     public ActionResult use(World world, PlayerEntity user, Hand hand) {
-        if (!world.isClient) {
+        if (!world.isClient()) {
             Box box = new Box(user.getBlockPos()).expand(13);
             for (LivingEntity nearbyEntity : world.getEntitiesByClass(LivingEntity.class, box, LivingEntity -> LivingEntity != user)) {
                 nearbyEntity.timeUntilRegen = 0;

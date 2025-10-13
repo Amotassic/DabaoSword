@@ -33,7 +33,7 @@ public abstract class MobEntityMixin extends LivingEntity {
 
     @Inject(method = "initEquipment", at = @At(value = "TAIL"))
     protected void initEquipment(Random random, LocalDifficulty localDifficulty, CallbackInfo ci) {
-        if (!getWorld().isClient && new java.util.Random().nextFloat() < getChance()) initCards();
+        if (!getEntityWorld().isClient() && new java.util.Random().nextFloat() < getChance()) initCards();
     }
 
     @Inject(method = "tryAttack", at = @At(value = "HEAD"))
@@ -47,7 +47,7 @@ public abstract class MobEntityMixin extends LivingEntity {
     }
 
     @Unique private float getChance() {
-        Difficulty difficulty = getWorld().getDifficulty();
+        Difficulty difficulty = getEntityWorld().getDifficulty();
         if (difficulty == Difficulty.EASY) return 0.3f;
         if (difficulty == Difficulty.NORMAL) return 0.6f;
         if (difficulty == Difficulty.HARD) return 0.9f;

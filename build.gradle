@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '1.10-SNAPSHOT'
+    id 'fabric-loom' version '1.11-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -54,7 +54,7 @@ dependencies {
 
     //implementation files(project.rootDir.toString() + '/libs/trinkets-3.11.1-dev.jar')
 
-    modImplementation "maven.modrinth:trinkets-canary:3.11.0-1.21.6"
+    modImplementation "maven.modrinth:trinkets-canary:3.11.0-1.21.10-rc1"
 }
 
 processResources {
@@ -99,7 +99,7 @@ jar {
         exclude 'META-INF' // 排除不必要的META-INF文件
     }*/
     from("LICENSE") {
-        rename { "${it}_${project.archivesBaseName}" }
+        rename { "${it}_${project.archives_base_name}" }
     }
 }
 

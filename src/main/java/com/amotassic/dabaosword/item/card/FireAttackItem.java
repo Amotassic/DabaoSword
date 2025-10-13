@@ -14,7 +14,7 @@ public class FireAttackItem extends CardItem.Armoury {
 
     @Override
     public ActionResult use(World world, PlayerEntity user, Hand hand) {
-        if (!world.isClient) {
+        if (!world.isClient()) {
             onUse(user, user.getStackInHand(hand), hand, user);
             return ActionResult.SUCCESS_SERVER;
         }
@@ -23,7 +23,7 @@ public class FireAttackItem extends CardItem.Armoury {
 
     @Override
     public void effect(LivingEntity user, ItemStack card, LivingEntity target) {
-        World world = user.getWorld();
+        World world = user.getEntityWorld();
         Vec3d momentum = user.getRotationVector().multiply(3);
         FireballEntity fireballEntity = new FireballEntity(world, user, momentum, 2);
         fireballEntity.addCommandTag("a");

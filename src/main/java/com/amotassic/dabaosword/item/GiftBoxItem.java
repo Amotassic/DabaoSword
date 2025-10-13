@@ -28,7 +28,7 @@ public class GiftBoxItem extends Item {
     @Override
     public ActionResult use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getOffHandStack();
-        if (!world.isClient && hand == Hand.MAIN_HAND && !stack.isEmpty()) {
+        if (!world.isClient() && hand == Hand.MAIN_HAND && !stack.isEmpty()) {
             float chance = 0.01f;
             if (stack.getItem() == Items.GOLD_INGOT) {
                 chance += 0.01f * stack.getCount();

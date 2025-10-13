@@ -20,6 +20,8 @@ import com.amotassic.dabaosword.ui.PlayerInvScreenHandler;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import dev.emi.trinkets.api.TrinketInventory;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.util.InputUtil;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.enchantment.Enchantment;
@@ -57,6 +59,7 @@ import net.minecraft.util.Pair;
 import net.minecraft.util.math.Box;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -176,7 +179,7 @@ public class ModTools {
 
     /**播放语音*/
     public static void voice(LivingEntity entity, SoundEvent sound, float... volume) {
-        if (entity.getWorld() instanceof ServerWorld world) {
+        if (entity.getEntityWorld() instanceof ServerWorld world) {
             float v = volume.length > 0 ? volume[0] : 2;
             world.playSoundFromEntity(null, entity, RegistryEntry.of(sound), SoundCategory.PLAYERS, v, 1.0F, net.minecraft.util.math.random.Random.create().nextLong());
         }
@@ -291,7 +294,7 @@ public class ModTools {
     }
 
     public static @Nullable <T extends Entity> T getClosestEntity(Entity entity, Class<T> clazz, double boxLength, Predicate<T> predicate) {
-        if (entity.getWorld() instanceof ServerWorld world) {
+        if (entity.getEntityWorld() instanceof ServerWorld world) {
             Box box = new Box(entity.getBlockPos()).expand(boxLength);
             List<T> entities = world.getEntitiesByClass(clazz, box, predicate.and(e -> e != entity));
             if (!entities.isEmpty()) {
@@ -328,14 +331,14 @@ public class ModTools {
     }
 
     public static void openFullInv(PlayerEntity player, LivingEntity target, boolean editable) {
-        if (player.getWorld().isClient) return;
+        if (player.getEntityWorld().isClient()) return;
         var payload = new SimplePayload(Integer.toString(target.getId()), String.valueOf(editable));
         openScreen(player, target.getDisplayName(), p -> payload,
                 ((syncId, inv, p) -> new FullInvScreenHandler(syncId, inv, payload)));
     }
 
     public static void openInv(PlayerEntity player, LivingEntity owner, PlayerEntity target, Text title, ItemStack stack, boolean equip, boolean armor, int cards) {
-        if (player.getWorld().isClient) return;
+        if (player.getEntityWorld().isClient()) return;
         var tempInv = new TempInventory(player, owner, stack, cards, equip, armor);
         var rows = tempInv.rowsToShow;
         var payload = new SimplePayload(Integer.toString(target.getId()), rows.toString());
@@ -344,7 +347,7 @@ public class ModTools {
     }
 
     public static void openMenu(PlayerEntity player, PlayerEntity target, ItemStack stack, List<ItemStack> stacks, Text title) {
-        if (player.getWorld().isClient) return;
+        if (player.getEntityWorld().isClient()) return;
         var tempInv = new TempInventory(player, stack, stacks);
         var rows = tempInv.rowsToShow;
         var payload = new SimplePayload(Integer.toString(target.getId()), rows.toString());
@@ -367,7 +370,7 @@ public class ModTools {
     }
 
     public static DamageSource damageSource(Entity source, RegistryKey<DamageType> type) {
-        return new DamageSource(source.getWorld().getRegistryManager().getOrThrow(RegistryKeys.DAMAGE_TYPE).getOrThrow(type), source);
+        return new DamageSource(source.getEntityWorld().getRegistryManager().getOrThrow(RegistryKeys.DAMAGE_TYPE).getOrThrow(type), source);
     }
 
     public static void writeDamage(DamageSource source, float amount, boolean returnShan, ItemStack stack) {
@@ -386,13 +389,13 @@ public class ModTools {
     }
     //牌堆记录闪避伤害的方法
     public static Pair<Pair<DamageSource, Float>, ItemStack> getDamage(PlayerEntity player) {
-        if (player.getWorld() instanceof ServerWorld world) {
+        if (player.getEntityWorld() instanceof ServerWorld world) {
             ItemStack stack = trinketItem(ModItems.CARD_PILE, player);
             NbtCompound compound = getOrCreateNbt(stack);
             if (compound.contains("DamageDodged")) {
                 NbtCompound nbt = compound.getList("DamageDodged").orElseThrow().getCompound(0).orElseThrow();
                 RegistryKey<DamageType> type = RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of(nbt.getString("type").orElseThrow()));
-                var entry = player.getWorld().getRegistryManager().getOrThrow(RegistryKeys.DAMAGE_TYPE).getOrThrow(type);
+                var entry = player.getEntityWorld().getRegistryManager().getOrThrow(RegistryKeys.DAMAGE_TYPE).getOrThrow(type);
                 Entity source = world.getEntityById(nbt.getInt("source").orElse(0));
                 Entity attacker = world.getEntityById(nbt.getInt("attacker").orElse(0));
                 DamageSource damageSource = new DamageSource(entry, source, attacker);
@@ -405,11 +408,11 @@ public class ModTools {
         return null;
     }
 
-    public static ServerWorld world(Entity entity) {return (ServerWorld) entity.getWorld();}
+    public static ServerWorld world(Entity entity) {return (ServerWorld) entity.getEntityWorld();}
 
     /**一个用于简便执行多条服务器指令的方法*/
     public static void excuteServerCommand(Entity entity, String... commands) {
-        if (entity.getWorld() instanceof ServerWorld world) {
+        if (entity.getEntityWorld() instanceof ServerWorld world) {
             var server = world.getServer();
             var dispatcher = server.getCommandManager().getDispatcher();
             var commandSource = entity.getCommandSource(world).withLevel(2).withSilent();
@@ -432,8 +435,8 @@ public class ModTools {
     }
 
     public static List<LivingEntity> getSkillOwners(LivingEntity entity) {
-        if (entity.getWorld().isClient) return List.of();
-        return new ArrayList<>(Objects.requireNonNull(entity.getServer()).getPlayerManager().getPlayerList());
+        if (entity.getEntityWorld().isClient()) return List.of();
+        return new ArrayList<>(Objects.requireNonNull(entity.getEntityWorld().getServer()).getPlayerManager().getPlayerList());
     }
 
     public static List<Skill> getSkillsMayUse(LivingEntity entity) {
@@ -482,6 +485,11 @@ public class ModTools {
     }
     public static void addTag(Entity entity, String name, String suffix) {
         entity.addCommandTag(name + "_" + suffix);
+    }
+
+    public static boolean hasShiftDown() {
+        return InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), GLFW.GLFW_KEY_LEFT_SHIFT)
+                || InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow(), GLFW.GLFW_KEY_RIGHT_SHIFT);
     }
 
 }

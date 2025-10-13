@@ -14,7 +14,7 @@ public class WuzhongItem extends CardItem.Armoury {
 
     @Override
     public ActionResult use(World world, PlayerEntity user, Hand hand) {
-        if (!world.isClient) {
+        if (!world.isClient()) {
             onUse(user, user.getStackInHand(hand), hand, user);
             return ActionResult.SUCCESS_SERVER;
         }

@@ -144,7 +144,7 @@ public class ModItems {
     LET_ME_CC = register("let_me_cc", LetMeCCItem::new, 1),
     //阳光开朗的笑容
     SUNSHINE_SMILE = register("sunshine_smile", SunshineSmile::new, new Item.Settings().maxDamage(999).rarity(Rarity.UNCOMMON).equippable(EquipmentSlot.HEAD).enchantable(25).component(DataComponentTypes.UNBREAKABLE, Unit.INSTANCE)),
-    XUYOU_SPAWN_EGG = register("xuyou_spawn_egg", s -> new SpawnEggItem(ModEntity.XUYOU, s)),
+    XUYOU_SPAWN_EGG = register("xuyou_spawn_egg", SpawnEggItem::new, new Item.Settings().spawnEgg(ModEntity.XUYOU)),
     GUDING_ITEM = register("guding", Item::new),
     INCOMPLETE_GUDINGDAO = register("incomplete_gdd", Item::new, 1);
     public static final CardItem EMPTY_CARD = register("empty_card", CardItem.Empty::new);

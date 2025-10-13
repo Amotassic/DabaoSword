@@ -37,7 +37,7 @@ public class SkillItem extends Item implements ISkill {
 
     @Override
     public void inventoryTick(ItemStack stack, ServerWorld world, Entity entity, @Nullable EquipmentSlot slot) {
-        if (!world.isClient && equipped(stack)) setEquipped(stack, false);
+        if (!world.isClient() && equipped(stack)) setEquipped(stack, false);
     }
 
     @Override @SuppressWarnings("deprecation")
@@ -58,7 +58,7 @@ public class SkillItem extends Item implements ISkill {
 
     @Override
     public ActionResult use(World world, PlayerEntity user, Hand hand) {
-        if (!user.getWorld().isClient && user.getCommandTags().contains("change_skill") && hand == Hand.OFF_HAND && user.isSneaking()) {
+        if (!user.getEntityWorld().isClient() && user.getCommandTags().contains("change_skill") && hand == Hand.OFF_HAND && user.isSneaking()) {
             ItemStack stack = user.getOffHandStack();
             if (stack.getItem() instanceof SkillItem) {
                 stack.setCount(0);

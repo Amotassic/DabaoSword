@@ -6,7 +6,6 @@ import com.amotassic.dabaosword.api.card.Rank;
 import com.amotassic.dabaosword.api.card.Suit;
 import com.amotassic.dabaosword.api.skill.Trigger;
 import com.amotassic.dabaosword.item.ModItems;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.CustomModelDataComponent;
 import net.minecraft.component.type.TooltipDisplayComponent;
@@ -74,7 +73,7 @@ public abstract class CardItem extends Item {
         }
 
         if (stack.isOf(ModItems.BINGLIANG_ITEM)) {
-            if (Screen.hasShiftDown()) {
+            if (hasShiftDown()) {
                 tooltip.add(getTip("1"));
                 tooltip.add(getTip("2"));
             } else {
@@ -84,7 +83,7 @@ public abstract class CardItem extends Item {
         }
 
         if (stack.isOf(ModItems.TOO_HAPPY_ITEM)) {
-            if (Screen.hasShiftDown()) {
+            if (hasShiftDown()) {
                 tooltip.add(getTip("1"));
                 tooltip.add(getTip("2"));
             } else {
@@ -98,7 +97,7 @@ public abstract class CardItem extends Item {
         }
 
         if (stack.isOf(ModItems.WANJIAN)) { //有大病的工具提示
-            if (Screen.hasShiftDown()) {
+            if (hasShiftDown()) {
                 int i = (int) (System.currentTimeMillis() / 1000) % 7;
                 switch (i) {
                     case 1 -> tooltip.add(getTip("1", AQUA));
@@ -170,7 +169,7 @@ public abstract class CardItem extends Item {
     }
 
     public static void addModel(ItemStack stack, World world) {
-        if (world.isClient) return;
+        if (world.isClient()) return;
         if (stack.get(DataComponentTypes.CUSTOM_MODEL_DATA) != null) return;
         var card = c(stack);
         if (card.suit == Suit.None || card.rank == Rank.None) return;

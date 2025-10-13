@@ -38,7 +38,7 @@ public class PlayerEvents implements PlayerDeathCallback, PlayerRespawnCallback 
 
     @Override
     public void onDeath(ServerPlayerEntity player, DamageSource source) {
-        if (player.getWorld() instanceof ServerWorld world) {
+        if (player.getEntityWorld() instanceof ServerWorld world) {
             Entity attacker = source.getAttacker();
             if (!(attacker instanceof PlayerEntity)) attacker = player.getPrimeAdversary();
 
@@ -105,7 +105,7 @@ public class PlayerEvents implements PlayerDeathCallback, PlayerRespawnCallback 
 
     @Override
     public void onPlayerRespawn(ServerPlayerEntity oldPlayer, ServerPlayerEntity player) {
-        if (player.getWorld() instanceof ServerWorld world) {
+        if (player.getEntityWorld() instanceof ServerWorld world) {
 
             boolean card = world.getGameRules().getBoolean(Gamerule.CLEAR_CARDS_AFTER_DEATH);
             if (card && hasTrinket(ModItems.CARD_PILE, player)) {

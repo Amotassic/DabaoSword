@@ -13,7 +13,7 @@ public class TooHappyItem extends CardItem.Armoury {
 
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (!user.getWorld().isClient) {
+        if (!user.getEntityWorld().isClient()) {
             onUse(user, user.getStackInHand(hand), hand, entity);
             return ActionResult.SUCCESS_SERVER;
         }

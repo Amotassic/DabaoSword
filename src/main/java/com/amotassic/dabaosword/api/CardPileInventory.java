@@ -26,9 +26,6 @@ public class CardPileInventory implements Inventory {
         readNbt();
     }
 
-    @Override
-    public void onClose(PlayerEntity player) {writeNbtToStack();}
-
     public int getEmptySlot() {
         for (int i = 0; i < size(); ++i) {
             if (!cards.get(i).isEmpty()) continue;
@@ -46,7 +43,7 @@ public class CardPileInventory implements Inventory {
     }
 
     public void writeNbtToStack() { //当涉及牌堆物品变化后，必须调用这个方法
-        if (player.getWorld().isClient()) return;
+        if (player.getEntityWorld().isClient()) return;
         NbtList nbtList;
         try (ErrorReporter.Logging logging = new ErrorReporter.Logging(player.getErrorReporterContext(), DabaoSword.LOGGER)) {
             var view = NbtWriteView.create(logging, player.getRegistryManager());

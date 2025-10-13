@@ -48,7 +48,7 @@ public class GameManager extends PersistentState {
     @Nullable
     public Game createGame(ServerPlayerEntity player, int type) {
         Box box = new Box(player.getBlockPos()).expand(ModConfig.SearchRadius);
-        List<PlayerEntity> players = player.getWorld().getEntitiesByClass(PlayerEntity.class, box, p -> !p.isSpectator() && !isPlayerInGame(p));
+        List<PlayerEntity> players = player.getEntityWorld().getEntitiesByClass(PlayerEntity.class, box, p -> !p.isSpectator() && !isPlayerInGame(p));
         if (players.size() < 2) {
             player.sendMessage(Text.literal("Not enough players to start a game!").formatted(Formatting.RED));
             return null;
@@ -71,6 +71,7 @@ public class GameManager extends PersistentState {
     }
 
     /**判断玩家是否已经加入任意一场对战*/
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isPlayerInGame(PlayerEntity player) {return getGameByPlayer(player) != null;}
 
     public void tick(ServerWorld world) {

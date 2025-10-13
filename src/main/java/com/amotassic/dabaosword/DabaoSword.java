@@ -14,7 +14,7 @@ import com.amotassic.dabaosword.util.Tags;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
 import net.minecraft.item.ItemGroups;
 import net.minecraft.item.Items;
 import net.minecraft.resource.ResourceType;
@@ -34,8 +34,7 @@ public class DabaoSword implements ModInitializer {
         long start = System.currentTimeMillis();
         SkillCards.register();
         LOGGER.info("Loaded all skills in {}ms", System.currentTimeMillis() - start);
-        ResourceManagerHelper helper = ResourceManagerHelper.get(ResourceType.SERVER_DATA);
-        helper.registerReloadListener(CardSuitAndRank.INSTANCE);
+        ResourceLoader.get(ResourceType.SERVER_DATA).registerReloader(CardSuitAndRank.ID, new CardSuitAndRank());
         ModDT.init();
         Tags.Tag();
         Gamerule.registerGamerules();

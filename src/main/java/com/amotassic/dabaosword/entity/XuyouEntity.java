@@ -72,7 +72,7 @@ public class XuyouEntity extends HostileEntity implements RangedAttackMob {
 
     @Override
     public void tickMovement() {
-        if (getWorld().getTime() % 200 == 0) draw(this);
+        if (getEntityWorld().getTime() % 200 == 0) draw(this);
         if (bbTimes >= 5) {
             goalSelector.remove(bb);
             bbTimes = 0; bbcd = 150;
@@ -99,7 +99,7 @@ public class XuyouEntity extends HostileEntity implements RangedAttackMob {
     @Override
     public void onDeath(DamageSource damageSource) {
         super.onDeath(damageSource);
-        if (getWorld().isClient) return;
+        if (getEntityWorld().isClient()) return;
         var data = d();
         for (var stack : allTrinkets(this)) {
             if(isCard(stack)) data.cards(stack, stack.getCount(), true);

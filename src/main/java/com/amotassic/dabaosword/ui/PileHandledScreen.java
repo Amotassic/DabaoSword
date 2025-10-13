@@ -3,6 +3,7 @@ package com.amotassic.dabaosword.ui;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.Text;
@@ -32,11 +33,11 @@ public class PileHandledScreen extends HandledScreen<PileScreenHandler> {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (client != null && client.interactionManager != null && focusedSlot!= null && keyCode == 261) {
+    public boolean keyPressed(KeyInput input) {
+        if (client != null && client.interactionManager != null && focusedSlot!= null && input.key()== 261) {
             client.interactionManager.clickSlot(handler.syncId, focusedSlot.id, 114, SlotActionType.THROW, client.player);
             return true;
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(input);
     }
 }

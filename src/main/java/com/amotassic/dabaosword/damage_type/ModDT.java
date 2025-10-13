@@ -36,7 +36,7 @@ public class ModDT {
 
     private static DamageSource create(Entity entity, RegistryKey<DamageType> key, boolean... notFromEntity) {
         boolean bl = notFromEntity.length > 0 && notFromEntity[0];
-        var entry = entity.getWorld().getRegistryManager().getOrThrow(RegistryKeys.DAMAGE_TYPE).getOrThrow(key);
+        var entry = entity.getEntityWorld().getRegistryManager().getOrThrow(RegistryKeys.DAMAGE_TYPE).getOrThrow(key);
         Entity source = bl ? null : entity;
         return new DamageSource(entry, source);
     }

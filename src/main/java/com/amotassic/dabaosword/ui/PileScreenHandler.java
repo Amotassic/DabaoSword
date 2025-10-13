@@ -46,7 +46,7 @@ public class PileScreenHandler extends ScreenHandler {
     @Override
     public void onClosed(PlayerEntity player) {
         super.onClosed(player);
-        this.inventory.onClose(player);
+        this.inventory.writeNbtToStack();
     }
 
     @Override
@@ -75,7 +75,7 @@ public class PileScreenHandler extends ScreenHandler {
 
     @Override
     public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
-        if (button == 114 && !player.getWorld().isClient) {
+        if (button == 114 && !player.getEntityWorld().isClient()) {
             ItemStack pile = trinketItem(ModItems.CARD_PILE, player);
             NbtCompound nbt = getOrCreateNbt(pile);
             int dropped = nbt.getInt("DroppedCards").orElse(0);

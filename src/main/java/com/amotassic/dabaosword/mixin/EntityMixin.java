@@ -92,7 +92,7 @@ abstract class FireballEntityMixin extends AbstractFireballEntity {
 
     @ModifyArgs(method = "onCollision", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;createExplosion(Lnet/minecraft/entity/Entity;DDDFZLnet/minecraft/world/World$ExplosionSourceType;)V"))
     public void onCollision(Args args) {
-        if (getWorld() instanceof ServerWorld) {
+        if (getEntityWorld() instanceof ServerWorld) {
             if (!ModConfig.FireAttackBreaksBlock && getCommandTags().contains("a")) {
                 args.set(5, false);
                 args.set(6, World.ExplosionSourceType.NONE);
@@ -143,10 +143,10 @@ abstract class ItemEntityMixin extends Entity {
     @Inject(method = "tick", at = @At("HEAD"))
     public void tick(CallbackInfo ci) {
         if (isCard(this.getStack())) this.resetPickupDelay();
-        if (getWorld() instanceof ServerWorld world) {
+        if (getEntityWorld() instanceof ServerWorld world) {
             Entity follow = world.getEntity(owner);
             if (world.getTime() % 20 == 0 && getCommandTags().contains("follow_owner") && follow != null) {
-                teleport((ServerWorld) follow.getWorld(), follow.getX(), follow.getY(), follow.getZ(), new HashSet<>(), getPitch(), getYaw(), false);
+                teleport((ServerWorld) follow.getEntityWorld(), follow.getX(), follow.getY(), follow.getZ(), new HashSet<>(), getPitch(), getYaw(), false);
             }
         }
 

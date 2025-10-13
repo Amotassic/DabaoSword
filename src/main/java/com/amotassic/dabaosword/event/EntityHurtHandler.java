@@ -56,7 +56,7 @@ public class EntityHurtHandler implements EntityHurtCallback {
 
     @Override
     public void hurtEntity(LivingEntity entity, DamageSource source, float amount) {
-        if (entity.getWorld() instanceof ServerWorld) {
+        if (entity.getEntityWorld() instanceof ServerWorld) {
 
             tiesuoTrigger(entity, source, amount);
 

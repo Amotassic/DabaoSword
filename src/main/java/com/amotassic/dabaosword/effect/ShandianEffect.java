@@ -27,7 +27,7 @@ public class ShandianEffect extends StatusEffect {
     }
 
     public static void summonLightning(LivingEntity entity, boolean cosmetic, boolean tag) {
-        if (entity.getWorld() instanceof ServerWorld world) {
+        if (entity.getEntityWorld() instanceof ServerWorld world) {
             LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(world, SpawnReason.MOB_SUMMONED);
             if (lightning != null) {
                 lightning.refreshPositionAfterTeleport(entity.getX(), entity.getY(), entity.getZ());

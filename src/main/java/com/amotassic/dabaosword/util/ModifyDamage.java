@@ -143,7 +143,7 @@ public class ModifyDamage {
     }
 
     public static boolean warmWine(LivingEntity entity, DamageSource source) {
-        if (entity.getWorld() instanceof ServerWorld world) {
+        if (entity.getEntityWorld() instanceof ServerWorld world) {
             if (source.getAttacker() instanceof PlayerEntity player && !player.getCommandTags().contains("sha")) {
                 ItemStack wine = getItem(player, p(ModItems.WARM_WINE));
                 if (wine.isEmpty()) return false;

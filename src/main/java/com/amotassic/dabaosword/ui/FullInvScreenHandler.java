@@ -36,7 +36,7 @@ public class FullInvScreenHandler extends ScreenHandler {
 
     public FullInvScreenHandler(int syncId, PlayerInventory inv, SimplePayload buf) {
         super(ModItems.FULL_INV_SCREEN_HANDLER, syncId);
-        this.target = (LivingEntity) inv.player.getWorld().getEntityById(Integer.parseInt(buf.name()));
+        this.target = (LivingEntity) inv.player.getEntityWorld().getEntityById(Integer.parseInt(buf.name()));
         this.editable = Boolean.parseBoolean(buf.value());
         this.inventory = new EntityInventory(target, editable);
         this.slotsEnabled = inventory.slotIndexes;
@@ -90,7 +90,7 @@ public class FullInvScreenHandler extends ScreenHandler {
     @Override
     public void onSlotClick(int slotIndex, int button, SlotActionType actionType, PlayerEntity player) {
         if (editable) {
-            if (button == 114 && !player.getWorld().isClient) {
+            if (button == 114 && !player.getEntityWorld().isClient()) {
                 getSlot(slotIndex).setStack(ItemStack.EMPTY);
                 return;
             }

@@ -16,7 +16,7 @@ public class JiedaoItem extends CardItem.Armoury {
 
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (!user.getWorld().isClient && !entity.getMainHandStack().isEmpty()) {
+        if (!user.getEntityWorld().isClient() && !entity.getMainHandStack().isEmpty()) {
             onUse(user, user.getStackInHand(hand), hand, entity);
             return ActionResult.SUCCESS_SERVER;
         }

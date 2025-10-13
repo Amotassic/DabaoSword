@@ -7,7 +7,6 @@ import com.amotassic.dabaosword.item.card.CardItem;
 import dev.emi.trinkets.TrinketSlot;
 import dev.emi.trinkets.api.SlotReference;
 import dev.emi.trinkets.api.TrinketsApi;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
@@ -42,7 +41,7 @@ public class Equipment extends CardItem implements ISkill {
     @Override
     public void inventoryTick(ItemStack stack, ServerWorld world, Entity entity, @Nullable EquipmentSlot slot) {
         super.inventoryTick(stack, world, entity, slot);
-        if (!world.isClient && equipped(stack)) setEquipped(stack, false);
+        if (!world.isClient() && equipped(stack)) setEquipped(stack, false);
     }
 
     @Override
@@ -50,7 +49,7 @@ public class Equipment extends CardItem implements ISkill {
         List<Text> tooltip = new ArrayList<>();
         addSRTip(c(stack), tooltip); addTip(s(stack), tooltip);
 
-        if (Screen.hasShiftDown()) {
+        if (hasShiftDown()) {
             tooltip.add(Text.translatable("equipment.tip1").formatted(BOLD));
             tooltip.add(Text.translatable("equipment.tip2").formatted(BOLD));
         } else tooltip.add(Text.translatable("dabaosword.shift_tip", Text.keybind("key.sneak")));
@@ -73,7 +72,7 @@ public class Equipment extends CardItem implements ISkill {
     @Override
     public ActionResult use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
-        if (!world.isClient) {
+        if (!world.isClient()) {
             onUse(user, stack, hand, user);
             return ActionResult.SUCCESS_SERVER;
         }

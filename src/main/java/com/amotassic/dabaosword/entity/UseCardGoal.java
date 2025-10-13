@@ -35,7 +35,7 @@ public class UseCardGoal extends Goal {
 
     @Override
     public void tick() {
-        if (mob.getWorld().getTime() % 20 != 0) return;
+        if (mob.getEntityWorld().getTime() % 20 != 0) return;
         for (ItemStack card : getCards()) {
             if (isEquipment.test(card)) onUse(mob, card, null, mob);
             if (isSha.test(card) || card.isOf(ModItems.SHAN) || card.isOf(ModItems.WUXIE)) continue;

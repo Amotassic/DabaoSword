@@ -8,7 +8,6 @@ import com.amotassic.dabaosword.item.card.CardItem;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -21,9 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class CardSuitAndRank extends SimpleJsonDataLoader implements IdentifiableResourceReloadListener {
+public class CardSuitAndRank extends SimpleJsonDataLoader {
     private static final ResourceFinder FINDER = ResourceFinder.json("default_suit_and_rank");
-    public static final CardSuitAndRank INSTANCE = new CardSuitAndRank();
+    public static final Identifier ID = Identifier.of("dabaosword", "default_suit_and_rank");
     // 所有的牌
     public static final List<ItemStack> ALL_CARDS = new ArrayList<>();
 
@@ -58,10 +57,5 @@ public class CardSuitAndRank extends SimpleJsonDataLoader implements Identifiabl
             }
         }
         DabaoSword.LOGGER.info("Loaded {} cards", ALL_CARDS.size());
-    }
-
-    @Override
-    public Identifier getFabricId() {
-        return Identifier.of("dabaosword", "default_suit_and_rank");
     }
 }

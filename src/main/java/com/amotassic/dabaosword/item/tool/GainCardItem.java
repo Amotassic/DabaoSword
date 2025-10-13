@@ -28,7 +28,7 @@ public class GainCardItem extends Item {
 
     @Override
     public void inventoryTick(ItemStack stack, ServerWorld world, Entity entity, @Nullable EquipmentSlot slot) {
-        if (!entity.getWorld().isClient && entity instanceof PlayerEntity player) {
+        if (!entity.getEntityWorld().isClient() && entity instanceof PlayerEntity player) {
             if (!player.isCreative() && !player.isSpectator()) {
                 draw(player, stack.getCount());
                 stack.setCount(0);
@@ -38,7 +38,7 @@ public class GainCardItem extends Item {
 
     @Override
     public ActionResult use(World world, PlayerEntity user, Hand hand) {
-        if (!world.isClient && hand == Hand.MAIN_HAND) {
+        if (!world.isClient() && hand == Hand.MAIN_HAND) {
             int m;
             if (user.isSneaking()) m=user.getMainHandStack().getCount(); else m=1;
             draw(user,m);

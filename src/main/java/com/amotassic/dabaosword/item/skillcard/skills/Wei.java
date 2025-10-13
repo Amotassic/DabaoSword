@@ -249,7 +249,7 @@ public class Wei {
 
         @Override
         public void tickSkill(Skill skill, LivingEntity entity) {
-            if (entity.getWorld().getTime() % 600 == 0 && entity instanceof PlayerEntity player) { // 每30s触发扣体力上限
+            if (entity.getEntityWorld().getTime() % 600 == 0 && entity instanceof PlayerEntity player) { // 每30s触发扣体力上限
                 int extraHP = skill.getTag();
                 if (extraHP >= 5 && !player.isCreative() && !player.isSpectator()) {
                     draw(player, 2);
@@ -342,7 +342,7 @@ public class Wei {
             voice(player, this);
             while (true) {
                 var card = newCard();
-                player.getWorld().getPlayers().forEach(p -> p.sendMessage(Text.translatable("item.dabaosword.luoshen.result", player.getDisplayName(), card.toHoverableText()), false));
+                player.getEntityWorld().getPlayers().forEach(p -> p.sendMessage(Text.translatable("item.dabaosword.luoshen.result", player.getDisplayName(), card.toHoverableText()), false));
                 if (isBlackCard.test(card)) give(player, card);
                 else break;
             }
@@ -369,7 +369,7 @@ public class Wei {
 
         @Override
         public ActionResult use(World world, PlayerEntity user, Hand hand) {
-            if (!world.isClient && !user.isSneaking()) voice(user, this);
+            if (!world.isClient() && !user.isSneaking()) voice(user, this);
             return super.use(world, user, hand);
         }
 
@@ -441,7 +441,7 @@ public class Wei {
 
         @Override
         public ActionResult use(World world, PlayerEntity user, Hand hand) {
-            if (!world.isClient && !user.isSneaking()) voice(user, "zili");
+            if (!world.isClient() && !user.isSneaking()) voice(user, "zili");
             return super.use(world, user, hand);
         }
 

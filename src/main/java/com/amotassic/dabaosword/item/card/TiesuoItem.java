@@ -23,9 +23,9 @@ public class TiesuoItem extends CardItem.Armoury {
     //原始的铁索连环
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (!user.getWorld().isClient && !entity.isGlowing() && !user.getOffHandStack().isOf(Items.KNOWLEDGE_BOOK)) {
+        if (!user.getEntityWorld().isClient() && !entity.isGlowing() && !user.getOffHandStack().isOf(Items.KNOWLEDGE_BOOK)) {
             Box box = new Box(entity.getBlockPos()).expand(5);
-            Set<LivingEntity> targets = new HashSet<>(user.getWorld().getEntitiesByClass(LivingEntity.class, box, LivingEntity::isAlive));
+            Set<LivingEntity> targets = new HashSet<>(user.getEntityWorld().getEntitiesByClass(LivingEntity.class, box, LivingEntity::isAlive));
             targets.remove(user);
             onUse(user, user.getStackInHand(hand), hand, targets.toArray(new LivingEntity[0]));
             user.removeStatusEffect(StatusEffects.GLOWING);
@@ -42,7 +42,7 @@ public class TiesuoItem extends CardItem.Armoury {
     //使用战技时播放纳西妲的语音
     @Override
     public ActionResult use(World world, PlayerEntity user, Hand hand) {
-        if (!world.isClient && user.getOffHandStack().isOf(Items.KNOWLEDGE_BOOK)) {
+        if (!world.isClient() && user.getOffHandStack().isOf(Items.KNOWLEDGE_BOOK)) {
             voice(user, "nahida", 3);
         }
         return ItemUsage.consumeHeldItem(world, user, hand);
@@ -52,7 +52,7 @@ public class TiesuoItem extends CardItem.Armoury {
     //看到的就连上
     @Override
     public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
-        if (!world.isClient && user.getOffHandStack().isOf(Items.KNOWLEDGE_BOOK)) {
+        if (!world.isClient() && user.getOffHandStack().isOf(Items.KNOWLEDGE_BOOK)) {
             Box box = user.getBoundingBox().stretch(user.getRotationVec(1.0F).multiply(20))
                     .expand(1.0D, 1.0D, 1.0D);
             for (LivingEntity entity : world.getEntitiesByClass(LivingEntity.class, box, LivingEntity::isAlive)) {
@@ -63,7 +63,7 @@ public class TiesuoItem extends CardItem.Armoury {
 
     @Override
     public boolean onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
-        if (!world.isClient && user.getOffHandStack().isOf(Items.KNOWLEDGE_BOOK)) {
+        if (!world.isClient() && user.getOffHandStack().isOf(Items.KNOWLEDGE_BOOK)) {
             if (user instanceof PlayerEntity player && !player.isCreative()) {stack.decrement(1);}
         }
         user.removeStatusEffect(StatusEffects.GLOWING);

@@ -48,7 +48,7 @@ public class Wu {
                 var nbt = skill.getNbt(); var chuang = nbt.getString("Chuang").orElse("");
                 if (chuang.length() > 36) return 0;
                 var card = c(newCard());
-                player.getWorld().getPlayers().forEach(p -> p.sendMessage(Text.translatable("buqu.tip1", player.getDisplayName(), skill.toHoverableText(), card.toStack().toHoverableText(), card.rank.rank), false));
+                player.getEntityWorld().getPlayers().forEach(p -> p.sendMessage(Text.translatable("buqu.tip1", player.getDisplayName(), skill.toHoverableText(), card.toStack().toHoverableText(), card.rank.rank), false));
                 if (chuang.isEmpty()) {
                     nbt.putString("Chuang", card.rank.rank);
                     voice(player, this);
@@ -145,13 +145,13 @@ public class Wu {
 
         @Override
         public void tickSkill(Skill skill, LivingEntity entity) {
-            if (entity instanceof PlayerEntity player && player.getWorld().getTime() % 10 == 0) {
+            if (entity instanceof PlayerEntity player && player.getEntityWorld().getTime() % 10 == 0) {
                 int cd = skill.getCD();
                 if (cd == 21 || cd == 0) { //目标超时未选择花色，寻找有标签的目标，随机选择一种花色
                     String tag = FJ + "_" + player.getName().getString();
                     Predicate<LivingEntity> p = e -> hasTag(e, tag);
                     var target = getClosestEntity(player, LivingEntity.class, 20, p);
-                    if (target == null) target = player.getWorld().getPlayers().stream().filter(p).findFirst().orElse(null);
+                    if (target == null) target = player.getEntityWorld().getPlayers().stream().filter(p).findFirst().orElse(null);
                     if (target == null) return;
                     if (cd == 21) this.triggerSkill(player, skill, target, new Random().nextInt(4) + 1);
                     removeTag(target, tag);
@@ -256,7 +256,7 @@ public class Wu {
 
         @Override
         public void tickSkill(Skill skill, LivingEntity entity) {
-            if (entity.getWorld() instanceof ServerWorld world) {
+            if (entity.getEntityWorld() instanceof ServerWorld world) {
                 int cd = skill.getCD();
                 if (world.getTime() % 20 == 0 && cd == 1) { //确保一秒内只触发一次
                     draw(entity);

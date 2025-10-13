@@ -63,7 +63,7 @@ public record SimplePayload(String name, String value) implements CustomPayload 
             return;
         }
         int id = Integer.parseInt(target);
-        LivingEntity entity = (LivingEntity) player.getWorld().getEntityById(id);
+        LivingEntity entity = (LivingEntity) player.getEntityWorld().getEntityById(id);
         for (var skill : getSkillsMayUse(player)) if (player != entity && skill.activeSkill(player, skill, entity)) return;
         for (var skill : getSkillsMayUse(player)) if (skill.activeSkill(player, skill)) return;
     }

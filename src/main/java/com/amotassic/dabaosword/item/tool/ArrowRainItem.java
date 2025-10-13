@@ -32,7 +32,7 @@ public class ArrowRainItem extends Item {
     @Override
     public ActionResult use(World world, PlayerEntity playerEntity, Hand hand) {
         ItemStack stack = playerEntity.getMainHandStack();
-        if (hand == Hand.MAIN_HAND && !world.isClient) {
+        if (hand == Hand.MAIN_HAND && !world.isClient()) {
             arrowRain(playerEntity, 5, 5);
             if (!playerEntity.isCreative()) stack.damage(1, playerEntity, EquipmentSlot.MAINHAND);
             return ActionResult.SUCCESS_SERVER;
@@ -41,7 +41,7 @@ public class ArrowRainItem extends Item {
     }
 
     public static void arrowRain(LivingEntity entity, float speed, int count) {
-        ServerWorld world = (ServerWorld) entity.getWorld();
+        ServerWorld world = (ServerWorld) entity.getEntityWorld();
         for (int i = 0; i < count; i++) {
             int j;
             if (i % 2 == 0) j = -5 * i / 2; else j = 5 * (i + 1) / 2;
@@ -52,7 +52,7 @@ public class ArrowRainItem extends Item {
 
     private static void summonArrow(LivingEntity entity, int angle, float speed) {
         ItemStack stack = new ItemStack(Items.ARROW);
-        ServerWorld world = (ServerWorld) entity.getWorld();
+        ServerWorld world = (ServerWorld) entity.getEntityWorld();
         ArrowEntity arrow = new ArrowEntity(world, entity, stack, null);
         arrow.addCommandTag("a");
         arrow.setVelocity(entity, entity.getPitch(), entity.getYaw() + angle, 0.0F, speed, 1.0F);
@@ -62,7 +62,7 @@ public class ArrowRainItem extends Item {
 
     //effect give @e[type=minecraft:iron_golem,limit=1,sort=nearest] dabaosword:cooldown2 1 4 true
     public static void arrowAround(LivingEntity entity, float speed, int count, double radius, double height) {
-        ServerWorld world = (ServerWorld) entity.getWorld();
+        ServerWorld world = (ServerWorld) entity.getEntityWorld();
         for (int i = 0; i < count; i++) {
             // 计算角度
             float angle = (float) (i * (360.0 / count));
@@ -80,7 +80,7 @@ public class ArrowRainItem extends Item {
     }
 
     private static void summonArrowToEntity(LivingEntity target, double x, double y, double z, float speed) {
-        ServerWorld world = (ServerWorld) target.getWorld();
+        ServerWorld world = (ServerWorld) target.getEntityWorld();
         ArrowEntity arrow = new ArrowEntity(world, x, y, z, new ItemStack(Items.ARROW), null);
         arrow.addCommandTag("cosmetic");
         // 计算箭的速度向量
@@ -94,7 +94,7 @@ public class ArrowRainItem extends Item {
     }
 
     public static void tridentStorm(LivingEntity entity, float speed, int count, double radius, double height) {
-        ServerWorld world = (ServerWorld) entity.getWorld();
+        ServerWorld world = (ServerWorld) entity.getEntityWorld();
         for (int i = 0; i < count; i++) {
             float angle = (float) (i * (360.0 / count));
             double radians = Math.toRadians(angle);
@@ -109,7 +109,7 @@ public class ArrowRainItem extends Item {
     }
 
     private static void summonTridentToEntity(LivingEntity target, double x, double y, double z, float speed) {
-        ServerWorld world = (ServerWorld) target.getWorld();
+        ServerWorld world = (ServerWorld) target.getEntityWorld();
         TridentEntity trident = new TridentEntity(world, target, new ItemStack(Items.TRIDENT));
         trident.addCommandTag("a");
         double dx = target.getX() - x;

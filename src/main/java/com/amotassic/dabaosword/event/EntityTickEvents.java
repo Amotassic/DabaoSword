@@ -32,7 +32,7 @@ import static dev.emi.trinkets.api.TrinketsApi.getTrinketComponent;
 public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityTick.EndPlayerTick {
     @Override
     public void endLivingTick(LivingEntity entity) {
-        if (entity.getWorld() instanceof ServerWorld world) {
+        if (entity.getEntityWorld() instanceof ServerWorld world) {
             long time = world.getTime();
             if (time % 2 == 0) {
                 String[] tags = {"sha", "juedou", "nanman", "wanjian"};
@@ -72,7 +72,7 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
 
     @Override
     public void endPlayerTick(PlayerEntity player) {
-        if (player.getWorld() instanceof ServerWorld world) {
+        if (player.getEntityWorld() instanceof ServerWorld world) {
             var time = world.getTime();
             int giveCard = world.getGameRules().getInt(Gamerule.GIVE_CARD_INTERVAL) * 20;
             boolean limit = world.getGameRules().getBoolean(Gamerule.ENABLE_CARDS_LIMIT);
@@ -129,7 +129,7 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
 
     private void decreaseAttackRange(LivingEntity entity) {
         Box box = new Box(entity.getBlockPos()).expand(20);
-        for (LivingEntity target : entity.getWorld().getEntitiesByClass(LivingEntity.class, box, living -> living != entity && living.hasStatusEffect(ModItems.DEFEND) && isLooking(entity, living))) {
+        for (LivingEntity target : entity.getEntityWorld().getEntitiesByClass(LivingEntity.class, box, living -> living != entity && living.hasStatusEffect(ModItems.DEFEND) && isLooking(entity, living))) {
             //实现沈佳宜的效果：若玩家看到的玩家有近战防御效果，则给当前玩家攻击范围缩短效果
             int amplifier = Objects.requireNonNull(target.getStatusEffect(ModItems.DEFEND)).getAmplifier();
             entity.addStatusEffect(new StatusEffectInstance(ModItems.DEFENDED, 2, amplifier,false,false,true));
@@ -146,7 +146,7 @@ public class EntityTickEvents implements EndEntityTick.EndLivingTick, EndEntityT
 
     public static boolean isEyeContact(Entity entity1, Entity entity2, float angle) {
         double MAX_ANGLE = Math.toRadians(angle);
-        Vec3d pos1 = entity1.getPos(); Vec3d pos2 = entity2.getPos();
+        Vec3d pos1 = entity1.getEntityPos(); Vec3d pos2 = entity2.getEntityPos();
         // 计算从生物 1 到生物 2 的向量
         Vec3d d = pos2.subtract(pos1);
         // 获取生物的视线方向

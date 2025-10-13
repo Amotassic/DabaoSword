@@ -44,7 +44,7 @@ public abstract class LivingEntityMixin extends Entity {
     private void damageMixin(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         //恭喜你发现了彩蛋！副手拿着幽匿催发体，然后尽情享受弹射物带来的快乐吧！
         if (source.isIn(DamageTypeTags.IS_PROJECTILE) && source.getAttacker() instanceof LivingEntity attacker && attacker.getOffHandStack().isOf(Items.SCULK_CATALYST)) {
-            Vec3d vec3d = attacker.getPos().add(0.0, 1.5f, 0.0);
+            Vec3d vec3d = attacker.getEntityPos().add(0.0, 1.5f, 0.0);
             Vec3d vec3d2 = this.getEyePos().subtract(vec3d);
             Vec3d vec3d3 = vec3d2.normalize();
             for (int i = 1; i < MathHelper.floor(vec3d2.length()) + 7; ++i) {
@@ -64,6 +64,11 @@ public abstract class LivingEntityMixin extends Entity {
         int i = ModifyDamage.shouldCancel(living, source, amount);
         if (i == 1) cir.setReturnValue(false);
         if (i == 2) cir.setReturnValue(true);
+    }
+
+    @Inject(method = "damage", at = @At(value = "HEAD"), cancellable = true)
+    private void warmWine(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        if (ModifyDamage.warmWine(living, source)) cir.setReturnValue(true);
     }
 
     @Inject(method = "tick", at = @At("TAIL"))

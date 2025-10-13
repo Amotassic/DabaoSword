@@ -6,6 +6,7 @@ import com.amotassic.dabaosword.util.ModTools;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.option.KeyBinding;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import org.lwjgl.glfw.GLFW;
 
@@ -25,7 +26,7 @@ public class ClientTickEnd {
 
             if (ModTools.hasTrinket(SkillCards.SHENSU, user)) {
                 Vec3d lastPos = new Vec3d(user.lastRenderX, user.lastRenderY, user.lastRenderZ);
-                float speed = (float) (user.getPos().distanceTo(lastPos) * 20);
+                float speed = (float) (user.getEntityPos().distanceTo(lastPos) * 20);
                 SimplePayload.sendToServer(SimplePayload.SHENSU, Float.toString(speed));
             }
 
@@ -37,8 +38,8 @@ public class ClientTickEnd {
         });
     }
 
+    private static final KeyBinding.Category category = KeyBinding.Category.create(Identifier.of("dabaosword", "key"));
     private static KeyBinding keyBinding(String name, int key) {
-        String category = "category.dabaosword.keybindings";
         return KeyBindingHelper.registerKeyBinding(new KeyBinding("key.dabaosword." + name, key, category));
     }
 }

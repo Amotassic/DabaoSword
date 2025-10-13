@@ -17,7 +17,7 @@ public class TurnOverEffect extends StatusEffect {
 
     @Override
     public boolean applyUpdateEffect(ServerWorld world, LivingEntity entity, int amplifier) {
-        if (!entity.getWorld().isClient) {//给有该效果的生物添加一个名字，便于客户端识别
+        if (!entity.getEntityWorld().isClient()) {//给有该效果的生物添加一个名字，便于客户端识别
             entity.setCustomName(Text.literal("翻面"));
             int restTime = Objects.requireNonNull(entity.getStatusEffect(ModItems.TURNOVER)).getDuration();
             if (restTime <= 1) entity.setCustomName(null);

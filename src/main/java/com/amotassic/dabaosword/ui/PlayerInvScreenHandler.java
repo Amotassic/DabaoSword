@@ -33,7 +33,7 @@ public class PlayerInvScreenHandler extends ScreenHandler {
     public final int rows;
 
     public PlayerInvScreenHandler(int syncId, PlayerInventory inv, SimplePayload buf) {
-        this(syncId, new TempInventory(inv.player, paibei(), List.of()), (PlayerEntity) inv.player.getWorld().getEntityById(Integer.parseInt(buf.name())), stringToSet(buf.value()));
+        this(syncId, new TempInventory(inv.player, paibei(), List.of()), (PlayerEntity) inv.player.getEntityWorld().getEntityById(Integer.parseInt(buf.name())), stringToSet(buf.value()));
     }
     private static Set<Integer> stringToSet(String str) {
         String trimmed = str.substring(1, str.length() - 1);
@@ -83,7 +83,7 @@ public class PlayerInvScreenHandler extends ScreenHandler {
 
     @Override
     public void onSlotClick(int index, int button, SlotActionType action, PlayerEntity player) {
-        if (index >= 0 && index < 81 && !player.getWorld().isClient) {
+        if (index >= 0 && index < 81 && !player.getEntityWorld().isClient()) {
             //System.out.println(index + " button: " + button + " action: " + action);
             var selected = getStack(index);
             if (button == 65 && maxSelect() >= 100) forEachNonEmptySlot(s -> addClick(s.getIndex(), 99)); //全选

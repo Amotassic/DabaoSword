@@ -13,7 +13,7 @@ public class PeachItem extends CardItem.Basic {
     //非潜行时右键，给自己回血
     @Override
     public ActionResult use(World world, PlayerEntity player, Hand hand) {
-        if (!world.isClient && player.getHealth() < player.getMaxHealth() && !player.isSneaking()) {
+        if (!world.isClient() && player.getHealth() < player.getMaxHealth() && !player.isSneaking()) {
             onUse(player, player.getStackInHand(hand), hand, player);
             return ActionResult.SUCCESS_SERVER;
         }
@@ -21,7 +21,7 @@ public class PeachItem extends CardItem.Basic {
     }
     //潜行时对生物右键，给其他生物回血
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (!user.getWorld().isClient && entity.getHealth() < entity.getMaxHealth() && user.isSneaking()) {
+        if (!user.getEntityWorld().isClient() && entity.getHealth() < entity.getMaxHealth() && user.isSneaking()) {
             onUse(user, user.getStackInHand(hand), hand, entity);
             return ActionResult.SUCCESS_SERVER;
         }

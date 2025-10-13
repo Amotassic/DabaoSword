@@ -5,6 +5,7 @@ import com.amotassic.dabaosword.item.ModItems;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.input.KeyInput;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
@@ -77,7 +78,9 @@ public class PlayerInvHandledScreen extends HandledScreen<PlayerInvScreenHandler
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyInput input) {
+        int keyCode = input.key();
+        int modifiers = input.modifiers();
         //System.out.println("keyCode: " + keyCode + " scanCode: " + scanCode + " modifiers: " + modifiers);
         boolean ctrlA = keyCode == 65 && modifiers == 2;
         boolean ctrlZ = keyCode == 90 && modifiers == 2;
@@ -89,9 +92,9 @@ public class PlayerInvHandledScreen extends HandledScreen<PlayerInvScreenHandler
         }
         boolean canClose = !(stack.getItem() instanceof ISkill) || selectedCount() >= s(stack).getMinSelect();
         if (!canClose || stack.isOf(ModItems.DISCARD) || stack.isOf(ModItems.STEAL)) {
-            if (client.options.inventoryKey.matchesKey(keyCode, scanCode) || keyCode == 256) return true;
+            if (client.options.inventoryKey.matchesKey(input) || keyCode == 256) return true;
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(input);
     }
 
     @Override

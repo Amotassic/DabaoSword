@@ -14,7 +14,7 @@ public class JiuItem extends CardItem.Basic {
 
     @Override
     public ActionResult use(World world, PlayerEntity user, Hand hand) {
-        if (!user.hasStatusEffect(StatusEffects.STRENGTH) && !world.isClient) {
+        if (!user.hasStatusEffect(StatusEffects.STRENGTH) && !world.isClient()) {
             onUse(user, user.getStackInHand(hand), hand, user);
             return ActionResult.SUCCESS_SERVER;
         }

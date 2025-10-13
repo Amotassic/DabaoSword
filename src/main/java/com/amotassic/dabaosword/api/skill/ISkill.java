@@ -45,7 +45,7 @@ public interface ISkill extends Trinket {
 
     @Override
     default void onEquip(ItemStack stack, SlotReference slot, LivingEntity entity) {
-        if (entity.getWorld() instanceof ServerWorld world && !equipped(stack)) {
+        if (entity.getEntityWorld() instanceof ServerWorld world && !equipped(stack)) {
             world.getPlayers().forEach(player -> player.sendMessage(
                     Text.translatable("dabaosword.entity.equip", entity.getDisplayName(), stack.toHoverableText())
             ));
@@ -67,7 +67,7 @@ public interface ISkill extends Trinket {
         if (stack.getItem() instanceof SkillItem && entity.getCommandTags().contains("duanchang")) return;
         Skill skill = s(stack);
         if (skill.lockOn() || !entity.hasStatusEffect(ModItems.TIEJI)) tickSkill(skill, entity);
-        if (entity.getWorld() instanceof ServerWorld world) {
+        if (entity.getEntityWorld() instanceof ServerWorld world) {
             int cd = skill.getCD(); //世界时间除以20取余为0时，技能内置CD减一秒
             if (cd > 0 && world.getTime() % 20 == 0) {
                 if (entity instanceof PlayerEntity player && player.getAbilities().creativeMode) skill.setCD(0);
@@ -81,7 +81,7 @@ public interface ISkill extends Trinket {
 
     default boolean shouldTickUpdate() {return false;}
     default void tickUpdateNbt(Skill skill, LivingEntity entity) {
-        int tick = (int) (entity.getWorld().getTime() % 20);
+        int tick = (int) (entity.getEntityWorld().getTime() % 20);
         var nbt = skill.getNbt();
         nbt.putInt("TickOfSecond", tick);
         skill.setNbt(nbt);

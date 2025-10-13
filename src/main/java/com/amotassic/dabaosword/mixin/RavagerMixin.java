@@ -37,7 +37,7 @@ public abstract class RavagerMixin extends RaiderEntity {
     private void roar(CallbackInfo ci) {
         if (isAlive() && hasCustomName() && getCommandTags().contains("b")) {
             int id = Integer.parseInt(Objects.requireNonNull(getCustomName()).getString());
-            LivingEntity living = (LivingEntity) getWorld().getEntityById(id);
+            LivingEntity living = (LivingEntity) getEntityWorld().getEntityById(id);
             if (living == null) {ci.cancel(); return;}
             knockBack(living);
             ci.cancel();
