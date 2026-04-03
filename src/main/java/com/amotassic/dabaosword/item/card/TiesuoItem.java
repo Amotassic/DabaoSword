@@ -1,16 +1,17 @@
 package com.amotassic.dabaosword.item.card;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsage;
-import net.minecraft.item.Items;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.Box;
-import net.minecraft.world.World;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemUtils;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import org.jspecify.annotations.NonNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -18,56 +19,55 @@ import java.util.Set;
 import static com.amotassic.dabaosword.util.ModTools.voice;
 
 public class TiesuoItem extends CardItem.Armoury {
-    public TiesuoItem(Settings settings) {super(settings);}
+    public TiesuoItem(Properties settings) {super(settings);}
 
     //原始的铁索连环
     @Override
-    public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (!user.getEntityWorld().isClient() && !entity.isGlowing() && !user.getOffHandStack().isOf(Items.KNOWLEDGE_BOOK)) {
-            Box box = new Box(entity.getBlockPos()).expand(5);
-            Set<LivingEntity> targets = new HashSet<>(user.getEntityWorld().getEntitiesByClass(LivingEntity.class, box, LivingEntity::isAlive));
+    public @NonNull InteractionResult interactLivingEntity(@NonNull ItemStack stack, Player user, @NonNull LivingEntity entity, @NonNull InteractionHand hand) {
+        if (!user.level().isClientSide() && !entity.isCurrentlyGlowing() && !user.getOffhandItem().is(Items.KNOWLEDGE_BOOK)) {
+            AABB box = new AABB(entity.getOnPos()).inflate(5);
+            Set<LivingEntity> targets = new HashSet<>(user.level().getEntitiesOfClass(LivingEntity.class, box, LivingEntity::isAlive));
             targets.remove(user);
-            onUse(user, user.getStackInHand(hand), hand, targets.toArray(new LivingEntity[0]));
-            user.removeStatusEffect(StatusEffects.GLOWING);
-            return ActionResult.SUCCESS_SERVER;
+            onUse(user, user.getItemInHand(hand), hand, targets.toArray(new LivingEntity[0]));
+            user.removeEffect(MobEffects.GLOWING);
+            return InteractionResult.SUCCESS_SERVER;
         }
-        return ActionResult.PASS;
+        return InteractionResult.PASS;
     }
 
     @Override
     public void effect(LivingEntity user, ItemStack card, LivingEntity target) {
-        target.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, -1, 0, false, true,false));
+        target.addEffect(new MobEffectInstance(MobEffects.GLOWING, -1, 0, false, true,false));
     }
 
     //使用战技时播放纳西妲的语音
     @Override
-    public ActionResult use(World world, PlayerEntity user, Hand hand) {
-        if (!world.isClient() && user.getOffHandStack().isOf(Items.KNOWLEDGE_BOOK)) {
+    public @NonNull InteractionResult use(@NonNull Level world, @NonNull Player user, @NonNull InteractionHand hand) {
+        if (!world.isClientSide() && user.getOffhandItem().is(Items.KNOWLEDGE_BOOK)) {
             voice(user, "nahida", 3);
         }
-        return ItemUsage.consumeHeldItem(world, user, hand);
+        return ItemUtils.startUsingInstantly(world, user, hand);
     }
 
-    @Override public int getMaxUseTime(ItemStack stack, LivingEntity user) {return 1200;}
+    @Override public int getUseDuration(@NonNull ItemStack stack, @NonNull LivingEntity user) {return 1200;}
     //看到的就连上
     @Override
-    public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
-        if (!world.isClient() && user.getOffHandStack().isOf(Items.KNOWLEDGE_BOOK)) {
-            Box box = user.getBoundingBox().stretch(user.getRotationVec(1.0F).multiply(20))
-                    .expand(1.0D, 1.0D, 1.0D);
-            for (LivingEntity entity : world.getEntitiesByClass(LivingEntity.class, box, LivingEntity::isAlive)) {
-                entity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, -1, 0, false, false,false));
+    public void onUseTick(Level world, @NonNull LivingEntity user, @NonNull ItemStack stack, int ticksRemaining) {
+        if (!world.isClientSide() && user.getOffhandItem().is(Items.KNOWLEDGE_BOOK)) {
+            AABB box = user.getBoundingBox().expandTowards(user.getViewVector(1.0F).scale(20))
+                    .inflate(1.0D, 1.0D, 1.0D);
+            for (var entity : world.getEntitiesOfClass(LivingEntity.class, box, e -> e.isAlive() && e != user)) {
+                entity.addEffect(new MobEffectInstance(MobEffects.GLOWING, -1, 0, false, false,false));
             }
         }
     }
 
     @Override
-    public boolean onStoppedUsing(ItemStack stack, World world, LivingEntity user, int remainingUseTicks) {
-        if (!world.isClient() && user.getOffHandStack().isOf(Items.KNOWLEDGE_BOOK)) {
-            if (user instanceof PlayerEntity player && !player.isCreative()) {stack.decrement(1);}
+    public boolean releaseUsing(@NonNull ItemStack stack, Level world, @NonNull LivingEntity user, int remainingTime) {
+        if (!world.isClientSide() && user.getOffhandItem().is(Items.KNOWLEDGE_BOOK)) {
+            if (user instanceof Player player && !player.isCreative()) stack.shrink(1);
         }
-        user.removeStatusEffect(StatusEffects.GLOWING);
-        return true;
+        return false;
     }
 
     @Override public boolean rangedUse() {return true;}

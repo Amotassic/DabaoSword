@@ -1,11 +1,11 @@
 package com.amotassic.dabaosword.mixin;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.RavagerEntity;
-import net.minecraft.entity.raid.RaiderEntity;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.Ravager;
+import net.minecraft.world.entity.raid.Raider;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -14,32 +14,32 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Objects;
 
-@Mixin(RavagerEntity.class)
-public abstract class RavagerMixin extends RaiderEntity {
-    @Shadow private int stunTick;
+@Mixin(Ravager.class)
+public abstract class RavagerMixin extends Raider {
+    @Shadow private int stunnedTick;
 
     @Shadow private int roarTick;
 
-    @Shadow protected abstract void knockBack(Entity entity);
+    @Shadow protected abstract void strongKnockback(Entity entity);
 
-    protected RavagerMixin(EntityType<? extends RaiderEntity> entityType, World world) {super(entityType, world);}
+    protected RavagerMixin(EntityType<? extends Raider> entityType, Level world) {super(entityType, world);}
 
-    @Inject(method = "tickMovement", at = @At("HEAD"))
+    @Inject(method = "aiStep", at = @At("HEAD"))
     public void tickMovement(CallbackInfo ci) {
-        if (getCommandTags().contains("a")) {
-            stunTick = 20;
-            getCommandTags().remove("a");
+        if (entityTags().contains("a")) {
+            stunnedTick = 20;
+            entityTags().remove("a");
         }
-        if (getCommandTags().contains("b") && roarTick == 1) discard();
+        if (entityTags().contains("b") && roarTick == 1) discard();
     }
 
     @Inject(method = "roar", at = @At("HEAD"), cancellable = true)
     private void roar(CallbackInfo ci) {
-        if (isAlive() && hasCustomName() && getCommandTags().contains("b")) {
+        if (isAlive() && hasCustomName() && entityTags().contains("b")) {
             int id = Integer.parseInt(Objects.requireNonNull(getCustomName()).getString());
-            LivingEntity living = (LivingEntity) getEntityWorld().getEntityById(id);
+            LivingEntity living = (LivingEntity) level().getEntity(id);
             if (living == null) {ci.cancel(); return;}
-            knockBack(living);
+            strongKnockback(living);
             ci.cancel();
         }
     }

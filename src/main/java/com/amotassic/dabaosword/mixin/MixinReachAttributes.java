@@ -1,11 +1,11 @@
 package com.amotassic.dabaosword.mixin;
 
-import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
-@Mixin(EntityAttributes.class)
+@Mixin(Attributes.class)
 public class MixinReachAttributes {
 
     @ModifyConstant(method = "<clinit>", constant = @Constant(doubleValue = 64.0))

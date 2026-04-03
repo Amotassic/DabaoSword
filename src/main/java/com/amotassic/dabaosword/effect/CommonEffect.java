@@ -1,8 +1,8 @@
 package com.amotassic.dabaosword.effect;
 
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectCategory;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
 
-public class CommonEffect extends StatusEffect {
-    public CommonEffect(StatusEffectCategory category, int color) {super(category, color);}
+public class CommonEffect extends MobEffect {
+    public CommonEffect(MobEffectCategory category, int color) {super(category, color);}
 }

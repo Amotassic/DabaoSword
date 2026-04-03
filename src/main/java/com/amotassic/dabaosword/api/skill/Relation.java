@@ -1,8 +1,8 @@
 package com.amotassic.dabaosword.api.skill;
 
 import com.amotassic.dabaosword.api.TriPredicate;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
 
 /**
  * 全局监听技能触发时，以此判断技能拥有者与技能触发者的关系

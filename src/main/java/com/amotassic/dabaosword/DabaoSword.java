@@ -13,12 +13,13 @@ import com.amotassic.dabaosword.util.ModConfig;
 import com.amotassic.dabaosword.util.Tags;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
-import net.minecraft.item.ItemGroups;
-import net.minecraft.item.Items;
-import net.minecraft.resource.ResourceType;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.Items;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,18 +35,19 @@ public class DabaoSword implements ModInitializer {
         long start = System.currentTimeMillis();
         SkillCards.register();
         LOGGER.info("Loaded all skills in {}ms", System.currentTimeMillis() - start);
-        ResourceLoader.get(ResourceType.SERVER_DATA).registerReloader(CardSuitAndRank.ID, new CardSuitAndRank());
+        ResourceLoader.get(PackType.SERVER_DATA).registerReloadListener(CardSuitAndRank.ID, new CardSuitAndRank());
         ModDT.init();
         Tags.Tag();
         Gamerule.registerGamerules();
         ServerNetworking.register();
-        CommandRegistrationCallback.EVENT.register(((d, a, e) -> DabaoSwordCommand.register(d,a)));
+        CommandRegistrationCallback.EVENT.register(DabaoSwordCommand::register);
         ModEntity.register();
-        ModEntity.entitySpawn();
 
-        ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register(content -> {
-            content.addAfter(Items.NETHERITE_SWORD,ModItems.GUDINGDAO);
-            content.addBefore(Items.BOW,ModItems.ARROW_RAIN);
+        CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.COMBAT).register(content -> {
+            content.insertAfter(Items.NETHERITE_SWORD, ModItems.GUDINGDAO);
+            content.insertBefore(Items.BOW, ModItems.ARROW_RAIN);
         });
     }
+
+    public static Identifier id(String path) {return Identifier.fromNamespaceAndPath(MOD_ID, path);}
 }

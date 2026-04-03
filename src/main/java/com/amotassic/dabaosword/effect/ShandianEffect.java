@@ -1,25 +1,26 @@
 package com.amotassic.dabaosword.effect;
 
 import com.amotassic.dabaosword.item.ModItems;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LightningEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectCategory;
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LightningBolt;
+import net.minecraft.world.entity.LivingEntity;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Objects;
 import java.util.Random;
 
-public class ShandianEffect extends StatusEffect {
-    public ShandianEffect() {super(StatusEffectCategory.HARMFUL, 0x000000);}
+public class ShandianEffect extends MobEffect {
+    public ShandianEffect() {super(MobEffectCategory.HARMFUL, 0x000000);}
 
     @Override
-    public boolean canApplyUpdateEffect(int duration, int amplifier) {return true;}
+    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {return true;}
     @Override
-    public boolean applyUpdateEffect(ServerWorld world, LivingEntity entity, int amplifier) {
-        int restTime = Objects.requireNonNull(entity.getStatusEffect(ModItems.SHANDIAN)).getDuration();
+    public boolean applyEffectTick(@NonNull ServerLevel world, LivingEntity entity, int amplifier) {
+        int restTime = Objects.requireNonNull(entity.getEffect(ModItems.SHANDIAN)).getDuration();
         if (restTime % 100 == 0 || restTime <= 1) {
             if (new Random().nextDouble() < 8.0 / 52.0) summonLightning(entity, false, true);
         }
@@ -27,14 +28,14 @@ public class ShandianEffect extends StatusEffect {
     }
 
     public static void summonLightning(LivingEntity entity, boolean cosmetic, boolean tag) {
-        if (entity.getEntityWorld() instanceof ServerWorld world) {
-            LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(world, SpawnReason.MOB_SUMMONED);
+        if (entity.level() instanceof ServerLevel world) {
+            LightningBolt lightning = EntityType.LIGHTNING_BOLT.create(world, EntitySpawnReason.MOB_SUMMONED);
             if (lightning != null) {
-                lightning.refreshPositionAfterTeleport(entity.getX(), entity.getY(), entity.getZ());
-                if (cosmetic) lightning.setCosmetic(true);
-                if (tag) lightning.addCommandTag("a");
+                lightning.teleportTo(entity.getX(), entity.getY(), entity.getZ());
+                if (cosmetic) lightning.setVisualOnly(true);
+                if (tag) lightning.addTag("a");
+                world.addFreshEntity(lightning);
             }
-            world.spawnEntity(lightning);
         }
     }
 }

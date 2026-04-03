@@ -1,30 +1,32 @@
 package com.amotassic.dabaosword.entity.client;
 
+import com.amotassic.dabaosword.DabaoSword;
 import com.amotassic.dabaosword.entity.XuyouEntity;
-import net.minecraft.client.render.entity.BipedEntityRenderer;
-import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
-import net.minecraft.client.render.entity.model.EntityModelLayer;
-import net.minecraft.client.render.entity.model.EntityModelLayers;
-import net.minecraft.client.render.entity.model.EquipmentModelData;
-import net.minecraft.client.render.entity.state.BipedEntityRenderState;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.model.geom.ModelLayers;
+import net.minecraft.client.renderer.entity.ArmorModelSet;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
+import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
+import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
+import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.NonNull;
 
-public class XuyouRenderer extends BipedEntityRenderer<XuyouEntity, BipedEntityRenderState, XuyouModel> {
-    public XuyouRenderer(EntityRendererFactory.Context context) {
-        this(context, ModModelLayers.XUYOU, EntityModelLayers.PLAYER_EQUIPMENT);
+public class XuyouRenderer extends HumanoidMobRenderer<XuyouEntity, HumanoidRenderState, XuyouModel> {
+    public XuyouRenderer(EntityRendererProvider.Context context) {
+        this(context, ModModelLayers.XUYOU, ModelLayers.PLAYER_ARMOR);
     }
 
     @Override
-    public BipedEntityRenderState createRenderState() {return new BipedEntityRenderState();}
+    public HumanoidRenderState createRenderState() {return new HumanoidRenderState();}
 
-    public XuyouRenderer(EntityRendererFactory.Context ctx, EntityModelLayer layer, EquipmentModelData<EntityModelLayer> equipmentModelData) {
-        super(ctx, new XuyouModel(ctx.getPart(layer)), 0.5f);
-        this.addFeature(new ArmorFeatureRenderer<>(this, EquipmentModelData.mapToEntityModel(equipmentModelData, ctx.getEntityModels(), XuyouModel::new), ctx.getEquipmentRenderer()));
+    public XuyouRenderer(EntityRendererProvider.Context ctx, ModelLayerLocation layer, ArmorModelSet<ModelLayerLocation> equipmentModelData) {
+        super(ctx, new XuyouModel(ctx.bakeLayer(layer)), 0.5f);
+        this.addLayer(new HumanoidArmorLayer<>(this, ArmorModelSet.bake(equipmentModelData, ctx.getModelSet(), XuyouModel::new), ctx.getEquipmentRenderer()));
     }
 
     @Override
-    public Identifier getTexture(BipedEntityRenderState state) {
-        return Identifier.of("dabaosword" ,"textures/entity/xuyou.png");
+    public @NonNull Identifier getTextureLocation(HumanoidRenderState state) {
+        return DabaoSword.id("textures/entity/xuyou.png");
     }
 }

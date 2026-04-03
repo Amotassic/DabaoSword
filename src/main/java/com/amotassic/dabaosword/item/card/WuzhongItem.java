@@ -1,22 +1,23 @@
 package com.amotassic.dabaosword.item.card;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.world.World;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import org.jspecify.annotations.NonNull;
 
 import static com.amotassic.dabaosword.util.ModTools.draw;
 
 public class WuzhongItem extends CardItem.Armoury {
-    public WuzhongItem(Settings settings) {super(settings);}
+    public WuzhongItem(Properties settings) {super(settings);}
 
     @Override
-    public ActionResult use(World world, PlayerEntity user, Hand hand) {
-        if (!world.isClient()) {
-            onUse(user, user.getStackInHand(hand), hand, user);
-            return ActionResult.SUCCESS_SERVER;
+    public @NonNull InteractionResult use(@NonNull Level world, @NonNull Player user, @NonNull InteractionHand hand) {
+        if (!world.isClientSide()) {
+            onUse(user, user.getItemInHand(hand), hand, user);
+            return InteractionResult.SUCCESS_SERVER;
         }
         return super.use(world, user, hand);
     }

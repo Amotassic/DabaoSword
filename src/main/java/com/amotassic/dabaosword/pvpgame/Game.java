@@ -7,14 +7,14 @@ import com.amotassic.dabaosword.util.ModConfig;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Uuids;
-import net.minecraft.world.GameMode;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.GameType;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -25,7 +25,7 @@ public class Game {
     public static final MapCodec<Game> CODEC = RecordCodecBuilder.mapCodec(
             instance -> instance.group(
                             Codec.INT.fieldOf("id").forGetter(game -> game.id),
-                            Uuids.SET_CODEC.fieldOf("players").forGetter(game -> game.players),
+                            UUIDUtil.CODEC_SET.fieldOf("players").forGetter(game -> game.players),
                             Codec.INT.fieldOf("type").forGetter(game -> game.type),
                             Codec.BOOL.fieldOf("active").forGetter(game -> game.active),
                             Codec.INT.fieldOf("count_down").forGetter(game -> game.countDown),
@@ -108,10 +108,10 @@ public class Game {
         for (int i = 0; i < primaryData.get(NEICOUNT); i++) ids.add(Identity.NEI.tag);
         Collections.shuffle(ids); // 随机打乱列表中的元素
         forEachPlayer(player -> { //确保移除所有的身份标签再添加新的身份标签
-            player.getCommandTags().remove("dabaosword.zhong");
-            player.getCommandTags().remove("dabaosword.fan");
-            player.getCommandTags().remove("dabaosword.nei");
-            player.addCommandTag(ids.removeFirst());
+            player.entityTags().remove("dabaosword.zhong");
+            player.entityTags().remove("dabaosword.fan");
+            player.entityTags().remove("dabaosword.nei");
+            player.addTag(ids.removeFirst());
         });
         this.zhongLives = primaryData.get(ZHONGLIVES);
         this.fanLives = primaryData.get(FANLIVES);
@@ -119,8 +119,8 @@ public class Game {
         this.zhongScore = this.fanScore = this.neiScore = 0;
     }
 
-    public boolean isPlayerInThisGame(PlayerEntity player) {
-        return this.players.contains(player.getUuid());
+    public boolean isPlayerInThisGame(Player player) {
+        return this.players.contains(player.getUUID());
     }
 
     public int getGameId() {return id;}
@@ -142,12 +142,12 @@ public class Game {
     /**游戏已经开始，且不处于准备阶段*/
     public boolean isOn() {return getGameTime() > 0;}
 
-    public void refuseGame(PlayerEntity player) {
+    public void refuseGame(Player player) {
         if (!isWaiting()) return;
         discardGame();
         forEachPlayer(p -> {
-            p.sendMessage(Text.translatable("dabaosword.game.refuse", player.getDisplayName()).formatted(Formatting.RED));
-            voice(p, SoundEvents.ITEM_SHIELD_BREAK.value());
+            p.sendSystemMessage(Component.translatable("dabaosword.game.refuse", player.getDisplayName()).withStyle(ChatFormatting.RED));
+            voice(p, SoundEvents.SHIELD_BREAK.value());
         });
     }
 
@@ -155,15 +155,15 @@ public class Game {
         forEachPlayer(player -> {
             if (getIdentity(player) == identity) {
                 voice(player, "win");
-                title(player, Text.translatable("dabaosword.game.win").formatted(Formatting.GOLD));
+                title(player, Component.translatable("dabaosword.game.win").withStyle(ChatFormatting.GOLD));
             }
-            player.sendMessage(Text.translatable("dabaosword.game.end", Text.translatable(identity.tag)).formatted(getIdentityColor(identity)));
+            player.sendSystemMessage(Component.translatable("dabaosword.game.end", Component.translatable(identity.tag)).withStyle(getIdentityColor(identity)));
         });
         discardGame();
     }
 
     public void timeOut() {
-        forEachPlayer(player -> player.sendMessage(Text.translatable("dabaosword.game.timeout").formatted(Formatting.RED)));
+        forEachPlayer(player -> player.sendSystemMessage(Component.translatable("dabaosword.game.timeout").withStyle(ChatFormatting.RED)));
         Integer max = findUniqueMax(zhongScore, fanScore, neiScore);
         if (max == null) discardGame();
         else if (zhongScore == max) win(Identity.ZHONG);
@@ -177,16 +177,16 @@ public class Game {
         var obj = scoreboard.getObjectives().stream().filter(o -> o.getName().equals("dabaosword.death")).findFirst().orElse(null);
         if (obj != null && PVPGameEvents.getGameManager().getGameCount() <= 1) scoreboard.removeObjective(obj);
         forEachPlayer(player -> {
-            player.getCommandTags().remove("dabaosword.zhong");
-            player.getCommandTags().remove("dabaosword.fan");
-            player.getCommandTags().remove("dabaosword.nei");
+            player.entityTags().remove("dabaosword.zhong");
+            player.entityTags().remove("dabaosword.fan");
+            player.entityTags().remove("dabaosword.nei");
             if (player.isSpectator()) {
-                player.changeGameMode(GameMode.SURVIVAL); player.kill(world(player));
+                player.setGameMode(GameType.SURVIVAL); player.kill(world(player));
             }
         });
     }
 
-    public void tick(ServerWorld world) {
+    public void tick(ServerLevel world) {
         if (!this.active) return;
         PVPGameTickCallback.EVENT.invoker().onGameTick(this, world);
         //倒计时为-1时，游戏开始计时
@@ -194,9 +194,9 @@ public class Game {
         if (isOn() && getGameTime() % 20 == 0) --this.timeOut;
     }
 
-    public void forEachPlayer(Consumer<ServerPlayerEntity> action) {
+    public void forEachPlayer(Consumer<ServerPlayer> action) {
         for (UUID uuid : getPlayers()) {
-            ServerPlayerEntity player = DabaoSword.server.getPlayerManager().getPlayer(uuid);
+            ServerPlayer player = DabaoSword.server.getPlayerList().getPlayer(uuid);
             if (player == null) continue;
             action.accept(player);
         }
@@ -228,7 +228,7 @@ public class Game {
     }
 
     /**减少该玩家所在队伍的剩余生命数（等于0不会减少），玩家死亡时调用*/
-    public void decreaseLives(ServerPlayerEntity player) {
+    public void decreaseLives(ServerPlayer player) {
         Identity identity = getIdentity(player);
         int lives = getLives(identity);
         if (lives > 0) setLives(identity, lives - 1);
@@ -251,17 +251,17 @@ public class Game {
     }
 
     /**增加该玩家所在队伍的分数，同时向所有玩家播报分数*/
-    public void increaseScore(ServerPlayerEntity player) {
+    public void increaseScore(ServerPlayer player) {
         Identity identity = getIdentity(player);
         setScore(identity, getScore(identity) + 1);
         this.timeOut = ModConfig.TimeOut;
-        forEachPlayer(p -> p.sendMessage(Text.translatable("dabaosword.score.add", player.getDisplayName()).formatted(Formatting.BOLD)));
+        forEachPlayer(p -> p.sendSystemMessage(Component.translatable("dabaosword.score.add", player.getDisplayName()).withStyle(ChatFormatting.BOLD)));
     }
 
     /**确保玩家在该对局中才可以调用本方法*/
-    public Identity getIdentity(ServerPlayerEntity player) {
-        if (player.getCommandTags().contains(Identity.ZHONG.tag)) return Identity.ZHONG;
-        if (player.getCommandTags().contains(Identity.FAN.tag)) return Identity.FAN;
+    public Identity getIdentity(ServerPlayer player) {
+        if (player.entityTags().contains(Identity.ZHONG.tag)) return Identity.ZHONG;
+        if (player.entityTags().contains(Identity.FAN.tag)) return Identity.FAN;
         return Identity.NEI;
     }
 
@@ -278,11 +278,11 @@ public class Game {
         return isUnique ? max : null;
     }
 
-    public static Formatting getIdentityColor(Identity identity) {
+    public static ChatFormatting getIdentityColor(Identity identity) {
         return switch (identity) {
-            case ZHONG -> Formatting.YELLOW;
-            case FAN -> Formatting.GREEN;
-            case NEI -> Formatting.BLUE;
+            case ZHONG -> ChatFormatting.YELLOW;
+            case FAN -> ChatFormatting.GREEN;
+            case NEI -> ChatFormatting.BLUE;
         };
     }
 

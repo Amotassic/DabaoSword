@@ -3,21 +3,18 @@ package com.amotassic.dabaosword.client;
 import com.amotassic.dabaosword.network.SimplePayload;
 import com.amotassic.dabaosword.util.ModTools;
 import com.amotassic.dabaosword.util.Tags;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.OrderedText;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@SuppressWarnings("deprecation")
-public class ChangeSkillRender implements HudRenderCallback {
-    private static final MinecraftClient client = MinecraftClient.getInstance();
+public class ChangeSkillRender {
+    private static final Minecraft client = Minecraft.getInstance();
     public static boolean isRendering = false;
     private static int screenWidth;
     private static int screenHeight;
@@ -25,20 +22,19 @@ public class ChangeSkillRender implements HudRenderCallback {
     private static int centerY;
     private static List<ItemStack> skills = new ArrayList<>();
 
-    @Override
-    public void onHudRender(DrawContext drawContext, RenderTickCounter renderTickCounter) {
-        ClientPlayerEntity player = client.player;
+    public static void onHudRender(GuiGraphicsExtractor drawContext, DeltaTracker renderTickCounter) {
+        LocalPlayer player = client.player;
         if (!isRendering || player == null) return;
-        if (skills.isEmpty()) skills = ModTools.trinketsWithSlots(player, s -> s.isIn(Tags.SKILLS)).stream().map(p -> p.getLeft().getStack(p.getRight())).toList();
+        if (skills.isEmpty()) skills = ModTools.trinketsWithSlots(player, s -> s.is(Tags.SKILLS)).stream().map(p -> p.getA().getItem(p.getB())).toList();
         if (skills.size() < 2) {
             close();
-            client.mouse.lockCursor();
+            client.mouseHandler.grabMouse();
             return;
         }
 
-        TextRenderer textRenderer = client.textRenderer;
-        screenWidth = client.getWindow().getScaledWidth();
-        screenHeight = client.getWindow().getScaledHeight();
+        Font textRenderer = client.font;
+        screenWidth = client.getWindow().getGuiScaledWidth();
+        screenHeight = client.getWindow().getGuiScaledHeight();
         centerX = screenWidth / 2;
         centerY = screenHeight / 2;
         int radius = 80; // 离原点的半径
@@ -52,9 +48,9 @@ public class ChangeSkillRender implements HudRenderCallback {
             int y = centerY + (int) (radius * Math.sin(angle));
             // 绘制文本（x,y为文本左上角坐标，需调整以居中显示）
             ItemStack skill = skills.get(i);
-            OrderedText text = skill.toHoverableText().asOrderedText();
-            drawContext.drawItem(skill, x - 8, y - 16);
-            drawContext.drawText(textRenderer, text, x - textRenderer.getWidth(text) / 2, y, -1, false);
+            var text = skill.getDisplayName().getVisualOrderText();
+            drawContext.fakeItem(skill, x - 8, y - 16);
+            drawContext.text(textRenderer, text, x - textRenderer.width(text) / 2, y, -1, false);
         }
     }
 

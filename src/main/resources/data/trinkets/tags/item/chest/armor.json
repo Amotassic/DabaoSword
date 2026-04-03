@@ -1,9 +1,9 @@
 {
   "replace": false,
   "values": [
-    "dabaosword:rattan_armor",
-    "dabaosword:baiyin",
-    "dabaosword:bagua",
-    "dabaosword:renwang"
+    "dabaosword:card/rattan_armor",
+    "dabaosword:card/baiyin",
+    "dabaosword:card/bagua",
+    "dabaosword:card/renwang"
   ]
 }

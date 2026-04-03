@@ -1,6 +1,0 @@
-{
-	"parent": "dabaosword:item/card",
-	"textures": {
-		"0": "dabaosword:item/peach"
-	}
-}

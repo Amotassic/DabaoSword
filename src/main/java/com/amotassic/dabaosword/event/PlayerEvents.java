@@ -8,16 +8,16 @@ import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.pvpgame.Game;
 import com.amotassic.dabaosword.util.Gamerule;
 import com.amotassic.dabaosword.util.ModConfig;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.world.GameMode;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,13 +37,13 @@ public class PlayerEvents implements PlayerDeathCallback, PlayerRespawnCallback 
     }
 
     @Override
-    public void onDeath(ServerPlayerEntity player, DamageSource source) {
-        if (player.getEntityWorld() instanceof ServerWorld world) {
-            Entity attacker = source.getAttacker();
-            if (!(attacker instanceof PlayerEntity)) attacker = player.getPrimeAdversary();
+    public void onDeath(ServerPlayer player, DamageSource source) {
+        if (player.level() instanceof ServerLevel world) {
+            Entity attacker = source.getEntity();
+            if (!(attacker instanceof Player)) attacker = player.getKillCredit();
 
-            if (ModConfig.KillStreak && attacker instanceof ServerPlayerEntity killer) { //紫砂也算连上了
-                UUID id = killer.getUuid(); long time = world.getTime();
+            if (ModConfig.KillStreak && attacker instanceof ServerPlayer killer) { //紫砂也算连上了
+                UUID id = killer.getUUID(); long time = world.getGameTime();
 
                 var data = playerKillData.getOrDefault(id, new KillStreakData(0, 0));
                 long timeDiff = time - data.lastKillTime();
@@ -54,7 +54,7 @@ public class PlayerEvents implements PlayerDeathCallback, PlayerRespawnCallback 
                 if (data.streak() >= 2) voice(killer, getKillSound(data.streak()));
             }
 
-            if (attacker instanceof ServerPlayerEntity killer && killer != player) {
+            if (attacker instanceof ServerPlayer killer && killer != player) {
                 Game game = getGameManager().getGameByPlayer(killer);
                 if (game != null && game.isOn() && game.isPlayerInThisGame(player)) {
                     var primaryData = game.getPrimaryData();
@@ -72,28 +72,28 @@ public class PlayerEvents implements PlayerDeathCallback, PlayerRespawnCallback 
                 var identity = game.getIdentity(player);
                 int re = game.getRespawnChances(identity);
                 if (re <= 0) { //如果玩家所在阵营剩余复活次数为0，公布玩家身份
-                    player.changeGameMode(GameMode.SPECTATOR);
-                    game.forEachPlayer(p -> p.sendMessage(Text.translatable("dabaosword.game.view_id.tip", player.getDisplayName(), Text.translatable(identity.tag)).formatted(Game.getIdentityColor(identity), Formatting.BOLD)));
+                    player.setGameMode(GameType.SPECTATOR);
+                    game.forEachPlayer(p -> p.sendSystemMessage(Component.translatable("dabaosword.game.view_id.tip", player.getDisplayName(), Component.translatable(identity.tag)).withStyle(Game.getIdentityColor(identity), ChatFormatting.BOLD)));
                 }
             }
 
-            if (world.getGameRules().getBoolean(Gamerule.CLEAR_CARDS_AFTER_DEATH)) {
+            if (world.getGameRules().get(Gamerule.CLEAR_CARDS_AFTER_DEATH)) {
                 CardEvents.cardDiscard(player, cardsToDrop(player));
             }
 
             if (hasItem(player, p(ModItems.BBJI))) voice(player, "xuyou");
-            player.getCommandTags().remove("duanchang");
+            player.entityTags().remove("duanchang");
         }
     }
 
-    public static ExData cardsToDrop(PlayerEntity player) {
+    public static ExData cardsToDrop(Player player) {
         var data = d();
         var inventory = getCardPack(player);
         for (var stack : inventory.cards) data.cards(stack, stack.getCount());
 
-        PlayerInventory inv = player.getInventory();
-        for (int i = 0; i < inv.size(); ++i) {
-            ItemStack stack = inv.getStack(i);
+        Inventory inv = player.getInventory();
+        for (int i = 0; i < inv.getContainerSize(); ++i) {
+            ItemStack stack = inv.getItem(i);
             if (isCard(stack)) data.cards(stack, stack.getCount());
         }
 
@@ -104,10 +104,10 @@ public class PlayerEvents implements PlayerDeathCallback, PlayerRespawnCallback 
     }
 
     @Override
-    public void onPlayerRespawn(ServerPlayerEntity oldPlayer, ServerPlayerEntity player) {
-        if (player.getEntityWorld() instanceof ServerWorld world) {
+    public void onPlayerRespawn(ServerPlayer oldPlayer, ServerPlayer player) {
+        if (player.level() instanceof ServerLevel world) {
 
-            boolean card = world.getGameRules().getBoolean(Gamerule.CLEAR_CARDS_AFTER_DEATH);
+            boolean card = world.getGameRules().get(Gamerule.CLEAR_CARDS_AFTER_DEATH);
             if (card && hasTrinket(ModItems.CARD_PILE, player)) {
                 give(player, newCard(ModItems.SHA));
                 give(player, newCard(ModItems.SHAN));

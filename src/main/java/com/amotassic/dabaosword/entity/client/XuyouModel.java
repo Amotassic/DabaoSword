@@ -1,15 +1,15 @@
 package com.amotassic.dabaosword.entity.client;
 
-import net.minecraft.client.model.Dilation;
-import net.minecraft.client.model.ModelPart;
-import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.client.render.entity.model.BipedEntityModel;
-import net.minecraft.client.render.entity.state.BipedEntityRenderState;
+import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.builders.CubeDeformation;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 
-public class XuyouModel extends BipedEntityModel<BipedEntityRenderState> {
+public class XuyouModel extends HumanoidModel<HumanoidRenderState> {
     public XuyouModel(ModelPart root) {super(root);}
 
-    public static TexturedModelData getTexturedModelData() {
-        return TexturedModelData.of(getModelData(Dilation.NONE, 0), 64, 64);
+    public static LayerDefinition getTexturedModelData() {
+        return LayerDefinition.create(createMesh(CubeDeformation.NONE, 0), 64, 64);
     }
 }

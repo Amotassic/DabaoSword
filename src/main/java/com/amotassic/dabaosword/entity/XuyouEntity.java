@@ -2,104 +2,107 @@ package com.amotassic.dabaosword.entity;
 
 import com.amotassic.dabaosword.api.CardEvents;
 import com.amotassic.dabaosword.damage_type.ModDT;
-import net.minecraft.entity.EntityData;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.ai.RangedAttackMob;
-import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.mob.HostileEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.storage.ReadView;
-import net.minecraft.storage.WriteView;
-import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.ServerWorldAccess;
-import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.SpawnGroupData;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.monster.RangedAttackMob;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import org.jspecify.annotations.NonNull;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
 
-public class XuyouEntity extends HostileEntity implements RangedAttackMob {
-    public XuyouEntity(EntityType<? extends HostileEntity> entityType, World world) {super(entityType, world);}
+public class XuyouEntity extends Monster implements RangedAttackMob {
+    public XuyouEntity(EntityType<? extends Monster> entityType, Level world) {super(entityType, world);}
 
     private int bbcd = 0;
     private int bbTimes = 0;
-    private final ProjectileAttackGoal bb = new ProjectileAttackGoal(this, 1.25,10, 7f);
+    private final RangedAttackGoal bb = new RangedAttackGoal(this, 1.25,10, 7f);
 
     @Override
-    protected void initGoals() {
-        this.goalSelector.add(0, new SwimGoal(this));
-        this.goalSelector.add(1, new UseCardGoal(this));
-        this.goalSelector.add(2, new RevengeGoal(this));
-        this.goalSelector.add(3, new MeleeAttackGoal(this, 1.0, false));
-        this.goalSelector.add(3, new WanderAroundGoal(this, 1.0));
-        this.targetSelector.add(2, new ActiveTargetGoal<>(this, PlayerEntity.class, true));
-        this.goalSelector.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 10.0f));
-        this.goalSelector.add(8, new LookAroundGoal(this));
+    protected void registerGoals() {
+        this.goalSelector.addGoal(0, new FloatGoal(this));
+        this.goalSelector.addGoal(1, new UseCardGoal(this));
+        this.goalSelector.addGoal(2, new HurtByTargetGoal(this));
+        this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.0, false));
+        this.goalSelector.addGoal(3, new WaterAvoidingRandomStrollGoal(this, 1.0));
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, Player.class, true));
+        this.goalSelector.addGoal(8, new LookAtPlayerGoal(this, Player.class, 10.0f));
+        this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
     }
 
-    public static DefaultAttributeContainer.Builder createAttributes() {
-        return HostileEntity.createMobAttributes()
-                .add(EntityAttributes.MAX_HEALTH, 30.0)
-                .add(EntityAttributes.ATTACK_DAMAGE, 3.0)
-                .add(EntityAttributes.ATTACK_SPEED, 1.0)
-                .add(EntityAttributes.MOVEMENT_SPEED, 0.3f);
-    }
-
-    @Override
-    public @Nullable EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData) {
-        initEquipment(world.getRandom(), difficulty);
-        return super.initialize(world, difficulty, spawnReason, entityData);
+    public static AttributeSupplier.Builder createAttributes() {
+        return Monster.createMobAttributes()
+                .add(Attributes.MAX_HEALTH, 30.0)
+                .add(Attributes.ATTACK_DAMAGE, 3.0)
+                .add(Attributes.ATTACK_SPEED, 1.0)
+                .add(Attributes.MOVEMENT_SPEED, 0.3f);
     }
 
     @Override
-    protected void writeCustomData(WriteView view) {
-        super.writeCustomData(view);
-        view.putInt("bbcd", bbcd);
-        view.putInt("bbTimes", bbTimes);
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, @NonNull DifficultyInstance difficulty, @NonNull EntitySpawnReason spawnType, SpawnGroupData spawnGroupData) {
+        populateDefaultEquipmentSlots(level.getRandom(), difficulty);
+        return super.finalizeSpawn(level, difficulty, spawnType, spawnGroupData);
     }
 
     @Override
-    protected void readCustomData(ReadView view) {
-        super.readCustomData(view);
-        bbcd = view.getInt("bbcd", 0);
-        bbTimes = view.getInt("bbTimes", 0);
+    protected void addAdditionalSaveData(@NonNull ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        output.putInt("bbcd", bbcd);
+        output.putInt("bbTimes", bbTimes);
     }
 
     @Override
-    public void tickMovement() {
-        if (getEntityWorld().getTime() % 200 == 0) draw(this);
+    protected void readAdditionalSaveData(@NonNull ValueInput input) {
+        super.readAdditionalSaveData(input);
+        bbcd = input.getInt("bbcd").orElse(0);
+        bbTimes = input.getInt("bbTimes").orElse(0);
+    }
+
+    @Override
+    protected void customServerAiStep(ServerLevel level) {
+        if (level.getGameTime() % 200 == 0) draw(this);
         if (bbTimes >= 5) {
-            goalSelector.remove(bb);
+            goalSelector.removeGoal(bb);
             bbTimes = 0; bbcd = 150;
         }
-        if (bbcd > 0) bbcd--; else goalSelector.add(2, bb);
-        super.tickMovement();
+        if (bbcd > 0) bbcd--; else goalSelector.addGoal(2, bb);
+        super.customServerAiStep(level);
     }
 
     @Override
-    public boolean canTarget(LivingEntity target) {
+    public boolean canAttack(LivingEntity target) {
         if (target.distanceTo(this) > 10) return false;
-        return super.canTarget(target);
+        return super.canAttack(target);
     }
 
     @Override
-    protected SoundEvent getDeathSound() {return getSound("dabaosword", "xuyou");}
+    protected @NonNull SoundEvent getDeathSound() {return getSound("dabaosword", "xuyou");}
 
     @Override
-    protected SoundEvent getHurtSound(DamageSource source) {
-        if (source.isOf(ModDT.LOSEHP)) return getSound("dabaosword", "losehp");
-        return source.getType().effects().getSound();
+    protected @NonNull SoundEvent getHurtSound(DamageSource source) {
+        if (source.is(ModDT.LOSEHP)) return getSound("dabaosword", "losehp");
+        return source.type().effects().sound();
     }
 
     @Override
-    public void onDeath(DamageSource damageSource) {
-        super.onDeath(damageSource);
-        if (getEntityWorld().isClient()) return;
+    public void die(@NonNull DamageSource damageSource) {
+        super.die(damageSource);
+        if (level().isClientSide()) return;
         var data = d();
         for (var stack : allTrinkets(this)) {
             if(isCard(stack)) data.cards(stack, stack.getCount(), true);
@@ -108,10 +111,10 @@ public class XuyouEntity extends HostileEntity implements RangedAttackMob {
     }
 
     @Override
-    public void shootAt(LivingEntity target, float pullProgress) {
+    public void performRangedAttack(LivingEntity target, float pullProgress) {
         bbTimes++;
-        target.timeUntilRegen = 0;
-        target.damage(world(target), ModDT.bbll(this), 2);
+        target.invulnerableTime = 0;
+        target.hurtServer(world(target), ModDT.bbll(this), 2);
         voice(this, "bbji");
     }
 }

@@ -1,39 +1,40 @@
 package com.amotassic.dabaosword.item.card;
 
 import com.amotassic.dabaosword.damage_type.ModDT;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import org.jspecify.annotations.NonNull;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class JuedouItem extends CardItem.Armoury {
-    public JuedouItem(Settings settings) {super(settings);}
+    public JuedouItem(Properties settings) {super(settings);}
 
     @Override
-    public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (!user.getEntityWorld().isClient() && entity.isAlive()) {
-            onUse(user, user.getStackInHand(hand), hand, entity);
-            return ActionResult.SUCCESS_SERVER;
+    public @NonNull InteractionResult interactLivingEntity(@NonNull ItemStack stack, Player user, @NonNull LivingEntity entity, @NonNull InteractionHand hand) {
+        if (!user.level().isClientSide() && entity.isAlive()) {
+            onUse(user, user.getItemInHand(hand), hand, entity);
+            return InteractionResult.SUCCESS_SERVER;
         }
-        return ActionResult.PASS;
+        return InteractionResult.PASS;
     }
 
     @Override
     public void effect(LivingEntity user, ItemStack card, LivingEntity entity) {
-        user.addCommandTag("juedou"); entity.addCommandTag("juedou"); //防止决斗触发杀
-        if (user instanceof PlayerEntity player && entity instanceof PlayerEntity target) {
+        user.addTag("juedou"); entity.addTag("juedou"); //防止决斗触发杀
+        if (user instanceof Player player && entity instanceof Player target) {
             int playerSha = countCard(player, isSha);
             int targetSha = countCard(target, isSha);
             if (playerSha >= targetSha) {
                 juedou(player, card, target);
-                target.sendMessage(Text.translatable("dabaosword.juedou2", player.getDisplayName()), false);
+                target.sendSystemMessage(Component.translatable("dabaosword.juedou2", player.getDisplayName()));
             } else {
                 juedou(target, card, player);
-                player.sendMessage(Text.translatable("dabaosword.juedou1"), false);
+                player.sendSystemMessage(Component.translatable("dabaosword.juedou1"));
                 //如果目标的杀比使用者的杀多，反击使用者，则目标减少一张杀
                 if (targetSha != 0) {
                     ItemStack sha = getCard(target, isSha);
@@ -44,8 +45,8 @@ public class JuedouItem extends CardItem.Armoury {
     }
 
     private void juedou(LivingEntity attacker, ItemStack card, LivingEntity target) {
-        target.timeUntilRegen = 0;
-        target.damage(world(attacker), ModDT.juedou(attacker), 5f);
+        target.invulnerableTime = 0;
+        target.hurtServer(world(attacker), ModDT.juedou(attacker), 5f);
     }
 
     @Override public boolean rangedUse() {return true;}

@@ -3,11 +3,11 @@ package com.amotassic.dabaosword.api.skill;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.skillcard.SkillCards;
 import com.amotassic.dabaosword.util.ModTools;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.Text;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
@@ -36,8 +36,8 @@ public final class Skill {
         return SkillCards.SKILL_MAP.getOrDefault(stack.getItem(), List.of());
     }
 
-    public boolean activeSkill(PlayerEntity user, Skill skill) {return item.activeSkill(user, skill);}
-    public boolean activeSkill(PlayerEntity user, Skill skill, LivingEntity target) {return item.activeSkill(user, skill, target);}
+    public boolean activeSkill(Player user, Skill skill) {return item.activeSkill(user, skill);}
+    public boolean activeSkill(Player user, Skill skill, LivingEntity target) {return item.activeSkill(user, skill, target);}
 
     public int getCD() {Integer i = stack.get(ModItems.CD); return i == null ? 0 : i;}
     public void setCD(int seconds) {stack.set(ModItems.CD, seconds);}
@@ -64,10 +64,10 @@ public final class Skill {
 
     public boolean isEmpty() {return stack.isEmpty();}
 
-    public Text toHoverableText() {return stack.toHoverableText();}
+    public Component toHoverableText() {return stack.getDisplayName();}
 
-    public NbtCompound getNbt() {return ModTools.getOrCreateNbt(stack);}
+    public CompoundTag getNbt() {return ModTools.getOrCreateNbt(stack);}
 
-    public void setNbt(NbtCompound nbt) {ModTools.setNbt(stack, nbt);}
+    public void setNbt(CompoundTag nbt) {ModTools.setNbt(stack, nbt);}
 
 }

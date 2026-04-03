@@ -2,8 +2,8 @@ package com.amotassic.dabaosword.api.event;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
 
 public interface EntityHurtCallback {
     Event<EntityHurtCallback> EVENT = EventFactory.createArrayBacked(EntityHurtCallback.class,

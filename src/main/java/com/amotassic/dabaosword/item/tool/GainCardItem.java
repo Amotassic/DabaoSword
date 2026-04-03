@@ -1,34 +1,35 @@
 package com.amotassic.dabaosword.item.tool;
 
-import net.minecraft.component.type.TooltipDisplayComponent;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.level.Level;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.util.function.Consumer;
 
 import static com.amotassic.dabaosword.util.ModTools.draw;
 
 public class GainCardItem extends Item {
-    public GainCardItem(Settings settings) {super(settings);}
+    public GainCardItem(Properties settings) {super(settings);}
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
-        textConsumer.accept(Text.translatable("item.dabaosword.gain_card.tooltip"));
+    public void appendHoverText(@NonNull ItemStack itemStack, @NonNull TooltipContext context, @NonNull TooltipDisplay display, Consumer<Component> builder, @NonNull TooltipFlag tooltipFlag) {
+        builder.accept(Component.translatable("item.dabaosword.gain_card.tooltip"));
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, ServerWorld world, Entity entity, @Nullable EquipmentSlot slot) {
-        if (!entity.getEntityWorld().isClient() && entity instanceof PlayerEntity player) {
+    public void inventoryTick(@NonNull ItemStack stack, @NonNull ServerLevel world, Entity entity, @Nullable EquipmentSlot slot) {
+        if (!entity.level().isClientSide() && entity instanceof Player player) {
             if (!player.isCreative() && !player.isSpectator()) {
                 draw(player, stack.getCount());
                 stack.setCount(0);
@@ -37,13 +38,13 @@ public class GainCardItem extends Item {
     }
 
     @Override
-    public ActionResult use(World world, PlayerEntity user, Hand hand) {
-        if (!world.isClient() && hand == Hand.MAIN_HAND) {
+    public @NonNull InteractionResult use(Level world, @NonNull Player player, @NonNull InteractionHand hand) {
+        if (!world.isClientSide() && hand == InteractionHand.MAIN_HAND) {
             int m;
-            if (user.isSneaking()) m=user.getMainHandStack().getCount(); else m=1;
-            draw(user,m);
-            return ActionResult.SUCCESS_SERVER;
+            if (player.isShiftKeyDown()) m = player.getMainHandItem().getCount(); else m = 1;
+            draw(player,m);
+            return InteractionResult.SUCCESS_SERVER;
         }
-        return super.use(world, user, hand);
+        return super.use(world, player, hand);
     }
 }

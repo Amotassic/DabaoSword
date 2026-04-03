@@ -1,15 +1,15 @@
 package com.amotassic.dabaosword.damage_type;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.DamageType;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.util.Identifier;
+import com.amotassic.dabaosword.DabaoSword;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.entity.Entity;
 
 public class ModDT {
 
-    public static final RegistryKey<DamageType>
+    public static final ResourceKey<DamageType>
     LOSEHP = register("losehp"),
     BBLL = register("bbll"),
 
@@ -34,15 +34,15 @@ public class ModDT {
     public static DamageSource wanjian(Entity entity) {return create(entity, WANJIAN);}
     public static DamageSource shandian(Entity entity) {return create(entity, SHANDIAN);}
 
-    private static DamageSource create(Entity entity, RegistryKey<DamageType> key, boolean... notFromEntity) {
+    private static DamageSource create(Entity entity, ResourceKey<DamageType> key, boolean... notFromEntity) {
         boolean bl = notFromEntity.length > 0 && notFromEntity[0];
-        var entry = entity.getEntityWorld().getRegistryManager().getOrThrow(RegistryKeys.DAMAGE_TYPE).getOrThrow(key);
+        var entry = entity.level().registryAccess().lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(key);
         Entity source = bl ? null : entity;
         return new DamageSource(entry, source);
     }
 
-    private static RegistryKey<DamageType> register(String id) {
-        return RegistryKey.of(RegistryKeys.DAMAGE_TYPE, Identifier.of("dabaosword", id));
+    private static ResourceKey<DamageType> register(String id) {
+        return ResourceKey.create(Registries.DAMAGE_TYPE, DabaoSword.id(id));
     }
 
     public static void init() {}

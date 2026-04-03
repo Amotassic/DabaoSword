@@ -6,32 +6,26 @@ import com.amotassic.dabaosword.api.card.Rank;
 import com.amotassic.dabaosword.api.card.Suit;
 import com.amotassic.dabaosword.api.skill.Trigger;
 import com.amotassic.dabaosword.item.ModItems;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.CustomModelDataComponent;
-import net.minecraft.component.type.TooltipDisplayComponent;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.world.World;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
+import org.jspecify.annotations.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
-import static net.minecraft.util.Formatting.*;
+import static net.minecraft.ChatFormatting.*;
 
 public abstract class CardItem extends Item {
-    public CardItem(Settings settings) {super(settings);}
+    public CardItem(Properties settings) {super(settings);}
 
     public abstract int getType();
 
@@ -41,62 +35,62 @@ public abstract class CardItem extends Item {
     public boolean rangedUse() {return false;}
 
     @Override @SuppressWarnings("deprecation")
-    public void appendTooltip(ItemStack stack, TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
-        List<Text> tooltip = new ArrayList<>();
+    public void appendHoverText(@NonNull ItemStack stack, @NonNull TooltipContext context, @NonNull TooltipDisplay display, @NonNull Consumer<Component> builder, @NonNull TooltipFlag tooltipFlag) {
+        List<Component> tooltip = new ArrayList<>();
         addSRTip(c(stack), tooltip); addTip(stack, tooltip);
-        tooltip.forEach(textConsumer);
+        tooltip.forEach(builder);
     }
 
-    public void addTip(ItemStack stack, List<Text> tooltip) {
+    public void addTip(ItemStack stack, List<Component> tooltip) {
 
-        if (stack.isOf(ModItems.SHAN)) {
-            tooltip.add(Text.translatable("item.dabaosword.shan.tip").formatted(BOLD));
+        if (stack.is(ModItems.SHAN)) {
+            tooltip.add(Component.translatable("item.dabaosword.shan.tip").withStyle(BOLD));
             tooltip.add(getTip());
         }
 
-        if (stack.isOf(ModItems.PEACH)) {
+        if (stack.is(ModItems.PEACH)) {
             tooltip.add(getTip("1", LIGHT_PURPLE));
             tooltip.add(getTip("2", LIGHT_PURPLE));
-            tooltip.add(Text.translatable("item.dabaosword.recover.tip").formatted(BOLD));
+            tooltip.add(Component.translatable("item.dabaosword.recover.tip").withStyle(BOLD));
         }
 
-        if (stack.isOf(ModItems.JIU)) {
+        if (stack.is(ModItems.JIU)) {
             tooltip.add(getTip());
-            tooltip.add(Text.translatable("item.dabaosword.recover.tip").formatted(BOLD));
+            tooltip.add(Component.translatable("item.dabaosword.recover.tip").withStyle(BOLD));
         }
 
-        if (stack.isOf(ModItems.FIRE_ATTACK) || stack.isOf(ModItems.JIEDAO) || stack.isOf(ModItems.NANMAN) || stack.isOf(ModItems.TAOYUAN) || stack.isOf(ModItems.TIESUO) || stack.isOf(ModItems.JUEDOU)) tooltip.add(getTip());
+        if (stack.is(ModItems.FIRE_ATTACK) || stack.is(ModItems.JIEDAO) || stack.is(ModItems.NANMAN) || stack.is(ModItems.TAOYUAN) || stack.is(ModItems.TIESUO) || stack.is(ModItems.JUEDOU)) tooltip.add(getTip());
 
-        if (stack.isOf(ModItems.SHANDIAN_ITEM) || stack.isOf(ModItems.WUGU) || stack.isOf(ModItems.WUXIE) || stack.isOf(ModItems.STEAL) || stack.isOf(ModItems.WUZHONG) || stack.isOf(ModItems.DISCARD)) {
+        if (stack.is(ModItems.SHANDIAN_ITEM) || stack.is(ModItems.WUGU) || stack.is(ModItems.WUXIE) || stack.is(ModItems.STEAL) || stack.is(ModItems.WUZHONG) || stack.is(ModItems.DISCARD)) {
             tooltip.add(getTip("1"));
             tooltip.add(getTip("2"));
         }
 
-        if (stack.isOf(ModItems.BINGLIANG_ITEM)) {
+        if (stack.is(ModItems.BINGLIANG_ITEM)) {
             if (hasShiftDown()) {
                 tooltip.add(getTip("1"));
                 tooltip.add(getTip("2"));
             } else {
                 tooltip.add(getTip(BLUE));
-                tooltip.add(Text.translatable("dabaosword.shift_tip", Text.keybind("key.sneak")));
+                tooltip.add(Component.translatable("dabaosword.shift_tip", Component.keybind("key.sneak")));
             }
         }
 
-        if (stack.isOf(ModItems.TOO_HAPPY_ITEM)) {
+        if (stack.is(ModItems.TOO_HAPPY_ITEM)) {
             if (hasShiftDown()) {
                 tooltip.add(getTip("1"));
                 tooltip.add(getTip("2"));
             } else {
                 tooltip.add(getTip(RED));
-                tooltip.add(Text.translatable("dabaosword.shift_tip", Text.keybind("key.sneak")));
+                tooltip.add(Component.translatable("dabaosword.shift_tip", Component.keybind("key.sneak")));
             }
         }
 
         if (stack.getItem() instanceof CardItem c && c.rangedUse()) {
-            tooltip.add(Text.translatable("item.dabaosword.long_hand").formatted(BOLD));
+            tooltip.add(Component.translatable("item.dabaosword.long_hand").withStyle(BOLD));
         }
 
-        if (stack.isOf(ModItems.WANJIAN)) { //有大病的工具提示
+        if (stack.is(ModItems.WANJIAN)) { //有大病的工具提示
             if (hasShiftDown()) {
                 int i = (int) (System.currentTimeMillis() / 1000) % 7;
                 switch (i) {
@@ -110,24 +104,24 @@ public abstract class CardItem extends Item {
                 }
             } else {
                 tooltip.add(getTip());
-                tooltip.add(Text.translatable("item.dabaosword.wanjian.shift", Text.keybind("key.sneak")).formatted(ITALIC));
+                tooltip.add(Component.translatable("item.dabaosword.wanjian.shift", Component.keybind("key.sneak")).withStyle(ITALIC));
             }
         }
     }
-    public MutableText getTip(Formatting... format) {return getTip("", format);}
-    public MutableText getTip(String suffix, Formatting... format) {
-        return Text.translatable(getTranslationKey() + ".tooltip" + suffix).formatted(format);
+    public MutableComponent getTip(ChatFormatting... format) {return getTip("", format);}
+    public MutableComponent getTip(String suffix, ChatFormatting... format) {
+        return Component.translatable(getDescriptionId().replace("card.", "") + ".tooltip" + suffix).withStyle(format);
     }
 
-    public final void addSRTip(Card card, List<Text> tooltip) {
+    public final void addSRTip(Card card, List<Component> tooltip) {
         if (card.suit == Suit.None || card.rank == Rank.None) return;
-        tooltip.add(Text.translatable("card.suit_and_rank", card.suit.suit, card.rank.rank).formatted(card.suit.color));
+        tooltip.add(Component.translatable("card.suit_and_rank", card.suit.suit, card.rank.rank).withStyle(card.suit.color));
     }
 
-    public static void onUse(LivingEntity user, ItemStack stack, Hand hand, LivingEntity... targets) {
+    public static void onUse(LivingEntity user, ItemStack stack, InteractionHand hand, LivingEntity... targets) {
         onUse(user, stack, hand, false, targets);
     }
-    public static void onUse(LivingEntity user, ItemStack stack, Hand hand, boolean noTarget, LivingEntity... targets) {
+    public static void onUse(LivingEntity user, ItemStack stack, InteractionHand hand, boolean noTarget, LivingEntity... targets) {
         onUse(user, stack, hand, noTarget, true, targets);
     }
     /**
@@ -136,7 +130,7 @@ public abstract class CardItem extends Item {
      * @param consume 是否消耗卡牌。用于虚拟牌，如八卦阵视为使用的闪。
      * @param targets 卡牌的目标。对于我的mod中不便于选择目标的卡牌（比如火攻），需要将使用者填到目标中，否则卡牌不会执行任何效果。
      */
-    public static void onUse(LivingEntity user, ItemStack stack, Hand hand, boolean noTarget, boolean consume, LivingEntity... targets) {
+    public static void onUse(LivingEntity user, ItemStack stack, InteractionHand hand, boolean noTarget, boolean consume, LivingEntity... targets) {
         var card = c(stack); var cardData = d().cards(card, card.count);
         if (consume) CardEvents.cardUseAndDecrement(user, stack, hand);
         if (card.type != 2) voice(user, card.item());
@@ -163,30 +157,14 @@ public abstract class CardItem extends Item {
         }
     }
 
-    @Override
-    public void inventoryTick(ItemStack stack, ServerWorld world, Entity entity, @Nullable EquipmentSlot slot) {
-        addModel(stack, world);
-    }
-
-    public static void addModel(ItemStack stack, World world) {
-        if (world.isClient()) return;
-        if (stack.get(DataComponentTypes.CUSTOM_MODEL_DATA) != null) return;
-        var card = c(stack);
-        if (card.suit == Suit.None || card.rank == Rank.None) return;
-        int s = card.suit.ordinal();
-        int r = card.rank.ordinal() + 1;
-        float f = 13 * s + r;
-        stack.set(DataComponentTypes.CUSTOM_MODEL_DATA, new CustomModelDataComponent(List.of(f), List.of(), List.of(), List.of()));
-    }
-
     public static class Basic extends CardItem {
-        public Basic(Settings settings) {super(settings);}
+        public Basic(Properties settings) {super(settings);}
 
         public final int getType() {return Card.BASIC;}
     }
 
     public static class Armoury extends CardItem {
-        public Armoury(Settings settings) {super(settings);}
+        public Armoury(Properties settings) {super(settings);}
 
         public final int getType() {return Card.ARMOURY;}
 
@@ -194,7 +172,7 @@ public abstract class CardItem extends Item {
     }
 
     public static class Empty extends CardItem {
-        public Empty(Settings settings) {super(settings);}
+        public Empty(Properties settings) {super(settings);}
 
         public int getType() {return 114;}
     }

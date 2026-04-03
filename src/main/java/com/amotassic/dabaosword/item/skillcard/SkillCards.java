@@ -9,8 +9,8 @@ import com.amotassic.dabaosword.item.skillcard.skills.Qun;
 import com.amotassic.dabaosword.item.skillcard.skills.Shu;
 import com.amotassic.dabaosword.item.skillcard.skills.Wei;
 import com.amotassic.dabaosword.item.skillcard.skills.Wu;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.item.Item;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
@@ -86,8 +86,8 @@ public class SkillCards {
 
     FEIYING = register("feiying", Qun.Feiying::new);
 
-    public static <T extends SkillItem> T register(String name, Function<Item.Settings, T> factory) {
-        T skill = ModItems.register(name, factory, 1);
+    public static <T extends SkillItem> T register(String name, Function<Item.Properties, T> factory) {
+        T skill = ModItems.register("skill/" + name, factory, 1);
         SKILLS.add(skill);
         return skill;
     }
@@ -113,7 +113,7 @@ public class SkillCards {
     }
 
     public static void register() {
-        Registries.ITEM.stream().filter(i -> i instanceof ISkill).forEach(SkillCards::addSkillEffect);
+        BuiltInRegistries.ITEM.stream().filter(i -> i instanceof ISkill).forEach(SkillCards::addSkillEffect);
     }
 
 }

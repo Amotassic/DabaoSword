@@ -6,44 +6,45 @@ import com.amotassic.dabaosword.api.event.PVPGameTickCallback;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.pvpgame.Game;
 import com.amotassic.dabaosword.pvpgame.GameManager;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLevelEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
-import net.minecraft.scoreboard.ScoreboardCriterion;
-import net.minecraft.scoreboard.ScoreboardDisplaySlot;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.ClickEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.world.World;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.scores.DisplaySlot;
+import net.minecraft.world.scores.criteria.ObjectiveCriteria;
+import org.jspecify.annotations.NonNull;
 
 import java.util.*;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
 
-public class PVPGameEvents implements ServerWorldEvents.Load, ServerTickEvents.StartTick, ServerTickEvents.StartWorldTick, PVPGameTickCallback {
+public class PVPGameEvents implements ServerLevelEvents.Load, ServerTickEvents.StartTick, ServerTickEvents.StartLevelTick, PVPGameTickCallback {
     private static GameManager gameManager;
 
     public static GameManager getGameManager() {return gameManager;}
 
     @Override
-    public void onWorldLoad(MinecraftServer server, ServerWorld world) {
+    public void onLevelLoad(@NonNull MinecraftServer minecraftServer, ServerLevel world) {
         //只需要保存在主世界的data目录下即可
-        if (world.getRegistryKey() == World.OVERWORLD) gameManager = world.getPersistentStateManager().getOrCreate(GameManager.getPersistentStateType());
+        if (world.dimension() == Level.OVERWORLD) gameManager = world.getDataStorage().computeIfAbsent(GameManager.getPersistentStateType());
     }
 
     @Override
-    public void onStartTick(ServerWorld world) {
+    public void onStartTick(ServerLevel world) {
         //防止每个维度都加载一次，暂时不知道用什么更优雅的办法
-        if (world.getRegistryKey() == World.OVERWORLD) gameManager.tick(world);
+        if (world.dimension() == Level.OVERWORLD) gameManager.tick(world);
     }
 
     @Override
-    public void onGameTick(Game game, ServerWorld world) {
+    public void onGameTick(Game game, ServerLevel world) {
         int countDown = game.getCountDown();
 
         if (game.isWaiting()) countDownTip(game, countDown);
@@ -62,51 +63,50 @@ public class PVPGameEvents implements ServerWorldEvents.Load, ServerTickEvents.S
         }
     }
 
-    public static void onGameCreate(ServerPlayerEntity player, Game game, Set<UUID> players) {
-        MutableText text = Text.translatable("dabaosword.game.create", player.getDisplayName(), players.size());
-        if (game.getPrimaryData().get("neiCount") == 0) text = text.append(Text.translatable("dabaosword.game.no_turn_coat"));
-        MutableText finalText = text;
-        game.forEachPlayer(p -> p.sendMessage(finalText));
+    public static void onGameCreate(ServerPlayer player, Game game, Set<UUID> players) {
+        MutableComponent text = Component.translatable("dabaosword.game.create", player.getDisplayName(), players.size());
+        if (game.getPrimaryData().get("neiCount") == 0) text.append(Component.translatable("dabaosword.game.no_turn_coat"));
+        game.forEachPlayer(p -> p.sendSystemMessage(text));
     }
 
     private void countDownTip(Game game, int countDown) {
         if (countDown % 20 != 0) return;
         game.forEachPlayer(player -> {
             if (countDown % 100 == 0) {
-                Text quit = Text.translatable("dabaosword.refuse").formatted(Formatting.RED).styled(style -> style.withClickEvent(new ClickEvent.RunCommand("/dabaosword refusegame")).withHoverEvent(new HoverEvent.ShowText(Text.translatable("dabaosword.refuse_hover"))));
-                player.sendMessage(Text.translatable("dabaosword.game.wait", countDown / 20).append(quit));
+                Component quit = Component.translatable("dabaosword.refuse").withStyle(ChatFormatting.RED).withStyle(style -> style.withClickEvent(new ClickEvent.RunCommand("/dabaosword refusegame")).withHoverEvent(new HoverEvent.ShowText(Component.translatable("dabaosword.refuse_hover"))));
+                player.sendSystemMessage(Component.translatable("dabaosword.game.wait", countDown / 20).append(quit));
                 return;
             }
             Set<Integer> times = Set.of(60, 40, 20);
             if (times.contains(countDown)) {
-                voice(player, SoundEvents.BLOCK_NOTE_BLOCK_BELL.value());
-                title(player, Text.literal(String.valueOf(countDown / 20)));
+                voice(player, SoundEvents.NOTE_BLOCK_BELL.value());
+                title(player, Component.literal(String.valueOf(countDown / 20)));
             }
         });
     }
 
-    private void onGameStart(Game game, ServerWorld world) {
+    private void onGameStart(Game game, ServerLevel world) {
         //添加死亡计分板
         var scoreboard = world.getServer().getScoreboard();
         var obj = scoreboard.getObjectives().stream().filter(o -> o.getName().equals("dabaosword.death")).findFirst().orElse(null);
-        var criterion = ScoreboardCriterion.DEATH_COUNT;
-        if (obj == null) obj = scoreboard.addObjective("dabaosword.death", criterion, Text.translatable("dabaosword.score.death"), criterion.getDefaultRenderType(), false, null);
-        scoreboard.setObjectiveSlot(ScoreboardDisplaySlot.SIDEBAR, obj);
+        var criterion = ObjectiveCriteria.DEATH_COUNT;
+        if (obj == null) obj = scoreboard.addObjective("dabaosword.death", criterion, Component.translatable("dabaosword.score.death"), criterion.getDefaultRenderType(), false, null);
+        scoreboard.setDisplayObjective(DisplaySlot.SIDEBAR, obj);
 
         game.forEachPlayer(player -> {
             var identity = game.getIdentity(player);
-            Formatting color = Game.getIdentityColor(identity);
-            Text o1 = Text.translatable(identity.tag); Text o2 = Text.translatable(identity.tag + ".tip");
-            Text o3 = Text.translatable("dabaosword.game.start.tip", o1, o2).formatted(color);
-            title(player, Text.translatable("dabaosword.game.start").formatted(Formatting.GOLD));
-            subtitle(player, o3); player.sendMessage(o3);
-            voice(player, SoundEvents.EVENT_RAID_HORN.value(), 32);
+            ChatFormatting color = Game.getIdentityColor(identity);
+            var o1 = Component.translatable(identity.tag); var o2 = Component.translatable(identity.tag + ".tip");
+            var o3 = Component.translatable("dabaosword.game.start.tip", o1, o2).withStyle(color);
+            title(player, Component.translatable("dabaosword.game.start").withStyle(ChatFormatting.GOLD));
+            subtitle(player, o3); player.sendSystemMessage(o3);
+            voice(player, SoundEvents.RAID_HORN.value(), 32);
         });
     }
 
     private void handleTimeOut(Game game, int timeOut) {
         if (game.getGameTime() % 20 != 0) return;
-        if (timeOut == 60 || timeOut == 30) game.forEachPlayer(player -> player.sendMessage(Text.translatable("dabaosword.game.timeout.warn", timeOut).formatted(Formatting.YELLOW)));
+        if (timeOut == 60 || timeOut == 30) game.forEachPlayer(player -> player.sendSystemMessage(Component.translatable("dabaosword.game.timeout.warn", timeOut).withStyle(ChatFormatting.YELLOW)));
         if (timeOut == 0) game.timeOut();
     }
 
@@ -118,11 +118,11 @@ public class PVPGameEvents implements ServerWorldEvents.Load, ServerTickEvents.S
         if (game.getScore(identity) < game.neiScore) game.win(nei);
     }
 
-    public static final Map<ServerPlayerEntity, CardPileInventory> PLAYER_CARD_PACKS = new HashMap<>();
+    public static final Map<ServerPlayer, CardPileInventory> PLAYER_CARD_PACKS = new HashMap<>();
 
     public void onStartTick(MinecraftServer server) {
         DabaoSword.server = server;
-        List<ServerPlayerEntity> playerList = server.getPlayerManager().getPlayerList();
+        List<ServerPlayer> playerList = server.getPlayerList().getPlayers();
         for (var player : playerList) {
             if (!PLAYER_CARD_PACKS.containsKey(player) && hasTrinket(ModItems.CARD_PILE, player)) PLAYER_CARD_PACKS.put(player, new CardPileInventory(player));
         }

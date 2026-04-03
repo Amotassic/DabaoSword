@@ -1,26 +1,26 @@
 package com.amotassic.dabaosword.api.card;
 
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 
 public enum Suit {
-    Heart(Text.translatable("suit.heart"), Formatting.RED),
-    Diamond(Text.translatable("suit.diamond"), Formatting.RED),
-    Spade(Text.translatable("suit.spade"), Formatting.WHITE),
-    Club(Text.translatable("suit.club"), Formatting.WHITE),
-    None(Text.translatable(" "), Formatting.WHITE);
+    Heart(Component.translatable("suit.heart"), ChatFormatting.RED),
+    Diamond(Component.translatable("suit.diamond"), ChatFormatting.RED),
+    Spade(Component.translatable("suit.spade"), ChatFormatting.WHITE),
+    Club(Component.translatable("suit.club"), ChatFormatting.WHITE),
+    None(Component.translatable(" "), ChatFormatting.WHITE);
 
-    public final MutableText suit;
-    public final Formatting color;
+    public final MutableComponent suit;
+    public final ChatFormatting color;
 
-    Suit(MutableText suit, Formatting color) {
+    Suit(MutableComponent suit, ChatFormatting color) {
         this.suit = suit;
         this.color = color;
     }
 
-    public static Suit fromNbt(NbtCompound nbt) {
+    public static Suit fromNbt(CompoundTag nbt) {
         if (!nbt.contains("Suit")) return None;
         return Suit.valueOf(nbt.getString("Suit").orElseThrow());
     }

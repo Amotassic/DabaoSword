@@ -1,10 +1,9 @@
 package com.amotassic.dabaosword.mixin.client;
 
 import com.amotassic.dabaosword.item.ModItems;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.Camera;
-import net.minecraft.entity.Entity;
-import net.minecraft.world.BlockView;
+import net.minecraft.client.Camera;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -15,18 +14,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class GameRendererMixin {
 
     @Shadow protected abstract void setRotation(float yaw, float pitch);
-
-    @Shadow private float yaw;
-
-    @Shadow private float pitch;
+    @Shadow private float yRot;
+    @Shadow private float xRot;
 
     @Inject(method = "update", at = @At(value = "TAIL"))
-    public void setProjectionMatrix(BlockView area, Entity focusedEntity, boolean thirdPerson, boolean inverseView, float tickProgress, CallbackInfo ci) {
-        var player = MinecraftClient.getInstance().player;
+    public void setProjectionMatrix(DeltaTracker deltaTracker, CallbackInfo ci) {
+        var player = Minecraft.getInstance().player;
         if (player != null) {
-            if (!player.isSpectator() && player.hasStatusEffect(ModItems.TURNOVER)) {
+            if (!player.isSpectator() && player.hasEffect(ModItems.TURNOVER)) {
                 //翻转摄像机，效果似乎更加河里了
-                setRotation(yaw + 180f, pitch + 180f);
+                setRotation(yRot + 180f, xRot + 180f);
             }
         }
     }

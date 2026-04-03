@@ -1,32 +1,33 @@
 package com.amotassic.dabaosword.item.card;
 
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import org.jspecify.annotations.NonNull;
 
 import static com.amotassic.dabaosword.api.CardEvents.cardMove;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class JiedaoItem extends CardItem.Armoury {
-    public JiedaoItem(Settings settings) {super(settings);}
+    public JiedaoItem(Properties settings) {super(settings);}
 
     @Override
-    public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (!user.getEntityWorld().isClient() && !entity.getMainHandStack().isEmpty()) {
-            onUse(user, user.getStackInHand(hand), hand, entity);
-            return ActionResult.SUCCESS_SERVER;
+    public @NonNull InteractionResult interactLivingEntity(@NonNull ItemStack stack, Player user, @NonNull LivingEntity entity, @NonNull InteractionHand hand) {
+        if (!user.level().isClientSide() && !entity.getMainHandItem().isEmpty()) {
+            onUse(user, user.getItemInHand(hand), hand, entity);
+            return InteractionResult.SUCCESS_SERVER;
         }
-        return ActionResult.PASS;
+        return InteractionResult.PASS;
     }
 
     @Override
     public void effect(LivingEntity user, ItemStack card, LivingEntity entity) {
-        ItemStack main = entity.getMainHandStack();
-        if (user instanceof PlayerEntity player) {
+        ItemStack main = entity.getMainHandItem();
+        if (user instanceof Player player) {
             if (isCard(main)) {
                 var exData = d().cards(main, main.getCount());
                 cardMove(entity, exData, player);
@@ -35,8 +36,8 @@ public class JiedaoItem extends CardItem.Armoury {
                 main.setCount(0);
             }
         } else {
-            user.setStackInHand(Hand.MAIN_HAND, main.copy());
-            if (user instanceof MobEntity mob) mob.setEquipmentDropChance(EquipmentSlot.MAINHAND, 1);
+            user.setItemInHand(InteractionHand.MAIN_HAND, main.copy());
+            if (user instanceof Mob mob) mob.setGuaranteedDrop(EquipmentSlot.MAINHAND);
             main.setCount(0);
         }
     }

@@ -1,6 +1,6 @@
 package com.amotassic.dabaosword.api.card;
 
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 
 import java.util.Objects;
 
@@ -33,7 +33,7 @@ public enum Rank {
         return None;
     }
 
-    public static Rank fromNbt(NbtCompound nbt) {
+    public static Rank fromNbt(CompoundTag nbt) {
         if (!nbt.contains("Rank")) return None;
         return fromString(nbt.getString("Rank").orElseThrow());
     }

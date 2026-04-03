@@ -2,8 +2,8 @@ package com.amotassic.dabaosword.api.event;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 
 public class EndEntityTick {
     public static Event<EndLivingTick> LIVING_EVENT = EventFactory.createArrayBacked(EndLivingTick.class,
@@ -25,6 +25,6 @@ public class EndEntityTick {
     }
 
     public interface EndPlayerTick {
-        void endPlayerTick(PlayerEntity player);
+        void endPlayerTick(Player player);
     }
 }

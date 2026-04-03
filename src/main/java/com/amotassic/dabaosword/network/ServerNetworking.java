@@ -6,7 +6,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 public class ServerNetworking {
 
     public static void register() {
-        PayloadTypeRegistry.playC2S().register(SimplePayload.ID, SimplePayload.CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(SimplePayload.ID, SimplePayload.CODEC);
         ServerPlayNetworking.registerGlobalReceiver(SimplePayload.ID, SimplePayload::execute);
     }
 }

@@ -1,8 +1,8 @@
 package com.amotassic.dabaosword.entity.client;
 
-import net.minecraft.client.render.entity.model.EntityModelLayer;
-import net.minecraft.util.Identifier;
+import com.amotassic.dabaosword.DabaoSword;
+import net.minecraft.client.model.geom.ModelLayerLocation;
 
 public class ModModelLayers {
-    public static final EntityModelLayer XUYOU = new EntityModelLayer(Identifier.of("dabaosword", "xuyou"), "main");
+    public static final ModelLayerLocation XUYOU = new ModelLayerLocation(DabaoSword.id("xuyou"), "main");
 }

@@ -1,46 +1,46 @@
 package com.amotassic.dabaosword.datagen;
 
 import com.amotassic.dabaosword.item.ModItems;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
-import net.minecraft.data.recipe.RecipeExporter;
-import net.minecraft.data.recipe.RecipeGenerator;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.book.RecipeCategory;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.RegistryWrapper;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.world.item.ItemStackTemplate;
+import org.jspecify.annotations.NonNull;
 
 import java.util.concurrent.CompletableFuture;
 
-public class RecipesProvider extends RecipeGenerator {
-    public RecipesProvider(RegistryWrapper.WrapperLookup lookup, RecipeExporter exporter) {
-        super(lookup, exporter);
-    }
+public class RecipesProvider extends RecipeProvider {
+    protected RecipesProvider(HolderLookup.Provider registries, RecipeOutput output) {super(registries, output);}
 
     @Override
-    public void generate() {
-        ItemStack smile = new ItemStack(ModItems.SUNSHINE_SMILE);
-        smile.addEnchantment(registries.getOrThrow(RegistryKeys.ENCHANTMENT).getOrThrow(Enchantments.FIRE_ASPECT), 1);
-        createShapeless(RecipeCategory.COMBAT, smile)
-                .input(ModItems.GUDING_ITEM)
+    public void buildRecipes() {
+        ItemStackTemplate smile = new ItemStackTemplate(ModItems.SUNSHINE_SMILE);
+/*        var mutable = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
+        mutable.set(registries.lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.FIRE_ASPECT), 1);
+        smile.apply(DataComponentPatch.builder().set(DataComponents.ENCHANTMENTS, mutable.toImmutable()).build());*/
+        shapeless(RecipeCategory.COMBAT, smile)
+                .requires(ModItems.GUDING_ITEM)
 //                .input('X', ModItems.GUDING_ITEM)
 //                .pattern("XXX")
 //                .pattern("X X")
-                .criterion("has_guding", this.conditionsFromItem(ModItems.GUDING_ITEM))
-                .offerTo(this.exporter);
+                .unlockedBy("has_guding", this.has(ModItems.GUDING_ITEM))
+                .save(this.output);
+
     }
 
     public static class Provider extends FabricRecipeProvider {
-        public Provider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+        public Provider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
             super(output, registriesFuture);
         }
 
         @Override
-        protected RecipeGenerator getRecipeGenerator(RegistryWrapper.WrapperLookup wrapperLookup, RecipeExporter recipeExporter) {
-            return new RecipesProvider(wrapperLookup, recipeExporter);
+        protected @NonNull RecipeProvider createRecipeProvider(HolderLookup.@NonNull Provider provider, @NonNull RecipeOutput recipeOutput) {
+            return new RecipesProvider(provider, recipeOutput);
         }
 
-        @Override public String getName() {return "dabaosword";}
+        @Override public @NonNull String getName() {return "dabaosword";}
     }
 }

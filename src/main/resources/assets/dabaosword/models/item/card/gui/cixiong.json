@@ -1,0 +1,6 @@
+{
+	"parent": "dabaosword:item/card/gui/gain_card",
+	"textures": {
+		"0": "dabaosword:item/cixiong"
+	}
+}

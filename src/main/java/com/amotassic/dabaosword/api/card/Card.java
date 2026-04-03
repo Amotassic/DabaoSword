@@ -2,11 +2,11 @@ package com.amotassic.dabaosword.api.card;
 
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.card.CardItem;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.Text;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 import static com.amotassic.dabaosword.util.ModTools.getOrCreateNbt;
 import static com.amotassic.dabaosword.util.ModTools.setNbt;
@@ -55,7 +55,7 @@ public final class Card {
 
     public ItemStack toStack() {
         if (isFromStack()) return copy.copy();
-        var stack = new ItemStack(item, count); var nbt = new NbtCompound();
+        var stack = new ItemStack(item, count); var nbt = new CompoundTag();
         if (suit != Suit.None) nbt.putString("Suit", suit.name());
         if (rank != Rank.None) nbt.putString("Rank", rank.rank);
         setNbt(stack, nbt);
@@ -73,7 +73,7 @@ public final class Card {
 
     public boolean isOf(Item item) {return this.item == item;}
 
-    public Text getName() {return this.item.getName();}
+    public Component getName() {return this.item.getName(card);}
 
     public String toString() {return card + ", suit=" + suit + ", rank=" + rank;}
 

@@ -4,22 +4,26 @@ import com.amotassic.dabaosword.damage_type.ModDT;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.ModConfig;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ItemEntity;
-import net.minecraft.entity.LightningEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.*;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.village.VillagerProfession;
-import net.minecraft.world.World;
-import net.minecraft.world.explosion.ExplosionImpl;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LightningBolt;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.npc.villager.VillagerProfession;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.entity.projectile.arrow.ThrownTrident;
+import net.minecraft.world.entity.projectile.hurtingprojectile.Fireball;
+import net.minecraft.world.entity.projectile.hurtingprojectile.LargeFireball;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerExplosion;
+import net.minecraft.world.phys.EntityHitResult;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -40,142 +44,141 @@ import static com.amotassic.dabaosword.util.ModTools.isCard;
 @Mixin(Entity.class)
 public abstract class EntityMixin {
 
-    @Shadow public abstract boolean damage(ServerWorld world, DamageSource source, float amount);
+    @Shadow public abstract boolean hurtServer(ServerLevel level, DamageSource source, float damage);
 
-    @Inject(method = "onStruckByLightning", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/entity/damage/DamageSource;F)Z"), cancellable = true)
-    public void onStruckByLightning(ServerWorld world, LightningEntity lightning, CallbackInfo ci) {
-        if (lightning.getCommandTags().contains("a")) {
-            this.damage(world, ModDT.shandian(lightning), 5.0f);
+    @Inject(method = "thunderHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;hurtServer(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/damagesource/DamageSource;F)Z"), cancellable = true)
+    public void onStruckByLightning(ServerLevel level, LightningBolt lightning, CallbackInfo ci) {
+        if (lightning.entityTags().contains("a")) {
+            this.hurtServer(level, ModDT.shandian(lightning), 5.0f);
             ci.cancel();
         }
     }
 
-    @ModifyReturnValue(method = "occludeVibrationSignals", at = @At("RETURN"))
+    @ModifyReturnValue(method = "dampensVibrations", at = @At("RETURN"))
     public boolean occludeVibrationSignals(boolean original) {
-        if ((Entity) (Object) this instanceof PlayerEntity player && player.getCommandTags().contains("wuyan")) {
+        if ((Entity) (Object) this instanceof Player player && player.entityTags().contains("wuyan")) {
             return true;
         }
         return original;
     }
 }
 
-@Mixin(PersistentProjectileEntity.class)
-abstract class ArrowEntiytMixin extends ProjectileEntity {
-    public ArrowEntiytMixin(EntityType<? extends ProjectileEntity> entityType, World world) {super(entityType, world);}
+@Mixin(AbstractArrow.class)
+abstract class ArrowEntiytMixin extends Projectile {
+    public ArrowEntiytMixin(EntityType<? extends Projectile> entityType, Level world) {super(entityType, world);}
 
     @Shadow protected abstract boolean isInGround();
 
     @Inject(method = "tick", at = @At(value = "HEAD"))
     public void tick(CallbackInfo ci) {
-        var tags = getCommandTags();
+        var tags = entityTags();
         if (this.isInGround()) {
             if (tags.contains("a") || tags.contains("cosmetic")) this.discard();
         }
     }
 
-    @Inject(method = "onEntityHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;setFireTicks(I)V"))
-    private void onHit(EntityHitResult entityHitResult, CallbackInfo ci) {
-        if (getCommandTags().contains("a")) this.discard();
+    @Inject(method = "onHitEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;setRemainingFireTicks(I)V"))
+    private void onHit(EntityHitResult hitResult, CallbackInfo ci) {
+        if (entityTags().contains("a")) this.discard();
     }
 
-    @Inject(method = "onEntityHit", at = @At(value = "HEAD"), cancellable = true)
+    @Inject(method = "onHitEntity", at = @At(value = "HEAD"), cancellable = true)
     private void cosmetic(EntityHitResult entityHitResult, CallbackInfo ci) {
-        if (getCommandTags().contains("cosmetic")) {
+        if (entityTags().contains("cosmetic")) {
             this.discard(); ci.cancel();
         }
     }
 }
 
-@Mixin(FireballEntity.class)
-abstract class FireballEntityMixin extends AbstractFireballEntity {
-    public FireballEntityMixin(EntityType<? extends AbstractFireballEntity> entityType, World world) {super(entityType, world);}
+@Mixin(LargeFireball.class)
+abstract class FireballEntityMixin extends Fireball {
+    public FireballEntityMixin(EntityType<? extends Fireball> entityType, Level world) {super(entityType, world);}
 
-    @ModifyArgs(method = "onCollision", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;createExplosion(Lnet/minecraft/entity/Entity;DDDFZLnet/minecraft/world/World$ExplosionSourceType;)V"))
+    @ModifyArgs(method = "onHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;explode(Lnet/minecraft/world/entity/Entity;DDDFZLnet/minecraft/world/level/Level$ExplosionInteraction;)V"))
     public void onCollision(Args args) {
-        if (getEntityWorld() instanceof ServerWorld) {
-            if (!ModConfig.FireAttackBreaksBlock && getCommandTags().contains("a")) {
+        if (level() instanceof ServerLevel) {
+            if (!ModConfig.FireAttackBreaksBlock && entityTags().contains("a")) {
                 args.set(5, false);
-                args.set(6, World.ExplosionSourceType.NONE);
+                args.set(6, Level.ExplosionInteraction.NONE);
             }
         }
     }
 
-    @ModifyArgs(method = "onEntityHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/entity/damage/DamageSource;F)Z"))
+    @ModifyArgs(method = "onHitEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;hurtServer(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/damagesource/DamageSource;F)Z"))
     protected void onEntityHit(Args args) {
-        if (getCommandTags().contains("a") && getOwner() != null) {
-            getOwner().addCommandTag("sha"); //防止触发杀
+        if (entityTags().contains("a") && getOwner() != null) {
+            getOwner().addTag("sha"); //防止触发杀
             args.set(1, ModDT.huogong(this.getOwner()));
             args.set(2, 6f);
         }
     }
 }
 
-@Mixin(ExplosionImpl.class)
+@Mixin(ServerExplosion.class)
 abstract class ExplosionMixin {
 
-    @Shadow @Final
-    private @Nullable Entity entity;
+    @Shadow @Final private @Nullable Entity source;
 
-    @ModifyArg(method = "damageEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/entity/damage/DamageSource;F)Z"))
-    public DamageSource collectBlocksAndDamageEntities(DamageSource source) {
-        if (entity instanceof FireballEntity fireball && entity.getCommandTags().contains("a") && fireball.getOwner() != null) {
-            fireball.getOwner().addCommandTag("sha"); //防止触发杀
+    @ModifyArg(method = "hurtEntities", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;hurtServer(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/damagesource/DamageSource;F)Z"))
+    public DamageSource collectBlocksAndDamageEntities(DamageSource damageSource) {
+        if (source instanceof LargeFireball fireball && source.entityTags().contains("a") && fireball.getOwner() != null) {
+            fireball.getOwner().addTag("sha"); //防止触发杀
             return ModDT.huogong(fireball.getOwner());
         }
-        return source;
+        return damageSource;
     }
 }
 
 @Mixin(ItemEntity.class)
 abstract class ItemEntityMixin extends Entity {
-    public ItemEntityMixin(EntityType<?> type, World world) {super(type, world);}
+    public ItemEntityMixin(EntityType<?> type, Level world) {super(type, world);}
 
-    @Shadow public abstract ItemStack getStack();
+    @Shadow public abstract ItemStack getItem();
 
-    @Shadow public abstract void setStack(ItemStack stack);
+    @Shadow public abstract void setItem(ItemStack itemStack);
 
-    @Shadow public abstract void resetPickupDelay();
+    @Shadow public abstract void setNoPickUpDelay();
 
-    @Shadow private @Nullable UUID owner;
+    @Shadow private @Nullable UUID target;
     @Unique
     ItemEntity thisItem = (ItemEntity) (Object) this;
 
     @Inject(method = "tick", at = @At("HEAD"))
     public void tick(CallbackInfo ci) {
-        if (isCard(this.getStack())) this.resetPickupDelay();
-        if (getEntityWorld() instanceof ServerWorld world) {
-            Entity follow = world.getEntity(owner);
-            if (world.getTime() % 20 == 0 && getCommandTags().contains("follow_owner") && follow != null) {
-                teleport((ServerWorld) follow.getEntityWorld(), follow.getX(), follow.getY(), follow.getZ(), new HashSet<>(), getPitch(), getYaw(), false);
+        if (isCard(this.getItem())) this.setNoPickUpDelay();
+        if (level() instanceof ServerLevel world && target != null) {
+            Entity follow = world.getEntity(target);
+            if (world.getGameTime() % 20 == 0 && entityTags().contains("follow_owner") && follow != null) {
+                teleportTo((ServerLevel) follow.level(), follow.getX(), follow.getY(), follow.getZ(), new HashSet<>(), getYRot(), getXRot(), false);
             }
         }
 
-        ItemStack stack = this.getStack();
-        if (stack.isOf(Items.ARROW) && stack.getCount() == 64) {
+        ItemStack stack = this.getItem();
+        if (stack.is(Items.ARROW) && stack.getCount() == 64) {
             var entity = getClosestEntity(thisItem, Entity.class, 0.2, e -> true);
-            if (entity instanceof ItemEntity item && item.getStack().isOf(Items.BOW)) {
-                item.setStack(new ItemStack(ModItems.ARROW_RAIN));
+            if (entity instanceof ItemEntity item && item.getItem().is(Items.BOW)) {
+                item.setItem(new ItemStack(ModItems.ARROW_RAIN));
                 this.discard();
             }
         }
 
-        if (stack.isOf(Items.EMERALD) && stack.getCount() == 64) {
+        if (stack.is(Items.EMERALD) && stack.getCount() == 64) {
             var entity = getClosestEntity(thisItem, Entity.class, 0.2, e -> true);
-            if (entity instanceof VillagerEntity villager && villager.getVillagerData().profession().getKey().orElse(VillagerProfession.NONE) == VillagerProfession.NITWIT) {
-                this.setStack(new ItemStack(ModItems.GIFTBOX, 1));
+            if (entity instanceof Villager villager && villager.getVillagerData().profession().unwrapKey().orElse(VillagerProfession.NONE) == VillagerProfession.NITWIT) {
+                this.setItem(new ItemStack(ModItems.GIFTBOX, 1));
             }
         }
     }
 }
 
-@Mixin(TridentEntity.class)
-abstract class TridentMixin extends PersistentProjectileEntity {
-    protected TridentMixin(EntityType<? extends PersistentProjectileEntity> entityType, World world) {
+@Mixin(ThrownTrident.class)
+abstract class TridentMixin extends AbstractArrow {
+    protected TridentMixin(EntityType<? extends AbstractArrow> entityType, Level world) {
         super(entityType, world);
     }
 
-    @Inject(method = "onEntityHit", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/projectile/TridentEntity;setVelocity(Lnet/minecraft/util/math/Vec3d;)V"))
+    @Inject(method = "onHitEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/projectile/arrow/ThrownTrident;setDeltaMovement(Lnet/minecraft/world/phys/Vec3;)V"))
     private void onHit(EntityHitResult entityHitResult, CallbackInfo ci) {
-        if (getCommandTags().contains("a")) this.discard();
+        if (entityTags().contains("a")) this.discard();
     }
 }

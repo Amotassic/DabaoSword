@@ -5,17 +5,17 @@ import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.WarmWineItem;
 import com.amotassic.dabaosword.item.card.CardItem;
 import com.amotassic.dabaosword.item.card.Sha;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.damage.DamageTypes;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.tag.DamageTypeTags;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.Hand;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +38,7 @@ public class ModifyDamage {
             if (f < 0) reducing.add(f); else multiply += f;
         }
 
-        if (source.getSource() instanceof LivingEntity SE && SE.getMainHandStack().isOf(ModItems.GUDINGDAO)) {
+        if (source.getDirectEntity() instanceof LivingEntity SE && SE.getMainHandItem().is(ModItems.GUDINGDAO)) {
             //插入一个武器版古锭刀的结算
             int i = 0; //i == 4则说明受击者的盔甲栏没有任何物品
             for (var s : getArmorItems(entity)) {if (s.isEmpty()) i++;}
@@ -57,31 +57,31 @@ public class ModifyDamage {
         List<LivingEntity> owners = getSkillOwners(entity);
         var exData = d().withDamage(source, amount);
 
-        Entity so = source.getSource(); Entity at = source.getAttacker();
+        Entity so = source.getDirectEntity(); Entity at = source.getEntity();
         //0.最高优先度执行，暂无用途
         for (LivingEntity e : owners) {
             int i = getResult(Trigger.CANCEL_DAMAGE_HIGHEST, e, entity, exData);
             if (i > 0) return i;
         }
         //无敌效果
-        if (entity.hasStatusEffect(ModItems.INVULNERABLE) && !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) return 1;
+        if (entity.hasEffect(ModItems.INVULNERABLE) && !source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) return 1;
 
         if (so instanceof LivingEntity SE) {
             //被乐的生物无法造成伤害
-            if (SE.hasStatusEffect(ModItems.TOO_HAPPY)) return 1;
+            if (SE.hasEffect(ModItems.TOO_HAPPY)) return 1;
             //沈佳宜防御效果
-            if (!(SE instanceof PlayerEntity) && entity.hasStatusEffect(ModItems.DEFEND)) {
-                if (Objects.requireNonNull(entity.getStatusEffect(ModItems.DEFEND)).getAmplifier() >= 2) return 1;
+            if (!(SE instanceof Player) && entity.hasEffect(ModItems.DEFEND)) {
+                if (Objects.requireNonNull(entity.getEffect(ModItems.DEFEND)).getAmplifier() >= 2) return 1;
             }
         } else if (at instanceof LivingEntity AT) {
             //被乐的生物无法造成伤害
-            if (AT.hasStatusEffect(ModItems.TOO_HAPPY)) return 1;
+            if (AT.hasEffect(ModItems.TOO_HAPPY)) return 1;
         }
 
         if (so instanceof LivingEntity SE && shouldSha(SE)) { //只要能触发杀，伤害就会被取消
-            Hand hand = isSha.test(SE.getMainHandStack()) ? Hand.MAIN_HAND : isSha.test(SE.getOffHandStack()) ? Hand.OFF_HAND : null;
-            ItemStack sha = hand != null ? SE.getStackInHand(hand) : getItem(SE, isSha);
-            SE.addCommandTag("sha");
+            var hand = isSha.test(SE.getMainHandItem()) ? InteractionHand.MAIN_HAND : isSha.test(SE.getOffhandItem()) ? InteractionHand.OFF_HAND : null;
+            ItemStack sha = hand != null ? SE.getItemInHand(hand) : getItem(SE, isSha);
+            SE.addTag("sha");
             Sha.shaUse(SE, sha, hand, amount, entity);
             return 2;
         }
@@ -101,7 +101,7 @@ public class ModifyDamage {
             int i = getResult(Trigger.CANCEL_DAMAGE_LOW, e, entity, exData);
             if (i > 0) return i;
         }
-        if (at != null && at.getCommandTags().contains("nanman")) {
+        if (at != null && at.entityTags().contains("nanman")) {
             var stack = getCard(entity, isSha);
             if (!stack.isEmpty()) {
                 voice(entity, stack);
@@ -110,9 +110,9 @@ public class ModifyDamage {
             }
         }
         if (at instanceof LivingEntity) {
-            if (!entity.hasStatusEffect(ModItems.COOLDOWN2)) {
+            if (!entity.hasEffect(ModItems.COOLDOWN2)) {
                 //此处条件是故意设置得与八卦阵条件不一样的，虽然感觉没啥用
-                if (hasCard(entity, p(ModItems.SHAN)) && !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+                if (hasCard(entity, p(ModItems.SHAN)) && !source.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
                     ItemStack shan = new ItemStack(ModItems.SHAN);
                     CardItem.onUse(entity, shan, null, true);
                     shan(entity, false, source, amount);
@@ -129,30 +129,30 @@ public class ModifyDamage {
     }
 
     private static boolean shouldSha(LivingEntity entity) {
-        return hasItem(entity, isSha) && !entity.getCommandTags().contains("sha") && !entity.getCommandTags().contains("juedou") && !entity.getCommandTags().contains("nanman");
+        return hasItem(entity, isSha) && !entity.entityTags().contains("sha") && !entity.entityTags().contains("juedou") && !entity.entityTags().contains("nanman");
     }
 
     public static void shan(LivingEntity entity, boolean bl, DamageSource source, float amount) {
         int cd = bl ? 60 : 40;
-        entity.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 20,0,false,false,false));
-        entity.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, cd,0,false,false,false));
-        if (entity instanceof PlayerEntity player) {
+        entity.addEffect(new MobEffectInstance(ModItems.INVULNERABLE, 20,0,false,false,false));
+        entity.addEffect(new MobEffectInstance(ModItems.COOLDOWN2, cd,0,false,false,false));
+        if (entity instanceof Player player) {
             writeDamage(source, amount, !bl, trinketItem(ModItems.CARD_PILE, player));
-            if (bl) player.sendMessage(Text.translatable("dabaosword.bagua"),true);
+            if (bl) player.sendOverlayMessage(Component.translatable("dabaosword.bagua"));
         }
     }
 
     public static boolean warmWine(LivingEntity entity, DamageSource source) {
-        if (entity.getEntityWorld() instanceof ServerWorld world) {
-            if (source.getAttacker() instanceof PlayerEntity player && !player.getCommandTags().contains("sha")) {
+        if (entity.level() instanceof ServerLevel world) {
+            if (source.getEntity() instanceof Player player && !player.entityTags().contains("sha")) {
                 ItemStack wine = getItem(player, p(ModItems.WARM_WINE));
                 if (wine.isEmpty()) return false;
-                player.addCommandTag("sha"); wine.decrement(1);
+                player.addTag("sha"); wine.shrink(1);
                 if (!player.isCreative() && !player.isSpectator()) give(player, newCard(ModItems.JIU));
 
                 ItemStack head = WarmWineItem.dropHead(entity);
-                if (!head.isEmpty()) entity.dropStack(world, head);
-                entity.damage(world, damageSource(player, DamageTypes.GENERIC_KILL), entity.getMaxHealth() * 100);
+                if (!head.isEmpty()) entity.drop(head, false, false);
+                entity.hurtServer(world, damageSource(player, DamageTypes.GENERIC_KILL), entity.getMaxHealth() * 100);
                 entity.kill(world);
                 return true;
             }

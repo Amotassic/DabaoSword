@@ -23,7 +23,8 @@
     "client.GameRendererMixin",
     "client.KeyboardMixin",
     "client.LivingEntityRendererMixin",
-    "client.MouseMixin"
+    "client.MouseMixin",
+    "client.RangeSelectMixin"
   ],
   "injectors": {
     "defaultRequire": 1

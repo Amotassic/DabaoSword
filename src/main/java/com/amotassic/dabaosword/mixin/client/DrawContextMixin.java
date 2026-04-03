@@ -1,13 +1,14 @@
 package com.amotassic.dabaosword.mixin.client;
 
+import com.amotassic.dabaosword.DabaoSword;
 import com.amotassic.dabaosword.api.card.Rank;
 import com.amotassic.dabaosword.api.card.Suit;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -17,23 +18,27 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static com.amotassic.dabaosword.util.ModTools.c;
 
-@Mixin(DrawContext.class)
+@Mixin(GuiGraphicsExtractor.class)
 public abstract class DrawContextMixin {
-    @Shadow protected abstract void drawTexturedQuad(RenderPipeline pipeline, Identifier sprite, int x1, int x2, int y1, int y2, float u1, float u2, float v1, float v2, int color);
 
-    @Inject(method = "drawStackOverlay(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/item/ItemStack;IILjava/lang/String;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;drawItemBar(Lnet/minecraft/item/ItemStack;II)V"))
-    public void drawItemInSlot(TextRenderer textRenderer, ItemStack stack, int x, int y, String countOverride, CallbackInfo ci) {
+    @Shadow
+    protected abstract void innerBlit(RenderPipeline renderPipeline, Identifier location, int x0, int x1, int y0, int y1, float u0, float u1, float v0, float v1, int color);
+
+    @Inject(method = "itemDecorations(Lnet/minecraft/client/gui/Font;Lnet/minecraft/world/item/ItemStack;IILjava/lang/String;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;itemBar(Lnet/minecraft/world/item/ItemStack;II)V"))
+    public void drawItemInSlot(Font font, ItemStack stack, int x, int y, String countText, CallbackInfo ci) {
         var card = c(stack);
         var s = card.suit; var r = card.rank;
-        if (s != Suit.None && r != Rank.None) {
-            Identifier suit = Identifier.of("dabaosword", "textures/item/suit/" + getSuitName(s) + ".png");
-            Identifier rank = Identifier.of("dabaosword", "textures/item/rank2/" + getRankName(s, r) + ".png");
-            drawTexturedQuad(RenderPipelines.GUI_TEXTURED, suit, x, x + 5, y, y + 5, 0, 1, 0, 1, -1);
-            drawTexturedQuad(RenderPipelines.GUI_TEXTURED, rank, x + 5, x + 11, y, y + 5, 0, 1, 0, 1, -1);
+        if (s != Suit.None) {
+            Identifier suit = DabaoSword.id("textures/item/suit/" + getSuitName(s) + ".png");
+            innerBlit(RenderPipelines.GUI_TEXTURED, suit, x, x + 5, y, y + 5, 0, 1, 0, 1, -1);
+        }
+        if (r != Rank.None) {
+            Identifier rank = DabaoSword.id("textures/item/rank2/" + getRankName(s, r) + ".png");
+            innerBlit(RenderPipelines.GUI_TEXTURED, rank, x + 5, x + 11, y, y + 5, 0, 1, 0, 1, -1);
         }
     }
 
-    @Unique private String getSuitName(Suit s) {
+    @Unique private static String getSuitName(Suit s) {
         return switch (s) {
             case Heart -> "heart";
             case Diamond -> "diamond";
@@ -43,7 +48,7 @@ public abstract class DrawContextMixin {
         };
     }
 
-    @Unique private String getRankName(Suit s, Rank r) {
+    @Unique private static String getRankName(Suit s, Rank r) {
         return switch (s) {
             case Heart, Diamond -> switch (r) {
                 case Ace -> "ar";

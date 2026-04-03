@@ -2,19 +2,20 @@ package com.amotassic.dabaosword.item.card;
 
 import com.amotassic.dabaosword.damage_type.ModDT;
 import com.amotassic.dabaosword.item.ModItems;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.mob.RavagerEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.Ravager;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.NonNull;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -23,21 +24,21 @@ import java.util.function.Predicate;
 import static com.amotassic.dabaosword.util.ModTools.world;
 
 public class NanmanItem extends CardItem.Armoury {
-    public NanmanItem(Settings settings) {super(settings);}
+    public NanmanItem(Properties settings) {super(settings);}
 
     @Override
-    public ActionResult use(World world, PlayerEntity user, Hand hand) {
-        if (world instanceof ServerWorld sw) {
+    public @NonNull InteractionResult use(@NonNull Level world, @NonNull Player user, @NonNull InteractionHand hand) {
+        if (world instanceof ServerLevel sw) {
 
-            Set<LivingEntity> targets = new HashSet<>(sw.getPlayers());
-            Box box = new Box(user.getBlockPos()).expand(10);
-            Predicate<LivingEntity> p = e -> e.isAlive() && !e.getCommandTags().contains("b");
-            targets.addAll(world.getEntitiesByClass(LivingEntity.class, box, p));
+            Set<LivingEntity> targets = new HashSet<>(sw.players());
+            AABB box = new AABB(user.getOnPos()).inflate(10);
+            Predicate<LivingEntity> p = e -> e.isAlive() && !e.entityTags().contains("b");
+            targets.addAll(world.getEntitiesOfClass(LivingEntity.class, box, p));
             targets.remove(user);
 
-            user.addCommandTag("nanman"); //防止触发杀
-            onUse(user, user.getStackInHand(hand), hand, targets.toArray(new LivingEntity[0]));
-            return ActionResult.SUCCESS_SERVER;
+            user.addTag("nanman"); //防止触发杀
+            onUse(user, user.getItemInHand(hand), hand, targets.toArray(new LivingEntity[0]));
+            return InteractionResult.SUCCESS_SERVER;
         }
         return super.use(world, user, hand);
     }
@@ -45,27 +46,27 @@ public class NanmanItem extends CardItem.Armoury {
     @Override
     public void effect(LivingEntity user, ItemStack card, LivingEntity entity) {
         //防止触发闪
-        entity.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 2, 0, false, false));
-        entity.damage(world(user), ModDT.nanman(user), 6);
+        entity.addEffect(new MobEffectInstance(ModItems.COOLDOWN2, 2, 0, false, false));
+        entity.hurtServer(world(user), ModDT.nanman(user), 6);
         summonRavager(entity);
     }
 
     private void summonRavager(LivingEntity entity) {
-        World world = entity.getEntityWorld();
-        RavagerEntity ravager = new RavagerEntity(EntityType.RAVAGER, world);
-        ravager.setCustomName(Text.of(String.valueOf(entity.getId())));
-        world.spawnEntity(ravager);
+        var world = entity.level();
+        Ravager ravager = new Ravager(EntityType.RAVAGER, world);
+        ravager.setCustomName(Component.literal(String.valueOf(entity.getId())));
+        world.addFreshEntity(ravager);
         ravager.setInvulnerable(true);
-        ravager.addCommandTag("a"); ravager.addCommandTag("b");
-        ravager.refreshPositionAfterTeleport(getBlockInFront(entity, 3));
+        ravager.addTag("a"); ravager.addTag("b");
+        ravager.moveOrInterpolateTo(getBlockInFront(entity, 3));
     }
 
-    public Vec3d getBlockInFront(LivingEntity entity, int distance) {
-        Vec3d pos = entity.getEntityPos();
-        Vec3d playerDirection = entity.getRotationVec(1.0F);
+    public Vec3 getBlockInFront(LivingEntity entity, int distance) {
+        Vec3 pos = entity.position();
+        Vec3 playerDirection = entity.getViewVector(1.0F);
         double x = pos.x + playerDirection.x * distance;
         double z = pos.z + playerDirection.z * distance;
-        return new Vec3d(x, pos.y, z);
+        return new Vec3(x, pos.y, z);
     }
 
     @Override public boolean askForWuxie() {return true;}

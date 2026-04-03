@@ -7,272 +7,272 @@
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:mashu"
+          "name": "dabaosword:skill/mashu"
         },
         {
           "weight": 1,
           "type": "minecraft:item",
-          "name": "dabaosword:feiying"
+          "name": "dabaosword:skill/feiying"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:huilei"
+          "name": "dabaosword:skill/huilei"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:duanchang"
+          "name": "dabaosword:skill/duanchang"
         },
         {
           "weight": 2,
           "type": "minecraft:item",
-          "name": "dabaosword:chengxiang"
+          "name": "dabaosword:skill/chengxiang"
         },
         {
           "weight": 2,
           "type": "minecraft:item",
-          "name": "dabaosword:daoshu"
+          "name": "dabaosword:skill/daoshu"
         },
         {
           "weight": 2,
           "type": "minecraft:item",
-          "name": "dabaosword:paoxiao"
+          "name": "dabaosword:skill/paoxiao"
         },
         {
           "weight": 2,
           "type": "minecraft:item",
-          "name": "dabaosword:shixin"
+          "name": "dabaosword:skill/shixin"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:fanjian"
+          "name": "dabaosword:skill/fanjian"
         },
         {
           "weight": 1,
           "type": "minecraft:item",
-          "name": "dabaosword:fenyin"
+          "name": "dabaosword:skill/fenyin"
         },
         {
           "weight": 2,
           "type": "minecraft:item",
-          "name": "dabaosword:jijiu"
+          "name": "dabaosword:skill/jijiu"
         },
         {
           "weight": 2,
           "type": "minecraft:item",
-          "name": "dabaosword:jiuchi"
+          "name": "dabaosword:skill/jiuchi"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:jianxiong"
+          "name": "dabaosword:skill/jianxiong"
         },
         {
           "weight": 2,
           "type": "minecraft:item",
-          "name": "dabaosword:jizhan"
+          "name": "dabaosword:skill/jizhan"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:yingzi"
+          "name": "dabaosword:skill/yingzi"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:weimu"
+          "name": "dabaosword:skill/weimu"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:wusheng"
+          "name": "dabaosword:skill/wusheng"
         },
         {
           "weight": 2,
           "type": "minecraft:item",
-          "name": "dabaosword:shensu"
+          "name": "dabaosword:skill/shensu"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:xiaoji"
+          "name": "dabaosword:skill/xiaoji"
         },
         {
           "weight": 1,
           "type": "minecraft:item",
-          "name": "dabaosword:lianying"
+          "name": "dabaosword:skill/lianying"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:longdan"
+          "name": "dabaosword:skill/longdan"
         },
         {
           "weight": 2,
           "type": "minecraft:item",
-          "name": "dabaosword:shanzhuan"
+          "name": "dabaosword:skill/shanzhuan"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:zhijian"
+          "name": "dabaosword:skill/zhijian"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:gongxin"
+          "name": "dabaosword:skill/gongxin"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:rende"
+          "name": "dabaosword:skill/rende"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:zhiheng"
+          "name": "dabaosword:skill/zhiheng"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:buqu"
+          "name": "dabaosword:skill/buqu"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:tieji"
+          "name": "dabaosword:skill/tieji"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:ganglie"
+          "name": "dabaosword:skill/ganglie"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:fangzhu"
+          "name": "dabaosword:skill/fangzhu"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:xingshang"
+          "name": "dabaosword:skill/xingshang"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:duanliang"
+          "name": "dabaosword:skill/duanliang"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:luoshen"
+          "name": "dabaosword:skill/luoshen"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:qingguo"
+          "name": "dabaosword:skill/qingguo"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:qixi"
+          "name": "dabaosword:skill/qixi"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:liegong"
+          "name": "dabaosword:skill/liegong"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:gongao"
+          "name": "dabaosword:skill/gongao"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:benxi"
+          "name": "dabaosword:skill/benxi"
         },
         {
           "weight": 2,
           "type": "minecraft:item",
-          "name": "dabaosword:leiji"
+          "name": "dabaosword:skill/leiji"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:guose"
+          "name": "dabaosword:skill/guose"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:liuli"
+          "name": "dabaosword:skill/liuli"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:jizhi"
+          "name": "dabaosword:skill/jizhi"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:kanpo"
+          "name": "dabaosword:skill/kanpo"
         },
         {
           "weight": 2,
           "type": "minecraft:item",
-          "name": "dabaosword:huoji"
+          "name": "dabaosword:skill/huoji"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:qice"
+          "name": "dabaosword:skill/qice"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:kurou"
+          "name": "dabaosword:skill/kurou"
         },
         {
           "weight": 1,
           "type": "minecraft:item",
-          "name": "dabaosword:jueqing"
+          "name": "dabaosword:skill/jueqing"
         },
         {
           "weight": 2,
           "type": "minecraft:item",
-          "name": "dabaosword:pojun"
+          "name": "dabaosword:skill/pojun"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:kuanggu"
+          "name": "dabaosword:skill/kuanggu"
         },
         {
           "weight": 2,
           "type": "minecraft:item",
-          "name": "dabaosword:taoluan"
+          "name": "dabaosword:skill/taoluan"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:quanji"
+          "name": "dabaosword:skill/quanji"
         },
         {
           "weight": 2,
           "type": "minecraft:item",
-          "name": "dabaosword:luanji"
+          "name": "dabaosword:skill/luanji"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:luoyi"
+          "name": "dabaosword:skill/luoyi"
         },
         {
           "weight": 3,
           "type": "minecraft:item",
-          "name": "dabaosword:yiji"
+          "name": "dabaosword:skill/yiji"
         }
       ],
       "rolls": 1.0

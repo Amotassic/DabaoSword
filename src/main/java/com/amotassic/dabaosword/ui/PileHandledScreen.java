@@ -1,41 +1,36 @@
 package com.amotassic.dabaosword.ui;
 
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.input.KeyInput;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.ContainerInput;
+import org.jspecify.annotations.NonNull;
 
-public class PileHandledScreen extends HandledScreen<PileScreenHandler> {
-    private static final Identifier TEXTURE = Identifier.of("textures/gui/container/generic_54.png");
+public class PileHandledScreen extends AbstractContainerScreen<PileScreenHandler> {
+    private static final Identifier TEXTURE = Identifier.withDefaultNamespace("textures/gui/container/generic_54.png");
 
-    public PileHandledScreen(PileScreenHandler handler, PlayerInventory inventory, Text title) {
-        super(handler, inventory, title);
-        this.backgroundHeight = 114 + 4 * 18;
-        this.playerInventoryTitleY = this.backgroundHeight - 94;
+    public PileHandledScreen(PileScreenHandler handler, Inventory inventory, Component title) {
+        int height = 114 + 4 * 18;
+        super(handler, inventory, title, 176, height);
+        this.inventoryLabelY = height - 94;
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        super.render(context, mouseX, mouseY, delta);
-        this.drawMouseoverTooltip(context, mouseX, mouseY);
+    public void extractBackground(GuiGraphicsExtractor context, int mouseX, int mouseY, float a) {
+        int i = (this.width - this.imageWidth) / 2;
+        int j = (this.height - this.imageHeight) / 2;
+        context.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, i, j, 0f, 0f, this.imageWidth, 4 * 18 + 17, 256, 256);
+        context.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, i, j + 4 * 18 + 17, 0, 126, this.imageWidth, 96, 256, 256);
     }
 
     @Override
-    protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
-        int i = (this.width - this.backgroundWidth) / 2;
-        int j = (this.height - this.backgroundHeight) / 2;
-        context.drawTexture(RenderPipelines.GUI_TEXTURED, TEXTURE, i, j, 0f, 0f, this.backgroundWidth, 4 * 18 + 17, 256, 256);
-        context.drawTexture(RenderPipelines.GUI_TEXTURED, TEXTURE, i, j + 4 * 18 + 17, 0, 126, this.backgroundWidth, 96, 256, 256);
-    }
-
-    @Override
-    public boolean keyPressed(KeyInput input) {
-        if (client != null && client.interactionManager != null && focusedSlot!= null && input.key()== 261) {
-            client.interactionManager.clickSlot(handler.syncId, focusedSlot.id, 114, SlotActionType.THROW, client.player);
+    public boolean keyPressed(@NonNull KeyEvent input) {
+        if (minecraft.gameMode != null && hoveredSlot != null && minecraft.player != null && input.key() == 261) {
+            minecraft.gameMode.handleContainerInput(menu.containerId, hoveredSlot.index, 114, ContainerInput.THROW, minecraft.player);
             return true;
         }
         return super.keyPressed(input);

@@ -1,34 +1,34 @@
 package com.amotassic.dabaosword.item;
 
 import com.amotassic.dabaosword.item.skillcard.SkillItem;
-import net.minecraft.component.type.TooltipDisplayComponent;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.world.World;
-import org.jetbrains.annotations.NotNull;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.level.Level;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Random;
 import java.util.function.Consumer;
 
 public class GiftBoxItem extends Item {
-    public GiftBoxItem(Settings settings) {super(settings);}
+    public GiftBoxItem(Properties settings) {super(settings);}
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
-        textConsumer.accept(Text.translatable("item.dabaosword.gift_box.tooltip").formatted(Formatting.GOLD));
+    public void appendHoverText(@NonNull ItemStack stack, @NonNull TooltipContext context, @NonNull TooltipDisplay displayComponent, Consumer<Component> textConsumer, @NonNull TooltipFlag type) {
+        textConsumer.accept(Component.translatable("item.dabaosword.gift_box.tooltip").withStyle(ChatFormatting.GOLD));
     }
 
     @Override
-    public ActionResult use(World world, PlayerEntity user, Hand hand) {
-        ItemStack stack = user.getOffHandStack();
-        if (!world.isClient() && hand == Hand.MAIN_HAND && !stack.isEmpty()) {
+    public @NonNull InteractionResult use(Level world, Player user, @NonNull InteractionHand hand) {
+        ItemStack stack = user.getOffhandItem();
+        if (!world.isClientSide() && hand == InteractionHand.MAIN_HAND && !stack.isEmpty()) {
             float chance = 0.01f;
             if (stack.getItem() == Items.GOLD_INGOT) {
                 chance += 0.01f * stack.getCount();
@@ -37,19 +37,19 @@ public class GiftBoxItem extends Item {
             }
             if (stack.getItem() == Items.GOLD_BLOCK) {
                 chance += 0.09f * stack.getCount();
-                stack.decrement(Math.min(stack.getCount(), 11));
+                stack.shrink(Math.min(stack.getCount(), 11));
                 return giftBox(user, chance);
             }
         }
         return super.use(world, user, hand);
     }
 
-    private ActionResult giftBox(@NotNull PlayerEntity player, float chance) {
+    private InteractionResult giftBox(Player player, float chance) {
         if (new Random().nextFloat() < chance) {
             SkillItem.changeSkill(player);
-            if (!player.isCreative()) player.getMainHandStack().decrement(1);
-            return ActionResult.SUCCESS_SERVER;
+            if (!player.isCreative()) player.getMainHandItem().shrink(1);
+            return InteractionResult.SUCCESS_SERVER;
         }
-        return ActionResult.PASS;
+        return InteractionResult.PASS;
     }
 }

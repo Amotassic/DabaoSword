@@ -4,12 +4,12 @@ import com.amotassic.dabaosword.api.skill.ExData;
 import com.amotassic.dabaosword.api.skill.Trigger;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.item.card.equipment.Equipment;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Hand;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
 
@@ -80,7 +80,7 @@ public class CardEvents {
     }
 
     public static void hurtByCard(LivingEntity entity, DamageSource source, float amount) {
-        Item card = switch (source.getType().msgId()) {
+        Item card = switch (source.type().msgId()) {
             case "huogong" -> ModItems.FIRE_ATTACK;
             case "juedou" -> ModItems.JUEDOU;
             case "nanman" -> ModItems.NANMAN;
@@ -97,36 +97,36 @@ public class CardEvents {
 
     /**专为处理卡牌减少而写的方法，牌堆中的卡牌减少，需要保存nbt*/
     public static void cardDecrement(LivingEntity entity, ItemStack stack, int count) {
-        if (entity instanceof PlayerEntity player) {
+        if (entity instanceof Player player) {
             if (getCardPack(player).removeStack(stack, count)) return;
-            else stack.decrement(count);
+            else stack.shrink(count);
             return;
         }
-        stack.decrement(count);
+        stack.shrink(count);
     }
     /**卡牌使用后减少，不需要传入原始的itemStack*/
-    public static void cardUseAndDecrement(LivingEntity user, ItemStack card, Hand hand) {
+    public static void cardUseAndDecrement(LivingEntity user, ItemStack card, InteractionHand hand) {
         //即使创造模式，无懈可击也会消耗，为什么呢？我也不知道
-        if (card.isOf(ModItems.WUXIE)) cardDecrement(user, getCard(user, p(ModItems.WUXIE)), 1);
+        if (card.is(ModItems.WUXIE)) cardDecrement(user, getCard(user, p(ModItems.WUXIE)), 1);
         else {
             //如果使用者是创造模式玩家，则不消耗卡牌
-            if (user instanceof PlayerEntity player && player.getAbilities().creativeMode) return;
+            if (user instanceof Player player && player.getAbilities().instabuild) return;
             Item usedItem = card.getItem();
             //找到和要消耗的完全相同的卡牌，若找不到，则找和要消耗的卡牌同名的牌
-            var stack = getCard(user, s -> ItemStack.areEqual(s, card));
+            var stack = getCard(user, s -> ItemStack.matches(s, card));
             if (stack.isEmpty()) stack = getCard(user, p(usedItem));
             cardDecrement(user, stack, 1);
             //如果使用者是玩家，且消耗的卡牌stack没了，则尝试补充卡牌
-            if (user instanceof PlayerEntity player && stack.isEmpty()) {
-                if (isSha.test(usedItem.getDefaultStack())) { //如果使用了杀则补充杀，否则补充同名牌
+            if (user instanceof Player player && stack.isEmpty()) {
+                if (isSha.test(usedItem.getDefaultInstance())) { //如果使用了杀则补充杀，否则补充同名牌
                     var s = getCard(user, isSha);
                     if (!s.isEmpty()) {
-                        if (hand != null) player.setStackInHand(hand, s.copy()); else give(player, s.copy());
+                        if (hand != null) player.setItemInHand(hand, s.copy()); else give(player, s.copy());
                         cardDecrement(player, s, s.getCount());
                     }
-                } else if (hand != null && player.getStackInHand(hand).isEmpty()) {
+                } else if (hand != null && player.getItemInHand(hand).isEmpty()) {
                     var s = getCard(user, p(usedItem));
-                    if (!s.isEmpty()) {player.setStackInHand(hand, s.copy()); cardDecrement(player, s, s.getCount());}
+                    if (!s.isEmpty()) {player.setItemInHand(hand, s.copy()); cardDecrement(player, s, s.getCount());}
                 }
             }
         }

@@ -1,8 +1,8 @@
 package com.amotassic.dabaosword.api.skill;
 
 import com.amotassic.dabaosword.api.TriPredicate;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
 
 import java.lang.invoke.MethodHandle;
 

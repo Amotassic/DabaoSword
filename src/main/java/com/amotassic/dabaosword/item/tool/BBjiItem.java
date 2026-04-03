@@ -1,18 +1,19 @@
 package com.amotassic.dabaosword.item.tool;
 
 import com.amotassic.dabaosword.damage_type.ModDT;
-import net.minecraft.component.type.TooltipDisplayComponent;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.Box;
-import net.minecraft.world.World;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import org.jspecify.annotations.NonNull;
 
 import java.util.function.Consumer;
 
@@ -20,25 +21,25 @@ import static com.amotassic.dabaosword.util.ModTools.voice;
 import static com.amotassic.dabaosword.util.ModTools.world;
 
 public class BBjiItem extends Item {
-    public BBjiItem(Settings settings) {super(settings);}
+    public BBjiItem(Properties settings) {super(settings);}
 
     @Override
-    public void appendTooltip(ItemStack stack, TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type) {
-        textConsumer.accept(Text.translatable("item.dabaosword.bbji.tooltip"));
+    public void appendHoverText(@NonNull ItemStack stack, @NonNull TooltipContext context, @NonNull TooltipDisplay displayComponent, Consumer<Component> textConsumer, @NonNull TooltipFlag type) {
+        textConsumer.accept(Component.translatable("item.dabaosword.bbji.tooltip"));
     }
 
     @Override
-    public ActionResult use(World world, PlayerEntity user, Hand hand) {
-        if (!world.isClient()) {
-            Box box = new Box(user.getBlockPos()).expand(13);
-            for (LivingEntity nearbyEntity : world.getEntitiesByClass(LivingEntity.class, box, LivingEntity -> LivingEntity != user)) {
-                nearbyEntity.timeUntilRegen = 0;
-                nearbyEntity.damage(world(user), ModDT.bbll(user),2);
+    public @NonNull InteractionResult use(Level world, @NonNull Player user, @NonNull InteractionHand hand) {
+        if (!world.isClientSide()) {
+            AABB box = new AABB(user.getOnPos()).inflate(13);
+            for (LivingEntity nearbyEntity : world.getEntitiesOfClass(LivingEntity.class, box, LivingEntity -> LivingEntity != user)) {
+                nearbyEntity.invulnerableTime = 0;
+                nearbyEntity.hurtServer(world(user), ModDT.bbll(user),2);
             }
             voice(user, this);
-            ItemStack stack = user.getStackInHand(hand);
-            EquipmentSlot slot = hand == Hand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND;
-            stack.damage(1, user, slot);
+            ItemStack stack = user.getItemInHand(hand);
+            EquipmentSlot slot = hand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND;
+            stack.hurtAndBreak(1, user, slot);
         }
         return super.use(world, user, hand);
     }

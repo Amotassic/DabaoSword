@@ -1,24 +1,25 @@
 package com.amotassic.dabaosword.pvpgame;
 
+import com.amotassic.dabaosword.DabaoSword;
 import com.amotassic.dabaosword.event.PVPGameEvents;
 import com.amotassic.dabaosword.util.ModConfig;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.math.Box;
-import net.minecraft.world.PersistentState;
-import net.minecraft.world.PersistentStateType;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.level.saveddata.SavedDataType;
+import net.minecraft.world.phys.AABB;
+import org.jspecify.annotations.Nullable;
 
 import java.util.*;
 
-public class GameManager extends PersistentState {
+public class GameManager extends SavedData {
     public static final Codec<GameManager> CODEC = RecordCodecBuilder.create(
             instance -> instance.group(
                             GameWithId.CODEC
@@ -32,38 +33,38 @@ public class GameManager extends PersistentState {
     private final Int2ObjectMap<Game> games = new Int2ObjectOpenHashMap<>();
     private int nextAvailableId;
 
-    public static PersistentStateType<GameManager> getPersistentStateType() {
-        return new PersistentStateType<>("dabaosword_game", GameManager::new, CODEC, null);
+    public static SavedDataType<GameManager> getPersistentStateType() {
+        return new SavedDataType<>(DabaoSword.id("dabaosword_game"), GameManager::new, CODEC, null);
     }
 
-    public GameManager() {this.markDirty();}
+    public GameManager() {this.setDirty();}
     public GameManager(List<GameManager.GameWithId> games, int nextAvailableId) {
         for (var gameWithId : games) this.games.put(gameWithId.id, gameWithId.game);
         this.nextAvailableId = nextAvailableId;
-        markDirty();
+        setDirty();
     }
 
     public int getGameCount() {return games.size();}
 
     @Nullable
-    public Game createGame(ServerPlayerEntity player, int type) {
-        Box box = new Box(player.getBlockPos()).expand(ModConfig.SearchRadius);
-        List<PlayerEntity> players = player.getEntityWorld().getEntitiesByClass(PlayerEntity.class, box, p -> !p.isSpectator() && !isPlayerInGame(p));
+    public Game createGame(ServerPlayer player, int type) {
+        AABB box = new AABB(player.getOnPos()).inflate(ModConfig.SearchRadius);
+        List<Player> players = player.level().getEntitiesOfClass(Player.class, box, p -> !p.isSpectator() && !isPlayerInGame(p));
         if (players.size() < 2) {
-            player.sendMessage(Text.literal("Not enough players to start a game!").formatted(Formatting.RED));
+            player.sendSystemMessage(Component.literal("Not enough players to start a game!").withStyle(ChatFormatting.RED));
             return null;
         }
         Set<UUID> playerUuids = new HashSet<>();
-        for (PlayerEntity p : players) playerUuids.add(p.getUuid());
+        for (var p : players) playerUuids.add(p.getUUID());
         Game game = new Game(nextId(), playerUuids, type);
         games.put(game.getGameId(), game);
         PVPGameEvents.onGameCreate(player, game, playerUuids);
-        markDirty();
+        setDirty();
         return game;
     }
 
     @Nullable
-    public Game getGameByPlayer(PlayerEntity player) {
+    public Game getGameByPlayer(Player player) {
         for (Game game : games.values()) {
             if (game.isPlayerInThisGame(player)) return game;
         }
@@ -72,21 +73,21 @@ public class GameManager extends PersistentState {
 
     /**判断玩家是否已经加入任意一场对战*/
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public boolean isPlayerInGame(PlayerEntity player) {return getGameByPlayer(player) != null;}
+    public boolean isPlayerInGame(Player player) {return getGameByPlayer(player) != null;}
 
-    public void tick(ServerWorld world) {
+    public void tick(ServerLevel world) {
         Iterator<Game> iterator = this.games.values().iterator();
         while (iterator.hasNext()) {
             Game game = iterator.next();
             if (!game.isActive()) { //移除游戏
                 iterator.remove();
-                markDirty();
+                setDirty();
                 continue;
             }
             game.tick(world);
         }
         //if (world.getTime() % 200 == 0) System.out.println("GameManager tick: " + games.keySet());
-        if (world.getTime() % 200 == 0) markDirty();
+        if (world.getGameTime() % 200 == 0) setDirty();
     }
 
     private int nextId() {return ++nextAvailableId;}

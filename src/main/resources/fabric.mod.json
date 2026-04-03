@@ -28,9 +28,9 @@
     "dabaosword.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.16.9",
-    "fabric": "*",
-    "minecraft": ">=1.21.6-",
+    "fabricloader": ">=0.18",
+    "fabric-api": "*",
+    "minecraft": ">=26.1-",
     "trinkets": ">=3.11.0"
   },
   "accessWidener": "dabaosword.accesswidener"

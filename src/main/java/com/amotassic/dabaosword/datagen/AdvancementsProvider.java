@@ -1,17 +1,19 @@
 package com.amotassic.dabaosword.datagen;
 
+import com.amotassic.dabaosword.DabaoSword;
 import com.amotassic.dabaosword.item.ModItems;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricAdvancementProvider;
-import net.minecraft.advancement.Advancement;
-import net.minecraft.advancement.AdvancementEntry;
-import net.minecraft.advancement.AdvancementFrame;
-import net.minecraft.advancement.AdvancementRewards;
-import net.minecraft.advancement.criterion.InventoryChangedCriterion;
-import net.minecraft.advancement.criterion.TickCriterion;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.advancements.AdvancementRewards;
+import net.minecraft.advancements.AdvancementType;
+import net.minecraft.advancements.criterion.InventoryChangeTrigger;
+import net.minecraft.advancements.criterion.PlayerTrigger;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.NonNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,52 +21,52 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public class AdvancementsProvider extends FabricAdvancementProvider {
-    public AdvancementsProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> r) {
-        super(output, r);
+    protected AdvancementsProvider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registryLookup) {
+        super(output, registryLookup);
     }
 
     @Override
-    public void generateAdvancement(RegistryWrapper.WrapperLookup wrapperLookup, Consumer<AdvancementEntry> consumer) {
+    public void generateAdvancement(HolderLookup.@NonNull Provider provider, @NonNull Consumer<AdvancementHolder> consumer) {
         ADVANCEMENTS.keySet().forEach(name -> consumer.accept(get(name)));
     }
 
     private static final Map<String, Advancement.Builder> ADVANCEMENTS = new HashMap<>();
 
-    private static AdvancementEntry add(String name, Advancement.Builder builder) {
+    private static AdvancementHolder add(String name, Advancement.Builder builder) {
         ADVANCEMENTS.put(name, builder);
-        Identifier id = Identifier.of("dabaosword", name);
+        Identifier id = DabaoSword.id(name);
         return builder.build(id);
     }
 
-    public static AdvancementEntry get(String name) {
-        Identifier id = Identifier.of("dabaosword", name);
+    public static AdvancementHolder get(String name) {
+        Identifier id = DabaoSword.id(name);
         return ADVANCEMENTS.get(name).build(id);
     }
 
-    private static final AdvancementEntry root = add("root", Advancement.Builder.create()
-            .rewards(AdvancementRewards.Builder.function(Identifier.of("dabaosword", "root")).build())
+    private static final AdvancementHolder root = add("root", Advancement.Builder.advancement()
+            .rewards(AdvancementRewards.Builder.function(DabaoSword.id("root")).build())
             .display(ModItems.BBJI,
-                    Text.translatable("advancement.dabaosword.root.title"),
-                    Text.translatable("advancement.dabaosword.root.tip"),
-                    Identifier.of("textures/gui/advancements/backgrounds/adventure.png"),
-                    AdvancementFrame.TASK, true, false, false
-            ).criterion("root", TickCriterion.Conditions.createTick()));
+                    Component.translatable("advancement.dabaosword.root.title"),
+                    Component.translatable("advancement.dabaosword.root.tip"),
+                    Identifier.withDefaultNamespace("textures/gui/advancements/backgrounds/adventure.png"),
+                    AdvancementType.TASK, true, false, false
+            ).addCriterion("root", PlayerTrigger.TriggerInstance.tick()));
 
     static {
-        add("card_pile", Advancement.Builder.create().parent(root)
+        add("card_pile", Advancement.Builder.advancement().parent(root)
                 .display(ModItems.CARD_PILE,
-                        Text.translatable("advancement.dabaosword.card_pile.title"),
-                        Text.translatable("advancement.dabaosword.card_pile.tip"),
+                        Component.translatable("advancement.dabaosword.card_pile.title"),
+                        Component.translatable("advancement.dabaosword.card_pile.tip"),
                         null,
-                        AdvancementFrame.TASK, true, true, false
-                ).criterion("card_pile", InventoryChangedCriterion.Conditions.items(ModItems.CARD_PILE)));
+                        AdvancementType.TASK, true, true, false
+                ).addCriterion("card_pile", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.CARD_PILE)));
 
-        add("gift_box", Advancement.Builder.create().parent(root)
+        add("gift_box", Advancement.Builder.advancement().parent(root)
                 .display(ModItems.GIFTBOX,
-                        Text.translatable("advancement.dabaosword.gift_box.title"),
-                        Text.translatable("advancement.dabaosword.gift_box.tip"),
+                        Component.translatable("advancement.dabaosword.gift_box.title"),
+                        Component.translatable("advancement.dabaosword.gift_box.tip"),
                         null,
-                        AdvancementFrame.TASK, true, true, false
-                ).criterion("gift_box", InventoryChangedCriterion.Conditions.items(ModItems.GIFTBOX)));
+                        AdvancementType.TASK, true, true, false
+                ).addCriterion("gift_box", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.GIFTBOX)));
     }
 }

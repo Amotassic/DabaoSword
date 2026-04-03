@@ -5,16 +5,16 @@ import com.amotassic.dabaosword.api.skill.Trigger;
 import com.amotassic.dabaosword.effect.ShandianEffect;
 import com.amotassic.dabaosword.item.card.CardItem;
 import com.amotassic.dabaosword.util.Tags;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.mob.HostileEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.tag.DamageTypeTags;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.Box;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.AABB;
 
 import java.util.Random;
 
@@ -36,27 +36,27 @@ public class EntityHurtHandler implements EntityHurtCallback {
     }
 
     private static void tiesuoTrigger(LivingEntity entity, DamageSource source, float amount) {
-        ServerWorld world = world(entity);
-        if (entity.isGlowing() && source.isIn(Tags.TRIGGER_TIESUO)) {
-            entity.removeStatusEffect(StatusEffects.GLOWING);
-            Box box = new Box(entity.getBlockPos()).expand(20);
-            for (LivingEntity near : world.getEntitiesByClass(LivingEntity.class, box, e -> e != entity && e.isGlowing())) {
-                near.removeStatusEffect(StatusEffects.GLOWING);
-                near.damage(world, source, amount);
-                if (source.isIn(DamageTypeTags.IS_FREEZING)) near.setFrozenTicks(entity.getFrozenTicks());
-                if (source.isIn(DamageTypeTags.IS_FIRE)) {
-                    int fireTicks = entity.getFireTicks() / 20;
-                    int fireTime = fireTicks == 0 ? 6 : fireTicks;
-                    near.setOnFireFor(fireTime);
+        ServerLevel world = world(entity);
+        if (entity.isCurrentlyGlowing() && source.is(Tags.TRIGGER_TIESUO)) {
+            entity.removeEffect(MobEffects.GLOWING);
+            AABB box = new AABB(entity.getOnPos()).inflate(20);
+            for (LivingEntity near : world.getEntitiesOfClass(LivingEntity.class, box, e -> e != entity && e.isCurrentlyGlowing())) {
+                near.removeEffect(MobEffects.GLOWING);
+                near.hurtServer(world, source, amount);
+                if (source.is(DamageTypeTags.IS_FREEZING)) near.setTicksFrozen(entity.getTicksFrozen());
+                if (source.is(DamageTypeTags.IS_FIRE)) {
+                    int fireTicks = entity.getRemainingFireTicks();
+                    int fireTime = fireTicks == 0 ? 120 : fireTicks;
+                    near.setRemainingFireTicks(fireTime);
                 }
-                if (source.isIn(DamageTypeTags.IS_LIGHTNING)) ShandianEffect.summonLightning(near, true, false);
+                if (source.is(DamageTypeTags.IS_LIGHTNING)) ShandianEffect.summonLightning(near, true, false);
             }
         }
     }
 
     @Override
     public void hurtEntity(LivingEntity entity, DamageSource source, float amount) {
-        if (entity.getEntityWorld() instanceof ServerWorld) {
+        if (entity.level() instanceof ServerLevel) {
 
             tiesuoTrigger(entity, source, amount);
 
@@ -65,32 +65,32 @@ public class EntityHurtHandler implements EntityHurtCallback {
 
             trySave(entity, amount);
 
-            if (source.isIn(Tags.FROM_CARD)) hurtByCard(entity, source, amount);
+            if (source.is(Tags.FROM_CARD)) hurtByCard(entity, source, amount);
 
-            if (source.getAttacker() instanceof LivingEntity living) {
-                if (living.getCommandTags().contains("px")) entity.timeUntilRegen = 0;
+            if (source.getEntity() instanceof LivingEntity living) {
+                if (living.entityTags().contains("px")) entity.invulnerableTime = 0;
 
-                if (living instanceof PlayerEntity && entity instanceof PlayerEntity && amount >= 15) {
+                if (living instanceof Player && entity instanceof Player && amount >= 15) {
                     voice(living, "wushuang");
                 }
             }
 
             //监听事件：若玩家杀死敌对生物，有概率摸牌，若杀死玩家，摸两张牌
-            if (source.getAttacker() instanceof PlayerEntity player && entity.getHealth() <= 0) {
-                if (entity instanceof HostileEntity) {
+            if (source.getEntity() instanceof Player player && entity.getHealth() <= 0) {
+                if (entity instanceof Monster) {
                     if (new Random().nextFloat() < 0.1) {
                         draw(player);
-                        player.sendMessage(Text.translatable("dabaosword.draw.monster"),true);
+                        player.sendOverlayMessage(Component.translatable("dabaosword.draw.monster"));
                     }
                 }
-                if (entity instanceof PlayerEntity && player!= entity) {
+                if (entity instanceof Player && player!= entity) {
                     if (player.getHealth() < 20) player.heal(20 - player.getHealth());
                     draw(player);
-                    player.sendMessage(Text.translatable("dabaosword.draw.player"),true);
+                    player.sendOverlayMessage(Component.translatable("dabaosword.draw.player"));
                 }
             }
 
-            if (entity.isDead()) getSkillOwners(entity).forEach(player ->
+            if (entity.isDeadOrDying()) getSkillOwners(entity).forEach(player ->
                     getResult(Trigger.ON_DEATH, player, entity, d().withDamage(source, amount)));
 
         }

@@ -4,9 +4,9 @@ import com.amotassic.dabaosword.api.CardEvents;
 import com.amotassic.dabaosword.api.card.Card;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.ModTools;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,7 +61,7 @@ public class ExData {
         else {
             for (var c : cards_from_inv.keySet()) {
                 // 如果将要添加的卡牌已经存在了，但数量未达到该物品堆的数量，就增加该物品堆已计入的数量
-                if (ItemStack.areEqual(c.toStack(), card.toStack())) {
+                if (ItemStack.matches(c.toStack(), card.toStack())) {
                     Integer stored = cards_from_inv.get(c); int stackCount = c.count;
                     if (stored == stackCount) continue;
 

@@ -2,23 +2,24 @@ package com.amotassic.dabaosword.item.tool;
 
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.ModTools;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.world.ServerWorld;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class SunshineSmile extends Item {
-    public SunshineSmile(Settings settings) {super(settings);}
+    public SunshineSmile(Properties settings) {super(settings);}
 
     @Override
-    public void inventoryTick(ItemStack stack, ServerWorld world, Entity entity, @Nullable EquipmentSlot slot) {
-        if (world instanceof ServerWorld sw && sw.getTime() % 1200 == 0) {
+    public void inventoryTick(@NonNull ItemStack stack, @NonNull ServerLevel world, @NonNull Entity entity, @Nullable EquipmentSlot slot) {
+        if (world instanceof ServerLevel sw && sw.getGameTime() % 1200 == 0) {
             var entry = ModTools.getEntry(ModItems.CRIT, entity);
-            if (EnchantmentHelper.getLevel(entry, stack) == 0) {
-                stack.addEnchantment(entry, 1);
+            if (EnchantmentHelper.getItemEnchantmentLevel(entry, stack) == 0) {
+                stack.enchant(entry, 1);
             }
         }
     }

@@ -1,31 +1,32 @@
 package com.amotassic.dabaosword.item.card;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.world.World;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import org.jspecify.annotations.NonNull;
 
 public class PeachItem extends CardItem.Basic {
-    public PeachItem(Settings settings) {super(settings);}
+    public PeachItem(Properties settings) {super(settings);}
 
     //非潜行时右键，给自己回血
     @Override
-    public ActionResult use(World world, PlayerEntity player, Hand hand) {
-        if (!world.isClient() && player.getHealth() < player.getMaxHealth() && !player.isSneaking()) {
-            onUse(player, player.getStackInHand(hand), hand, player);
-            return ActionResult.SUCCESS_SERVER;
+    public @NonNull InteractionResult use(@NonNull Level world, @NonNull Player player, @NonNull InteractionHand hand) {
+        if (!world.isClientSide() && player.getHealth() < player.getMaxHealth() && !player.isShiftKeyDown()) {
+            onUse(player, player.getItemInHand(hand), hand, player);
+            return InteractionResult.SUCCESS_SERVER;
         }
         return super.use(world, player, hand);
     }
     //潜行时对生物右键，给其他生物回血
-    public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (!user.getEntityWorld().isClient() && entity.getHealth() < entity.getMaxHealth() && user.isSneaking()) {
-            onUse(user, user.getStackInHand(hand), hand, entity);
-            return ActionResult.SUCCESS_SERVER;
+    public @NonNull InteractionResult interactLivingEntity(@NonNull ItemStack stack, Player user, @NonNull LivingEntity entity, @NonNull InteractionHand hand) {
+        if (!user.level().isClientSide() && entity.getHealth() < entity.getMaxHealth() && user.isShiftKeyDown()) {
+            onUse(user, user.getItemInHand(hand), hand, entity);
+            return InteractionResult.SUCCESS_SERVER;
         }
-        return ActionResult.PASS;
+        return InteractionResult.PASS;
     }
 
     @Override

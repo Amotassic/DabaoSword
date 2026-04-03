@@ -1,28 +1,29 @@
 package com.amotassic.dabaosword.effect;
 
 import com.amotassic.dabaosword.item.ModItems;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectCategory;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import org.jspecify.annotations.NonNull;
 
 import java.util.Objects;
 
-public class CooldownEffect extends StatusEffect {
-    public CooldownEffect() {super(StatusEffectCategory.NEUTRAL,0xFFFFFF);}
+public class CooldownEffect extends MobEffect {
+    public CooldownEffect() {super(MobEffectCategory.NEUTRAL,0xFFFFFF);}
 
     @Override
-    public boolean canApplyUpdateEffect(int duration, int amplifier) {return true;}
+    public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {return true;}
 
     @Override
-    public boolean applyUpdateEffect(ServerWorld world, LivingEntity entity, int amplifier) {
-        if (entity instanceof PlayerEntity player) {
-            int restTime = Objects.requireNonNull(entity.getStatusEffect(ModItems.COOLDOWN)).getDuration();
+    public boolean applyEffectTick(@NonNull ServerLevel world, @NonNull LivingEntity entity, int amplifier) {
+        if (entity instanceof Player player) {
+            int restTime = Objects.requireNonNull(entity.getEffect(ModItems.COOLDOWN)).getDuration();
             if(restTime<=1) {
-                player.sendMessage(Text.translatable("dabaosword.cooldown_end").formatted(Formatting.GREEN),true);
+                player.sendOverlayMessage(Component.translatable("dabaosword.cooldown_end").withStyle(ChatFormatting.GREEN));
             }
         }
         return true;

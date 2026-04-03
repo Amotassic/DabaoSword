@@ -2,32 +2,33 @@ package com.amotassic.dabaosword.api;
 
 import com.amotassic.dabaosword.DabaoSword;
 import com.amotassic.dabaosword.item.ModItems;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventories;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.storage.NbtReadView;
-import net.minecraft.storage.NbtWriteView;
-import net.minecraft.util.ErrorReporter;
-import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.util.ProblemReporter;
+import net.minecraft.world.Container;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.TagValueInput;
+import net.minecraft.world.level.storage.TagValueOutput;
+import org.jspecify.annotations.NonNull;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
 
-public class CardPileInventory implements Inventory {
-    public DefaultedList<ItemStack> cards;
-    public PlayerEntity player;
+public class CardPileInventory implements Container {
+    public NonNullList<ItemStack> cards;
+    public Player player;
     private static final Item pile = ModItems.CARD_PILE;
 
-    public CardPileInventory(PlayerEntity player) {
+    public CardPileInventory(Player player) {
         this.player = player;
-        this.cards = DefaultedList.ofSize(36, ItemStack.EMPTY);
+        this.cards = NonNullList.withSize(36, ItemStack.EMPTY);
         readNbt();
     }
 
     public int getEmptySlot() {
-        for (int i = 0; i < size(); ++i) {
+        for (int i = 0; i < getContainerSize(); ++i) {
             if (!cards.get(i).isEmpty()) continue;
             return i;
         }
@@ -36,19 +37,19 @@ public class CardPileInventory implements Inventory {
 
     public void readNbt() {
         cards.clear();
-        try (ErrorReporter.Logging logging = new ErrorReporter.Logging(player.getErrorReporterContext(), DabaoSword.LOGGER)) {
-            var view = NbtReadView.create(logging, player.getRegistryManager(), getOrCreateNbt(trinketItem(pile, player)));
-            Inventories.readData(view, cards);
+        try (var logging = new ProblemReporter.ScopedCollector(player.problemPath(), DabaoSword.LOGGER)) {
+            var view = TagValueInput.create(logging, player.registryAccess(), getOrCreateNbt(trinketItem(pile, player)));
+            ContainerHelper.loadAllItems(view, cards);
         }
     }
 
     public void writeNbtToStack() { //当涉及牌堆物品变化后，必须调用这个方法
-        if (player.getEntityWorld().isClient()) return;
-        NbtList nbtList;
-        try (ErrorReporter.Logging logging = new ErrorReporter.Logging(player.getErrorReporterContext(), DabaoSword.LOGGER)) {
-            var view = NbtWriteView.create(logging, player.getRegistryManager());
-            Inventories.writeData(view, cards);
-            nbtList = view.getNbt().getList("Items").orElse(new NbtList());
+        if (player.level().isClientSide()) return;
+        ListTag nbtList;
+        try (var logging = new ProblemReporter.ScopedCollector(player.problemPath(), DabaoSword.LOGGER)) {
+            var view = TagValueOutput.createWithContext(logging, player.registryAccess());
+            ContainerHelper.saveAllItems(view, cards);
+            nbtList = view.buildResult().getList("Items").orElse(new ListTag());
         }
         ItemStack stack = trinketItem(pile, player);
         var nbtCompound = getOrCreateNbt(stack);
@@ -57,7 +58,7 @@ public class CardPileInventory implements Inventory {
     }
 
     @Override
-    public int size() {return cards.size();}
+    public int getContainerSize() {return cards.size();}
 
     @Override
     public boolean isEmpty() {
@@ -76,13 +77,13 @@ public class CardPileInventory implements Inventory {
     }
 
     @Override
-    public ItemStack getStack(int slot) {return cards.get(slot);}
+    public @NonNull ItemStack getItem(int slot) {return cards.get(slot);}
 
     public int getSlotWith(ItemStack stack) { //倒序检索 3.3放弃了倒序检索，会出现bug
-        for (int i = 0; i < size(); i++) {
-            ItemStack itemStack = getStack(i);
+        for (int i = 0; i < getContainerSize(); i++) {
+            ItemStack itemStack = getItem(i);
             if (itemStack.isEmpty()) continue;
-            if (ItemStack.areEqual(itemStack, stack)) return i;
+            if (ItemStack.matches(itemStack, stack)) return i;
         }
         return -1;
     }
@@ -91,19 +92,19 @@ public class CardPileInventory implements Inventory {
     public boolean removeStack(ItemStack stack, int count) {
         int i = getSlotWith(stack);
         if (i == -1) return false;
-        removeStack(i, count);
+        removeItem(i, count);
         return true;
     }
 
     @Override
-    public ItemStack removeStack(int slot, int amount) {
-        ItemStack stack = Inventories.splitStack(cards, slot, amount);
+    public @NonNull ItemStack removeItem(int slot, int amount) {
+        ItemStack stack = ContainerHelper.removeItem(cards, slot, amount);
         writeNbtToStack();
         return stack;
     }
 
     @Override
-    public ItemStack removeStack(int slot) {
+    public @NonNull ItemStack removeItemNoUpdate(int slot) {
         ItemStack itemStack = cards.get(slot);
         cards.set(slot, ItemStack.EMPTY);
         writeNbtToStack();
@@ -111,16 +112,16 @@ public class CardPileInventory implements Inventory {
     }
 
     @Override
-    public void setStack(int slot, ItemStack stack) {cards.set(slot, stack);}
+    public void setItem(int slot, @NonNull ItemStack stack) {cards.set(slot, stack);}
 
     @Override
-    public void markDirty() {}
+    public void setChanged() {}
 
     @Override
-    public boolean canPlayerUse(PlayerEntity player) {return true;}
+    public boolean stillValid(@NonNull Player player) {return true;}
 
     @Override
-    public void clear() {
+    public void clearContent() {
         cards.clear();
         writeNbtToStack();
     }
@@ -145,7 +146,7 @@ public class CardPileInventory implements Inventory {
         }
         if (slot == -1) slot = getEmptySlot();
         if (slot >= 0) {
-            cards.set(slot, stack.copyAndEmpty());
+            cards.set(slot, stack.copyAndClear());
             return true;
         }
         return false;
@@ -160,16 +161,16 @@ public class CardPileInventory implements Inventory {
 
     private int addStack(int slot, ItemStack stack) {
         int i = stack.getCount();
-        ItemStack itemStack = getStack(slot);
+        ItemStack itemStack = getItem(slot);
         if (itemStack.isEmpty()) {
             itemStack = stack.copyWithCount(0);
-            setStack(slot, itemStack);
+            setItem(slot, itemStack);
         }
-        int j = getMaxCount(itemStack) - itemStack.getCount();
+        int j = getMaxStackSize(itemStack) - itemStack.getCount();
         int k = Math.min(i, j);
         if (k != 0) {
             i -= k;
-            itemStack.increment(k);
+            itemStack.grow(k);
         }
         return i;
     }
@@ -183,6 +184,6 @@ public class CardPileInventory implements Inventory {
     }
 
     private boolean canStackAddMore(ItemStack existingStack, ItemStack stack) {
-        return !existingStack.isEmpty() && ItemStack.areItemsAndComponentsEqual(existingStack, stack) && existingStack.isStackable() && existingStack.getCount() < this.getMaxCount(existingStack);
+        return !existingStack.isEmpty() && ItemStack.isSameItemSameComponents(existingStack, stack) && existingStack.isStackable() && existingStack.getCount() < this.getMaxStackSize(existingStack);
     }
 }

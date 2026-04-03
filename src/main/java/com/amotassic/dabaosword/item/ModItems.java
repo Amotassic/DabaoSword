@@ -1,5 +1,6 @@
 package com.amotassic.dabaosword.item;
 
+import com.amotassic.dabaosword.DabaoSword;
 import com.amotassic.dabaosword.api.event.*;
 import com.amotassic.dabaosword.effect.*;
 import com.amotassic.dabaosword.entity.ModEntity;
@@ -15,32 +16,33 @@ import com.amotassic.dabaosword.network.SimplePayload;
 import com.amotassic.dabaosword.ui.FullInvScreenHandler;
 import com.amotassic.dabaosword.ui.PileScreenHandler;
 import com.amotassic.dabaosword.ui.PlayerInvScreenHandler;
+import com.amotassic.dabaosword.util.ModTools;
+import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTab;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLevelEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
-import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
-import net.minecraft.component.ComponentType;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.effect.StatusEffect;
-import net.minecraft.entity.effect.StatusEffectCategory;
-import net.minecraft.item.*;
-import net.minecraft.network.codec.PacketCodecs;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.screen.ScreenHandlerType;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Rarity;
+import net.fabricmc.fabric.api.menu.v1.ExtendedMenuType;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.Unit;
-import net.minecraft.util.dynamic.Codecs;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.*;
+import net.minecraft.world.item.enchantment.Enchantment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -134,73 +136,76 @@ public class ModItems {
     //牌堆
     CARD_PILE = register("card_pile", CardPile::new, 1),
     //礼盒
-    GIFTBOX = register("gift_box", GiftBoxItem::new, new Item.Settings().rarity(Rarity.UNCOMMON)),
-    GUDINGDAO = register("gudingdao", GudingdaoItem::new, new Item.Settings().maxDamage(999).rarity(Rarity.EPIC).sword(ToolMaterial.NETHERITE, 5, -2.4f)),
-    ARROW_RAIN = register("arrow_rain", ArrowRainItem::new, new Item.Settings().maxDamage(50).rarity(Rarity.UNCOMMON)),
-    WARM_WINE = register("warm_wine", WarmWineItem::new, new Item.Settings().rarity(Rarity.UNCOMMON)),
+    GIFTBOX = register("gift_box", GiftBoxItem::new, new Item.Properties().rarity(Rarity.UNCOMMON)),
+    GUDINGDAO = register("gudingdao", GudingdaoItem::new, new Item.Properties().durability(999).rarity(Rarity.EPIC).sword(ToolMaterial.NETHERITE, 5, -2.4f)),
+    ARROW_RAIN = register("arrow_rain", ArrowRainItem::new, new Item.Properties().durability(50).rarity(Rarity.UNCOMMON)),
+    WARM_WINE = register("warm_wine", WarmWineItem::new, new Item.Properties().rarity(Rarity.UNCOMMON)),
     //BB机
-    BBJI = register("bbji", BBjiItem::new, new Item.Settings().maxDamage(250).rarity(Rarity.UNCOMMON)),
+    BBJI = register("bbji", BBjiItem::new, new Item.Properties().durability(250).rarity(Rarity.UNCOMMON)),
     //让我康康
     LET_ME_CC = register("let_me_cc", LetMeCCItem::new, 1),
     //阳光开朗的笑容
-    SUNSHINE_SMILE = register("sunshine_smile", SunshineSmile::new, new Item.Settings().maxDamage(999).rarity(Rarity.UNCOMMON).equippable(EquipmentSlot.HEAD).enchantable(25).component(DataComponentTypes.UNBREAKABLE, Unit.INSTANCE)),
-    XUYOU_SPAWN_EGG = register("xuyou_spawn_egg", SpawnEggItem::new, new Item.Settings().spawnEgg(ModEntity.XUYOU)),
+    SUNSHINE_SMILE = register("sunshine_smile", SunshineSmile::new, new Item.Properties().durability(999).rarity(Rarity.UNCOMMON).equippable(EquipmentSlot.HEAD).enchantable(25).component(DataComponents.UNBREAKABLE, Unit.INSTANCE)),
+    XUYOU_SPAWN_EGG = register("xuyou_spawn_egg", SpawnEggItem::new, new Item.Properties().spawnEgg(ModEntity.XUYOU)),
     GUDING_ITEM = register("guding", Item::new),
     INCOMPLETE_GUDINGDAO = register("incomplete_gdd", Item::new, 1);
     public static final CardItem EMPTY_CARD = register("empty_card", CardItem.Empty::new);
     public static final SkillItem EMPTY_SKILL = register("empty_skill", SkillItem::new);
 
-    public static <T extends Item> T register(String id, Function<Item.Settings, T> factory, int... maxCount) {
-        Item.Settings settings = new Item.Settings();
-        if (maxCount.length > 0) settings = settings.maxCount(maxCount[0]);
+    public static <T extends Item> T register(String id, Function<Item.Properties, T> factory, int... maxCount) {
+        Item.Properties settings = new Item.Properties();
+        if (maxCount.length > 0) settings = settings.stacksTo(maxCount[0]);
         return register(id, factory, settings);
     }
     /**将注册的卡牌添加到卡牌列表中，便于自动将物品添加到物品组*/
-    public static CardItem registerCard(String name, Function<Item.Settings, CardItem> factory, int... maxCount) {
-        CardItem card = register(name, factory, maxCount);
+    public static CardItem registerCard(String name, Function<Item.Properties, CardItem> factory, int... maxCount) {
+        CardItem card = register("card/" + name, factory, maxCount);
         CARDS.add(card);
         return card;
     }
 
-    public static <T extends Item> T register(String id, Function<Item.Settings, T> factory, Item.Settings settings) {
-        var key = RegistryKey.of(RegistryKeys.ITEM, Identifier.of("dabaosword", id));
-        T item = factory.apply(settings.registryKey(key));
-        if (item instanceof BlockItem blockItem) blockItem.appendBlocks(Item.BLOCK_ITEMS, item);
-        return Registry.register(Registries.ITEM, key, item);
+    public static <T extends Item> T register(String id, Function<Item.Properties, T> factory, Item.Properties settings) {
+        var key = ResourceKey.create(Registries.ITEM, DabaoSword.id(id));
+        T item = factory.apply(settings.setId(key));
+        if (item instanceof BlockItem blockItem) blockItem.registerBlocks(Item.BY_BLOCK, item);
+        return Registry.register(BuiltInRegistries.ITEM, key, item);
     }
 
-    public static final RegistryKey<ItemGroup> ZZRS = RegistryKey.of(RegistryKeys.ITEM_GROUP, Identifier.of("dabaosword", "zzrs"));
+    public static final ResourceKey<CreativeModeTab> ZZRS = ResourceKey.create(Registries.CREATIVE_MODE_TAB, DabaoSword.id("zzrs"));
 
-    private static void addToGroup(ItemGroup.DisplayContext context, ItemGroup.Entries entries) {
-        var wrapper = context.lookup().getOrThrow(RegistryKeys.ENCHANTMENT);
-        var entry = wrapper.getOptional(CRIT).orElse(null);
-        ItemStack smile = new ItemStack(SUNSHINE_SMILE);
-        if (entry != null) smile.addEnchantment(entry, 1);
+    private static void addToGroup(CreativeModeTab.ItemDisplayParameters context, CreativeModeTab.Output entries) {
         //添加所有卡牌
-        CARDS.forEach(entries::add);
-        entries.add(GAIN_CARD);
-        entries.add(CARD_PILE);
+        CARDS.forEach(entries::accept);
+        entries.accept(GAIN_CARD);
+        entries.accept(CARD_PILE);
         //添加所有技能
-        SkillCards.SKILLS.forEach(entries::add);
+        SkillCards.SKILLS.forEach(entries::accept);
 
-        entries.add(GIFTBOX);
-        entries.add(WARM_WINE);
-        entries.add(BBJI);
-        entries.add(LET_ME_CC);
-        entries.add(smile);
-        entries.add(XUYOU_SPAWN_EGG);
+        entries.accept(GIFTBOX);
+        entries.accept(WARM_WINE);
+        entries.accept(BBJI);
+        entries.accept(LET_ME_CC);
+        addToGroupWithEnchant(entries, SUNSHINE_SMILE, CRIT, 1);
+        entries.accept(XUYOU_SPAWN_EGG);
+    }
+
+    private static void addToGroupWithEnchant(CreativeModeTab.Output output, Item item, ResourceKey<Enchantment> key, int level) {
+        ItemStack stack = new ItemStack(item);
+        var player = Minecraft.getInstance().player;
+        if (player != null) stack.enchant(ModTools.getEntry(key, player), level);
+        output.accept(stack);
     }
 
     //注册部分
     public static void register() {
-        Registry.register(Registries.ITEM_GROUP, ZZRS,
-                FabricItemGroup.builder().icon(() -> new ItemStack(SUNSHINE_SMILE))
-                        .displayName(Text.translatable("itemGroup.dabaosword.zzrs"))
-                        .entries(ModItems::addToGroup).build());
+        Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, ZZRS,
+                FabricCreativeModeTab.builder().icon(() -> new ItemStack(SUNSHINE_SMILE))
+                        .title(Component.translatable("itemGroup.dabaosword.zzrs"))
+                        .displayItems(ModItems::addToGroup).build());
 
-        ServerWorldEvents.LOAD.register(new PVPGameEvents());
+        ServerLevelEvents.LOAD.register(new PVPGameEvents());
         ServerTickEvents.START_SERVER_TICK.register(new PVPGameEvents());
-        ServerTickEvents.START_WORLD_TICK.register(new PVPGameEvents());
+        ServerTickEvents.START_LEVEL_TICK.register(new PVPGameEvents());
         PVPGameTickCallback.EVENT.register(new PVPGameEvents());
         AttackEntityCallback.EVENT.register(new AttackEntityHandler());
         EntityHurtCallback.EVENT.register(new EntityHurtHandler());
@@ -210,48 +215,48 @@ public class ModItems {
         EndEntityTick.PLAYER_EVENT.register(new EntityTickEvents());
     }
 
-    private static RegistryEntry<StatusEffect> register(String id, StatusEffect statusEffect) {
-        return Registry.registerReference(Registries.STATUS_EFFECT, Identifier.of("dabaosword", id), statusEffect);
+    private static Holder<MobEffect> register(String id, MobEffect statusEffect) {
+        return Registry.registerForHolder(BuiltInRegistries.MOB_EFFECT, DabaoSword.id(id), statusEffect);
     }//状态效果注册
     //兵粮寸断效果
-    public static final RegistryEntry<StatusEffect> BINGLIANG = register("bingliang",
-            new CommonEffect(StatusEffectCategory.HARMFUL, 0x46F732).addAttributeModifier(EntityAttributes.ATTACK_DAMAGE, Identifier.of("bingliang"),-4, EntityAttributeModifier.Operation.ADD_VALUE)),
+    public static final Holder<MobEffect> BINGLIANG = register("bingliang",
+            new CommonEffect(MobEffectCategory.HARMFUL, 0x46F732).addAttributeModifier(Attributes.ATTACK_DAMAGE, Identifier.withDefaultNamespace("bingliang"), -4, AttributeModifier.Operation.ADD_VALUE)),
     //乐不思蜀效果
-    TOO_HAPPY = register("too_happy", new TooHappyEffect().addAttributeModifier(EntityAttributes.MOVEMENT_SPEED, Identifier.of("too_happy"),-10, EntityAttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)),
+    TOO_HAPPY = register("too_happy", new TooHappyEffect().addAttributeModifier(Attributes.MOVEMENT_SPEED, Identifier.withDefaultNamespace("too_happy"),-10, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL)),
     //触及距离增加
-    REACH = register("reach", new CommonEffect(StatusEffectCategory.BENEFICIAL, 0xFFFFFF)
-            .addAttributeModifier(EntityAttributes.BLOCK_INTERACTION_RANGE, Identifier.of("reach_block"), 1.0, EntityAttributeModifier.Operation.ADD_VALUE)
-            .addAttributeModifier(EntityAttributes.ENTITY_INTERACTION_RANGE, Identifier.of("attack_range"), 1.0, EntityAttributeModifier.Operation.ADD_VALUE)),
+    REACH = register("reach", new CommonEffect(MobEffectCategory.BENEFICIAL, 0xFFFFFF)
+            .addAttributeModifier(Attributes.BLOCK_INTERACTION_RANGE, Identifier.withDefaultNamespace("reach_block"), 1.0, AttributeModifier.Operation.ADD_VALUE)
+            .addAttributeModifier(Attributes.ENTITY_INTERACTION_RANGE, Identifier.withDefaultNamespace("attack_range"), 1.0, AttributeModifier.Operation.ADD_VALUE)),
     //近战防御范围增加
-    DEFEND = register("defend", new CommonEffect(StatusEffectCategory.BENEFICIAL, 0xFFFFFF)),
-    DEFENDED = register("defended", new CommonEffect(StatusEffectCategory.HARMFUL, 0xFFFFFF).addAttributeModifier(EntityAttributes.ENTITY_INTERACTION_RANGE, Identifier.of("attack_range_lower"), -1.0, EntityAttributeModifier.Operation.ADD_VALUE)),
+    DEFEND = register("defend", new CommonEffect(MobEffectCategory.BENEFICIAL, 0xFFFFFF)),
+    DEFENDED = register("defended", new CommonEffect(MobEffectCategory.HARMFUL, 0xFFFFFF).addAttributeModifier(Attributes.ENTITY_INTERACTION_RANGE, Identifier.withDefaultNamespace("attack_range_lower"), -1.0, AttributeModifier.Operation.ADD_VALUE)),
     //冷却状态效果
     COOLDOWN = register("cooldown", new CooldownEffect()),
     COOLDOWN2 = register("cooldown2", new Cooldown2Effect()),
     //无敌效果
-    INVULNERABLE = register("invulnerable", new CommonEffect(StatusEffectCategory.BENEFICIAL,0x35F5DF)),
+    INVULNERABLE = register("invulnerable", new CommonEffect(MobEffectCategory.BENEFICIAL,0x35F5DF)),
     //下落攻击效果
     FALLING_ATTACK = register("falling_attack", new FallingEffect()),
     //翻面效果
     TURNOVER = register("turn_over", new TurnOverEffect()),
     //铁骑效果
-    TIEJI = register("tieji", new CommonEffect(StatusEffectCategory.HARMFUL, 0x07050F)),
+    TIEJI = register("tieji", new CommonEffect(MobEffectCategory.HARMFUL, 0x07050F)),
     //闪电效果
     SHANDIAN = register("shandian", new ShandianEffect());
 
     //物品组件注册
-    public static final ComponentType<Integer> TAGS = component("tags", builder -> builder.codec(Codecs.NON_NEGATIVE_INT).packetCodec(PacketCodecs.VAR_INT));
-    public static final ComponentType<Integer> CD = component("cd", builder -> builder.codec(Codecs.NON_NEGATIVE_INT).packetCodec(PacketCodecs.VAR_INT));
+    public static final DataComponentType<Integer> TAGS = component("tags", builder -> builder.persistent(ExtraCodecs.NON_NEGATIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT));
+    public static final DataComponentType<Integer> CD = component("cd", builder -> builder.persistent(ExtraCodecs.NON_NEGATIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT));
 
-    private static <T> ComponentType<T> component(String id, UnaryOperator<ComponentType.Builder<T>> builderOperator) {
-        return Registry.register(Registries.DATA_COMPONENT_TYPE, Identifier.of("dabaosword",id), (builderOperator.apply(ComponentType.builder())).build());
+    private static <T> DataComponentType<T> component(String id, UnaryOperator<DataComponentType.Builder<T>> builderOperator) {
+        return Registry.register(BuiltInRegistries.DATA_COMPONENT_TYPE, DabaoSword.id(id), (builderOperator.apply(DataComponentType.builder())).build());
     }
 
-    public static final ScreenHandlerType<PlayerInvScreenHandler> PLAYER_INV_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "player_inv", new ExtendedScreenHandlerType<>(PlayerInvScreenHandler::new, SimplePayload.CODEC));
+    public static final MenuType<PlayerInvScreenHandler> PLAYER_INV_SCREEN_HANDLER = Registry.register(BuiltInRegistries.MENU, "player_inv", new ExtendedMenuType<>(PlayerInvScreenHandler::new, SimplePayload.CODEC));
 
-    public static final ScreenHandlerType<FullInvScreenHandler> FULL_INV_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "full_inv", new ExtendedScreenHandlerType<>(FullInvScreenHandler::new, SimplePayload.CODEC));
+    public static final MenuType<FullInvScreenHandler> FULL_INV_SCREEN_HANDLER = Registry.register(BuiltInRegistries.MENU, "full_inv", new ExtendedMenuType<>(FullInvScreenHandler::new, SimplePayload.CODEC));
 
-    public static final ScreenHandlerType<PileScreenHandler> PILE_SCREEN_HANDLER = Registry.register(Registries.SCREEN_HANDLER, "card_pile", new ExtendedScreenHandlerType<>(PileScreenHandler::new, SimplePayload.CODEC));
+    public static final MenuType<PileScreenHandler> PILE_SCREEN_HANDLER = Registry.register(BuiltInRegistries.MENU, "card_pile", new ExtendedMenuType<>(PileScreenHandler::new, SimplePayload.CODEC));
 
-    public static final RegistryKey<Enchantment> CRIT = RegistryKey.of(RegistryKeys.ENCHANTMENT, Identifier.of("dabaosword:crit"));
+    public static final ResourceKey<Enchantment> CRIT = ResourceKey.create(Registries.ENCHANTMENT, DabaoSword.id("crit"));
 }

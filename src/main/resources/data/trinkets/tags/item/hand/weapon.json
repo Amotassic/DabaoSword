@@ -1,16 +1,16 @@
 {
   "replace": false,
   "values": [
-    "dabaosword:cixiong",
-    "dabaosword:guding_dao",
-    "dabaosword:hanbing",
-    "dabaosword:qinggang",
-    "dabaosword:qinglong",
-    "dabaosword:fangtian",
-    "dabaosword:guanshi",
-    "dabaosword:zhangba",
-    "dabaosword:liannu",
-    "dabaosword:qilin",
-    "dabaosword:zhuque"
+    "dabaosword:card/cixiong",
+    "dabaosword:card/guding_dao",
+    "dabaosword:card/hanbing",
+    "dabaosword:card/qinggang",
+    "dabaosword:card/qinglong",
+    "dabaosword:card/fangtian",
+    "dabaosword:card/guanshi",
+    "dabaosword:card/zhangba",
+    "dabaosword:card/liannu",
+    "dabaosword:card/qilin",
+    "dabaosword:card/zhuque"
   ]
 }

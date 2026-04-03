@@ -3,38 +3,37 @@ package com.amotassic.dabaosword.item.card.equipment;
 import com.amotassic.dabaosword.api.skill.*;
 import com.amotassic.dabaosword.item.ModItems;
 import com.amotassic.dabaosword.util.ModifyDamage;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.projectile.ArrowEntity;
-import net.minecraft.fluid.Fluids;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.tag.DamageTypeTags;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.arrow.Arrow;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 import java.util.Random;
 
 import static com.amotassic.dabaosword.util.ModTools.*;
-import static net.minecraft.util.Formatting.AQUA;
+import static net.minecraft.ChatFormatting.AQUA;
 
 public class Armor extends Equipment {
-    public Armor(Settings settings) {super(settings);}
+    public Armor(Properties settings) {super(settings);}
 
     public static class Bagua extends Armor {
-        public Bagua(Settings settings) {super(settings);}
+        public Bagua(Properties settings) {super(settings);}
 
-        public void addTip(Skill skill, List<Text> tooltip) {tooltip.add(getTip(AQUA));}
+        public void addTip(Skill skill, List<Component> tooltip) {tooltip.add(getTip(AQUA));}
 
         @SkillInfo(trigger = Trigger.CANCEL_DAMAGE_HIGH, relation = Relation.SELF)
         public int bagua(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
             DamageSource source = data.source;
-            if (source.getAttacker() instanceof LivingEntity && !user.hasStatusEffect(ModItems.COOLDOWN2)) {
-                if (new Random().nextFloat() < 0.5 && !source.isIn(DamageTypeTags.BYPASSES_ARMOR)) {
+            if (source.getEntity() instanceof LivingEntity && !user.hasEffect(ModItems.COOLDOWN2)) {
+                if (new Random().nextFloat() < 0.5 && !source.is(DamageTypeTags.BYPASSES_ARMOR)) {
                     voice(user, this);
                     ItemStack shan = new ItemStack(ModItems.SHAN);
                     onUse(user, shan, null, true, false);
@@ -47,14 +46,14 @@ public class Armor extends Equipment {
     }
 
     public static class Baiyin extends Armor {
-        public Baiyin(Settings settings) {super(settings);}
+        public Baiyin(Properties settings) {super(settings);}
 
-        public void addTip(Skill skill, List<Text> tooltip) {tooltip.add(getTip(AQUA));}
+        public void addTip(Skill skill, List<Component> tooltip) {tooltip.add(getTip(AQUA));}
 
         @SkillInfo(trigger = Trigger.MODIFY_DAMAGE, relation = Relation.SELF)
         public int jianshang(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
             var source = data.source; var muls = data.muls;
-            if (!source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY) && source.getAttacker() instanceof LivingEntity) {
+            if (!source.is(DamageTypeTags.BYPASSES_INVULNERABILITY) && source.getEntity() instanceof LivingEntity) {
                 voice(target, this);
                 muls.add(-0.4f);
             }
@@ -65,7 +64,7 @@ public class Armor extends Equipment {
         public int recover(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
             if (user.isAlive() && user.getHealth() < user.getMaxHealth()) {
                 for (var card : data.cards_from_equ.keySet()) {
-                    if (card.toStack().isOf(this)) {
+                    if (card.toStack().is(this)) {
                         voice(user, this);
                         user.heal(5);
                     }
@@ -76,9 +75,9 @@ public class Armor extends Equipment {
     }
 
     public static class Renwang extends Armor {
-        public Renwang(Settings settings) {super(settings);}
+        public Renwang(Properties settings) {super(settings);}
         @Override
-        public void addTip(Skill skill, List<Text> tooltip) {
+        public void addTip(Skill skill, List<Component> tooltip) {
             tooltip.add(getTip("1"));
             tooltip.add(getTip("2", AQUA));
         }
@@ -93,21 +92,21 @@ public class Armor extends Equipment {
     }
 
     public static class Rattan extends Armor {
-        public Rattan(Settings settings) {super(settings);}
+        public Rattan(Properties settings) {super(settings);}
 
-        public void addTip(Skill skill, List<Text> tooltip) {tooltip.add(getTip());}
+        public void addTip(Skill skill, List<Component> tooltip) {tooltip.add(getTip());}
 
         //实现渡江不沉的效果，代码来自https://github.com/focamacho/RingsOfAscension/中的水上行走戒指
         @Override
         public void tickSkill(Skill skill, LivingEntity entity) {
-            if (entity.isSneaking()) return;
-            World world = entity.getEntityWorld();
-            BlockPos pos = entity.getBlockPos();
-            boolean water = !world.getFluidState(pos).isOf(Fluids.WATER) && world.getFluidState(pos.down()).isOf(Fluids.WATER);
+            if (entity.isShiftKeyDown()) return;
+            var world = entity.level();
+            BlockPos pos = entity.getOnPos();
+            boolean water = !world.getFluidState(pos).is(Fluids.WATER) && world.getFluidState(pos.below()).is(Fluids.WATER);
 
-            if (water && entity.getEntityPos().y - pos.getY() < 0.15) {
-                Vec3d motion = entity.getVelocity();
-                entity.setVelocity(motion.x, 0.0D, motion.z);
+            if (water && entity.position().y - pos.getY() < 0.15) {
+                Vec3 motion = entity.getDeltaMovement();
+                entity.setDeltaMovement(motion.x, 0.0D, motion.z);
                 entity.fallDistance = 0;
                 entity.setOnGround(true);
             }
@@ -117,7 +116,7 @@ public class Armor extends Equipment {
         public int shouyi(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
             var source = data.source; var adds = data.adds; var amount = data.amount;
             //穿藤甲时，若承受火焰伤害，则 战火燃尽，嘤熊胆！（伤害大于5就只加5）
-            if (source.isIn(DamageTypeTags.IS_FIRE)) {
+            if (source.is(DamageTypeTags.IS_FIRE)) {
                 voice(target, "rattan_armor2");
                 adds.add(Math.min(amount, 5f));
             }
@@ -127,7 +126,7 @@ public class Armor extends Equipment {
         @SkillInfo(trigger = Trigger.DROP_TARGET, relation = Relation.ANY)
         public int goodEffect(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
             var card = data.getFirst().toStack();
-            boolean bl = card.isOf(ModItems.WANJIAN) || card.isOf(ModItems.NANMAN) || card.isOf(ModItems.SHA);
+            boolean bl = card.is(ModItems.WANJIAN) || card.is(ModItems.NANMAN) || card.is(ModItems.SHA);
             if (data.targets.contains(user) && bl) {
                 voice(user, this); data.removeTarget(user);
             }
@@ -138,23 +137,23 @@ public class Armor extends Equipment {
         public int tengjia(LivingEntity user, LivingEntity target, Skill skill, ExData data) {
             var source = data.source;
             //弹射物对藤甲无效
-            if (source.isIn(DamageTypeTags.IS_PROJECTILE)) {
-                Entity projectile = source.getSource();
-                if (projectile instanceof ArrowEntity) { //即使处于CD中，箭也对藤甲无效
+            if (source.is(DamageTypeTags.IS_PROJECTILE)) {
+                Entity projectile = source.getDirectEntity();
+                if (projectile instanceof Arrow) { //即使处于CD中，箭也对藤甲无效
                     projectile.discard(); voice(target, this);
                     return 1;
                 }
                 if (skill.getCD() == 0) {
                     if (projectile != null) projectile.discard();
-                    target.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 10,0,false,false,false));
+                    target.addEffect(new MobEffectInstance(ModItems.INVULNERABLE, 10,0,false,false,false));
                     skill.setCD(5); voice(target, this);
                     return 1;
                 }
             }
             //若攻击者主手没有物品，则无法击穿藤甲
-            if (source.getSource() instanceof LivingEntity s && s.getMainHandStack().isEmpty()) {
+            if (source.getDirectEntity() instanceof LivingEntity s && s.getMainHandItem().isEmpty()) {
                 if (skill.getCD() == 0) {
-                    target.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 10,0,false,false,false));
+                    target.addEffect(new MobEffectInstance(ModItems.INVULNERABLE, 10,0,false,false,false));
                     skill.setCD(5); voice(target, this);
                     return 1;
                 }

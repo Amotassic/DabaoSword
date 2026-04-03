@@ -1,11 +1,12 @@
 package com.amotassic.dabaosword.item.card;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import org.jspecify.annotations.NonNull;
 
 import java.util.List;
 import java.util.Random;
@@ -14,22 +15,22 @@ import static com.amotassic.dabaosword.api.CardEvents.cardDiscard;
 import static com.amotassic.dabaosword.util.ModTools.*;
 
 public class DiscardItem extends CardItem.Armoury {
-    public DiscardItem(Settings settings) {super(settings);}
+    public DiscardItem(Properties settings) {super(settings);}
 
     @Override
-    public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
-        if (!user.getEntityWorld().isClient() && countAllCards(entity) > 0) {
-            onUse(user, user.getStackInHand(hand), hand, entity);
-            return ActionResult.SUCCESS_SERVER;
+    public @NonNull InteractionResult interactLivingEntity(@NonNull ItemStack stack, Player user, @NonNull LivingEntity entity, @NonNull InteractionHand hand) {
+        if (!user.level().isClientSide() && countAllCards(entity) > 0) {
+            onUse(user, user.getItemInHand(hand), hand, entity);
+            return InteractionResult.SUCCESS_SERVER;
         }
-        return ActionResult.PASS;
+        return InteractionResult.PASS;
     }
 
     @Override
     public void effect(LivingEntity user, ItemStack card, LivingEntity entity) {
-        if (user instanceof PlayerEntity player) {
-            if (entity instanceof PlayerEntity target) {
-                openInv(player, target, target, Text.translatable("dabaosword.discard.title", card.getName()), card, true, false, 1);
+        if (user instanceof Player player) {
+            if (entity instanceof Player target) {
+                openInv(player, target, target, Component.translatable("dabaosword.discard.title", card.getDisplayName()), card, true, false, 1);
             } else {
                 List<ItemStack> stacks = getItems(entity, isCard, true, false, true, false);
                 if (!stacks.isEmpty()) {
@@ -39,11 +40,11 @@ public class DiscardItem extends CardItem.Armoury {
                 }
             }
         } else {
-            if (entity instanceof PlayerEntity player) { //如果是玩家则弃牌
+            if (entity instanceof Player player) { //如果是玩家则弃牌
                 List<ItemStack> candidate = getItems(entity, isCard, true, false, true, true);
                 if (!candidate.isEmpty()) {
                     ItemStack chosen = candidate.get(new Random().nextInt(candidate.size()));
-                    player.sendMessage(Text.translatable("dabaosword.discard", user.getDisplayName(), player.getDisplayName(), chosen.toHoverableText()), false);
+                    player.sendSystemMessage(Component.translatable("dabaosword.discard", user.getDisplayName(), player.getDisplayName(), chosen.getDisplayName()));
                     var exData = d().cards(chosen, 1, isEquipped(entity, s -> s.equals(chosen)));
                     cardDiscard(player, exData);
                 }
@@ -55,7 +56,7 @@ public class DiscardItem extends CardItem.Armoury {
                         var exData = d().cards(chosen, 1, isEquipped(entity, s -> s.equals(chosen)));
                         cardDiscard(entity, exData);
                     }
-                    else chosen.decrement(1);
+                    else chosen.shrink(1);
                 }
             }
         }

@@ -1,34 +1,35 @@
 package com.amotassic.dabaosword.item.card;
 
 import com.amotassic.dabaosword.item.ModItems;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.NonNull;
 
 public class ShanItem extends CardItem.Basic {
-    public ShanItem(Settings settings) {super(settings);}
+    public ShanItem(Properties settings) {super(settings);}
 
     //使用后，向前冲刺一段距离，无敌0.5秒，冷却时间1秒
     @Override
-    public ActionResult use(World world, PlayerEntity user, Hand hand) {
+    public @NonNull InteractionResult use(@NonNull Level world, @NonNull Player user, @NonNull InteractionHand hand) {
         //判断是否有独立冷却buff，若冷却中则无法生效
-        if (!world.isClient() && !user.hasStatusEffect(ModItems.COOLDOWN2)) {
-            onUse(user, user.getStackInHand(hand), hand, user);
-            return ActionResult.SUCCESS_SERVER;
+        if (!world.isClientSide() && !user.hasEffect(ModItems.COOLDOWN2)) {
+            onUse(user, user.getItemInHand(hand), hand, user);
+            return InteractionResult.SUCCESS_SERVER;
         }
         return super.use(world, user, hand);
     }
 
     @Override
     public void effect(LivingEntity user, ItemStack card, LivingEntity target) {
-        Vec3d momentum = user.getRotationVector().multiply(3);
-        user.velocityModified = true; user.addVelocity(momentum.getX(),0 ,momentum.getZ());
-        user.addStatusEffect(new StatusEffectInstance(ModItems.INVULNERABLE, 20,0,false,false,false));
-        user.addStatusEffect(new StatusEffectInstance(ModItems.COOLDOWN2, 20,0,false,false,false));
+        Vec3 momentum = user.getForward().scale(3);
+        user.hurtMarked = true; user.setDeltaMovement(momentum.x, 0, momentum.z);
+        user.addEffect(new MobEffectInstance(ModItems.INVULNERABLE, 20,0,false,false,false));
+        user.addEffect(new MobEffectInstance(ModItems.COOLDOWN2, 20,0,false,false,false));
     }
 }
